@@ -7,7 +7,6 @@
     "rootDir": ".",
     "baseUrl": ".",
     "ignoreDeprecations": "5.0",
-    "skipLibCheck": true,
     "paths": {
       "@/*": ["./*"],
       "@default-tamagui-config": ["src/theme/tamagui.config.ts"],
