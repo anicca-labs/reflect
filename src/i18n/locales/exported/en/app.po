@@ -14,91 +14,89 @@ msgstr ""
 "Plural-Forms: \n"
 
 #: app/sign-in.tsx
-msgid "Already have an account? Sign in"
-msgstr "Already have an account? Sign in"
+#~ msgid "Already have an account? Sign in"
+#~ msgstr "Already have an account? Sign in"
 
 #: app/(tabs)/index.tsx
-msgid "Cancel"
-msgstr "Cancel"
+#~ msgid "Cancel"
+#~ msgstr "Cancel"
 
 #: app/sign-in.tsx
-msgid "Create account"
-msgstr "Create account"
+#~ msgid "Create account"
+#~ msgstr "Create account"
 
 #: app/sign-in.tsx
-msgid "Create your account."
-msgstr "Create your account."
+#~ msgid "Create your account."
+#~ msgstr "Create your account."
 
 #: app/(tabs)/index.tsx
-msgid "Delete"
-msgstr "Delete"
+#~ msgid "Delete"
+#~ msgstr "Delete"
 
 #: app/(tabs)/index.tsx
-msgid "Delete entry?"
-msgstr "Delete entry?"
+#~ msgid "Delete entry?"
+#~ msgstr "Delete entry?"
 
 #: app/sign-in.tsx
-msgid "Don't have an account? Sign up"
-msgstr "Don't have an account? Sign up"
+#~ msgid "Don't have an account? Sign up"
+#~ msgstr "Don't have an account? Sign up"
 
 #: app/sign-in.tsx
-msgid "Email"
-msgstr "Email"
+#~ msgid "Email"
+#~ msgstr "Email"
 
 #: app/(tabs)/index.tsx
-msgid "Journal"
-msgstr "Journal"
+#~ msgid "Journal"
+#~ msgstr "Journal"
 
 #: app/(tabs)/reflections.tsx
-msgid "No entries yet. Start writing in the Journal tab."
-msgstr "No entries yet. Start writing in the Journal tab."
+#~ msgid "No entries yet. Start writing in the Journal tab."
+#~ msgstr "No entries yet. Start writing in the Journal tab."
 
 #: app/sign-in.tsx
-msgid "Password"
-msgstr "Password"
+#~ msgid "Password"
+#~ msgstr "Password"
 
 #: app/(tabs)/reflections.tsx
-msgid "Permission"
-msgstr "Permission"
+#~ msgid "Permission"
+#~ msgstr "Permission"
 
 #: app/(tabs)/reflections.tsx
-msgid "Push notifications"
-msgstr "Push notifications"
+#~ msgid "Push notifications"
+#~ msgstr "Push notifications"
 
 #: app/(tabs)/reflections.tsx
-msgid "Reflections"
-msgstr "Reflections"
+#~ msgid "Reflections"
+#~ msgstr "Reflections"
 
 #: app/(tabs)/index.tsx
-msgid "Save entry"
-msgstr "Save entry"
+#~ msgid "Save entry"
+#~ msgstr "Save entry"
 
 #: app/(tabs)/reflections.tsx
-msgid "Scheduled! (5 s)"
-msgstr "Scheduled! (5 s)"
+#~ msgid "Scheduled! (5 s)"
+#~ msgstr "Scheduled! (5 s)"
 
 #: app/(tabs)/reflections.tsx
-msgid "Send test notification"
-msgstr "Send test notification"
+#~ msgid "Send test notification"
+#~ msgstr "Send test notification"
 
 #: app/sign-in.tsx
-msgid "Sign in"
-msgstr "Sign in"
+#~ msgid "Sign in"
+#~ msgstr "Sign in"
 
 #: app/(tabs)/index.tsx
-msgid "This cannot be undone."
-msgstr "This cannot be undone."
+#~ msgid "This cannot be undone."
+#~ msgstr "This cannot be undone."
 
-#. placeholder {0}: todayEntries.length
-#. placeholder {1}: todayEntries.length === 1 ? 'entry' : 'entries'
 #: app/(tabs)/index.tsx
-msgid "Today · {0} {1}"
-msgstr "Today · {0} {1}"
+#~ msgid "Today · {0} {1}"
+#~ msgstr "Today · {0} {1}"
 
 #: app/sign-in.tsx
-msgid "Welcome back."
-msgstr "Welcome back."
+#~ msgid "Welcome back."
+#~ msgstr "Welcome back."
 
 #: app/(tabs)/index.tsx
-msgid "What's on your mind?"
-msgstr "What's on your mind?"
+#~ msgid "What's on your mind?"
+#~ msgstr "What's on your mind?"

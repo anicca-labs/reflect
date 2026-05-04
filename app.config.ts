@@ -7,16 +7,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
-  scheme: process.env.EXPO_PUBLIC_APP_SCHEMA ?? "reflect",
+  scheme: process.env.APP_SCHEMA ?? "reflect",
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
     bundleIdentifier: process.env.APP_IDENTIFIER ?? "com.marianoksairi.reflect",
     buildNumber: "1",
-    googleServicesFile: process.env.EXPO_PUBLIC_GOOGLE_SERVICES_INFOPLIST_PATH,
+    googleServicesFile: process.env.GOOGLE_SERVICES_INFOPLIST_PATH,
     infoPlist: {
       UIBackgroundModes: ["fetch", "remote-notification"],
+      ITSAppUsesNonExemptEncryption: false,
     },
     entitlements: {
       "aps-environment": "production",
@@ -42,8 +43,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "expo-router",
-    "react-native-keyboard-controller",
-    "react-native-purchases",
     "@react-native-firebase/app",
     [
       "expo-notifications",
@@ -75,6 +74,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     "expo-secure-store",
   ],
+  extra: {
+    eas: {
+      projectId: "ffe92c43-db25-4566-b08e-b8dee91b107b",
+    },
+  },
   experiments: {
     typedRoutes: true,
     reactCompiler: true,

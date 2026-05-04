@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { YStack, XStack, Text, Input, Spinner } from 'tamagui'
-import { Containers } from '@ksairi-org/ui-containers'
-import { KeyboardScrollView } from '@ksairi-org/ui-containers'
+import { Containers , KeyboardScrollView } from '@ksairi-org/ui-containers'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { BaseTouchable } from '@ksairi-org/ui-touchables'
 import { supabase } from '@/src/services/supabase'
@@ -109,7 +108,7 @@ export default function SignInScreen() {
               onPress={() => { setMode(m => m === 'sign-in' ? 'sign-up' : 'sign-in'); setError(null) }}
               pressStyle={{ opacity: 0.7 }}>
               {mode === 'sign-in'
-                ? <Trans>Don't have an account? Sign up</Trans>
+                ? <Trans>Don&apos;t have an account? Sign up</Trans>
                 : <Trans>Already have an account? Sign in</Trans>}
             </Text>
           </XStack>

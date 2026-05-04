@@ -2985,6 +2985,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hookform/resolvers@npm:^5.2.2":
+  version: 5.2.2
+  resolution: "@hookform/resolvers@npm:5.2.2"
+  dependencies:
+    "@standard-schema/utils": "npm:^0.3.0"
+  peerDependencies:
+    react-hook-form: ^7.55.0
+  checksum: 10c0/0692cd61dcc2a70cbb27b88a37f733c39e97f555c036ba04a81bd42b0467461cfb6bafacb46c16f173672f9c8a216bd7928a2330d4e49c700d130622bf1defaf
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.2":
   version: 0.19.2
   resolution: "@humanfs/core@npm:0.19.2"
@@ -3277,6 +3288,73 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ksairi-org/expo-image@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@ksairi-org/expo-image@npm:0.1.2"
+  peerDependencies:
+    expo-image: "*"
+  checksum: 10c0/eb2efe1c809a2eb83b4b832d7575d9a915976f0bf5f35ca46cf896b559bbfe14f18e86ebc3e9c9c2b4d73cd64f0d4dcb80471bcd1490bbf0d14ffd5b55fa5bdb
+  languageName: node
+  linkType: hard
+
+"@ksairi-org/react-auth-client@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@ksairi-org/react-auth-client@npm:0.1.1"
+  peerDependencies:
+    "@supabase/supabase-js": "*"
+  checksum: 10c0/fd6bdc7a4ee001e04ac71b65dfc61d8d9f264fa54bf937f7ccf7d278e27d50e851e58eaa7a2c9f823642cf9b50aad022e5e9a12321416908485346a6ee1f5636
+  languageName: node
+  linkType: hard
+
+"@ksairi-org/react-auth-core@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@ksairi-org/react-auth-core@npm:0.1.1"
+  peerDependencies:
+    react: "*"
+  checksum: 10c0/0790579452721a668938770078efdff8818e1368dabf8215e9f7cb62ab250b21c7d7a19bc3794eab24fdce469d8908d0b73df726308a8b91bcb8ac488e94bc7f
+  languageName: node
+  linkType: hard
+
+"@ksairi-org/react-auth-hooks@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@ksairi-org/react-auth-hooks@npm:0.1.2"
+  peerDependencies:
+    react: "*"
+  checksum: 10c0/809a6b4a599dfc1a1bb57f4cde585593032c7846b5f2eee277a8814823d5a360204f50cd9c724b6648a623977a4d6c2ea20a3861a8909c6b88eef9df1aa46ef9
+  languageName: node
+  linkType: hard
+
+"@ksairi-org/react-auth-setup@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@ksairi-org/react-auth-setup@npm:0.1.1"
+  peerDependencies:
+    react: "*"
+  checksum: 10c0/6ce0f405a51f042859ce66d1c0f6c81086145c0cc7a95d5d7b5a0e30b9342d8e11bfa0e3db6b31d2096756d2e247c01e6fa59698a7efbf72df0becf09a335778
+  languageName: node
+  linkType: hard
+
+"@ksairi-org/react-auth-storage@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@ksairi-org/react-auth-storage@npm:0.1.2"
+  peerDependencies:
+    react: "*"
+    react-native-mmkv: "*"
+    zustand: "*"
+  checksum: 10c0/2aa71cf089f6a08c06422f4096ac0d6c438a1eca012cff47076c75638799af59631f639dc0e9443e84564371e0e611fada670c6372d7f8f633a78e3941c1ee2c
+  languageName: node
+  linkType: hard
+
+"@ksairi-org/react-form@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@ksairi-org/react-form@npm:0.1.2"
+  peerDependencies:
+    "@hookform/resolvers": "*"
+    react: "*"
+    react-hook-form: "*"
+  checksum: 10c0/898c86a059b5bb4343fddd0e851de95595b5f29176f0a490a0c1b56cdcb204ec20f131888d528d0577681a017194a3d93cf8a0baffdc8357afc3ac8fb1606ef6
+  languageName: node
+  linkType: hard
+
 "@ksairi-org/react-hooks@npm:^0.1.1":
   version: 0.1.1
   resolution: "@ksairi-org/react-hooks@npm:0.1.1"
@@ -3307,25 +3385,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ksairi-org/react-native-ui-config@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "@ksairi-org/react-native-ui-config@npm:0.1.1"
+"@ksairi-org/react-native-splash-view@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@ksairi-org/react-native-splash-view@npm:0.1.2"
+  peerDependencies:
+    expo-splash-screen: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/5856e4ec729771b051cb0c4b474b138883622133f690594f9c88f3c79d91c215005f91a7deb687b2590440448bee6a69f19050abaffa2eea13d5d7f9558b1b28
+  languageName: node
+  linkType: hard
+
+"@ksairi-org/react-native-ui-config@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@ksairi-org/react-native-ui-config@npm:0.1.2"
   peerDependencies:
     react: "*"
     react-native: "*"
     tamagui: "*"
-  checksum: 10c0/1bcb5bdea96e52ce780982b599e4c7f84eb98e16adaba00488c71cd9f40a5665639768e02d25699c58a6556cac8a9f2980342af6e812a7245d45fde3e9031ff9
+  checksum: 10c0/2ca155bed902ddb9cd57d7ea132ffaf8979b9b1b322297a9fad53f04cfa4662b6600ca7592b092a5313854a74057eec9104ac1c4e06e617b8c3790133d001f06
   languageName: node
   linkType: hard
 
-"@ksairi-org/react-query-sdk@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "@ksairi-org/react-query-sdk@npm:0.1.1"
+"@ksairi-org/react-query-sdk@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@ksairi-org/react-query-sdk@npm:0.1.2"
   peerDependencies:
     "@tanstack/react-query": "*"
     axios: "*"
     react: "*"
-  checksum: 10c0/2d7c87921b18d02b9a07bf40c3678b9eb5e77b0728463c4dc50dd30de4aa0c4f5b650ad238efa6c32593b57ed79065306dcae1d6b5c4918a95534379ccd00a2d
+  checksum: 10c0/f26dd964feaf9f828ab0cc8866ce5f27ab8984765c17306eef8500ef8ebc89aef1cdb736b39006a82177863fc2dff0df42354760f20611cfcb380db3966b301a
   languageName: node
   linkType: hard
 
@@ -3343,27 +3432,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ksairi-org/ui-button@npm:^0.1.9":
-  version: 0.1.9
-  resolution: "@ksairi-org/ui-button@npm:0.1.9"
+"@ksairi-org/ui-button@npm:^0.1.10":
+  version: 0.1.10
+  resolution: "@ksairi-org/ui-button@npm:0.1.10"
   peerDependencies:
     react: "*"
     react-native: "*"
     tamagui: "*"
-  checksum: 10c0/95ef99c51b87bb38072d5b0046bcfa076e645b74ae29424ce789cf70d1a5501c50cf789f7eeed4bdeb017bdad1c5180a0009b9be1216c4718a1fc3d1ec540238
+  checksum: 10c0/0d1f519bc3caff9dfdaeac00fa971085a5398c6155d10076e7ec0849114ccba126b183772f423180a53424494c0fff1285de3576f3b34982e73a0bb736cb127a
   languageName: node
   linkType: hard
 
-"@ksairi-org/ui-containers@npm:^0.1.10":
-  version: 0.1.10
-  resolution: "@ksairi-org/ui-containers@npm:0.1.10"
+"@ksairi-org/ui-containers@npm:^0.1.11":
+  version: 0.1.11
+  resolution: "@ksairi-org/ui-containers@npm:0.1.11"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-keyboard-controller: "*"
     react-native-safe-area-context: "*"
     tamagui: "*"
-  checksum: 10c0/d4ba643241bb1857bf3384e75010e317b9b2a32a088bcaa5457faf0ab36a71b1bf94046dd9cda59ec7924528d6abfcf2165033a732095071a7b780358cbf8d53
+  checksum: 10c0/6121dba40b338945b578bf7b9637a2fd214f4806c71ccbb49ea34c3c1e330bc0a3fe8c515b5cadd09faa2fdc0fc6ec7b1b81abf32d97631c70f84db5d9a297ef
   languageName: node
   linkType: hard
 
@@ -3744,6 +3833,18 @@ __metadata:
     "@orval/core": "npm:8.9.0"
     remeda: "npm:^2.33.6"
   checksum: 10c0/75cd31499c6db2b725747250fb3ac35adb7afe7f78f6b06be50f531858c58af9a2a67ebb70c24162330ce19a2905b8385f1f5d4a5c116cc9ca4a3af42d928732
+  languageName: node
+  linkType: hard
+
+"@phenomnomnominal/tsquery@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "@phenomnomnominal/tsquery@npm:6.2.0"
+  dependencies:
+    "@types/esquery": "npm:^1.5.4"
+    esquery: "npm:^1.7.0"
+  peerDependencies:
+    typescript: ">3.0.0"
+  checksum: 10c0/9842cd208f9f2b39cd147e57983b83641bbe8b98ff7c509b05d7c9ae7fba1811e668f7bd646cdfc4c0a5408262de6462c993512eae2fad370c52032cbbeddec7
   languageName: node
   linkType: hard
 
@@ -4806,6 +4907,13 @@ __metadata:
   dependencies:
     "@sinonjs/commons": "npm:^3.0.0"
   checksum: 10c0/2e2fb6cc57f227912814085b7b01fede050cd4746ea8d49a1e44d5a0e56a804663b0340ae2f11af7559ea9bf4d087a11f2f646197a660ea3cb04e19efc04aa63
+  languageName: node
+  linkType: hard
+
+"@standard-schema/utils@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@standard-schema/utils@npm:0.3.0"
+  checksum: 10c0/6eb74cd13e52d5fc74054df51e37d947ef53f3ab9e02c085665dcca3c38c60ece8d735cebbdf18fbb13c775fbcb9becb3f53109b0e092a63f0f7389ce0993fd0
   languageName: node
   linkType: hard
 
@@ -6918,7 +7026,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/estree@npm:^1.0.6":
+"@types/esquery@npm:^1.5.4":
+  version: 1.5.4
+  resolution: "@types/esquery@npm:1.5.4"
+  dependencies:
+    "@types/estree": "npm:*"
+  checksum: 10c0/a9fdd09d42ce2e94a8bcb59fbeb56e87f65c0c140747a64e70f55ceb8cd41b12f0ee5daf6c1e6eee51bc05b7d90e51cebc607dab22c3657d4b9aa299bf4e9873
+  languageName: node
+  linkType: hard
+
+"@types/estree@npm:*, @types/estree@npm:^1.0.6":
   version: 1.0.8
   resolution: "@types/estree@npm:1.0.8"
   checksum: 10c0/39d34d1afaa338ab9763f37ad6066e3f349444f9052b9676a7cc0252ef9485a41c6d81c9c4e0d26e9077993354edf25efc853f3224dd4b447175ef62bdcc86a5
@@ -6947,6 +7064,13 @@ __metadata:
   dependencies:
     "@types/unist": "npm:*"
   checksum: 10c0/3249781a511b38f1d330fd1e3344eed3c4e7ea8eff82e835d35da78e637480d36fad37a78be5a7aed8465d237ad0446abc1150859d0fde395354ea634decf9f7
+  languageName: node
+  linkType: hard
+
+"@types/inflected@npm:^2":
+  version: 2.1.3
+  resolution: "@types/inflected@npm:2.1.3"
+  checksum: 10c0/9d3899e17a4d65b4205fd2ca0d002e72d2d6b47badcd9668b4941c4b10b7f31995c8b5b710e2dc632311f9322fe2df63ae912988cff6319a8df82cfef05517ac
   languageName: node
   linkType: hard
 
@@ -9904,7 +10028,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esquery@npm:^1.5.0":
+"esquery@npm:^1.5.0, esquery@npm:^1.7.0":
   version: 1.7.0
   resolution: "esquery@npm:1.7.0"
   dependencies:
@@ -10031,6 +10155,54 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-dev-client@npm:~55.0.30":
+  version: 55.0.30
+  resolution: "expo-dev-client@npm:55.0.30"
+  dependencies:
+    expo-dev-launcher: "npm:55.0.31"
+    expo-dev-menu: "npm:55.0.26"
+    expo-dev-menu-interface: "npm:55.0.2"
+    expo-manifests: "npm:~55.0.16"
+    expo-updates-interface: "npm:~55.1.6"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/8eb4bf49ff955219fae26431865405bb3cf237d5ce412c0dda8f12dc080be90f04e5936b52b37f48bd29a20ad39ab419c5597ae0cb816ab646f164085f10d62b
+  languageName: node
+  linkType: hard
+
+"expo-dev-launcher@npm:55.0.31":
+  version: 55.0.31
+  resolution: "expo-dev-launcher@npm:55.0.31"
+  dependencies:
+    "@expo/schema-utils": "npm:^55.0.3"
+    expo-dev-menu: "npm:55.0.26"
+    expo-manifests: "npm:~55.0.16"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/1fe5193b4c98b8171ea7c999edb3401a0b491cad3ad1c1ec26f44436c1ff4ac54fa5e5b9ca395a9faf4d6c60445187b81baaf06113c69ef3403936a7a0d005ea
+  languageName: node
+  linkType: hard
+
+"expo-dev-menu-interface@npm:55.0.2":
+  version: 55.0.2
+  resolution: "expo-dev-menu-interface@npm:55.0.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/e13f4f235df2d3d9e35026553a3b49350ea08a7a1285634f15f8e957a39e3cf522f1f6a81a89396c66bfec452e664094e1711cf516db077da2d12ae844e3cabe
+  languageName: node
+  linkType: hard
+
+"expo-dev-menu@npm:55.0.26":
+  version: 55.0.26
+  resolution: "expo-dev-menu@npm:55.0.26"
+  dependencies:
+    expo-dev-menu-interface: "npm:55.0.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/91e2a82af3bb3ed3c3eb2548bead284bce72c74d81c76912bc7d4cc36a7af6d4b72f1e01730bd313619c4e6992a003e36001cfc55f0cb88dd966083fcdf34768
+  languageName: node
+  linkType: hard
+
 "expo-file-system@npm:~55.0.17":
   version: 55.0.17
   resolution: "expo-file-system@npm:55.0.17"
@@ -10091,6 +10263,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-json-utils@npm:~55.0.2":
+  version: 55.0.2
+  resolution: "expo-json-utils@npm:55.0.2"
+  checksum: 10c0/0a20a9a0cd1d66691858cc447abc021d13ac5a75be30cdda10a642b7aa03fbf1ffac83c84702bda77bb29fc43a8063582620434725ce32a7c8555a154066c24c
+  languageName: node
+  linkType: hard
+
 "expo-keep-awake@npm:~55.0.6":
   version: 55.0.6
   resolution: "expo-keep-awake@npm:55.0.6"
@@ -10123,6 +10302,17 @@ __metadata:
     expo: "*"
     react: "*"
   checksum: 10c0/8dd78f2f28337e7e56b3c7cc9ace130956fa736bb1631d15f2409d500839a30eb8f07a24df8765470b943acda24c714885c559b29e2b05d4c6b5a76fcbc492f2
+  languageName: node
+  linkType: hard
+
+"expo-manifests@npm:~55.0.16":
+  version: 55.0.16
+  resolution: "expo-manifests@npm:55.0.16"
+  dependencies:
+    expo-json-utils: "npm:~55.0.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/17a1b0de18cf24a86caf41900da147a6d69b3c5fa0d70afddbcb5122a7eec4e00a9dd8b86d0882b8a47ed5c5291e09bda58b7fb164a1e1f8eddc831aa9076372
   languageName: node
   linkType: hard
 
@@ -10307,6 +10497,15 @@ __metadata:
     react-native-web:
       optional: true
   checksum: 10c0/3e9c7c74430c02c85af22dc8ec70452d70a0085afee1fd4a3b48fc4fb5e705d74d9975edab1725410596b0ed025f6ba6f16c9998db90e017d4461b5c5e6c545c
+  languageName: node
+  linkType: hard
+
+"expo-updates-interface@npm:~55.1.6":
+  version: 55.1.6
+  resolution: "expo-updates-interface@npm:55.1.6"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/e876208cdec1890a34b45002d7d1f2d36f86b610207ef3c1b60fdd85c6d4d8358bde612711b306add34b62a7f2afac9c9553843ebb3a8cf097b59cbef4c87bc1
   languageName: node
   linkType: hard
 
@@ -11332,6 +11531,13 @@ __metadata:
   version: 4.0.0
   resolution: "indent-string@npm:4.0.0"
   checksum: 10c0/1e1904ddb0cb3d6cce7cd09e27a90184908b7a5d5c21b92e232c93579d314f0b83c246ffb035493d0504b1e9147ba2c9b21df0030f48673fba0496ecd698161f
+  languageName: node
+  linkType: hard
+
+"inflected@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "inflected@npm:2.1.0"
+  checksum: 10c0/2002977295a20d3ff02bf2aa741daab6920c7e10d241e0c6396af97d60a821f0ff5cf7ed3605d0e3c42d789a53507a5c1c7dc274923667ad8e2d495dbc7d152c
   languageName: node
   linkType: hard
 
@@ -14172,6 +14378,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-hook-form@npm:^7.75.0":
+  version: 7.75.0
+  resolution: "react-hook-form@npm:7.75.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  checksum: 10c0/4c264ffde2fae6d5f3158a97784d5bb44e7cbffea3204af364244fcd6921b763f4e66fd8e34423fb416baa8bee2cfa4777556a7245f66de24a28be28b6af172e
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^16.13.1, react-is@npm:^16.7.0":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -14585,20 +14800,30 @@ __metadata:
     "@commitlint/config-conventional": "npm:^20.5.0"
     "@expo/log-box": "npm:^55.0.11"
     "@expo/vector-icons": "npm:^15.0.3"
+    "@hookform/resolvers": "npm:^5.2.2"
+    "@ksairi-org/expo-image": "npm:^0.1.2"
+    "@ksairi-org/react-auth-client": "npm:^0.1.1"
+    "@ksairi-org/react-auth-core": "npm:^0.1.1"
+    "@ksairi-org/react-auth-hooks": "npm:^0.1.2"
+    "@ksairi-org/react-auth-setup": "npm:^0.1.1"
+    "@ksairi-org/react-auth-storage": "npm:^0.1.2"
+    "@ksairi-org/react-form": "npm:^0.1.2"
     "@ksairi-org/react-hooks": "npm:^0.1.1"
     "@ksairi-org/react-native-functions": "npm:^0.1.1"
     "@ksairi-org/react-native-hooks": "npm:^0.1.1"
-    "@ksairi-org/react-native-ui-config": "npm:^0.1.1"
-    "@ksairi-org/react-query-sdk": "npm:^0.1.1"
-    "@ksairi-org/ui-button": "npm:^0.1.9"
+    "@ksairi-org/react-native-splash-view": "npm:^0.1.2"
+    "@ksairi-org/react-native-ui-config": "npm:^0.1.2"
+    "@ksairi-org/react-query-sdk": "npm:^0.1.2"
+    "@ksairi-org/ui-button": "npm:^0.1.10"
     "@ksairi-org/ui-button-animated": "npm:^0.1.5"
-    "@ksairi-org/ui-containers": "npm:^0.1.10"
+    "@ksairi-org/ui-containers": "npm:^0.1.11"
     "@ksairi-org/ui-touchables": "npm:^0.1.4"
     "@lingui/cli": "npm:^6.0.0"
     "@lingui/core": "npm:^6.0.0"
     "@lingui/format-po": "npm:^6.0.0"
     "@lingui/macro": "npm:^5.9.5"
     "@lingui/react": "npm:^6.0.0"
+    "@phenomnomnominal/tsquery": "npm:^6.2.0"
     "@react-native-community/hooks": "npm:^3.0.0"
     "@react-native-community/netinfo": "npm:^11.4.1"
     "@react-native-firebase/analytics": "npm:^24.0.0"
@@ -14615,6 +14840,7 @@ __metadata:
     "@tanstack/react-query": "npm:^5.100.6"
     "@testing-library/react-native": "npm:^13.3.3"
     "@types/babel__core": "npm:^7"
+    "@types/inflected": "npm:^2"
     "@types/jest": "npm:29.5.14"
     "@types/node": "npm:^25.6.0"
     "@types/react": "npm:~19.2.10"
@@ -14628,6 +14854,7 @@ __metadata:
     expo: "npm:^55.0.18"
     expo-build-properties: "npm:^55.0.13"
     expo-constants: "npm:~55.0.15"
+    expo-dev-client: "npm:~55.0.30"
     expo-font: "npm:~55.0.6"
     expo-haptics: "npm:~55.0.14"
     expo-image: "npm:~55.0.9"
@@ -14642,11 +14869,13 @@ __metadata:
     expo-system-ui: "npm:~55.0.16"
     expo-web-browser: "npm:~55.0.14"
     husky: "npm:^9.1.7"
+    inflected: "npm:^2.1.0"
     jest-expo: "npm:~55.0.16"
     orval: "npm:^8.9.0"
     prettier: "npm:^3.8.3"
     react: "npm:19.2.0"
     react-dom: "npm:19.2.0"
+    react-hook-form: "npm:^7.75.0"
     react-native: "npm:0.83.6"
     react-native-gesture-handler: "npm:~2.30.0"
     react-native-keyboard-controller: "npm:1.20.7"

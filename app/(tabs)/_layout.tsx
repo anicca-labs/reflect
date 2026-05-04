@@ -1,7 +1,6 @@
 import { Tabs } from 'expo-router'
 import React from 'react'
-import { HapticTab } from '@atoms'
-import { IconSymbol } from '@atoms'
+import { HapticTab , IconSymbol } from '@atoms'
 import { useTheme } from 'tamagui'
 
 export default function TabLayout() {

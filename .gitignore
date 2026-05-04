@@ -42,3 +42,12 @@ app-example
 /ios
 /android
 .env
+
+# Yarn
+.yarn/install-state.gz
+
+# EAS local build artifacts
+build-*.tar.gz
+build-*.apk
+app-build.ipa
+app-build.aab

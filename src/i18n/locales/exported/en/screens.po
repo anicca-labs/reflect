@@ -6,3 +6,99 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Already have an account? Sign in"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Cancel"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Create account"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Create your account."
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Delete"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Delete entry?"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Don't have an account? Sign up"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Email"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Journal"
+msgstr ""
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "No entries yet. Start writing in the Journal tab."
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Password"
+msgstr ""
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Permission"
+msgstr ""
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Push notifications"
+msgstr ""
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Reflections"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Save entry"
+msgstr ""
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Scheduled! (5 s)"
+msgstr ""
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Send test notification"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Sign in"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "This cannot be undone."
+msgstr ""
+
+#. placeholder {0}: todayEntries.length
+#. placeholder {1}: todayEntries.length === 1 ? 'entry' : 'entries'
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Today · {0} {1}"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Welcome back."
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "What's on your mind?"
+msgstr ""
