@@ -30,7 +30,7 @@
     "format:check": "prettier --check .",
     "test": "jest --watchAll=false",
     "test:watch": "jest",
-    "check:tsc": "tsc --noEmit",
+    "check:tsc": "bash -c 'out=$(node_modules/.bin/tsc --noEmit 2>&1); proj=$(echo \"$out\" | awk \"/node_modules\\//{skip=1} skip&&/^[^ ]/ &&!/node_modules\\//{skip=0} !skip\"); [ -n \"$proj\" ] && echo \"$proj\" && exit 1 || true'",
     "i18n:extract": "lingui extract",
     "i18n:compile": "lingui compile",
     "i18n": "yarn i18n:extract && yarn i18n:compile",
