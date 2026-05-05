@@ -2,6 +2,7 @@ import type { ConfigContext, ExpoConfig } from "expo/config";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
+  owner: "ksairi-org",
   name: process.env.DISPLAY_NAME ?? "reflect",
   slug: "reflect",
   version: "1.0.0",
