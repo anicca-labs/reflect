@@ -28,10 +28,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     package: process.env.APP_IDENTIFIER ?? "com.marianoksairi.reflect",
     versionCode: 1,
     adaptiveIcon: {
-      backgroundColor: "#E6F4FE",
-      foregroundImage: "./assets/images/android-icon-foreground.png",
-      backgroundImage: "./assets/images/android-icon-background.png",
-      monochromeImage: "./assets/images/android-icon-monochrome.png",
+      foregroundImage: "./assets/images/adaptive-icon.png",
+      backgroundColor: "#F5F0E8",
     },
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
@@ -64,13 +62,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "expo-splash-screen",
       {
-        image: "./assets/images/splash-icon.png",
+        image: "./assets/images/icon.png",
         imageWidth: 200,
         resizeMode: "contain",
-        backgroundColor: "#ffffff",
-        dark: {
-          backgroundColor: "#000000",
-        },
+        backgroundColor: "#F5F0E8",
       },
     ],
     "expo-secure-store",
