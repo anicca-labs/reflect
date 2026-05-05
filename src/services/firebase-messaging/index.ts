@@ -1,4 +1,5 @@
-import messaging from '@react-native-firebase/messaging'
+import { getMessaging, AuthorizationStatus } from '@react-native-firebase/messaging'
+import { getApp } from '@react-native-firebase/app'
 import * as ExpoNotifications from 'expo-notifications'
 
 ExpoNotifications.setNotificationHandler({
@@ -11,21 +12,22 @@ ExpoNotifications.setNotificationHandler({
   }),
 })
 
+const messaging = getMessaging(getApp())
+
 export async function requestNotificationPermission(): Promise<boolean> {
   const { status } = await ExpoNotifications.requestPermissionsAsync()
   if (status !== 'granted') return false
 
-  // Also request Firebase messaging permission (required on iOS)
-  const authStatus = await messaging().requestPermission()
+  const authStatus = await messaging.requestPermission()
   const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL
+    authStatus === AuthorizationStatus.AUTHORIZED ||
+    authStatus === AuthorizationStatus.PROVISIONAL
   return enabled
 }
 
 export async function getFCMToken(): Promise<string | null> {
   try {
-    const token = await messaging().getToken()
+    const token = await messaging.getToken()
     return token
   } catch {
     return null
@@ -35,7 +37,7 @@ export async function getFCMToken(): Promise<string | null> {
 export function subscribeToForegroundMessages(
   onMessage: (title: string, body: string) => void,
 ): () => void {
-  return messaging().onMessage(async remoteMessage => {
+  return messaging.onMessage(async remoteMessage => {
     const title = remoteMessage.notification?.title ?? 'Reflect'
     const body = remoteMessage.notification?.body ?? ''
     onMessage(title, body)
