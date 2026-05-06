@@ -5,6 +5,8 @@ import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts'
 import { Trans } from '@lingui/react/macro'
 import { SizingAnimatedButton } from '@ksairi-org/ui-button-animated'
 import { Containers } from '@ksairi-org/ui-containers'
+import { BaseIcon } from '@atoms'
+import { sizes } from '@theme'
 import type { JournalEntry } from '@/src/types/journal'
 import {
   requestNotificationPermission,
@@ -12,7 +14,8 @@ import {
   scheduleLocalNotification,
 } from '@firebase-messaging'
 import { logScreenView } from '@analytics'
-import { useJournalEntries } from '@hooks'
+import { useJournalEntries, useRevenueCat } from '@hooks'
+import { exportJournal } from '@export'
 
 function formatDayLabel(iso: string) {
   const d = new Date(iso)
@@ -49,6 +52,8 @@ function groupByDay(entries: JournalEntry[]): { label: string; items: JournalEnt
 
 export default function ReflectionsScreen() {
   const { data: entries = [], isLoading: loading, refetch } = useJournalEntries()
+  const { isPro, presentPaywall } = useRevenueCat()
+  const [exporting, setExporting] = useState(false)
   const [notifPermission, setNotifPermission] = useState<boolean | null>(null)
   const [fcmToken, setFcmToken] = useState<string | null>(null)
   const [scheduling, setScheduling] = useState(false)
@@ -80,15 +85,47 @@ export default function ReflectionsScreen() {
     setScheduled(true)
   }
 
+  async function handleExport() {
+    if (!isPro) {
+      await presentPaywall()
+      return
+    }
+    setExporting(true)
+    await exportJournal(entries)
+    setExporting(false)
+  }
+
   const groups = groupByDay(entries)
 
   return (
     <Containers.Screen shouldAutoResize={false}>
       <ScrollView>
         <YStack p="$5">
-          <DisplayLg color="$color12" letterSpacing={-0.5} mb="$6">
-            <Trans>Reflections</Trans>
-          </DisplayLg>
+          <XStack justify="space-between" items="center" mb="$6">
+            <DisplayLg color="$color12" letterSpacing={-0.5}>
+              <Trans>Reflections</Trans>
+            </DisplayLg>
+            {entries.length > 0 && (
+              <SizingAnimatedButton
+                onPress={handleExport}
+                disabled={exporting}
+                loading={exporting}
+                backgroundColor="$color2"
+                spinnerBackgroundColor="$color2"
+                spinnerPieceColor="$accentBackground"
+                height={sizes.xl}
+                borderWidth={1}
+                borderColor="$borderColor"
+                px="$3">
+                <XStack gap="$2" items="center">
+                  <BaseIcon iconName="iconBook" width={sizes.sm} height={sizes.sm} color="$accentBackground" />
+                  <LabelLg color="$accentBackground">
+                    {isPro ? <Trans>Export</Trans> : <Trans>Export ✦</Trans>}
+                  </LabelLg>
+                </XStack>
+              </SizingAnimatedButton>
+            )}
+          </XStack>
 
           {loading && !entries.length && (
             <YStack items="center" mt="$10">

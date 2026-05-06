@@ -26,6 +26,7 @@
       "@theme/*": ["src/theme/*"],
       "@analytics": ["src/services/analytics/index.ts"],
       "@revenue-cat": ["src/services/revenue-cat/index.ts"],
+      "@export": ["src/services/export/index.ts"],
       "@firebase-messaging": ["src/services/firebase-messaging/index.ts"],
       "@sentry": ["src/services/sentry/index.ts"],
       "@stores": ["src/stores/index.ts"],
