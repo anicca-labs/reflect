@@ -19,11 +19,14 @@ import {
 import { useEffect } from 'react'
 import { SplashView } from '@ksairi-org/react-native-splash-view'
 import { themes } from '@theme'
+import { configureRevenueCat } from '@revenue-cat'
 import splash from '../assets/animations/splash.riv'
 
 setupSentry(!__DEV__)
 
 const queryClient = new QueryClient()
+
+configureRevenueCat()
 
 const getSplashStyle = (isDark: boolean) => ({
   backgroundColor: isDark ? themes.dark.splashBackground : themes.light.splashBackground,
