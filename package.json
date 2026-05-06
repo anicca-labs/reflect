@@ -65,7 +65,7 @@
     "@lingui/core": "^6.0.0",
     "@lingui/macro": "^5.9.5",
     "@lingui/react": "^6.0.0",
-    "@react-native-async-storage/async-storage": "^3.0.2",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/hooks": "^3.0.0",
     "@react-native-community/netinfo": "^11.4.1",
     "@react-native-firebase/analytics": "^24.0.0",

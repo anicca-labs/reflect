@@ -35,7 +35,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: "./assets/images/adaptive-icon.png",
       backgroundColor: "#F5F0E8",
     },
-    edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
     googleServicesFile: process.env.GOOGLE_SERVICES_JSON_PATH,
     permissions: ["android.permission.POST_NOTIFICATIONS"],
