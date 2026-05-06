@@ -85,7 +85,7 @@ export default function ReflectionsScreen() {
     <Containers.Screen shouldAutoResize={false}>
       <ScrollView>
         <YStack p="$5">
-          <Text fontSize={30} fontWeight="700" color="$color12" letterSpacing={-0.5} mb="$6">
+          <Text fontSize="$9" fontWeight="700" color="$color12" letterSpacing={-0.5} mb="$6">
             <Trans>Reflections</Trans>
           </Text>
 
@@ -96,7 +96,7 @@ export default function ReflectionsScreen() {
           )}
 
           {!loading && !entries.length && (
-            <Text color="$color8" fontSize={15} text="center" mt="$14">
+            <Text color="$color8" fontSize="$2" text="center" mt="$14">
               <Trans>No entries yet. Start writing in the Journal tab.</Trans>
             </Text>
           )}
@@ -104,7 +104,7 @@ export default function ReflectionsScreen() {
           {groups.map(group => (
             <YStack key={group.label} mb="$7">
               <Text
-                fontSize={12}
+                fontSize="$1"
                 color="$color8"
                 textTransform="uppercase"
                 letterSpacing={0.9}
@@ -120,10 +120,10 @@ export default function ReflectionsScreen() {
                   mb="$2"
                   borderWidth={1}
                   borderColor="$borderColor">
-                  <Text fontSize={15} color="$color12">
+                  <Text fontSize="$2" color="$color12">
                     {entry.content}
                   </Text>
-                  <Text fontSize={12} color="$color8" mt="$2">
+                  <Text fontSize="$1" color="$color8" mt="$2">
                     {formatTime(entry.created_at)}
                   </Text>
                 </YStack>
@@ -133,16 +133,16 @@ export default function ReflectionsScreen() {
 
           {/* Notifications demo */}
           <YStack mt="$6" bg="$color2" rounded="$4" p="$4" borderWidth={1} borderColor="$borderColor">
-            <Text fontSize={12} color="$color8" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+            <Text fontSize="$1" color="$color8" textTransform="uppercase" letterSpacing={0.9} mb="$3">
               <Trans>Push notifications</Trans>
             </Text>
 
             <XStack items="center" justify="space-between" mb="$3">
-              <Text fontSize={14} color="$color11">
+              <Text fontSize="$2" color="$color11">
                 <Trans>Permission</Trans>
               </Text>
               <Text
-                fontSize={13}
+                fontSize="$1"
                 fontWeight="600"
                 color={notifPermission === null ? '$color8' : notifPermission ? '$green10' : '$red10'}>
                 {notifPermission === null ? '—' : notifPermission ? 'Granted' : 'Denied'}
@@ -150,7 +150,7 @@ export default function ReflectionsScreen() {
             </XStack>
 
             {fcmToken && (
-              <Text fontSize={11} color="$color8" mb="$3" numberOfLines={1}>
+              <Text fontSize="$1" color="$color8" mb="$3" numberOfLines={1}>
                 {fcmToken.slice(0, 24)}…
               </Text>
             )}
@@ -163,7 +163,7 @@ export default function ReflectionsScreen() {
               spinnerBackgroundColor="$color3"
               spinnerPieceColor="$accentColor"
               height={40}>
-              <Text color={notifPermission ? '$accentColor' : '$color8'} fontWeight="600" fontSize={14}>
+              <Text color={notifPermission ? '$accentColor' : '$color8'} fontWeight="600" fontSize="$2">
                 {scheduled
                   ? <Trans>Scheduled! (5 s)</Trans>
                   : <Trans>Send test notification</Trans>}

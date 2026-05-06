@@ -6,6 +6,7 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import { BaseTouchable } from '@ksairi-org/ui-touchables'
 import { CTAButton } from '@ksairi-org/ui-button'
 import { Containers , KeyboardScrollView } from '@ksairi-org/ui-containers'
+import { sizes } from '@theme'
 import type { JournalEntry } from '@/src/types/journal'
 import { logJournalEntryCreated, logJournalEntryDeleted, logScreenView } from '@analytics'
 import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry } from '@hooks'
@@ -47,13 +48,13 @@ function EntryCard({ entry, onDelete }: EntryCardProps) {
 
   return (
     <YStack bg="$color2" rounded="$4" p="$4" mb="$3" borderWidth={1} borderColor="$borderColor">
-      <Text fontSize={15} color="$color12" mb="$3">
+      <Text fontSize="$2" color="$color12" mb="$3">
         {entry.content}
       </Text>
       <XStack justify="space-between" items="center">
-        <Text fontSize={12} color="$color8">{formatTime(entry.created_at)}</Text>
-        <BaseTouchable onPress={confirmDelete} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Text fontSize={12} color="$red10"><Trans>Delete</Trans></Text>
+        <Text fontSize="$1" color="$color8">{formatTime(entry.created_at)}</Text>
+        <BaseTouchable onPress={confirmDelete} hitSlop={{ top: sizes.sm, bottom: sizes.sm, left: sizes.sm, right: sizes.sm }}>
+          <Text fontSize="$1" color="$red10"><Trans>Delete</Trans></Text>
         </BaseTouchable>
       </XStack>
     </YStack>
@@ -89,13 +90,13 @@ export default function JournalScreen() {
   return (
     <Containers.Screen shouldAutoResize={false}>
       <KeyboardScrollView
-        contentContainerStyle={{ padding: 20 }}
+        contentContainerStyle={{ padding: sizes.lg }}
         keyboardShouldPersistTaps="handled">
         <YStack>
-          <Text fontSize={12} color="$color8" mb="$1" textTransform="uppercase" letterSpacing={0.9}>
+          <Text fontSize="$1" color="$color8" mb="$1" textTransform="uppercase" letterSpacing={0.9}>
             {formatDateHeading(new Date().toISOString())}
           </Text>
-          <Text fontSize={30} fontWeight="700" color="$color12" letterSpacing={-0.5} mb="$6">
+          <Text fontSize="$9" fontWeight="700" color="$color12" letterSpacing={-0.5} mb="$6">
             <Trans>Journal</Trans>
           </Text>
 
@@ -105,11 +106,11 @@ export default function JournalScreen() {
               value={draft}
               onChangeText={setDraft}
               placeholder={t`What's on your mind?`}
-              minH={110}
+              minH={sizes['3xl']}
               bg="transparent"
               borderWidth={0}
               focusStyle={{ outlineWidth: 0 }}
-              fontSize={16}
+              fontSize="$3"
               color="$color12"
             />
           </YStack>
@@ -122,7 +123,7 @@ export default function JournalScreen() {
             pressStyle={{ opacity: 0.75 }}
             borderRadius="$4"
             mb="$8">
-            <Text color={hasContent ? '$accentColor' : '$color8'} fontWeight="600" fontSize={15}>
+            <Text color={hasContent ? '$accentColor' : '$color8'} fontWeight="600" fontSize="$2">
               <Trans>Save entry</Trans>
             </Text>
           </CTAButton>
@@ -135,7 +136,7 @@ export default function JournalScreen() {
 
           {todayEntries.length > 0 && (
             <YStack>
-              <Text fontSize={12} color="$color8" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+              <Text fontSize="$1" color="$color8" textTransform="uppercase" letterSpacing={0.9} mb="$3">
                 <Trans>Today · {todayEntries.length} {todayEntries.length === 1 ? 'entry' : 'entries'}</Trans>
               </Text>
               {todayEntries.map(entry => (

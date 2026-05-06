@@ -4,6 +4,7 @@ import { Containers , KeyboardScrollView } from '@ksairi-org/ui-containers'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { BaseTouchable } from '@ksairi-org/ui-touchables'
 import { supabase } from '@/src/services/supabase'
+import { sizes } from '@theme'
 
 type Mode = 'sign-in' | 'sign-up'
 
@@ -32,19 +33,19 @@ export default function SignInScreen() {
   return (
     <Containers.Screen shouldAutoResize={false}>
       <KeyboardScrollView
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 28 }}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: sizes.lg }}
         keyboardShouldPersistTaps="handled">
         <YStack gap="$0">
           <Text
             fontFamily="$heading"
-            fontSize={36}
+            fontSize="$9"
             fontWeight="700"
             color="$color12"
             letterSpacing={-0.5}
             mb="$2">
             reflect
           </Text>
-          <Text fontSize={15} color="$color9" mb="$8">
+          <Text fontSize="$2" color="$color9" mb="$8">
             {mode === 'sign-in'
               ? <Trans>Welcome back.</Trans>
               : <Trans>Create your account.</Trans>}
@@ -80,7 +81,7 @@ export default function SignInScreen() {
           />
 
           {error && (
-            <Text color="$red10" fontSize={13} mb="$3">
+            <Text color="$red10" fontSize="$1" mb="$3">
               {error}
             </Text>
           )}
@@ -95,7 +96,7 @@ export default function SignInScreen() {
             mt="$2">
             {loading
               ? <Spinner color={isReady ? '$accentColor' : '$color8'} />
-              : <Text color={isReady ? '$accentColor' : '$color8'} fontWeight="600" fontSize={15}>
+              : <Text color={isReady ? '$accentColor' : '$color8'} fontWeight="600" fontSize="$2">
                   {mode === 'sign-in' ? <Trans>Sign in</Trans> : <Trans>Create account</Trans>}
                 </Text>
             }
@@ -104,7 +105,7 @@ export default function SignInScreen() {
           <XStack justify="center" mt="$5">
             <Text
               color="$accentBackground"
-              fontSize={14}
+              fontSize="$2"
               onPress={() => { setMode(m => m === 'sign-in' ? 'sign-up' : 'sign-in'); setError(null) }}
               pressStyle={{ opacity: 0.7 }}>
               {mode === 'sign-in'
