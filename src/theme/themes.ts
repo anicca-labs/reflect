@@ -1,4 +1,4 @@
-import { defaultConfig } from '@tamagui/config/v4'
+import { defaultConfig } from '@tamagui/config/v5'
 
 export const lightTheme = {
   ...defaultConfig.themes.light,
