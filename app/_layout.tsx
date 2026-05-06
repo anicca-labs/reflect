@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useColorScheme } from 'react-native'
 import tamaguiConfig from '@default-tamagui-config'
 import { LinguiClientProvider } from '@i18n'
-import { useAuthSession } from '@hooks'
+import { useAuthSession, useCustomFonts } from '@hooks'
 import {
   requestNotificationPermission,
   getFCMToken,
@@ -52,8 +52,11 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
+  const fontsLoaded = useCustomFonts()
   const colorScheme = useColorScheme() ?? 'light'
   const isOSThemeDark = colorScheme === 'dark'
+
+  if (!fontsLoaded) return null
 
   return (
     <QueryClientProvider client={queryClient}>

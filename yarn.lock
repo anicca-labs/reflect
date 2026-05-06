@@ -1852,6 +1852,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo-google-fonts/dm-sans@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@expo-google-fonts/dm-sans@npm:0.4.2"
+  checksum: 10c0/65ba636124377daebf8b6d8833cd3a3d9ef255812aaa3f764505c9133d49ae3d830e75c0cce9a9abdd9b76b3eb5dea64e47ee6be16f9dddab7938e86b0bf56c3
+  languageName: node
+  linkType: hard
+
+"@expo-google-fonts/lora@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@expo-google-fonts/lora@npm:0.4.2"
+  checksum: 10c0/0be0a4fc59b9d39c607667f2a37b09c5d05ef74997410fa1a0c4d20246e6382137302dec7cf09cae8f7247a321340d571b6c0b1b50462f5e364b6416b6d13626
+  languageName: node
+  linkType: hard
+
 "@expo-google-fonts/material-symbols@npm:^0.4.1":
   version: 0.4.34
   resolution: "@expo-google-fonts/material-symbols@npm:0.4.34"
@@ -14798,6 +14812,8 @@ __metadata:
     "@babel/runtime": "npm:^7.29.2"
     "@commitlint/cli": "npm:^20.5.2"
     "@commitlint/config-conventional": "npm:^20.5.0"
+    "@expo-google-fonts/dm-sans": "npm:^0.4.2"
+    "@expo-google-fonts/lora": "npm:^0.4.2"
     "@expo/log-box": "npm:^55.0.11"
     "@expo/vector-icons": "npm:^15.0.3"
     "@hookform/resolvers": "npm:^5.2.2"
