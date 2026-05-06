@@ -122,7 +122,12 @@ export const darkTheme = {
   shadow6: 'rgba(0, 0, 0, 0.65)',
 } as typeof defaultConfig.themes.dark
 
+const splashTokens = {
+  light: { splashBackground: 'hsl(37, 38%, 93%)' },  // brand cream #F5F0E8
+  dark:  { splashBackground: 'hsl(30, 8%, 6%)' },     // matches dark background
+}
+
 export const themes = {
-  light: lightTheme,
-  dark: darkTheme,
+  light: { ...lightTheme, ...splashTokens.light },
+  dark:  { ...darkTheme,  ...splashTokens.dark  },
 }

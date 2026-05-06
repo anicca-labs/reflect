@@ -16,9 +16,14 @@ import {
 } from '@firebase-messaging'
 import { useEffect } from 'react'
 import { SplashView } from '@ksairi-org/react-native-splash-view'
+import { themes } from '@theme'
 import splash from '../assets/animations/splash.riv'
 
 const queryClient = new QueryClient()
+
+const getSplashStyle = (isDark: boolean) => ({
+  backgroundColor: isDark ? themes.dark.splashBackground : themes.light.splashBackground,
+})
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -48,12 +53,13 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme() ?? 'light'
+  const isOSThemeDark = colorScheme === 'dark'
 
   return (
     <QueryClientProvider client={queryClient}>
       <LinguiClientProvider>
         <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme}>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <ThemeProvider value={isOSThemeDark ? DarkTheme : DefaultTheme}>
             <KeyboardProvider>
               <RootLayoutNav />
               <StatusBar style="auto" />
@@ -61,7 +67,7 @@ export default function RootLayout() {
           </ThemeProvider>
         </TamaguiProvider>
       </LinguiClientProvider>
-      <SplashView source={splash} style={{ backgroundColor: '#F5F0E8' }} />
+      <SplashView source={splash} style={getSplashStyle(isOSThemeDark)} />
     </QueryClientProvider>
   )
 }
