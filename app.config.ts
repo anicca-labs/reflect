@@ -13,7 +13,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
-    bundleIdentifier: process.env.APP_IDENTIFIER ?? "com.marianoksairi.reflect",
+    bundleIdentifier: process.env.APP_IDENTIFIER ?? "com.reflect.prod",
     buildNumber: "1",
     googleServicesFile: process.env.GOOGLE_SERVICES_INFOPLIST_PATH,
     infoPlist: {
@@ -22,13 +22,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     entitlements: {
       "aps-environment": "production",
+      "com.apple.developer.sign-in-with-apple": "enabled" as const,
       ...(process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID
         ? { "com.apple.developer.in-app-payments": [process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID] }
         : {}),
     },
   },
   android: {
-    package: process.env.APP_IDENTIFIER ?? "com.marianoksairi.reflect",
+    package: process.env.APP_IDENTIFIER ?? "com.reflect.prod",
     versionCode: 1,
     adaptiveIcon: {
       foregroundImage: "./assets/images/adaptive-icon.png",

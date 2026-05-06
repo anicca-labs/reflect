@@ -3051,6 +3051,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@invertase/react-native-apple-authentication@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "@invertase/react-native-apple-authentication@npm:2.5.1"
+  checksum: 10c0/04cc3e6fde99caea6cdb16bb50786afce141e5014939e9d51bfe29a21c0241d73eac529954ac4826851ce603f4d3e9f1b68cc54225e2df532ecd8021b7be4804
+  languageName: node
+  linkType: hard
+
 "@isaacs/fs-minipass@npm:^4.0.0":
   version: 4.0.1
   resolution: "@isaacs/fs-minipass@npm:4.0.1"
@@ -3375,6 +3382,28 @@ __metadata:
   peerDependencies:
     react: "*"
   checksum: 10c0/1f03521508f1851deeddbc69377bba7d9e50b7120d9ba38565c69cd468bcd34e271b2b4d1874ec71417ca13742206004356a81eb8a6c59245ff7289293a3437f
+  languageName: node
+  linkType: hard
+
+"@ksairi-org/react-native-auth-apple@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@ksairi-org/react-native-auth-apple@npm:0.1.1"
+  peerDependencies:
+    "@invertase/react-native-apple-authentication": "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/af0b25d8c1e2193def2cec860e4a565ba1bc21de2e534e5209a47160c47b271640a156e22f8137bc21fd95b94a4f14292192669af3ea0e9e4c9a97dedc3d4aad
+  languageName: node
+  linkType: hard
+
+"@ksairi-org/react-native-auth-google@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@ksairi-org/react-native-auth-google@npm:0.1.1"
+  peerDependencies:
+    "@react-native-google-signin/google-signin": "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/7cee8c68b1e20a17221d944c29e34c939cfb177b970c71c1e212ecee87c3da914a9ceda7977b7f69d9154075daf52d421cfb970d6258ecdd9f1a8c9ce2d17cbb
   languageName: node
   linkType: hard
 
@@ -4328,6 +4357,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-async-storage/async-storage@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@react-native-async-storage/async-storage@npm:3.0.2"
+  dependencies:
+    idb: "npm:8.0.3"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/afcc9805d15c644a0390e806a2d663bd9ce44f73f15d279b707581677d3a51b985e93a7bb64e301c6f970c3dae531ac7a40bb94e5773bc3515ae54afe59d9d77
+  languageName: node
+  linkType: hard
+
 "@react-native-community/hooks@npm:^3.0.0":
   version: 3.1.0
   resolution: "@react-native-community/hooks@npm:3.1.0"
@@ -4385,6 +4426,20 @@ __metadata:
     expo:
       optional: true
   checksum: 10c0/5be8b1e50d4f04ff6ead57503c506537c034e7e19c1e4515003eed535c5e8d54a976302fed459bffb62e6413640225bd2c28982c4083e9216c7bda7f768f0336
+  languageName: node
+  linkType: hard
+
+"@react-native-google-signin/google-signin@npm:^16.1.2":
+  version: 16.1.2
+  resolution: "@react-native-google-signin/google-signin@npm:16.1.2"
+  peerDependencies:
+    expo: ">=52.0.40"
+    react: "*"
+    react-native: "*"
+  peerDependenciesMeta:
+    expo:
+      optional: true
+  checksum: 10c0/91f8f8c4ed5311e7cd7c2977696624d857abb18b7bedfec0a126d8cca38cd56d48d8e0976ba01cf75db385bdd0a054e51148b5a3c64476305ccfdd79370f57af
   languageName: node
   linkType: hard
 
@@ -6999,6 +7054,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/aes-js@npm:^3":
+  version: 3.1.4
+  resolution: "@types/aes-js@npm:3.1.4"
+  checksum: 10c0/622b63b751d5bc3f1666b90078f72f7a5063f9762612fccceba54ff8277ad20b148676bfdf1a54450133f62aaf52f53bbaece686cfc648237fc4b2ac4f81c9df
+  languageName: node
+  linkType: hard
+
 "@types/babel__core@npm:^7, @types/babel__core@npm:^7.1.14":
   version: 7.20.5
   resolution: "@types/babel__core@npm:7.20.5"
@@ -7596,6 +7658,13 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 10c0/c9c52697227661b68d0debaf972222d4f622aa06b185824164e153438afa7b08273432ca43ea792cadb24dada1d46f6f6bb1ef8de9956979288cc1b96bf9914e
+  languageName: node
+  linkType: hard
+
+"aes-js@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "aes-js@npm:3.1.2"
+  checksum: 10c0/2568cc67af66fd9d41de25dc73d49ae810269c7648bbb1928b9f84d8fd6ddb4e39ed506d1be6794f5ffd567aadea75fc6895ef34d2b70b764f539f72a6a2baeb
   languageName: node
   linkType: hard
 
@@ -11485,6 +11554,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"idb@npm:8.0.3":
+  version: 8.0.3
+  resolution: "idb@npm:8.0.3"
+  checksum: 10c0/421cd9a3281b7564528857031cc33fd9e95753f8191e483054cb25d1ceea7303a0d1462f4f69f5b41606f0f066156999e067478abf2460dfcf9cab80dae2a2b2
+  languageName: node
+  linkType: hard
+
 "ieee754@npm:^1.1.13":
   version: 1.2.1
   resolution: "ieee754@npm:1.2.1"
@@ -14817,6 +14893,7 @@ __metadata:
     "@expo/log-box": "npm:^55.0.11"
     "@expo/vector-icons": "npm:^15.0.3"
     "@hookform/resolvers": "npm:^5.2.2"
+    "@invertase/react-native-apple-authentication": "npm:^2.5.1"
     "@ksairi-org/expo-image": "npm:^0.1.2"
     "@ksairi-org/react-auth-client": "npm:^0.1.1"
     "@ksairi-org/react-auth-core": "npm:^0.1.1"
@@ -14825,6 +14902,8 @@ __metadata:
     "@ksairi-org/react-auth-storage": "npm:^0.1.2"
     "@ksairi-org/react-form": "npm:^0.1.2"
     "@ksairi-org/react-hooks": "npm:^0.1.1"
+    "@ksairi-org/react-native-auth-apple": "npm:^0.1.1"
+    "@ksairi-org/react-native-auth-google": "npm:^0.1.1"
     "@ksairi-org/react-native-functions": "npm:^0.1.1"
     "@ksairi-org/react-native-hooks": "npm:^0.1.1"
     "@ksairi-org/react-native-splash-view": "npm:0.1.3"
@@ -14840,11 +14919,13 @@ __metadata:
     "@lingui/macro": "npm:^5.9.5"
     "@lingui/react": "npm:^6.0.0"
     "@phenomnomnominal/tsquery": "npm:^6.2.0"
+    "@react-native-async-storage/async-storage": "npm:^3.0.2"
     "@react-native-community/hooks": "npm:^3.0.0"
     "@react-native-community/netinfo": "npm:^11.4.1"
     "@react-native-firebase/analytics": "npm:^24.0.0"
     "@react-native-firebase/app": "npm:^24.0.0"
     "@react-native-firebase/messaging": "npm:^24.0.0"
+    "@react-native-google-signin/google-signin": "npm:^16.1.2"
     "@react-navigation/bottom-tabs": "npm:^7.4.0"
     "@react-navigation/elements": "npm:^2.6.3"
     "@react-navigation/native": "npm:^7.1.8"
@@ -14855,12 +14936,14 @@ __metadata:
     "@tamagui/core": "npm:^2.0.0-rc.41"
     "@tanstack/react-query": "npm:^5.100.6"
     "@testing-library/react-native": "npm:^13.3.3"
+    "@types/aes-js": "npm:^3"
     "@types/babel__core": "npm:^7"
     "@types/inflected": "npm:^2"
     "@types/jest": "npm:29.5.14"
     "@types/node": "npm:^25.6.0"
     "@types/react": "npm:~19.2.10"
     "@types/react-test-renderer": "npm:^19.1.0"
+    aes-js: "npm:^3.1.2"
     axios: "npm:^1.15.2"
     babel-plugin-inline-import: "npm:^3.0.0"
     burnt: "npm:^0.13.0"
