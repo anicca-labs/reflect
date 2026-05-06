@@ -113,10 +113,7 @@ export default function ReflectionsScreen() {
                 backgroundColor="$color2"
                 spinnerBackgroundColor="$color2"
                 spinnerPieceColor="$accentBackground"
-                height={sizes.xl}
-                borderWidth={1}
-                borderColor="$borderColor"
-                px="$3">
+                height={sizes.xl}>
                 <XStack gap="$2" items="center">
                   <BaseIcon iconName="iconBook" width={sizes.sm} height={sizes.sm} color="$accentBackground" />
                   <LabelLg color="$accentBackground">
