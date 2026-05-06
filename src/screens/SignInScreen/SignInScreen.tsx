@@ -56,22 +56,6 @@ export default function SignInScreen() {
   const hasInitializedAppleSignIn = useRef(false)
   const prevAppState = useRef<string>('active')
 
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextState) => {
-      // Re-trigger Apple sign-in after returning from the iOS credential picker
-      if (
-        Platform.OS === 'ios' &&
-        prevAppState.current === 'background' &&
-        nextState === 'active' &&
-        hasInitializedAppleSignIn.current
-      ) {
-        handleAppleSignIn()
-      }
-      prevAppState.current = nextState
-    })
-    return () => subscription.remove()
-  }, [handleAppleSignIn])
-
   async function handleSubmit() {
     setError(null)
     setLoading(true)
@@ -144,6 +128,21 @@ export default function SignInScreen() {
       setSocialLoading(false)
     }
   }, [t])
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (
+        Platform.OS === 'ios' &&
+        prevAppState.current === 'background' &&
+        nextState === 'active' &&
+        hasInitializedAppleSignIn.current
+      ) {
+        handleAppleSignIn()
+      }
+      prevAppState.current = nextState
+    })
+    return () => subscription.remove()
+  }, [handleAppleSignIn])
 
   const handleGoogleSignIn = useCallback(async () => {
     setError(null)
