@@ -22,6 +22,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     entitlements: {
       "aps-environment": "production",
+      ...(process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID
+        ? { "com.apple.developer.in-app-payments": [process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID] }
+        : {}),
     },
   },
   android: {
