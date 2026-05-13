@@ -95,6 +95,9 @@ jobs:
           curl -Ls https://cli.doppler.com/install.sh | sudo sh
           doppler --version
 
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
       - name: Build and Deploy to Apple App Store
         run: yarn deploy-store-ios
         env:

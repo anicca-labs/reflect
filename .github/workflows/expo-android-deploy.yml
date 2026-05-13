@@ -49,6 +49,9 @@ jobs:
           curl -Ls https://cli.doppler.com/install.sh | sudo sh
           doppler --version
 
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
       - name: Build and Deploy to Google Play Store
         run: yarn deploy-store-android
         env:
