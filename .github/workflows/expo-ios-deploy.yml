@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       environment:
-        description: 'Environment (stg, prod)'
+        description: 'Environment (stg, prd)'
         required: true
         type: string
       node-version:
@@ -96,7 +96,12 @@ jobs:
           doppler --version
 
       - name: Build and Deploy to Apple App Store
-        run: yarn deploy-store-ios ${{ inputs.environment }}
+        run: yarn deploy-store-ios
         env:
+          ENV: ${{ inputs.environment }}
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          # Required for non-interactive Apple auth in CI.
+          # Generate an app-specific password at appleid.apple.com.
+          EXPO_APPLE_ID: ${{ secrets.EXPO_APPLE_ID }}
+          EXPO_APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.EXPO_APPLE_APP_SPECIFIC_PASSWORD }}

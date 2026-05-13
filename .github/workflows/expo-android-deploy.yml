@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       environment:
-        description: 'Environment (stg, prod)'
+        description: 'Environment (stg, prd)'
         required: true
         type: string
       node-version:
@@ -50,7 +50,8 @@ jobs:
           doppler --version
 
       - name: Build and Deploy to Google Play Store
-        run: yarn deploy-store-android ${{ inputs.environment }}
+        run: yarn deploy-store-android
         env:
+          ENV: ${{ inputs.environment }}
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
