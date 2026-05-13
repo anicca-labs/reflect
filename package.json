@@ -13,7 +13,7 @@
     "start:prd": "ENV=prd yarn start",
     "doctor": "expo-doctor",
     "build": "yarn sync-env-vars && yarn generate:open-api-hooks",
-    "pre-build": "yarn doctor && yarn i18n && yarn build",
+    "pre-build": "yarn i18n && yarn build",
     "dev-client-ios": "yarn pre-build && doppler run --project mobile --config ${ENV:-stg} -- eas build --platform ios --profile development --local",
     "dev-client-ios:prd": "ENV=prd yarn dev-client-ios",
     "dev-client-android": "yarn pre-build && doppler run --project mobile --config ${ENV:-stg} -- eas build --platform android --profile development --local",
