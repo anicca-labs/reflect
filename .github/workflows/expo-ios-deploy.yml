@@ -25,8 +25,8 @@ on:
       xcode-version:
         required: false
         type: string
-        default: '16.3'
-        description: 'Only > 15.1'
+        default: '26.0'
+        description: 'Expo SDK 55 requires Xcode >= 26.0'
 
 jobs:
   deploy:
