@@ -21,12 +21,12 @@ on:
       macos-runner-image:
         required: false
         type: string
-        default: 'macos-14'
+        default: 'macos-15'
       xcode-version:
         required: false
         type: string
-        default: '16.2'
-        description: 'Only > 15.1'
+        default: '26.0'
+        description: 'Expo SDK 55 requires Xcode >= 26.0'
 
 jobs:
   deploy:
@@ -53,7 +53,7 @@ jobs:
 
       - name: Free-up Space
         run: |
-          df -hI /dev/disk3s1s1
+          df -h
           {
             xcrun simctl delete all
             sudo rm -rf ~/Library/Developer/CoreSimulator/Caches/*
@@ -67,7 +67,7 @@ jobs:
           } || {
             echo "Cleaning unused xcode version failed. Continuing the execution"
           }
-          df -hI /dev/disk3s1s1
+          df -h
 
       - name: Xcode Select Version
         uses: mobiledevops/xcode-select-version-action@v1
@@ -94,6 +94,12 @@ jobs:
         run: |
           curl -Ls https://cli.doppler.com/install.sh | sudo sh
           doppler --version
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Install iOS platform
+        run: sudo xcodebuild -downloadPlatform iOS
 
       - name: Build and Deploy to Apple App Store
         run: yarn deploy-store-ios
