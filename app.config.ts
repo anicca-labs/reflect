@@ -10,11 +10,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   scheme: process.env.EXPO_PUBLIC_APP_SCHEMA ?? "reflect",
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
-  splash: {
-    image: "./assets/images/splash.png",
-    resizeMode: "contain",
-    backgroundColor: "#F5F0E8",
-  },
   ios: {
     supportsTablet: true,
     bundleIdentifier: process.env.APP_IDENTIFIER ?? "com.reflect.prod",
@@ -48,6 +43,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "expo-splash-screen",
       {
+        ios: {
+          backgroundColor: "#F5F0E8",
+          image: "./assets/images/splash.png",
+          enableFullScreenImage_legacy: true,
+        },
         android: {
           backgroundColor: "#F5F0E8",
           image: "./assets/images/splash.png",
