@@ -20,6 +20,8 @@
     "dev-client-android:prd": "ENV=prd yarn dev-client-android",
     "dev-client-ios-device": "yarn pre-build && doppler run --project mobile --config ${ENV:-stg} -- eas build --platform ios --profile preview --local",
     "dev-client-ios-device:prd": "ENV=prd yarn dev-client-ios-device",
+    "build-apk": "yarn pre-build && doppler run --project mobile --config ${ENV:-stg} -- eas build --platform android --profile preview --local",
+    "build-apk:prd": "ENV=prd yarn build-apk",
     "build-store-ios": "yarn pre-build && EXPO_NO_CAPABILITY_SYNC=1 doppler run --project mobile --config ${ENV:-stg} -- eas build --platform ios --profile prd --local --non-interactive --output ./app-build.ipa",
     "build-store-ios:prd": "ENV=prd yarn build-store-ios",
     "build-store-android": "yarn pre-build && doppler run --project mobile --config ${ENV:-stg} -- eas build --platform android --profile prd --local --non-interactive --output ./app-build.aab",

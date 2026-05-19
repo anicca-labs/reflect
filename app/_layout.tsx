@@ -7,7 +7,7 @@ import "react-native-reanimated";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { TamaguiProvider } from "tamagui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useColorScheme } from "react-native";
+import { useColorScheme, Platform } from "react-native";
 import tamaguiConfig from "@default-tamagui-config";
 import { LinguiClientProvider } from "@i18n";
 import { useAuthSession, useCustomFonts } from "@hooks";
@@ -80,8 +80,9 @@ function RootLayout() {
       <SplashView
         source={splash}
         style={getSplashStyle(isOSThemeDark)}
-        fadeOutDelay={2500}
-        fadeOutDuration={2500}
+        animationViewStyle={Platform.OS === "android" ? { width: 288, height: 288, alignSelf: "center" } : undefined}
+        fadeOutDelay={1500}
+        fadeOutDuration={500}
       />
     </QueryClientProvider>
   );

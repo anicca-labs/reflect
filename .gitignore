@@ -36,6 +36,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Tamagui extraction cache (disableExtraction: true — this file is unused)
+.tamagui/
+
 app-example
 
 # generated native folders

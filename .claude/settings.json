@@ -1,4 +1,6 @@
 {
+  "includeCoAuthoredBy": false,
+  "attribution": {"commit": "", "pr": ""},
   "enabledPlugins": {"expo-rn-plugin@ksairi": true},
   "permissions": {
     "allow": [

@@ -1,5 +1,4 @@
 import type { ConfigContext, ExpoConfig } from "expo/config";
-
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   owner: "ksairi-org",
@@ -8,14 +7,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
+  scheme: process.env.EXPO_PUBLIC_APP_SCHEMA ?? "reflect",
+  userInterfaceStyle: "automatic",
+  newArchEnabled: true,
   splash: {
     image: "./assets/images/splash.png",
     resizeMode: "contain",
     backgroundColor: "#F5F0E8",
   },
-  scheme: process.env.APP_SCHEMA ?? "reflect",
-  userInterfaceStyle: "automatic",
-  newArchEnabled: true,
   ios: {
     supportsTablet: true,
     bundleIdentifier: process.env.APP_IDENTIFIER ?? "com.reflect.prod",
@@ -46,6 +45,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     favicon: "./assets/images/favicon.png",
   },
   plugins: [
+    [
+      "expo-splash-screen",
+      {
+        android: {
+          backgroundColor: "#F5F0E8",
+          image: "./assets/images/splash.png",
+          imageWidth: 288,
+        },
+      },
+    ],
     "expo-router",
     [
       "@sentry/react-native/expo",
