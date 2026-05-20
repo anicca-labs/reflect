@@ -105,6 +105,10 @@ msgstr ""
 msgid "Sign in"
 msgstr ""
 
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Sign in with Apple"
+msgstr ""
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "This cannot be undone."
 msgstr ""

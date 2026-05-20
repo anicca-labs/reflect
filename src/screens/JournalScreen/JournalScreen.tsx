@@ -8,16 +8,18 @@ import { BaseTouchable } from '@ksairi-org/ui-touchables'
 import { CTAButton } from '@ksairi-org/ui-button'
 import { Containers , KeyboardScrollView } from '@ksairi-org/ui-containers'
 import { sizes } from '@theme'
+import { format } from 'date-fns'
+import { getDateLocale } from '@/src/utils/date'
 import type { JournalEntry } from '@/src/types/journal'
 import { logJournalEntryCreated, logJournalEntryDeleted, logScreenView } from '@analytics'
 import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry } from '@hooks'
 
 function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  return format(new Date(iso), 'h:mm a', { locale: getDateLocale() })
 }
 
 function formatDateHeading(iso: string) {
-  return new Date(iso).toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })
+  return format(new Date(iso), 'EEEE, MMMM d', { locale: getDateLocale() })
 }
 
 function isToday(iso: string) {
@@ -48,12 +50,12 @@ function EntryCard({ entry, onDelete }: EntryCardProps) {
   }
 
   return (
-    <YStack bg="$color2" rounded="$4" p="$4" mb="$3" borderWidth={1} borderColor="$borderColor">
-      <BodySm color="$color12" mb="$3">
+    <YStack bg="$surface-card" rounded="$4" p="$4" mb="$3" borderWidth={1} borderColor="$borderColor">
+      <BodySm color="$text-emphasis" mb="$3">
         {entry.content}
       </BodySm>
       <XStack justify="space-between" items="center">
-        <LabelMd color="$color8">{formatTime(entry.created_at)}</LabelMd>
+        <LabelMd color="$text-disabled">{formatTime(entry.created_at)}</LabelMd>
         <BaseTouchable onPress={confirmDelete} hitSlop={{ top: sizes.sm, bottom: sizes.sm, left: sizes.sm, right: sizes.sm }}>
           <LabelMd color="$red10"><Trans>Delete</Trans></LabelMd>
         </BaseTouchable>
@@ -94,25 +96,25 @@ export default function JournalScreen() {
         contentContainerStyle={{ padding: sizes.lg }}
         keyboardShouldPersistTaps="handled">
         <YStack>
-          <LabelMd color="$color8" mb="$1" textTransform="uppercase" letterSpacing={0.9}>
+          <LabelMd color="$text-disabled" mb="$1" textTransform="uppercase" letterSpacing={0.9}>
             {formatDateHeading(new Date().toISOString())}
           </LabelMd>
-          <DisplayLg color="$color12" letterSpacing={-0.5} mb="$6">
+          <DisplayLg color="$text-emphasis" letterSpacing={-0.5} mb="$6">
             <Trans>Journal</Trans>
           </DisplayLg>
 
-          <YStack bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor" mb="$4">
+          <YStack bg="$surface-card" rounded="$4" borderWidth={1} borderColor="$borderColor" mb="$4">
             <TextArea
               ref={inputRef}
               value={draft}
               onChangeText={setDraft}
               placeholder={t`What's on your mind?`}
               minH={sizes['3xl']}
-              bg="transparent"
+              bg="$background0"
               borderWidth={0}
               focusStyle={{ outlineWidth: 0 }}
               fontSize="$3"
-              color="$color12"
+              color="$text-emphasis"
             />
           </YStack>
 
@@ -120,11 +122,11 @@ export default function JournalScreen() {
             onPress={handleSave}
             disabled={!hasContent}
             loading={createMutation.isPending}
-            background={hasContent ? '$accentBackground' : '$color3'}
+            background={hasContent ? '$accentBackground' : '$surface-subtle'}
             pressStyle={{ opacity: 0.75 }}
             borderRadius="$4"
             mb="$8">
-            <LabelLg color={hasContent ? '$accentColor' : '$color8'}>
+            <LabelLg color={hasContent ? '$accentColor' : '$text-disabled'}>
               <Trans>Save entry</Trans>
             </LabelLg>
           </CTAButton>
@@ -137,7 +139,7 @@ export default function JournalScreen() {
 
           {todayEntries.length > 0 && (
             <YStack>
-              <LabelMd color="$color8" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
                 <Trans>Today · {todayEntries.length} {todayEntries.length === 1 ? 'entry' : 'entries'}</Trans>
               </LabelMd>
               {todayEntries.map(entry => (

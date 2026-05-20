@@ -11,6 +11,7 @@ import { useColorScheme, Platform } from "react-native";
 import tamaguiConfig from "@default-tamagui-config";
 import { LinguiClientProvider } from "@i18n";
 import { useAuthSession, useCustomFonts } from "@hooks";
+import { EnvBadge } from "@atoms";
 import {
   requestNotificationPermission,
   getFCMToken,
@@ -63,20 +64,19 @@ function RootLayout() {
   const colorScheme = useColorScheme() ?? "light";
   const isOSThemeDark = colorScheme === "dark";
 
-  if (!fontsLoaded) return null;
-
   return (
     <QueryClientProvider client={queryClient}>
       <LinguiClientProvider>
         <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme}>
           <ThemeProvider value={isOSThemeDark ? DarkTheme : DefaultTheme}>
             <KeyboardProvider>
-              <RootLayoutNav />
+              {fontsLoaded ? <RootLayoutNav /> : null}
               <StatusBar style="auto" />
             </KeyboardProvider>
           </ThemeProvider>
         </TamaguiProvider>
       </LinguiClientProvider>
+      <EnvBadge />
       <SplashView
         source={splash}
         style={getSplashStyle(isOSThemeDark)}

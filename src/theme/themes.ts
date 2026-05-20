@@ -3,19 +3,19 @@ import { defaultConfig } from '@tamagui/config/v5'
 export const lightTheme = {
   ...defaultConfig.themes.light,
 
-  // Color scale — warm off-white → warm near-black
-  color1: 'hsl(40, 20%, 98%)',   // page background
-  color2: 'hsl(38, 18%, 95%)',   // surface (cards, inputs)
-  color3: 'hsl(36, 16%, 91%)',
-  color4: 'hsl(34, 14%, 87%)',
-  color5: 'hsl(32, 12%, 83%)',
-  color6: 'hsl(30, 11%, 78%)',
-  color7: 'hsl(28, 10%, 70%)',
-  color8: 'hsl(26, 9%, 60%)',
-  color9: 'hsl(24, 8%, 48%)',
-  color10: 'hsl(22, 9%, 36%)',
-  color11: 'hsl(20, 10%, 24%)',
-  color12: 'hsl(18, 12%, 11%)',  // text
+  // Surface scale — warm off-white → warm near-black
+  'surface-app':     'hsl(40, 20%, 98%)',  // page background
+  'surface-card':    'hsl(38, 18%, 95%)',  // cards, inputs
+  'surface-subtle':  'hsl(36, 16%, 91%)',  // disabled button bg, chips
+  'surface-hover':   'hsl(34, 14%, 87%)',
+  'surface-pressed': 'hsl(32, 12%, 83%)',
+  'border-subtle':   'hsl(30, 11%, 78%)',
+  'border-default':  'hsl(28, 10%, 70%)',
+  'text-disabled':   'hsl(26, 9%, 60%)',
+  'text-placeholder':'hsl(24, 8%, 48%)',
+  'text-tertiary':   'hsl(22, 9%, 36%)',
+  'text-secondary':  'hsl(20, 10%, 24%)',
+  'text-emphasis':   'hsl(18, 12%, 11%)',  // headings, strong text
 
   background: 'hsl(40, 20%, 98%)',
   backgroundHover: 'hsl(38, 18%, 95%)',
@@ -60,24 +60,24 @@ export const lightTheme = {
   shadow4: 'rgba(28, 25, 23, 0.18)',
   shadow5: 'rgba(28, 25, 23, 0.24)',
   shadow6: 'rgba(28, 25, 23, 0.32)',
-} as typeof defaultConfig.themes.light
+}
 
 export const darkTheme = {
   ...defaultConfig.themes.dark,
 
-  // Color scale — warm near-black → warm off-white
-  color1: 'hsl(30, 8%, 6%)',    // page background
-  color2: 'hsl(28, 7%, 10%)',   // surface
-  color3: 'hsl(27, 7%, 14%)',
-  color4: 'hsl(26, 7%, 18%)',
-  color5: 'hsl(25, 7%, 22%)',
-  color6: 'hsl(24, 7%, 27%)',
-  color7: 'hsl(23, 8%, 35%)',
-  color8: 'hsl(22, 9%, 44%)',
-  color9: 'hsl(21, 10%, 55%)',
-  color10: 'hsl(20, 11%, 68%)',
-  color11: 'hsl(19, 14%, 82%)',
-  color12: 'hsl(36, 28%, 96%)',  // text — warm white
+  // Surface scale — warm near-black → warm off-white
+  'surface-app':     'hsl(30, 8%, 6%)',   // page background
+  'surface-card':    'hsl(28, 7%, 10%)',  // cards, inputs
+  'surface-subtle':  'hsl(27, 7%, 14%)',  // disabled button bg, chips
+  'surface-hover':   'hsl(26, 7%, 18%)',
+  'surface-pressed': 'hsl(25, 7%, 22%)',
+  'border-subtle':   'hsl(24, 7%, 27%)',
+  'border-default':  'hsl(23, 8%, 35%)',
+  'text-disabled':   'hsl(22, 9%, 44%)',
+  'text-placeholder':'hsl(21, 10%, 55%)',
+  'text-tertiary':   'hsl(20, 11%, 68%)',
+  'text-secondary':  'hsl(19, 14%, 82%)',
+  'text-emphasis':   'hsl(36, 28%, 96%)',  // headings, strong text — warm white
 
   background: 'hsl(30, 8%, 6%)',
   backgroundHover: 'hsl(28, 7%, 10%)',
@@ -120,7 +120,7 @@ export const darkTheme = {
   shadow4: 'rgba(0, 0, 0, 0.45)',
   shadow5: 'rgba(0, 0, 0, 0.55)',
   shadow6: 'rgba(0, 0, 0, 0.65)',
-} as typeof defaultConfig.themes.dark
+}
 
 const splashTokens = {
   light: { splashBackground: 'hsl(37, 38%, 93%)' },  // brand cream #F5F0E8

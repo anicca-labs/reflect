@@ -25,6 +25,8 @@ import { FontAwesome } from '@expo/vector-icons'
 
 type Mode = 'sign-in' | 'sign-up'
 
+// NOTE: StyleSheet required — AppleButton's `style` prop only accepts StyleSheet output, not Tamagui styled()
+// NOTE: StyleSheet required — AppleButton's style prop only accepts StyleSheet output, not Tamagui styled()
 const socialButtonStyle = StyleSheet.create({
   button: { width: '100%', height: sizes.xl },
 })
@@ -183,10 +185,10 @@ export default function SignInScreen() {
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: sizes.lg }}
         keyboardShouldPersistTaps="handled">
         <YStack gap="$0">
-          <DisplayLg color="$color12" letterSpacing={-0.5} mb="$2">
+          <DisplayLg color="$text-emphasis" letterSpacing={-0.5} mb="$2">
             reflect
           </DisplayLg>
-          <BodySm color="$color9" mb="$8">
+          <BodySm color="$text-placeholder" mb="$8">
             {mode === 'sign-in'
               ? <Trans>Welcome back.</Trans>
               : <Trans>Create your account.</Trans>}
@@ -201,7 +203,9 @@ export default function SignInScreen() {
             autoComplete="email"
             size="$4"
             mb="$3"
-            bg="$color2"
+            bg="$surface-card"
+            color="$text-emphasis"
+            placeholderTextColor="$text-placeholder"
             borderColor="$borderColor"
             borderWidth={1}
             focusStyle={{ borderColor: '$accentBackground', outlineWidth: 0 }}
@@ -215,7 +219,9 @@ export default function SignInScreen() {
             autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'}
             size="$4"
             mb="$2"
-            bg="$color2"
+            bg="$surface-card"
+            color="$text-emphasis"
+            placeholderTextColor="$text-placeholder"
             borderColor="$borderColor"
             borderWidth={1}
             focusStyle={{ borderColor: '$accentBackground', outlineWidth: 0 }}
@@ -230,14 +236,14 @@ export default function SignInScreen() {
           <BaseTouchable
             onPress={handleSubmit}
             disabled={!isReady || loading}
-            bg={isReady ? '$accentBackground' : '$color3'}
+            bg={isReady ? '$accentBackground' : '$surface-subtle'}
             rounded="$4"
             py="$3"
             items="center"
             mt="$2">
             {loading
-              ? <Spinner color={isReady ? '$accentColor' : '$color8'} />
-              : <LabelLg color={isReady ? '$accentColor' : '$color8'}>
+              ? <Spinner color={isReady ? '$accentColor' : '$text-disabled'} />
+              : <LabelLg color={isReady ? '$accentColor' : '$text-disabled'}>
                   {mode === 'sign-in' ? <Trans>Sign in</Trans> : <Trans>Create account</Trans>}
                 </LabelLg>
             }
@@ -269,7 +275,7 @@ export default function SignInScreen() {
             <BaseTouchable
               onPress={handleGoogleSignIn}
               style={socialButtonStyle.button}
-              bg="$color1"
+              bg="$surface-app"
               rounded="$4"
               borderWidth={1}
               borderColor="$borderColor"
@@ -284,7 +290,7 @@ export default function SignInScreen() {
                 <Path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
                 <Path fill="none" d="M0 0h48v48H0z" />
               </Svg>
-              <LabelLg color="$color11">
+              <LabelLg color="$text-secondary">
                 Sign in
               </LabelLg>
             </BaseTouchable>

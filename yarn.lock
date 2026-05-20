@@ -3509,14 +3509,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ksairi-org/react-native-splash-view@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@ksairi-org/react-native-splash-view@npm:0.1.7"
+"@ksairi-org/react-native-splash-view@npm:0.1.8":
+  version: 0.1.8
+  resolution: "@ksairi-org/react-native-splash-view@npm:0.1.8"
   peerDependencies:
     expo-splash-screen: "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/fc3904e921c81a42004cfa59726cb5d857c9128824a09e25a16b42020474d6333dfe5ce1b439cad94b79faa356e27975fb8da606c88bdb0a39ea11b670ae42f7
+  checksum: 10c0/23edba0c0c4bd87633922a24429a02cdf803c9e28926a991376c137f940f50943105de2acc59fd5420637433cf186542dab5cb821d159de0758e2f451c0f438c
   languageName: node
   linkType: hard
 
@@ -9404,6 +9404,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"date-fns@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "date-fns@npm:4.2.1"
+  checksum: 10c0/1694c57a180a76c1001401fde85925cebb3b89594d37625063be0a571eddde278a87d3c76ecad5759c3dbeabcc34a5c5757eb6b3487d89a9a61ef48571791166
+  languageName: node
+  linkType: hard
+
 "debug@npm:2.6.9, debug@npm:^2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -15228,7 +15235,7 @@ __metadata:
     "@ksairi-org/react-native-auth-google": "npm:^0.1.1"
     "@ksairi-org/react-native-functions": "npm:^0.1.1"
     "@ksairi-org/react-native-hooks": "npm:^0.1.1"
-    "@ksairi-org/react-native-splash-view": "npm:0.1.7"
+    "@ksairi-org/react-native-splash-view": "npm:0.1.8"
     "@ksairi-org/react-native-ui-config": "npm:^0.1.3"
     "@ksairi-org/react-query-sdk": "npm:^0.1.2"
     "@ksairi-org/ui-button": "npm:^0.1.11"
@@ -15270,6 +15277,7 @@ __metadata:
     axios: "npm:^1.15.2"
     babel-plugin-inline-import: "npm:^3.0.0"
     burnt: "npm:^0.13.0"
+    date-fns: "npm:^4.2.1"
     eslint: "npm:^9.25.0"
     eslint-config-expo: "npm:~55.0.1"
     eslint-config-prettier: "npm:^10.1.8"
