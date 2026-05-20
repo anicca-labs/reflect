@@ -256,16 +256,14 @@ export default function SignInScreen() {
               <BaseTouchable
                 onPress={handleAppleSignIn}
                 style={socialButtonStyle.button}
-                bg="$color12"
+                bg="black"
                 rounded="$4"
                 items="center"
                 justify="center"
                 flexDirection="row"
                 gap="$2">
                 <FontAwesome name="apple" size={20} color="white" />
-                <LabelLg color="white">
-                  Sign in with Apple
-                </LabelLg>
+                <LabelLg color="white"><Trans>Sign in with Apple</Trans></LabelLg>
               </BaseTouchable>
             )}
             <BaseTouchable
