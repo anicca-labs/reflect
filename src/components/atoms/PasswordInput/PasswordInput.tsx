@@ -17,7 +17,7 @@ type PasswordInputProps = {
 
 export type PasswordInputHandle = { focus: () => void }
 
-export const PasswordInput = forwardRef<PasswordInputHandle, PasswordInputProps>(function PasswordInput({
+export const PasswordInput = forwardRef<PasswordInputHandle, PasswordInputProps>(({
   value,
   onChangeText,
   placeholder,
@@ -81,6 +81,8 @@ export const PasswordInput = forwardRef<PasswordInputHandle, PasswordInputProps>
     </XStack>
   )
 })
+
+PasswordInput.displayName = 'PasswordInput'
 
 const styles = StyleSheet.create({
   input: {
