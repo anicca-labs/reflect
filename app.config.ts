@@ -29,6 +29,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     entitlements: {
       "aps-environment": "production",
+      "com.apple.developer.applesignin": ["Default"],
       ...(process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID
         ? { "com.apple.developer.in-app-payments": [process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID] }
         : {}),

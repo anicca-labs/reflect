@@ -1,7 +1,36 @@
 import { Session } from '@supabase/supabase-js'
 import { useRouter, useSegments } from 'expo-router'
 import { useEffect, useState } from 'react'
+import * as Linking from 'expo-linking'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { supabase } from '@/src/services/supabase'
+
+async function handleAuthUrl(url: string) {
+  // PKCE flow: Supabase sends ?code= in query params
+  const queryParams = new URLSearchParams(url.split('?')[1] ?? '')
+  const code = queryParams.get('code')
+  if (code) {
+    await supabase.auth.exchangeCodeForSession(code)
+    return
+  }
+  // Implicit flow: tokens in hash fragment
+  const hashParams = new URLSearchParams(url.split('#')[1] ?? '')
+  const accessToken = hashParams.get('access_token')
+  const refreshToken = hashParams.get('refresh_token')
+  if (accessToken && refreshToken) {
+    await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
+  }
+}
+
+// iOS Keychain survives app deletion; AsyncStorage does not.
+// On a fresh install, purge any stale Keychain session before restoring.
+async function clearStaleKeychainOnFreshInstall() {
+  const installed = await AsyncStorage.getItem('app_installed')
+  if (!installed) {
+    await supabase.auth.signOut({ scope: 'local' })
+    await AsyncStorage.setItem('app_installed', '1')
+  }
+}
 
 export function useAuthSession() {
   const [session, setSession] = useState<Session | null | undefined>(undefined)
@@ -9,9 +38,21 @@ export function useAuthSession() {
   const segments = useSegments()
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session: s } }) => setSession(s))
+    async function init() {
+      await clearStaleKeychainOnFreshInstall()
+      const { data: { session: s } } = await supabase.auth.getSession()
+      setSession(s)
+    }
+    init()
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => setSession(s))
-    return () => subscription.unsubscribe()
+
+    Linking.getInitialURL().then((url) => { if (url) handleAuthUrl(url) })
+    const linkingSub = Linking.addEventListener('url', ({ url }) => handleAuthUrl(url))
+
+    return () => {
+      subscription.unsubscribe()
+      linkingSub.remove()
+    }
   }, [])
 
   useEffect(() => {

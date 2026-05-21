@@ -30,6 +30,18 @@ msgid "Cancel"
 msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Check your email"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+#~ msgid "Check your email — we sent a confirmation link to {email}."
+#~ msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Confirm password"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr ""
 
@@ -74,11 +86,23 @@ msgid "No entries yet. Start writing in the Journal tab."
 msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
+#~ msgid "OK"
+#~ msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Passwords do not match"
 msgstr ""
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Permission"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Please enter a valid email address"
 msgstr ""
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
@@ -101,12 +125,20 @@ msgstr ""
 msgid "Send test notification"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Settings"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Sign in"
 msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Sign in with Apple"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Sign out"
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
@@ -118,6 +150,14 @@ msgstr ""
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} {1}"
 msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "We sent a confirmation link to {email}."
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+#~ msgid "We sent a confirmation link to {email}. Tap the link to activate your account."
+#~ msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Welcome back."

@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router'
 import React from 'react'
 import { HapticTab, BaseIcon } from '@atoms'
+import { Ionicons } from '@expo/vector-icons'
 import { useTheme } from 'tamagui'
 import { sizes } from '@theme'
 
@@ -31,6 +32,13 @@ export default function TabLayout() {
         options={{
           title: 'Reflections',
           tabBarIcon: ({ color }) => <BaseIcon iconName="iconBook" width={sizes.lg} height={sizes.lg} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={sizes.lg} color={color} />,
         }}
       />
     </Tabs>

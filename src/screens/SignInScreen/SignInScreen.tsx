@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { AppState, Platform, StyleSheet } from 'react-native'
+import { AppState, Platform, StyleSheet, useColorScheme } from 'react-native'
 import { YStack, XStack, Input, Spinner } from 'tamagui'
 import { DisplayLg, BodySm, LabelSm, LabelLg } from '@fonts'
 import { Containers, KeyboardScrollView } from '@ksairi-org/ui-containers'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { BaseTouchable } from '@ksairi-org/ui-touchables'
+import { PasswordInput, PasswordInputHandle, FormField } from '@atoms'
 import { supabase } from '@/src/services/supabase'
+import { useToast } from '@hooks'
 import { sizes } from '@theme'
 
 import {
@@ -26,7 +28,6 @@ import { FontAwesome } from '@expo/vector-icons'
 type Mode = 'sign-in' | 'sign-up'
 
 // NOTE: StyleSheet required — AppleButton's `style` prop only accepts StyleSheet output, not Tamagui styled()
-// NOTE: StyleSheet required — AppleButton's style prop only accepts StyleSheet output, not Tamagui styled()
 const socialButtonStyle = StyleSheet.create({
   button: { width: '100%', height: sizes.xl },
 })
@@ -43,29 +44,89 @@ export default function SignInScreen() {
   const [mode, setMode] = useState<Mode>('sign-in')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [socialLoading, setSocialLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
+  const [authError, setAuthError] = useState<string | null>(null)
   const { t } = useLingui()
+  const { toast } = useToast()
+  const isDark = useColorScheme() === 'dark'
 
   const hasInitializedAppleSignIn = useRef(false)
   const prevAppState = useRef<string>('active')
+  const passwordRef = useRef<PasswordInputHandle>(null)
+  const confirmPasswordRef = useRef<PasswordInputHandle>(null)
+
+  function validateEmail() {
+    if (email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError(t`Please enter a valid email address`)
+    } else {
+      setEmailError(null)
+    }
+  }
+
+  function checkPasswordMatch() {
+    if (mode === 'sign-up' && password.length > 0 && confirmPassword.length > 0 && password !== confirmPassword) {
+      setPasswordError(t`Passwords do not match`)
+    } else {
+      setPasswordError(null)
+    }
+  }
+
+  function clearErrors() {
+    setEmailError(null)
+    setPasswordError(null)
+    setAuthError(null)
+  }
+
+  function switchMode() {
+    setMode(m => m === 'sign-in' ? 'sign-up' : 'sign-in')
+    setEmail('')
+    setPassword('')
+    setConfirmPassword('')
+    clearErrors()
+  }
 
   async function handleSubmit() {
-    setError(null)
+    if (mode === 'sign-up' && password !== confirmPassword) {
+      setPasswordError(t`Passwords do not match`)
+      return
+    }
+    setAuthError(null)
     setLoading(true)
 
-    const { error: authError } = mode === 'sign-in'
+    const { error } = mode === 'sign-in'
       ? await supabase.auth.signInWithPassword({ email, password })
-      : await supabase.auth.signUp({ email, password })
+      : await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${process.env.EXPO_PUBLIC_APP_SCHEMA}://`,
+          },
+        })
 
     setLoading(false)
-    if (authError) setError(authError.message)
+    if (error) {
+      setAuthError(error.message)
+    } else if (mode === 'sign-up') {
+      toast({
+        title: t`Check your email`,
+        message: t`We sent a confirmation link to ${email}.`,
+        preset: 'done',
+        duration: 6,
+      })
+      setMode('sign-in')
+      setEmail('')
+      setPassword('')
+      setConfirmPassword('')
+    }
   }
 
   const handleAppleSignIn = useCallback(async () => {
     hasInitializedAppleSignIn.current = true
-    setError(null)
+    clearErrors()
     setSocialLoading(true)
 
     try {
@@ -104,21 +165,17 @@ export default function SignInScreen() {
         nonce = response.nonce ?? undefined
       }
 
-      const { error: authError } = await supabase.auth.signInWithIdToken({
+      const { error } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
         token: identityToken,
         nonce,
       })
-      if (authError) throw authError
+      if (error) throw error
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err)
-      const isCancelledIOS = message.includes(
-        'com.apple.AuthenticationServices.AuthorizationError error 1001',
-      )
+      const isCancelledIOS = message.includes('com.apple.AuthenticationServices.AuthorizationError error 1001')
       const isCancelledAndroid = message.includes('E_SIGNIN_CANCELLED_ERROR')
-      if (!isCancelledIOS && !isCancelledAndroid) {
-        setError(message)
-      }
+      if (!isCancelledIOS && !isCancelledAndroid) setAuthError(message)
     } finally {
       setSocialLoading(false)
     }
@@ -140,7 +197,7 @@ export default function SignInScreen() {
   }, [handleAppleSignIn])
 
   const handleGoogleSignIn = useCallback(async () => {
-    setError(null)
+    clearErrors()
     setSocialLoading(true)
 
     try {
@@ -158,26 +215,25 @@ export default function SignInScreen() {
       const idToken = signInResult.data.idToken
       if (!idToken) throw new Error(t`Google sign-in failed: no identity token`)
 
-      const { error: authError } = await supabase.auth.signInWithIdToken({
+      const { error } = await supabase.auth.signInWithIdToken({
         provider: 'google',
         token: idToken,
       })
-      if (authError) throw authError
+      if (error) throw error
     } catch (err: unknown) {
       if (isErrorWithCode(err)) {
-        const cancelled =
-          err.code === statusCodes.SIGN_IN_CANCELLED ||
-          err.code === statusCodes.IN_PROGRESS
-        if (!cancelled) setError(err.message)
+        const cancelled = err.code === statusCodes.SIGN_IN_CANCELLED || err.code === statusCodes.IN_PROGRESS
+        if (!cancelled) setAuthError(err.message)
       } else if (err instanceof Error) {
-        setError(err.message)
+        setAuthError(err.message)
       }
     } finally {
       setSocialLoading(false)
     }
   }, [t])
 
-  const isReady = email.trim().length > 0 && password.length >= 6
+  const isReady = email.trim().length > 0 && password.length >= 6 &&
+    (mode === 'sign-in' || confirmPassword.length >= 6)
 
   return (
     <Containers.Screen shouldAutoResize={false}>
@@ -194,43 +250,59 @@ export default function SignInScreen() {
               : <Trans>Create your account.</Trans>}
           </BodySm>
 
-          <Input
-            value={email}
-            onChangeText={setEmail}
-            placeholder={t`Email`}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            autoComplete="email"
-            size="$4"
-            mb="$3"
-            bg="$surface-card"
-            color="$text-emphasis"
-            placeholderTextColor="$text-placeholder"
-            borderColor="$borderColor"
-            borderWidth={1}
-            focusStyle={{ borderColor: '$accentBackground', outlineWidth: 0 }}
-          />
+          <FormField error={emailError}>
+            <Input
+              value={email}
+              onChangeText={(text) => { setEmail(text); setEmailError(null) }}
+              onBlur={validateEmail}
+              onSubmitEditing={() => isReady ? handleSubmit() : passwordRef.current?.focus()}
+              returnKeyType={isReady ? 'done' : 'next'}
+              placeholder={t`Email`}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              autoComplete="email"
+              size="$4"
+              bg="$surface-card"
+              color="$text-emphasis"
+              placeholderTextColor="$text-placeholder"
+              borderColor="$borderColor"
+              borderWidth={1}
+              focusStyle={{ borderColor: '$accentBackground', outlineWidth: 0 }}
+            />
+          </FormField>
 
-          <Input
-            value={password}
-            onChangeText={setPassword}
-            placeholder={t`Password`}
-            secureTextEntry
-            autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'}
-            size="$4"
-            mb="$2"
-            bg="$surface-card"
-            color="$text-emphasis"
-            placeholderTextColor="$text-placeholder"
-            borderColor="$borderColor"
-            borderWidth={1}
-            focusStyle={{ borderColor: '$accentBackground', outlineWidth: 0 }}
-          />
+          <FormField error={passwordError}>
+            <PasswordInput
+              ref={passwordRef}
+              value={password}
+              onChangeText={(text) => { setPassword(text); setPasswordError(null) }}
+              onBlur={checkPasswordMatch}
+              onSubmitEditing={() => isReady ? handleSubmit() : confirmPasswordRef.current?.focus()}
+              returnKeyType={isReady ? 'done' : mode === 'sign-up' ? 'next' : 'done'}
+              placeholder={t`Password`}
+              autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'}
+              mb="$0"
+            />
+          </FormField>
 
-          {error && (
-            <LabelSm color="$red10" mb="$3">
-              {error}
-            </LabelSm>
+          {mode === 'sign-up' && (
+            <FormField error={null}>
+              <PasswordInput
+                ref={confirmPasswordRef}
+                value={confirmPassword}
+                onChangeText={(text) => { setConfirmPassword(text); setPasswordError(null) }}
+                onBlur={checkPasswordMatch}
+                onSubmitEditing={() => isReady && handleSubmit()}
+                returnKeyType="done"
+                placeholder={t`Confirm password`}
+                autoComplete="new-password"
+                mb="$0"
+              />
+            </FormField>
+          )}
+
+          {authError && (
+            <LabelSm color="$red10" mb="$3">{authError}</LabelSm>
           )}
 
           <BaseTouchable
@@ -249,11 +321,11 @@ export default function SignInScreen() {
             }
           </BaseTouchable>
 
-          <YStack gap="$3" mt="$6" opacity={socialLoading ? 0.6 : 1}>
+          {mode === 'sign-in' && <YStack gap="$3" mt="$6" opacity={socialLoading ? 0.6 : 1}>
             {Platform.OS === 'ios' && appleAuth.isSupported && (
               <AppleButton
                 style={socialButtonStyle.button}
-                buttonStyle={AppleButton.Style.BLACK}
+                buttonStyle={isDark ? AppleButton.Style.WHITE : AppleButton.Style.BLACK}
                 buttonType={AppleButton.Type.SIGN_IN}
                 onPress={handleAppleSignIn}
               />
@@ -262,14 +334,14 @@ export default function SignInScreen() {
               <BaseTouchable
                 onPress={handleAppleSignIn}
                 style={socialButtonStyle.button}
-                bg="black"
+                bg={isDark ? 'white' : 'black'}
                 rounded="$4"
                 items="center"
                 justify="center"
                 flexDirection="row"
                 gap="$2">
-                <FontAwesome name="apple" size={20} color="white" />
-                <LabelLg color="white"><Trans>Sign in with Apple</Trans></LabelLg>
+                <FontAwesome name="apple" size={20} color={isDark ? 'black' : 'white'} />
+                <LabelLg color={isDark ? 'black' : 'white'}><Trans>Sign in with Apple</Trans></LabelLg>
               </BaseTouchable>
             )}
             <BaseTouchable
@@ -294,12 +366,12 @@ export default function SignInScreen() {
                 Sign in
               </LabelLg>
             </BaseTouchable>
-          </YStack>
+          </YStack>}
 
           <XStack justify="center" mt="$5">
             <BodySm
               color="$accentBackground"
-              onPress={() => { setMode(m => m === 'sign-in' ? 'sign-up' : 'sign-in'); setError(null) }}
+              onPress={switchMode}
               pressStyle={{ opacity: 0.7 }}>
               {mode === 'sign-in'
                 ? <Trans>Don&apos;t have an account? Sign up</Trans>
