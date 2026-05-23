@@ -13,6 +13,14 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "{remainingFree} free entries left — upgrade to keep writing"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "1 free entry left — upgrade to keep writing"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Already have an account? Sign in"
 msgstr ""
@@ -25,7 +33,12 @@ msgstr ""
 msgid "Apple sign-in is not configured for Android"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Are you sure you want to sign out?"
+msgstr ""
+
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Cancel"
 msgstr ""
 
@@ -81,6 +94,10 @@ msgstr ""
 msgid "Journal"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Manage subscription"
+msgstr ""
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr ""
@@ -97,15 +114,19 @@ msgstr ""
 msgid "Passwords do not match"
 msgstr ""
 
-#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Permission"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Plan"
 msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Please enter a valid email address"
 msgstr ""
 
-#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Push notifications"
 msgstr ""
 
@@ -117,11 +138,15 @@ msgstr ""
 msgid "Save entry"
 msgstr ""
 
-#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Save entry ✦"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Scheduled! (5 s)"
 msgstr ""
 
-#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Send test notification"
 msgstr ""
 
@@ -141,6 +166,10 @@ msgstr ""
 msgid "Sign out"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Subscription"
+msgstr ""
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "This cannot be undone."
 msgstr ""
@@ -149,6 +178,15 @@ msgstr ""
 #. placeholder {1}: todayEntries.length === 1 ? 'entry' : 'entries'
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} {1}"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Unlimited entries unlocked. Keep writing."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Upgrade to Pro ✦"
 msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -164,5 +202,14 @@ msgid "Welcome back."
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Welcome to Pro ✦"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's on your mind?"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "You've used all free entries. Tap Save to unlock unlimited writing ✦"
 msgstr ""

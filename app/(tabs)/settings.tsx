@@ -1,2 +1,2 @@
-import SettingsScreen from '@screens/SettingsScreen/SettingsScreen'
+import { SettingsScreen } from '@screens/SettingsScreen/SettingsScreen'
 export default SettingsScreen

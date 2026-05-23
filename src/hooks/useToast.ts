@@ -10,6 +10,13 @@ type ToastOptions = {
   duration?: number
 }
 
+type AlertOptions = {
+  title: string
+  message?: string
+  preset?: 'done' | 'heart' | 'error'
+  duration?: number
+}
+
 export function useToast() {
   function toast({ title, message, preset = 'done', duration = 5 }: ToastOptions) {
     if (Platform.OS === 'android') {
@@ -23,5 +30,17 @@ export function useToast() {
     }
   }
 
-  return { toast }
+  function alert({ title, message, preset = 'heart', duration = 6 }: AlertOptions) {
+    if (Platform.OS === 'android') {
+      ToastAndroid.showWithGravity(
+        message ? `${title} — ${message}` : title,
+        ToastAndroid.LONG,
+        ToastAndroid.CENTER,
+      )
+    } else {
+      Burnt.alert({ title, message, preset, duration })
+    }
+  }
+
+  return { toast, alert }
 }

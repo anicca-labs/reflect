@@ -1,1 +1,1 @@
-export { default } from './ReflectionsScreen';
+export { ReflectionsScreen } from './ReflectionsScreen';

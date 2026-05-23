@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import * as Linking from 'expo-linking'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { supabase } from '@/src/services/supabase'
+import { identifyRevenueCatUser, resetRevenueCatUser } from '@/src/services/revenue-cat'
 
 async function handleAuthUrl(url: string) {
   // PKCE flow: Supabase sends ?code= in query params
@@ -44,7 +45,11 @@ export function useAuthSession() {
       setSession(s)
     }
     init()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => setSession(s))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
+      setSession(s)
+      if (s?.user) identifyRevenueCatUser(s.user.id)
+      else if (event === 'SIGNED_OUT') resetRevenueCatUser()
+    })
 
     Linking.getInitialURL().then((url) => { if (url) handleAuthUrl(url) })
     const linkingSub = Linking.addEventListener('url', ({ url }) => handleAuthUrl(url))

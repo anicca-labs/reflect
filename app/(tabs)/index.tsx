@@ -1,2 +1,2 @@
-import JournalScreen from '@screens/JournalScreen'
+import { JournalScreen } from '@screens/JournalScreen'
 export default JournalScreen

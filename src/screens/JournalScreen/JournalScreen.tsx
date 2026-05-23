@@ -1,18 +1,17 @@
 import React, { useState, useRef, type ComponentRef } from 'react'
-import { Alert } from 'react-native'
+import { Alert, ScrollView } from 'react-native'
 import { useFocusEffect } from 'expo-router'
 import { YStack, XStack, TextArea, Spinner } from 'tamagui'
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { BaseTouchable } from '@ksairi-org/ui-touchables'
-import { CTAButton } from '@ksairi-org/ui-button'
-import { Containers , KeyboardScrollView } from '@ksairi-org/ui-containers'
+import { Containers } from '@ksairi-org/ui-containers'
 import { sizes } from '@theme'
 import { format } from 'date-fns'
 import { getDateLocale } from '@/src/utils/date'
 import type { JournalEntry } from '@/src/types/journal'
 import { logJournalEntryCreated, logJournalEntryDeleted, logScreenView } from '@analytics'
-import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry } from '@hooks'
+import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry, useRevenueCat, useToast } from '@hooks'
 
 function formatTime(iso: string) {
   return format(new Date(iso), 'h:mm a', { locale: getDateLocale() })
@@ -64,12 +63,16 @@ function EntryCard({ entry, onDelete }: EntryCardProps) {
   )
 }
 
-export default function JournalScreen() {
+const FREE_ENTRY_LIMIT = 7
+
+export function JournalScreen() {
   const [draft, setDraft] = useState('')
   const { data: entries = [], isLoading: loading, refetch } = useJournalEntries()
   const createMutation = useCreateJournalEntry()
   const deleteMutation = useDeleteJournalEntry()
+  const { isPro, presentPaywall } = useRevenueCat()
   const { t } = useLingui()
+  const { alert } = useToast()
   const inputRef = useRef<ComponentRef<typeof TextArea>>(null)
 
   useFocusEffect(
@@ -81,10 +84,18 @@ export default function JournalScreen() {
 
   const todayEntries = entries.filter(e => isToday(e.created_at))
   const hasContent = draft.trim().length > 0
+  const remainingFree = Math.max(0, FREE_ENTRY_LIMIT - entries.length)
+  const atLimit = !isPro && entries.length >= FREE_ENTRY_LIMIT
+  const showHint = !isPro && entries.length >= FREE_ENTRY_LIMIT - 2 && entries.length < FREE_ENTRY_LIMIT
 
   async function handleSave() {
     const trimmed = draft.trim()
     if (!trimmed) return
+    if (atLimit) {
+      const purchased = await presentPaywall()
+      if (!purchased) return
+      alert({ title: t`Welcome to Pro ✦`, message: t`Unlimited entries unlocked. Keep writing.`, duration: 6 })
+    }
     setDraft('')
     await createMutation.mutateAsync(trimmed)
     logJournalEntryCreated(trimmed.split(/\s+/).length)
@@ -92,10 +103,8 @@ export default function JournalScreen() {
 
   return (
     <Containers.Screen shouldAutoResize={false}>
-      <KeyboardScrollView
-        contentContainerStyle={{ padding: sizes.lg }}
-        keyboardShouldPersistTaps="handled">
-        <YStack>
+      <YStack flex={1}>
+        <YStack p="$5" pb="$4">
           <LabelMd color="$text-disabled" mb="$1" textTransform="uppercase" letterSpacing={0.9}>
             {formatDateHeading(new Date().toISOString())}
           </LabelMd>
@@ -118,37 +127,60 @@ export default function JournalScreen() {
             />
           </YStack>
 
-          <CTAButton
+          <BaseTouchable
             onPress={handleSave}
-            disabled={!hasContent}
-            loading={createMutation.isPending}
-            background={hasContent ? '$accentBackground' : '$surface-subtle'}
-            pressStyle={{ opacity: 0.75 }}
-            borderRadius="$4"
-            mb="$8">
-            <LabelLg color={hasContent ? '$accentColor' : '$text-disabled'}>
-              <Trans>Save entry</Trans>
-            </LabelLg>
-          </CTAButton>
+            disabled={!hasContent || createMutation.isPending}
+            bg="$accentBackground"
+            opacity={hasContent ? 1 : 0.4}
+            rounded="$4"
+            py="$3"
+            items="center"
+            alignSelf="stretch"
+            mb={showHint || atLimit ? '$2' : '$0'}>
+            {createMutation.isPending
+              ? <Spinner color="$accentColor" />
+              : <LabelLg color="$accentColor">
+                  {atLimit ? <Trans>Save entry ✦</Trans> : <Trans>Save entry</Trans>}
+                </LabelLg>
+            }
+          </BaseTouchable>
 
-          {loading && !todayEntries.length && (
-            <YStack items="center" mt="$4">
-              <Spinner color="$accentBackground" />
-            </YStack>
-          )}
+          {showHint ? (
+            <BodySm color="$text-disabled" text="center" mt="$2">
+              {remainingFree === 1
+                ? <Trans>1 free entry left — upgrade to keep writing</Trans>
+                : <Trans>{remainingFree} free entries left — upgrade to keep writing</Trans>}
+            </BodySm>
+          ) : null}
 
-          {todayEntries.length > 0 && (
-            <YStack>
-              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
-                <Trans>Today · {todayEntries.length} {todayEntries.length === 1 ? 'entry' : 'entries'}</Trans>
-              </LabelMd>
-              {todayEntries.map(entry => (
-                <EntryCard key={entry.id} entry={entry} onDelete={(id) => deleteMutation.mutate(id)} />
-              ))}
-            </YStack>
-          )}
+          {atLimit ? (
+            <BodySm color="$accentBackground" text="center" mt="$2">
+              <Trans>You've used all free entries. Tap Save to unlock unlimited writing ✦</Trans>
+            </BodySm>
+          ) : null}
         </YStack>
-      </KeyboardScrollView>
+
+        <ScrollView keyboardShouldPersistTaps="handled">
+          <YStack px="$5" pb="$8">
+            {loading && !todayEntries.length ? (
+              <YStack items="center" mt="$4">
+                <Spinner color="$accentBackground" />
+              </YStack>
+            ) : null}
+
+            {todayEntries.length > 0 ? (
+              <YStack>
+                <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+                  <Trans>Today · {todayEntries.length} {todayEntries.length === 1 ? 'entry' : 'entries'}</Trans>
+                </LabelMd>
+                {todayEntries.map(entry => (
+                  <EntryCard key={entry.id} entry={entry} onDelete={(id) => deleteMutation.mutate(id)} />
+                ))}
+              </YStack>
+            ) : null}
+          </YStack>
+        </ScrollView>
+      </YStack>
     </Containers.Screen>
   )
 }

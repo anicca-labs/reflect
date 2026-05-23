@@ -40,7 +40,7 @@ AppState.addEventListener('change', (state) => {
   }
 })
 
-export default function SignInScreen() {
+export function SignInScreen() {
   const [mode, setMode] = useState<Mode>('sign-in')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -285,7 +285,7 @@ export default function SignInScreen() {
             />
           </FormField>
 
-          {mode === 'sign-up' && (
+          {mode === 'sign-up' ? (
             <FormField error={null}>
               <PasswordInput
                 ref={confirmPasswordRef}
@@ -299,11 +299,11 @@ export default function SignInScreen() {
                 mb="$0"
               />
             </FormField>
-          )}
+          ) : null}
 
-          {authError && (
+          {authError ? (
             <LabelSm color="$red10" mb="$3">{authError}</LabelSm>
-          )}
+          ) : null}
 
           <BaseTouchable
             onPress={handleSubmit}
@@ -321,16 +321,17 @@ export default function SignInScreen() {
             }
           </BaseTouchable>
 
-          {mode === 'sign-in' && <YStack gap="$3" mt="$6" opacity={socialLoading ? 0.6 : 1}>
-            {Platform.OS === 'ios' && appleAuth.isSupported && (
+          {mode === 'sign-in' ? (
+            <YStack gap="$3" mt="$6" opacity={socialLoading ? 0.6 : 1}>
+            {Platform.OS === 'ios' && appleAuth.isSupported ? (
               <AppleButton
                 style={socialButtonStyle.button}
                 buttonStyle={isDark ? AppleButton.Style.WHITE : AppleButton.Style.BLACK}
                 buttonType={AppleButton.Type.SIGN_IN}
                 onPress={handleAppleSignIn}
               />
-            )}
-            {Platform.OS === 'android' && !!process.env.EXPO_PUBLIC_ANDROID_APPLE_SIGN_IN_CLIENT_ID && (
+            ) : null}
+            {Platform.OS === 'android' && !!process.env.EXPO_PUBLIC_ANDROID_APPLE_SIGN_IN_CLIENT_ID ? (
               <BaseTouchable
                 onPress={handleAppleSignIn}
                 style={socialButtonStyle.button}
@@ -343,7 +344,7 @@ export default function SignInScreen() {
                 <FontAwesome name="apple" size={20} color={isDark ? 'black' : 'white'} />
                 <LabelLg color={isDark ? 'black' : 'white'}><Trans>Sign in with Apple</Trans></LabelLg>
               </BaseTouchable>
-            )}
+            ) : null}
             <BaseTouchable
               onPress={handleGoogleSignIn}
               style={socialButtonStyle.button}
@@ -366,7 +367,8 @@ export default function SignInScreen() {
                 Sign in
               </LabelLg>
             </BaseTouchable>
-          </YStack>}
+          </YStack>
+          ) : null}
 
           <XStack justify="center" mt="$5">
             <BodySm
