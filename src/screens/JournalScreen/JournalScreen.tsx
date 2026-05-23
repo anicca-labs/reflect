@@ -155,7 +155,7 @@ export function JournalScreen() {
 
           {atLimit ? (
             <BodySm color="$accentBackground" text="center" mt="$2">
-              <Trans>You've used all free entries. Tap Save to unlock unlimited writing ✦</Trans>
+              <Trans>{"You've used all free entries. Tap Save to unlock unlimited writing ✦"}</Trans>
             </BodySm>
           ) : null}
         </YStack>
