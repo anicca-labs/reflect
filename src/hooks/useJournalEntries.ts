@@ -39,6 +39,7 @@ export function useCreateJournalEntry() {
         id: `temp-${Date.now()}`,
         user_id: '',
         content,
+        is_bookmarked: false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }
@@ -69,6 +70,31 @@ export function useUpdateJournalEntry() {
         (old ?? []).map((e) =>
           e.id === id ? { ...e, content, updated_at: new Date().toISOString() } : e,
         ),
+      )
+      return { previous }
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(QUERY_KEY, ctx.previous)
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+  })
+}
+
+export function useToggleBookmark() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, is_bookmarked }: { id: string; is_bookmarked: boolean }) => {
+      const { error } = await supabase
+        .from('journal_entries')
+        .update({ is_bookmarked })
+        .eq('id', id)
+      if (error) throw error
+    },
+    onMutate: async ({ id, is_bookmarked }) => {
+      await queryClient.cancelQueries({ queryKey: QUERY_KEY })
+      const previous = queryClient.getQueryData<JournalEntry[]>(QUERY_KEY)
+      queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) =>
+        (old ?? []).map((e) => e.id === id ? { ...e, is_bookmarked } : e),
       )
       return { previous }
     },

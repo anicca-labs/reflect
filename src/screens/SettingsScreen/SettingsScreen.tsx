@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Alert, AppState, Linking } from 'react-native'
+import { Alert, AppState, Linking, Modal, TouchableOpacity, FlatList } from 'react-native'
 import { YStack, XStack, Spinner } from 'tamagui'
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts'
 import { Containers } from '@ksairi-org/ui-containers'
@@ -8,7 +8,7 @@ import { SizingAnimatedButton } from '@ksairi-org/ui-button-animated'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { supabase } from '@/src/services/supabase'
 import { manageSubscriptions } from '@/src/services/revenue-cat'
-import { useRevenueCat, useToast } from '@hooks'
+import { useRevenueCat, useToast, useReminder } from '@hooks'
 import {
   requestNotificationPermission,
   getFCMToken,
@@ -17,13 +17,23 @@ import {
 
 type NotifScheduleState = 'idle' | 'scheduling' | 'scheduled'
 
+const REMINDER_HOURS = Array.from({ length: 18 }, (_, i) => i + 6) // 6 AM → 11 PM
+
+function formatHour(h: number): string {
+  const period = h < 12 ? 'AM' : 'PM'
+  const display = h === 0 ? 12 : h > 12 ? h - 12 : h
+  return `${display}:00 ${period}`
+}
+
 export function SettingsScreen() {
   const { isPro, isLoading: rcLoading, customerInfo, presentPaywall } = useRevenueCat()
   const { t } = useLingui()
   const { alert } = useToast()
+  const { enabled: reminderEnabled, hour: reminderHour, loading: reminderLoading, toggle: toggleReminder, updateTime } = useReminder()
   const [notifPermission, setNotifPermission] = useState<boolean | null>(null)
   const [fcmToken, setFcmToken] = useState<string | null>(null)
   const [scheduleState, setScheduleState] = useState<NotifScheduleState>('idle')
+  const [showTimePicker, setShowTimePicker] = useState(false)
   const openedSettings = useRef(false)
 
   async function checkPermission() {
@@ -138,6 +148,62 @@ export function SettingsScreen() {
             ) : null}
           </YStack>
 
+          {/* Daily reminder */}
+          <YStack bg="$surface-card" rounded="$4" p="$4" borderWidth={1} borderColor="$borderColor">
+            <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+              <Trans>Daily reminder</Trans>
+            </LabelMd>
+
+            <XStack items="center" justify="space-between" mb={reminderEnabled ? '$3' : '$0'}>
+              <BodySm color="$text-secondary">
+                <Trans>Remind me to write</Trans>
+              </BodySm>
+              {reminderLoading ? (
+                <Spinner size="small" color="$text-disabled" />
+              ) : (
+                <BaseTouchable
+                  onPress={() => toggleReminder(notifPermission === true)}
+                  disabled={!notifPermission}
+                  opacity={notifPermission ? 1 : 0.4}>
+                  <YStack
+                    bg={reminderEnabled ? '$accentBackground' : '$surface-subtle'}
+                    rounded="$10"
+                    width={44}
+                    height={26}
+                    justify="center"
+                    px="$1">
+                    <YStack
+                      bg="white"
+                      rounded="$10"
+                      width={20}
+                      height={20}
+                      alignSelf={reminderEnabled ? 'flex-end' : 'flex-start'}
+                    />
+                  </YStack>
+                </BaseTouchable>
+              )}
+            </XStack>
+
+            {reminderEnabled ? (
+              <BaseTouchable onPress={() => setShowTimePicker(true)}>
+                <XStack justify="space-between" items="center">
+                  <BodySm color="$text-secondary">
+                    <Trans>Time</Trans>
+                  </BodySm>
+                  <LabelMd color="$accentBackground">
+                    {formatHour(reminderHour)}
+                  </LabelMd>
+                </XStack>
+              </BaseTouchable>
+            ) : null}
+
+            {!notifPermission && (
+              <BodySm color="$text-disabled" mt="$2">
+                <Trans>Enable notifications in Settings to use reminders.</Trans>
+              </BodySm>
+            )}
+          </YStack>
+
           {/* Push notifications */}
           <YStack bg="$surface-card" rounded="$4" p="$4" borderWidth={1} borderColor="$borderColor">
             <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
@@ -195,6 +261,40 @@ export function SettingsScreen() {
           </LabelLg>
         </BaseTouchable>
       </YStack>
+
+      {/* Time picker modal */}
+      <Modal
+        visible={showTimePicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowTimePicker(false)}>
+        <TouchableOpacity
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
+          activeOpacity={1}
+          onPress={() => setShowTimePicker(false)}>
+          <TouchableOpacity activeOpacity={1}>
+            <YStack bg="$background" rounded="$4" p="$4" mx="$2" mb="$6">
+              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+                <Trans>Select reminder time</Trans>
+              </LabelMd>
+              <FlatList
+                data={REMINDER_HOURS}
+                keyExtractor={h => String(h)}
+                style={{ maxHeight: 300 }}
+                renderItem={({ item: h }) => (
+                  <TouchableOpacity
+                    onPress={() => { updateTime(h, 0); setShowTimePicker(false) }}
+                    style={{ paddingVertical: 12, paddingHorizontal: 8 }}>
+                    <LabelLg color={h === reminderHour ? '$accentBackground' : '$text-emphasis'}>
+                      {formatHour(h)}
+                    </LabelLg>
+                  </TouchableOpacity>
+                )}
+              />
+            </YStack>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </Containers.Screen>
   )
 }

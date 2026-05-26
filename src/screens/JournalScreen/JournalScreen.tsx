@@ -11,7 +11,7 @@ import { format } from 'date-fns'
 import { getDateLocale } from '@/src/utils/date'
 import type { JournalEntry } from '@/src/types/journal'
 import { logJournalEntryCreated, logJournalEntryDeleted, logScreenView } from '@analytics'
-import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry, useRevenueCat, useToast } from '@hooks'
+import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry, useRevenueCat, useToast, useStreak } from '@hooks'
 
 function formatTime(iso: string) {
   return format(new Date(iso), 'h:mm a', { locale: getDateLocale() })
@@ -83,6 +83,7 @@ export function JournalScreen() {
   )
 
   const todayEntries = entries.filter(e => isToday(e.created_at))
+  const streak = useStreak(entries)
   const hasContent = draft.trim().length > 0
   const remainingFree = Math.max(0, FREE_ENTRY_LIMIT - entries.length)
   const atLimit = !isPro && entries.length >= FREE_ENTRY_LIMIT
@@ -108,9 +109,18 @@ export function JournalScreen() {
           <LabelMd color="$text-disabled" mb="$1" textTransform="uppercase" letterSpacing={0.9}>
             {formatDateHeading(new Date().toISOString())}
           </LabelMd>
-          <DisplayLg color="$text-emphasis" letterSpacing={-0.5} mb="$6">
-            <Trans>Journal</Trans>
-          </DisplayLg>
+          <XStack justify="space-between" items="flex-end" mb="$6">
+            <DisplayLg color="$text-emphasis" letterSpacing={-0.5}>
+              <Trans>Journal</Trans>
+            </DisplayLg>
+            {streak > 0 ? (
+              <YStack items="flex-end">
+                <LabelMd color="$accentBackground" letterSpacing={-0.3}>
+                  {streak} {streak === 1 ? <Trans>day streak</Trans> : <Trans>day streak</Trans>} 🔥
+                </LabelMd>
+              </YStack>
+            ) : null}
+          </XStack>
 
           <YStack bg="$surface-card" rounded="$4" borderWidth={1} borderColor="$borderColor" mb="$4">
             <TextArea

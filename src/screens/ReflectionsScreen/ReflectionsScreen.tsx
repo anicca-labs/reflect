@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { useFocusEffect } from 'expo-router'
-import { ScrollView, YStack, XStack, Spinner } from 'tamagui'
+import { ScrollView, YStack, XStack, Spinner, Input } from 'tamagui'
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { SizingAnimatedButton } from '@ksairi-org/ui-button-animated'
+import { BaseTouchable } from '@ksairi-org/ui-touchables'
 import { Containers } from '@ksairi-org/ui-containers'
 import { BaseIcon } from '@atoms'
 import { sizes } from '@theme'
@@ -11,7 +12,7 @@ import { format } from 'date-fns'
 import { getDateLocale } from '@/src/utils/date'
 import type { JournalEntry } from '@/src/types/journal'
 import { logScreenView } from '@analytics'
-import { useJournalEntries, useRevenueCat } from '@hooks'
+import { useJournalEntries, useToggleBookmark, useRevenueCat } from '@hooks'
 import { exportJournal } from '@export'
 
 function formatDayLabel(iso: string) {
@@ -41,10 +42,45 @@ function groupByDay(entries: JournalEntry[]): { label: string; items: JournalEnt
   return Array.from(map.values())
 }
 
+interface EntryCardProps {
+  entry: JournalEntry
+  onToggleBookmark: (id: string, current: boolean) => void
+}
+
+function EntryCard({ entry, onToggleBookmark }: EntryCardProps) {
+  return (
+    <YStack
+      bg="$surface-card"
+      rounded="$4"
+      p="$4"
+      mb="$2"
+      borderWidth={1}
+      borderColor="$borderColor">
+      <BodySm color="$text-emphasis">
+        {entry.content}
+      </BodySm>
+      <XStack justify="space-between" items="center" mt="$2">
+        <LabelMd color="$text-disabled">{formatTime(entry.created_at)}</LabelMd>
+        <BaseTouchable
+          onPress={() => onToggleBookmark(entry.id, entry.is_bookmarked)}
+          hitSlop={{ top: sizes.sm, bottom: sizes.sm, left: sizes.sm, right: sizes.sm }}>
+          <LabelMd color={entry.is_bookmarked ? '$accentBackground' : '$text-disabled'}>
+            {entry.is_bookmarked ? '★' : '☆'}
+          </LabelMd>
+        </BaseTouchable>
+      </XStack>
+    </YStack>
+  )
+}
+
 export function ReflectionsScreen() {
   const { data: entries = [], isLoading: loading, refetch } = useJournalEntries()
   const { isPro, presentPaywall } = useRevenueCat()
+  const toggleBookmarkMutation = useToggleBookmark()
+  const { t } = useLingui()
   const [exporting, setExporting] = useState(false)
+  const [search, setSearch] = useState('')
+  const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false)
 
   useFocusEffect(
     React.useCallback(() => {
@@ -63,13 +99,20 @@ export function ReflectionsScreen() {
     setExporting(false)
   }
 
-  const groups = groupByDay(entries)
+  const query = search.trim().toLowerCase()
+  const filtered = entries.filter(e => {
+    if (showBookmarkedOnly && !e.is_bookmarked) return false
+    if (query && !e.content.toLowerCase().includes(query)) return false
+    return true
+  })
+
+  const groups = groupByDay(filtered)
 
   return (
     <Containers.Screen shouldAutoResize={false}>
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps="handled">
         <YStack p="$5">
-          <XStack justify="space-between" items="center" mb="$6">
+          <XStack justify="space-between" items="center" mb="$4">
             <DisplayLg color="$text-emphasis" letterSpacing={-0.5}>
               <Trans>Reflections</Trans>
             </DisplayLg>
@@ -92,6 +135,42 @@ export function ReflectionsScreen() {
             ) : null}
           </XStack>
 
+          {entries.length > 0 ? (
+            <YStack mb="$4" gap="$2">
+              <Input
+                value={search}
+                onChangeText={setSearch}
+                placeholder={t`Search entries…`}
+                bg="$surface-card"
+                borderWidth={1}
+                borderColor="$borderColor"
+                focusStyle={{ outlineWidth: 0 }}
+                fontSize="$3"
+                color="$text-emphasis"
+                rounded="$4"
+                px="$4"
+                height={44}
+              />
+              <BaseTouchable onPress={() => setShowBookmarkedOnly(v => !v)}>
+                <XStack
+                  bg={showBookmarkedOnly ? '$accentBackground' : '$surface-card'}
+                  rounded="$4"
+                  px="$3"
+                  py="$2"
+                  borderWidth={1}
+                  borderColor={showBookmarkedOnly ? '$accentBackground' : '$borderColor'}
+                  items="center"
+                  gap="$2"
+                  alignSelf="flex-start">
+                  <LabelMd color={showBookmarkedOnly ? '$accentColor' : '$text-disabled'}>
+                    {'★ '}
+                    <Trans>Bookmarked</Trans>
+                  </LabelMd>
+                </XStack>
+              </BaseTouchable>
+            </YStack>
+          ) : null}
+
           {loading && !entries.length ? (
             <YStack items="center" mt="$10">
               <Spinner color="$accentBackground" />
@@ -101,6 +180,12 @@ export function ReflectionsScreen() {
           {!loading && !entries.length ? (
             <BodySm color="$text-disabled" text="center" mt="$14">
               <Trans>No entries yet. Start writing in the Journal tab.</Trans>
+            </BodySm>
+          ) : null}
+
+          {!loading && entries.length > 0 && filtered.length === 0 ? (
+            <BodySm color="$text-disabled" text="center" mt="$14">
+              <Trans>No entries match your search.</Trans>
             </BodySm>
           ) : null}
 
@@ -114,21 +199,11 @@ export function ReflectionsScreen() {
                 {group.label}
               </LabelMd>
               {group.items.map(entry => (
-                <YStack
+                <EntryCard
                   key={entry.id}
-                  bg="$surface-card"
-                  rounded="$4"
-                  p="$4"
-                  mb="$2"
-                  borderWidth={1}
-                  borderColor="$borderColor">
-                  <BodySm color="$text-emphasis">
-                    {entry.content}
-                  </BodySm>
-                  <LabelMd color="$text-disabled" mt="$2">
-                    {formatTime(entry.created_at)}
-                  </LabelMd>
-                </YStack>
+                  entry={entry}
+                  onToggleBookmark={(id, current) => toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })}
+                />
               ))}
             </YStack>
           ))}

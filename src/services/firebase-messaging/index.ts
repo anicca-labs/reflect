@@ -62,3 +62,38 @@ export async function scheduleLocalNotification(title: string, body: string, del
     trigger: { type: ExpoNotifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: delaySeconds },
   })
 }
+
+const REMINDER_NOTIF_ID_KEY = '@reflect/reminder_notif_id'
+
+export async function scheduleDailyReminder(hour: number, minute: number): Promise<void> {
+  const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default
+
+  const existingId = await AsyncStorage.getItem(REMINDER_NOTIF_ID_KEY)
+  if (existingId) {
+    await ExpoNotifications.cancelScheduledNotificationAsync(existingId)
+  }
+
+  const id = await ExpoNotifications.scheduleNotificationAsync({
+    content: {
+      title: 'Reflect',
+      body: "Time to jot down today's thoughts.",
+    },
+    trigger: {
+      type: ExpoNotifications.SchedulableTriggerInputTypes.CALENDAR,
+      hour,
+      minute,
+      repeats: true,
+    },
+  })
+
+  await AsyncStorage.setItem(REMINDER_NOTIF_ID_KEY, id)
+}
+
+export async function cancelDailyReminder(): Promise<void> {
+  const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default
+  const id = await AsyncStorage.getItem(REMINDER_NOTIF_ID_KEY)
+  if (id) {
+    await ExpoNotifications.cancelScheduledNotificationAsync(id)
+    await AsyncStorage.removeItem(REMINDER_NOTIF_ID_KEY)
+  }
+}

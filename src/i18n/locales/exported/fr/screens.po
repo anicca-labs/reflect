@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2026-04-30\n"
+"POT-Creation-Date: 2026-05-26 09:48-0300\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
-"Language: en\n"
+"Language: fr\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: \n"
@@ -15,237 +15,225 @@ msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "{remainingFree} free entries left — upgrade to keep writing"
-msgstr ""
+msgstr "{remainingFree} entrées gratuites restantes — passez à Pro pour continuer"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "1 free entry left — upgrade to keep writing"
-msgstr ""
+msgstr "1 entrée gratuite restante — passez à Pro pour continuer"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Already have an account? Sign in"
-msgstr ""
+msgstr "Déjà un compte ? Connectez-vous"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Apple sign-in failed: no identity token"
-msgstr ""
+msgstr "Échec de connexion Apple : aucun jeton d'identité"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Apple sign-in is not configured for Android"
-msgstr ""
+msgstr "La connexion Apple n'est pas configurée pour Android"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Are you sure you want to sign out?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir vous déconnecter ?"
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Bookmarked"
-msgstr ""
+msgstr "Favoris"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Check your email"
-msgstr ""
-
-#: src/screens/SignInScreen/SignInScreen.tsx
-#~ msgid "Check your email — we sent a confirmation link to {email}."
-#~ msgstr ""
+msgstr "Vérifiez votre e-mail"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Confirm password"
-msgstr ""
+msgstr "Confirmer le mot de passe"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
-msgstr ""
+msgstr "Créer un compte"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create your account."
-msgstr ""
+msgstr "Créez votre compte."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Daily reminder"
-msgstr ""
+msgstr "Rappel quotidien"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "day streak"
-msgstr ""
+msgstr "jours consécutifs"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Delete entry?"
-msgstr ""
+msgstr "Supprimer l'entrée ?"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Don't have an account? Sign up"
-msgstr ""
+msgstr "Pas encore de compte ? Inscrivez-vous"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Enable notifications in Settings to use reminders."
-msgstr ""
+msgstr "Activez les notifications dans Réglages pour utiliser les rappels."
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export"
-msgstr ""
+msgstr "Exporter"
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export ✦"
-msgstr ""
+msgstr "Exporter ✦"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google sign-in failed: no identity token"
-msgstr ""
+msgstr "Échec de connexion Google : aucun jeton d'identité"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Journal"
-msgstr ""
+msgstr "Journal"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
-msgstr ""
+msgstr "Gérer l'abonnement"
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries match your search."
-msgstr ""
+msgstr "Aucune entrée ne correspond à votre recherche."
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries yet. Start writing in the Journal tab."
-msgstr ""
-
-#: src/screens/SignInScreen/SignInScreen.tsx
-#~ msgid "OK"
-#~ msgstr ""
+msgstr "Aucune entrée pour l'instant. Commencez à écrire dans l'onglet Journal."
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
-msgstr ""
+msgstr "Mot de passe"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Les mots de passe ne correspondent pas"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Permission"
-msgstr ""
+msgstr "Permission"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Plan"
-msgstr ""
+msgstr "Forfait"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Please enter a valid email address"
-msgstr ""
+msgstr "Veuillez saisir une adresse e-mail valide"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Push notifications"
-msgstr ""
+msgstr "Notifications push"
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Reflections"
-msgstr ""
+msgstr "Réflexions"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
-msgstr ""
+msgstr "Me rappeler d'écrire"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Save entry"
-msgstr ""
+msgstr "Enregistrer"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Save entry ✦"
-msgstr ""
+msgstr "Enregistrer ✦"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Scheduled! (5 s)"
-msgstr ""
+msgstr "Planifié ! (5 s)"
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Search entries…"
-msgstr ""
+msgstr "Rechercher des entrées…"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Select reminder time"
-msgstr ""
+msgstr "Choisir l'heure du rappel"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Send test notification"
-msgstr ""
+msgstr "Envoyer une notification test"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Settings"
-msgstr ""
+msgstr "Réglages"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Sign in"
-msgstr ""
+msgstr "Se connecter"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Sign in with Apple"
-msgstr ""
+msgstr "Se connecter avec Apple"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Sign out"
-msgstr ""
+msgstr "Se déconnecter"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
-msgstr ""
+msgstr "Abonnement"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "This cannot be undone."
-msgstr ""
+msgstr "Cette action est irréversible."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Time"
-msgstr ""
+msgstr "Heure"
 
 #. placeholder {0}: todayEntries.length
 #. placeholder {1}: todayEntries.length === 1 ? 'entry' : 'entries'
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} {1}"
-msgstr ""
+msgstr "Aujourd'hui · {0} {1}"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Unlimited entries unlocked. Keep writing."
-msgstr ""
+msgstr "Entrées illimitées débloquées. Continuez à écrire."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Upgrade to Pro ✦"
-msgstr ""
+msgstr "Passer à Pro ✦"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "We sent a confirmation link to {email}."
-msgstr ""
-
-#: src/screens/SignInScreen/SignInScreen.tsx
-#~ msgid "We sent a confirmation link to {email}. Tap the link to activate your account."
-#~ msgstr ""
+msgstr "Nous avons envoyé un lien de confirmation à {email}."
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Welcome back."
-msgstr ""
+msgstr "Bon retour."
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Welcome to Pro ✦"
-msgstr ""
+msgstr "Bienvenue dans Pro ✦"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's on your mind?"
-msgstr ""
+msgstr "Qu'avez-vous en tête ?"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "You've used all free entries. Tap Save to unlock unlimited writing ✦"
-msgstr ""
+msgstr "Vous avez utilisé toutes vos entrées gratuites. Appuyez sur Enregistrer pour débloquer l'écriture illimitée ✦"
