@@ -10,11 +10,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useColorScheme, Platform } from "react-native";
 import tamaguiConfig from "@default-tamagui-config";
 import { LinguiClientProvider } from "@i18n";
-import { useAuthSession, useCustomFonts } from "@hooks";
+import { useAuthSession, useCustomFonts , useToast } from "@hooks";
 import { EnvBadge } from "@atoms";
 import { subscribeToForegroundMessages } from "@firebase-messaging";
 import { useEffect } from "react";
-import { useToast } from "@hooks";
 import { SplashView } from "@ksairi-org/react-native-splash-view";
 import { themes } from "@theme";
 import { configureRevenueCat } from "@revenue-cat";
@@ -43,7 +42,7 @@ function RootLayoutNav() {
       notification({ title, message: body });
     });
     return unsubscribe;
-  }, []);
+  }, [notification]);
 
   return (
     <Stack>

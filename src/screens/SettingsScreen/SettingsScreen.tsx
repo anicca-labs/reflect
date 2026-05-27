@@ -13,7 +13,6 @@ import { useRevenueCat, useToast, useReminder } from '@hooks'
 import {
   getNotificationPermissionStatus,
   requestNotificationPermission,
-  getFCMToken,
   type NotificationPermissionStatus,
 } from '@firebase-messaging'
 import { upsertDeviceToken } from '@/src/services/user-devices'
@@ -34,7 +33,6 @@ export function SettingsScreen() {
   const { alert } = useToast()
   const { enabled: reminderEnabled, hour: reminderHour, loading: reminderLoading, toggle: toggleReminder, updateTime } = useReminder()
   const [notifPermission, setNotifPermission] = useState<NotificationPermissionStatus | null>(null)
-  const [fcmToken, setFcmToken] = useState<string | null>(null)
   const [showTimePicker, setShowTimePicker] = useState(false)
   const openedSettings = useRef(false)
 
@@ -47,8 +45,6 @@ export function SettingsScreen() {
     const status = await getNotificationPermissionStatus()
     setNotifPermission(status)
     if (status === 'granted') {
-      const token = await getFCMToken()
-      setFcmToken(token)
       const { data: { user } } = await supabase.auth.getUser()
       if (user) upsertDeviceToken(user.id)
     }
@@ -74,8 +70,6 @@ export function SettingsScreen() {
       const granted = await requestNotificationPermission()
       setNotifPermission(granted ? 'granted' : 'denied')
       if (granted) {
-        const token = await getFCMToken()
-        setFcmToken(token)
         const { data: { user } } = await supabase.auth.getUser()
         if (user) upsertDeviceToken(user.id)
       }
