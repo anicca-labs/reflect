@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { AppState, Platform, StyleSheet, useColorScheme } from 'react-native'
-import { YStack, XStack, Input, Spinner } from 'tamagui'
+import { YStack, XStack, Input, Spinner, styled } from 'tamagui'
 import { DisplayLg, BodySm, LabelSm, LabelLg } from '@fonts'
 import { Containers, KeyboardScrollView } from '@ksairi-org/ui-containers'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -32,6 +32,18 @@ const socialButtonStyle = StyleSheet.create({
   button: { width: '100%', height: sizes.xl },
 })
 
+const EmailInput = styled(Input, {
+  bg: '$surface-card',
+  color: '$text-emphasis',
+  placeholderTextColor: '$placeholderColor',
+  borderColor: '$borderColor',
+  borderWidth: 1,
+  focusStyle: {
+    borderColor: '$accentBackground',
+    outlineWidth: 0,
+  },
+})
+
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
     supabase.auth.startAutoRefresh()
@@ -53,7 +65,6 @@ export function SignInScreen() {
   const { t } = useLingui()
   const { toast } = useToast()
   const isDark = useColorScheme() === 'dark'
-
   const hasInitializedAppleSignIn = useRef(false)
   const prevAppState = useRef<string>('active')
   const passwordRef = useRef<PasswordInputHandle>(null)
@@ -251,7 +262,7 @@ export function SignInScreen() {
           </BodySm>
 
           <FormField error={emailError}>
-            <Input
+            <EmailInput
               value={email}
               onChangeText={(text) => { setEmail(text); setEmailError(null) }}
               onBlur={validateEmail}
@@ -262,12 +273,6 @@ export function SignInScreen() {
               keyboardType="email-address"
               autoComplete="email"
               size="$4"
-              bg="$surface-card"
-              color="$text-emphasis"
-              placeholderTextColor="$text-placeholder"
-              borderColor="$borderColor"
-              borderWidth={1}
-              focusStyle={{ borderColor: '$accentBackground', outlineWidth: 0 }}
             />
           </FormField>
 

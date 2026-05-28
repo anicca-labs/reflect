@@ -21,6 +21,14 @@ msgstr "Sisa {remainingFree} entri gratis — tingkatkan untuk terus menulis"
 msgid "1 free entry left — upgrade to keep writing"
 msgstr "Sisa 1 entri gratis — tingkatkan untuk terus menulis"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "12-hour"
+msgstr "12 jam"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "24-hour"
+msgstr "24 jam"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Already have an account? Sign in"
 msgstr "Sudah punya akun? Masuk"
@@ -54,18 +62,6 @@ msgstr "Periksa email Anda"
 msgid "Confirm password"
 msgstr "Konfirmasi kata sandi"
 
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Connect"
-#~ msgstr "Hubungkan"
-
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Connected"
-#~ msgstr "Terhubung"
-
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Connected accounts"
-#~ msgstr "Akun yang terhubung"
-
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "Buat akun"
@@ -80,6 +76,10 @@ msgstr "Pengingat harian"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "day streak"
+msgstr "hari berturut-turut"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "days streak"
 msgstr "hari berturut-turut"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
@@ -110,10 +110,6 @@ msgstr "Aktifkan"
 msgid "Enable notifications in Settings to use reminders."
 msgstr "Aktifkan notifikasi di Pengaturan untuk menggunakan pengingat."
 
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Error"
-#~ msgstr ""
-
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export"
 msgstr "Ekspor"
@@ -121,6 +117,10 @@ msgstr "Ekspor"
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export ✦"
 msgstr "Ekspor ✦"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Free"
+msgstr "Gratis"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google sign-in failed: no identity token"
@@ -225,6 +225,10 @@ msgstr "Tindakan ini tidak dapat dibatalkan."
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Time"
 msgstr "Waktu"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Time format"
+msgstr "Format waktu"
 
 #. placeholder {0}: todayEntries.length
 #. placeholder {1}: todayEntries.length === 1 ? 'entry' : 'entries'

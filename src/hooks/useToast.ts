@@ -48,7 +48,7 @@ export function useToast() {
     }
   }
 
-  function notification({ title, message, duration = 4 }: NotificationOptions) {
+  function notification({ title, message, duration = 6 }: NotificationOptions) {
     if (Platform.OS === 'android') {
       ToastAndroid.showWithGravity(
         message ? `${title} — ${message}` : title,
@@ -56,13 +56,12 @@ export function useToast() {
         ToastAndroid.TOP,
       )
     } else {
-      Burnt.toast({
+      Burnt.alert({
         title,
         message,
         preset: 'custom',
         icon: { ios: { name: 'bell.fill', color: '#007AFF' } },
         duration,
-        from: 'top',
       })
     }
   }

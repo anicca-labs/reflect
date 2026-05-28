@@ -8,6 +8,7 @@ import { SizingAnimatedButton } from '@ksairi-org/ui-button-animated'
 import { Trans, useLingui } from '@lingui/react/macro'
 import * as Device from 'expo-device'
 import { supabase } from '@/src/services/supabase'
+import { usePreferencesStore } from '@/src/stores'
 import { manageSubscriptions } from '@/src/services/revenue-cat'
 import { useRevenueCat, useToast, useReminder } from '@hooks'
 import {
@@ -19,7 +20,8 @@ import { upsertDeviceToken } from '@/src/services/user-devices'
 
 const REMINDER_HOURS = Array.from({ length: 18 }, (_, i) => i + 6) // 6 AM → 11 PM
 
-function formatHour(h: number): string {
+function formatHour(h: number, use24h: boolean): string {
+  if (use24h) return `${String(h).padStart(2, '0')}:00`
   const period = h < 12 ? 'AM' : 'PM'
   const display = h === 0 ? 12 : h > 12 ? h - 12 : h
   return `${display}:00 ${period}`
@@ -32,6 +34,7 @@ export function SettingsScreen() {
   const { t } = useLingui()
   const { alert } = useToast()
   const { enabled: reminderEnabled, hour: reminderHour, loading: reminderLoading, toggle: toggleReminder, updateTime } = useReminder()
+  const { timeFormat, setTimeFormat } = usePreferencesStore()
   const [notifPermission, setNotifPermission] = useState<NotificationPermissionStatus | null>(null)
   const [showTimePicker, setShowTimePicker] = useState(false)
   const openedSettings = useRef(false)
@@ -131,7 +134,7 @@ export function SettingsScreen() {
                 {rcLoading
                   ? <Spinner size="small" color="$text-disabled" />
                   : <LabelMd color={isPro ? '$green10' : '$text-disabled'}>
-                      {isPro ? planLabel : 'Free'}
+                      {isPro ? planLabel : <Trans>Free</Trans>}
                     </LabelMd>
                 }
               </XStack>
@@ -212,7 +215,7 @@ export function SettingsScreen() {
                       <Trans>Time</Trans>
                     </BodySm>
                     <LabelMd color="$accentBackground">
-                      {formatHour(reminderHour)}
+                      {formatHour(reminderHour, timeFormat === '24h')}
                     </LabelMd>
                   </XStack>
                 </BaseTouchable>
@@ -245,6 +248,29 @@ export function SettingsScreen() {
                 </XStack>
               </BaseTouchable>
 
+            </YStack>
+
+            {/* Time format */}
+            <YStack bg="$surface-card" rounded="$4" p="$4" borderWidth={1} borderColor="$borderColor">
+              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+                <Trans>Time format</Trans>
+              </LabelMd>
+              <XStack gap="$2">
+                {(['12h', '24h'] as const).map((fmt) => (
+                  <BaseTouchable
+                    key={fmt}
+                    onPress={() => setTimeFormat(fmt)}
+                    flex={1}
+                    bg={timeFormat === fmt ? '$accentBackground' : '$surface-subtle'}
+                    rounded="$4"
+                    py="$3"
+                    items="center">
+                    <LabelMd color={timeFormat === fmt ? '$accentColor' : '$text-secondary'}>
+                      {fmt === '12h' ? <Trans>12-hour</Trans> : <Trans>24-hour</Trans>}
+                    </LabelMd>
+                  </BaseTouchable>
+                ))}
+              </XStack>
             </YStack>
 
             {/* Sign out */}
@@ -288,7 +314,7 @@ export function SettingsScreen() {
                     onPress={() => { updateTime(h, 0); setShowTimePicker(false) }}
                     style={{ paddingVertical: 12, paddingHorizontal: 8 }}>
                     <LabelLg color={h === reminderHour ? '$accentBackground' : '$text-emphasis'}>
-                      {formatHour(h)}
+                      {formatHour(h, timeFormat === '24h')}
                     </LabelLg>
                   </TouchableOpacity>
                 )}

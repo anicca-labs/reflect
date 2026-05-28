@@ -9,7 +9,8 @@ import { Containers } from '@ksairi-org/ui-containers'
 import { BaseIcon } from '@atoms'
 import { sizes } from '@theme'
 import { format } from 'date-fns'
-import { getDateLocale } from '@/src/utils/date'
+import { getDateLocale, formatEntryTime } from '@/src/utils/date'
+import { usePreferencesStore } from '@/src/stores'
 import type { JournalEntry } from '@/src/types/journal'
 import { logScreenView } from '@analytics'
 import { useJournalEntries, useToggleBookmark, useRevenueCat } from '@hooks'
@@ -19,10 +20,6 @@ function formatDayLabel(iso: string) {
   const d = new Date(iso)
   const isThisYear = d.getFullYear() === new Date().getFullYear()
   return format(d, isThisYear ? 'EEEE, MMMM d' : 'EEEE, MMMM d, yyyy', { locale: getDateLocale() })
-}
-
-function formatTime(iso: string) {
-  return format(new Date(iso), 'h:mm a', { locale: getDateLocale() })
 }
 
 function dateKey(iso: string) {
@@ -48,6 +45,7 @@ interface EntryCardProps {
 }
 
 function EntryCard({ entry, onToggleBookmark }: EntryCardProps) {
+  const timeFormat = usePreferencesStore((s) => s.timeFormat)
   return (
     <YStack
       bg="$surface-card"
@@ -60,7 +58,7 @@ function EntryCard({ entry, onToggleBookmark }: EntryCardProps) {
         {entry.content}
       </BodySm>
       <XStack justify="space-between" items="center" mt="$2">
-        <LabelMd color="$text-disabled">{formatTime(entry.created_at)}</LabelMd>
+        <LabelMd color="$text-disabled">{formatEntryTime(entry.created_at, timeFormat === '24h')}</LabelMd>
         <BaseTouchable
           onPress={() => onToggleBookmark(entry.id, entry.is_bookmarked)}
           hitSlop={{ top: sizes.sm, bottom: sizes.sm, left: sizes.sm, right: sizes.sm }}>

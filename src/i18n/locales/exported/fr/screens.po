@@ -21,6 +21,14 @@ msgstr "{remainingFree} entrées gratuites restantes — passez à Pro pour cont
 msgid "1 free entry left — upgrade to keep writing"
 msgstr "1 entrée gratuite restante — passez à Pro pour continuer"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "12-hour"
+msgstr "12 heures"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "24-hour"
+msgstr "24 heures"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Already have an account? Sign in"
 msgstr "Déjà un compte ? Connectez-vous"
@@ -54,18 +62,6 @@ msgstr "Vérifiez votre e-mail"
 msgid "Confirm password"
 msgstr "Confirmer le mot de passe"
 
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Connect"
-#~ msgstr "Connecter"
-
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Connected"
-#~ msgstr "Connecté"
-
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Connected accounts"
-#~ msgstr "Comptes connectés"
-
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "Créer un compte"
@@ -80,6 +76,10 @@ msgstr "Rappel quotidien"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "day streak"
+msgstr "jour consécutif"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "days streak"
 msgstr "jours consécutifs"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
@@ -110,10 +110,6 @@ msgstr "Activer"
 msgid "Enable notifications in Settings to use reminders."
 msgstr "Activez les notifications dans Réglages pour utiliser les rappels."
 
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Error"
-#~ msgstr ""
-
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export"
 msgstr "Exporter"
@@ -121,6 +117,10 @@ msgstr "Exporter"
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export ✦"
 msgstr "Exporter ✦"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Free"
+msgstr "Gratuit"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google sign-in failed: no identity token"
@@ -225,6 +225,10 @@ msgstr "Cette action est irréversible."
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Time"
 msgstr "Heure"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Time format"
+msgstr "Format de l'heure"
 
 #. placeholder {0}: todayEntries.length
 #. placeholder {1}: todayEntries.length === 1 ? 'entry' : 'entries'

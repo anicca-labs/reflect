@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { scheduleDailyReminder, cancelDailyReminder } from '@firebase-messaging'
 import { syncReminderToBackend } from '@/src/services/user-devices'
 
 const ENABLED_KEY = '@reflect/reminder_enabled'
@@ -36,11 +35,6 @@ export function useReminder() {
     const next = !enabled
     setEnabled(next)
     await AsyncStorage.setItem(ENABLED_KEY, String(next))
-    if (next) {
-      await scheduleDailyReminder(hour, minute)
-    } else {
-      await cancelDailyReminder()
-    }
     syncReminderToBackend(next, hour, minute)
   }
 
@@ -52,7 +46,6 @@ export function useReminder() {
       AsyncStorage.setItem(MINUTE_KEY, String(newMinute)),
     ])
     if (enabled) {
-      await scheduleDailyReminder(newHour, newMinute)
       syncReminderToBackend(true, newHour, newMinute)
     }
   }

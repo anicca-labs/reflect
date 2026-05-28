@@ -4,9 +4,11 @@ import { HapticTab, BaseIcon } from '@atoms'
 import { Ionicons } from '@expo/vector-icons'
 import { useTheme } from 'tamagui'
 import { sizes } from '@theme'
+import { useLingui } from '@lingui/react/macro'
 
 export default function TabLayout() {
   const theme = useTheme()
+  const { t } = useLingui()
 
   return (
     <Tabs
@@ -23,21 +25,21 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Journal',
+          title: t`Journal`,
           tabBarIcon: ({ color }) => <BaseIcon iconName="iconPen" width={sizes.lg} height={sizes.lg} color={color} />,
         }}
       />
       <Tabs.Screen
         name="reflections"
         options={{
-          title: 'Reflections',
+          title: t`Reflections`,
           tabBarIcon: ({ color }) => <BaseIcon iconName="iconBook" width={sizes.lg} height={sizes.lg} color={color} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: t`Settings`,
           tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={sizes.lg} color={color} />,
         }}
       />

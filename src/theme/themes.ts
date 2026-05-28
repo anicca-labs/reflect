@@ -46,7 +46,7 @@ export const lightTheme = {
   borderColorPress: 'hsl(30, 11%, 78%)',
   borderColorFocus: 'hsl(26, 60%, 52%)',   // amber on focus
 
-  placeholderColor: 'hsl(26, 9%, 60%)',
+  placeholderColor: 'hsl(24, 8%, 48%)',
   outlineColor: 'hsla(26, 60%, 52%, 0.35)',
 
   // Brand — warm amber
@@ -106,7 +106,7 @@ export const darkTheme = {
   borderColorPress: 'hsl(24, 7%, 27%)',
   borderColorFocus: 'hsl(26, 72%, 56%)',
 
-  placeholderColor: 'hsl(22, 9%, 44%)',
+  placeholderColor: 'hsl(21, 10%, 55%)',
   outlineColor: 'hsla(26, 72%, 56%, 0.35)',
 
   // Brand — lighter amber for dark mode

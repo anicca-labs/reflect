@@ -21,6 +21,14 @@ msgstr "تبقّى {remainingFree} تسجيل مجاني — اشترك للاس
 msgid "1 free entry left — upgrade to keep writing"
 msgstr "تبقّى تسجيل مجاني واحد — اشترك للاستمرار في الكتابة"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "12-hour"
+msgstr "١٢ ساعة"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "24-hour"
+msgstr "٢٤ ساعة"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Already have an account? Sign in"
 msgstr "لديك حساب بالفعل؟ سجّل الدخول"
@@ -54,18 +62,6 @@ msgstr "تحقّق من بريدك الإلكتروني"
 msgid "Confirm password"
 msgstr "تأكيد كلمة المرور"
 
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Connect"
-#~ msgstr "ربط"
-
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Connected"
-#~ msgstr "مرتبط"
-
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Connected accounts"
-#~ msgstr "الحسابات المرتبطة"
-
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "إنشاء حساب"
@@ -80,6 +76,10 @@ msgstr "تذكير يومي"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "day streak"
+msgstr "يوم متتالٍ"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "days streak"
 msgstr "أيام متتالية"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
@@ -110,10 +110,6 @@ msgstr "تفعيل"
 msgid "Enable notifications in Settings to use reminders."
 msgstr "فعّل الإشعارات في الإعدادات لاستخدام التذكيرات."
 
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Error"
-#~ msgstr ""
-
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export"
 msgstr "تصدير"
@@ -121,6 +117,10 @@ msgstr "تصدير"
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export ✦"
 msgstr "تصدير ✦"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Free"
+msgstr "مجاني"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google sign-in failed: no identity token"
@@ -225,6 +225,10 @@ msgstr "لا يمكن التراجع عن هذا."
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Time"
 msgstr "الوقت"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Time format"
+msgstr "تنسيق الوقت"
 
 #. placeholder {0}: todayEntries.length
 #. placeholder {1}: todayEntries.length === 1 ? 'entry' : 'entries'

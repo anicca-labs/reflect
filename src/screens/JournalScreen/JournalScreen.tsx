@@ -8,14 +8,11 @@ import { BaseTouchable } from '@ksairi-org/ui-touchables'
 import { Containers } from '@ksairi-org/ui-containers'
 import { sizes } from '@theme'
 import { format } from 'date-fns'
-import { getDateLocale } from '@/src/utils/date'
+import { getDateLocale, formatEntryTime } from '@/src/utils/date'
+import { usePreferencesStore } from '@/src/stores'
 import type { JournalEntry } from '@/src/types/journal'
 import { logJournalEntryCreated, logJournalEntryDeleted, logScreenView } from '@analytics'
 import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry, useRevenueCat, useToast, useStreak, getDailyPromptIndex } from '@hooks'
-
-function formatTime(iso: string) {
-  return format(new Date(iso), 'h:mm a', { locale: getDateLocale() })
-}
 
 function formatDateHeading(iso: string) {
   return format(new Date(iso), 'EEEE, MMMM d', { locale: getDateLocale() })
@@ -36,6 +33,7 @@ interface EntryCardProps {
 
 function EntryCard({ entry, onDelete }: EntryCardProps) {
   const { t } = useLingui()
+  const timeFormat = usePreferencesStore((s) => s.timeFormat)
 
   function confirmDelete() {
     Alert.alert(
@@ -54,7 +52,7 @@ function EntryCard({ entry, onDelete }: EntryCardProps) {
         {entry.content}
       </BodySm>
       <XStack justify="space-between" items="center">
-        <LabelMd color="$text-disabled">{formatTime(entry.created_at)}</LabelMd>
+        <LabelMd color="$text-disabled">{formatEntryTime(entry.created_at, timeFormat === '24h')}</LabelMd>
         <BaseTouchable onPress={confirmDelete} hitSlop={{ top: sizes.sm, bottom: sizes.sm, left: sizes.sm, right: sizes.sm }}>
           <LabelMd color="$red10"><Trans>Delete</Trans></LabelMd>
         </BaseTouchable>
@@ -126,7 +124,7 @@ export function JournalScreen() {
             {streak > 0 ? (
               <YStack items="flex-end">
                 <LabelMd color="$accentBackground" letterSpacing={-0.3}>
-                  {streak} {streak === 1 ? <Trans>day streak</Trans> : <Trans>day streak</Trans>} 🔥
+                  {streak} {streak === 1 ? <Trans>day streak</Trans> : <Trans>days streak</Trans>} 🔥
                 </LabelMd>
               </YStack>
             ) : null}

@@ -21,6 +21,14 @@ msgstr ""
 msgid "1 free entry left — upgrade to keep writing"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "12-hour"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "24-hour"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Already have an account? Sign in"
 msgstr ""
@@ -54,18 +62,6 @@ msgstr ""
 msgid "Confirm password"
 msgstr ""
 
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Connect"
-#~ msgstr ""
-
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Connected"
-#~ msgstr ""
-
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Connected accounts"
-#~ msgstr ""
-
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr ""
@@ -80,6 +76,10 @@ msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "day streak"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "days streak"
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
@@ -110,16 +110,16 @@ msgstr ""
 msgid "Enable notifications in Settings to use reminders."
 msgstr ""
 
-#: src/screens/SettingsScreen/SettingsScreen.tsx
-#~ msgid "Error"
-#~ msgstr ""
-
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export"
 msgstr ""
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export ✦"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Free"
 msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -224,6 +224,10 @@ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Time"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Time format"
 msgstr ""
 
 #. placeholder {0}: todayEntries.length

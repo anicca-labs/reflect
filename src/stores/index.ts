@@ -1,4 +1,6 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import { createZustandMmkvStorage } from './utils'
 
 type UserStoreKey = 'firstName' | 'lastName'
 
@@ -19,3 +21,23 @@ export const useUserStore = create<UserStoreState>((set) => ({
   lastName: null,
   setKeyValue: (key, value) => set({ [key]: value }),
 }))
+
+type TimeFormat = '12h' | '24h'
+
+type PreferencesStoreState = {
+  timeFormat: TimeFormat
+  setTimeFormat: (format: TimeFormat) => void
+}
+
+export const usePreferencesStore = create<PreferencesStoreState>()(
+  persist(
+    (set) => ({
+      timeFormat: '12h',
+      setTimeFormat: (format) => set({ timeFormat: format }),
+    }),
+    {
+      name: 'reflect-preferences',
+      storage: createJSONStorage(() => createZustandMmkvStorage()),
+    },
+  ),
+)
