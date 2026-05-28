@@ -7,7 +7,7 @@ export async function upsertDeviceToken(userId: string): Promise<void> {
 
   await supabase.from('device_tokens').upsert(
     { user_id: userId, fcm_token: fcmToken, updated_at: new Date().toISOString() },
-    { onConflict: 'user_id' },
+    { onConflict: 'fcm_token' },
   )
 }
 
@@ -29,6 +29,6 @@ export async function syncReminderToBackend(enabled: boolean, hour: number, minu
       timezone: enabled ? timezone : null,
       updated_at: new Date().toISOString(),
     },
-    { onConflict: 'user_id' },
+    { onConflict: 'fcm_token' },
   )
 }
