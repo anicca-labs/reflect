@@ -75,14 +75,11 @@ Deno.serve(async (req) => {
     return new Response('Unauthorized', { status: 401, headers: CORS_HEADERS })
   }
 
-  const { title, body, user_id } = await req.json() as {
-    title: string
-    body: string
+  const body = await req.json() as {
+    action?: string
+    title?: string
+    body?: string
     user_id?: string
-  }
-
-  if (!title || !body) {
-    return new Response('title and body are required', { status: 400, headers: CORS_HEADERS })
   }
 
   const supabase = createClient(
@@ -90,6 +87,38 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     { db: { schema: 'api' } },
   )
+
+  if (body.action === 'list') {
+    const { data: devices, error } = await supabase
+      .from('device_tokens')
+      .select('user_id, fcm_token, updated_at')
+      .order('updated_at', { ascending: false })
+
+    if (error) return new Response(error.message, { status: 500, headers: CORS_HEADERS })
+    if (!devices?.length) return Response.json([], { headers: CORS_HEADERS })
+
+    const { data: { users }, error: authError } = await supabase.auth.admin.listUsers({
+      perPage: 1000,
+    })
+    if (authError) return new Response(authError.message, { status: 500, headers: CORS_HEADERS })
+
+    const emailById = Object.fromEntries(users.map((u) => [u.id, u.email ?? u.id]))
+
+    const result = devices.map((d) => ({
+      user_id: d.user_id,
+      email: emailById[d.user_id] ?? d.user_id,
+      fcm_token: d.fcm_token,
+      updated_at: d.updated_at,
+    }))
+
+    return Response.json(result, { headers: CORS_HEADERS })
+  }
+
+  const { title, body: msgBody, user_id } = body as { title: string; body: string; user_id?: string }
+
+  if (!title || !msgBody) {
+    return new Response('title and body are required', { status: 400, headers: CORS_HEADERS })
+  }
 
   let query = supabase.from('device_tokens').select('fcm_token, user_id')
   if (user_id) query = query.eq('user_id', user_id)
@@ -102,7 +131,7 @@ Deno.serve(async (req) => {
 
   const accessToken = await getFirebaseAccessToken()
   const results = await Promise.allSettled(
-    devices.map((d) => sendPush(d.fcm_token, accessToken, title, body)),
+    devices.map((d) => sendPush(d.fcm_token, accessToken, title, msgBody)),
   )
 
   const sent = results.filter((r) => r.status === 'fulfilled' && r.value.ok).length
