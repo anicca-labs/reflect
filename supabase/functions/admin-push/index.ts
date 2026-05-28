@@ -1,3 +1,4 @@
+// @openapi-internal — admin-only, not callable from app clients
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import * as jose from 'https://esm.sh/jose@5'
 
