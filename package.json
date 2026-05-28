@@ -55,6 +55,8 @@
     "i18n:compile": "lingui compile",
     "i18n": "yarn i18n:extract && yarn i18n:compile",
     "postinstall": "yarn i18n:compile",
+    "functions:deploy:stg": "doppler run --project mobile --config stg -- supabase functions deploy --project-ref sznlkorcninofgezkwmy && doppler run --project mobile --config stg -- supabase functions deploy admin-push --no-verify-jwt --project-ref sznlkorcninofgezkwmy",
+    "functions:deploy:prd": "doppler run --project mobile --config prd -- supabase functions deploy --project-ref orrcfftpaxlldolavipm && doppler run --project mobile --config prd -- supabase functions deploy admin-push --no-verify-jwt --project-ref orrcfftpaxlldolavipm",
     "prepare": "husky"
   },
   "dependencies": {
