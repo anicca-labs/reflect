@@ -28,7 +28,8 @@ function requireEnv(name) {
 
 function sha256b64(filePath) {
   const content = fs.readFileSync(filePath)
-  return `sha256:${crypto.createHash('sha256').update(content).digest('base64')}`
+  // expo-updates compares this directly against toBase64Url(downloadedHash) — no sha256: prefix
+  return crypto.createHash('sha256').update(content).digest('base64url')
 }
 
 function extToContentType(ext) {
