@@ -50,6 +50,7 @@ msgid "Bookmarked"
 msgstr "Disimpan"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Cancel"
 msgstr "Batal"
@@ -83,10 +84,12 @@ msgid "days streak"
 msgstr "hari berturut-turut"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Delete"
 msgstr "Hapus"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Delete entry?"
 msgstr "Hapus entri?"
 
@@ -109,6 +112,10 @@ msgstr "Aktifkan"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Enable notifications in Settings to use reminders."
 msgstr "Aktifkan notifikasi di Pengaturan untuk menggunakan pengingat."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Entry limit reached — upgrade to keep writing"
+msgstr ""
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export"
@@ -219,6 +226,7 @@ msgid "Subscription"
 msgstr "Langganan"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "This cannot be undone."
 msgstr "Tindakan ini tidak dapat dibatalkan."
 
@@ -283,5 +291,5 @@ msgid "What's one thing you want to remember about today?"
 msgstr "Satu hal apa yang ingin kamu ingat dari hari ini?"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "You've used all free entries. Tap Save to unlock unlimited writing ✦"
-msgstr "Anda telah menggunakan semua entri gratis. Ketuk Simpan untuk membuka penulisan tak terbatas ✦"
+#~ msgid "You've used all free entries. Tap Save to unlock unlimited writing ✦"
+#~ msgstr "Anda telah menggunakan semua entri gratis. Ketuk Simpan untuk membuka penulisan tak terbatas ✦"

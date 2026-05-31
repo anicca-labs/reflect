@@ -6,17 +6,17 @@ const ENABLED_KEY = '@reflect/reminder_enabled'
 const HOUR_KEY = '@reflect/reminder_hour'
 const MINUTE_KEY = '@reflect/reminder_minute'
 
-export const DEFAULT_REMINDER_HOUR = 20
-export const DEFAULT_REMINDER_MINUTE = 0
+const DEFAULT_REMINDER_HOUR = 20
+const DEFAULT_REMINDER_MINUTE = 0
 
-export function useReminder() {
+const useReminder = () => {
   const [enabled, setEnabled] = useState(false)
   const [hour, setHour] = useState(DEFAULT_REMINDER_HOUR)
   const [minute, setMinute] = useState(DEFAULT_REMINDER_MINUTE)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function load() {
+    const load = async () => {
       const [enabledVal, hourVal, minuteVal] = await Promise.all([
         AsyncStorage.getItem(ENABLED_KEY),
         AsyncStorage.getItem(HOUR_KEY),
@@ -30,7 +30,7 @@ export function useReminder() {
     load()
   }, [])
 
-  async function toggle(notifPermission: boolean) {
+  const toggle = async (notifPermission: boolean) => {
     if (!notifPermission) return
     const next = !enabled
     setEnabled(next)
@@ -38,7 +38,7 @@ export function useReminder() {
     syncReminderToBackend(next, hour, minute)
   }
 
-  async function updateTime(newHour: number, newMinute: number) {
+  const updateTime = async (newHour: number, newMinute: number) => {
     setHour(newHour)
     setMinute(newMinute)
     await Promise.all([
@@ -52,3 +52,5 @@ export function useReminder() {
 
   return { enabled, hour, minute, loading, toggle, updateTime }
 }
+
+export { DEFAULT_REMINDER_HOUR, DEFAULT_REMINDER_MINUTE, useReminder }

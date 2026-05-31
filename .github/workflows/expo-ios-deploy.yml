@@ -111,3 +111,5 @@ jobs:
           # Generate an app-specific password at appleid.apple.com.
           EXPO_APPLE_ID: ${{ secrets.EXPO_APPLE_ID }}
           EXPO_APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.EXPO_APPLE_APP_SPECIFIC_PASSWORD }}
+          # Default 3s timeout is too short when new Swift Packages are being resolved.
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120

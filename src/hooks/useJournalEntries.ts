@@ -4,8 +4,8 @@ import type { JournalEntry } from '@/src/types/journal'
 
 const QUERY_KEY = ['journal-entries'] as const
 
-export function useJournalEntries() {
-  return useQuery({
+const useJournalEntries = () =>
+  useQuery({
     queryKey: QUERY_KEY,
     queryFn: async () => {
       const { data, error } = await supabase
@@ -16,9 +16,8 @@ export function useJournalEntries() {
       return (data ?? []) as JournalEntry[]
     },
   })
-}
 
-export function useCreateJournalEntry() {
+const useCreateJournalEntry = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (content: string) => {
@@ -53,7 +52,7 @@ export function useCreateJournalEntry() {
   })
 }
 
-export function useUpdateJournalEntry() {
+const useUpdateJournalEntry = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, content }: { id: string; content: string }) => {
@@ -80,7 +79,7 @@ export function useUpdateJournalEntry() {
   })
 }
 
-export function useToggleBookmark() {
+const useToggleBookmark = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, is_bookmarked }: { id: string; is_bookmarked: boolean }) => {
@@ -105,7 +104,7 @@ export function useToggleBookmark() {
   })
 }
 
-export function useDeleteJournalEntry() {
+const useDeleteJournalEntry = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
@@ -126,3 +125,5 @@ export function useDeleteJournalEntry() {
     onSettled: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   })
 }
+
+export { useJournalEntries, useCreateJournalEntry, useUpdateJournalEntry, useToggleBookmark, useDeleteJournalEntry }

@@ -4,7 +4,7 @@
 
 - `any`, `as` casts, `eslint-disable` — fix at source
 - Raw hex/rgba in Tamagui props — use `$token` references only
-- `StyleSheet.create()` — use Tamagui `styled()`
+- `StyleSheet.create()` or inline `style={{}}` — use Tamagui props for Tamagui components; wrap non-Tamagui components with `styled()` instead
 - `FlatList` — use `FlashList` with `estimatedItemSize`
 - `TouchableOpacity` / `Pressable` — use your team's touchable wrapper
 - Raw `expo-image` — use your team's image wrapper (if any)
@@ -55,4 +55,6 @@ Run `/expo-rn-plugin:coding-standards` to load full standards. Quick pointers:
 - Routes: `app/` via expo-router
 - Components: `src/components/`
 - Storage: `expo-secure-store` (tokens) · MMKV/Zustand (UI) · AsyncStorage (cache)
-- OTA: `eas update --channel production --message "…"`
+- OTA: self-hosted via Supabase — `yarn push-ota` (stg) / `yarn push-ota:prd` (prd)
+  - Doppler vars required per env: `EXPO_UPDATE_URL` (Edge Function URL), `EXPO_UPDATE_CHANNEL` (`stg`/`prd`)
+  - `EXPO_UPDATE_URL` = `https://{supabase-ref}.supabase.co/functions/v1/expo-update-manifest`

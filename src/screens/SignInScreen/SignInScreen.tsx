@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AppState, Platform, StyleSheet, useColorScheme } from 'react-native'
 import { YStack, XStack, Input, Spinner, styled } from 'tamagui'
 import { DisplayLg, BodySm, LabelSm, LabelLg } from '@fonts'
@@ -52,7 +52,7 @@ AppState.addEventListener('change', (state) => {
   }
 })
 
-export function SignInScreen() {
+const SignInScreen = () => {
   const [mode, setMode] = useState<Mode>('sign-in')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -70,7 +70,7 @@ export function SignInScreen() {
   const passwordRef = useRef<PasswordInputHandle>(null)
   const confirmPasswordRef = useRef<PasswordInputHandle>(null)
 
-  function validateEmail() {
+  const validateEmail = () => {
     if (email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setEmailError(t`Please enter a valid email address`)
     } else {
@@ -78,7 +78,7 @@ export function SignInScreen() {
     }
   }
 
-  function checkPasswordMatch() {
+  const checkPasswordMatch = () => {
     if (mode === 'sign-up' && password.length > 0 && confirmPassword.length > 0 && password !== confirmPassword) {
       setPasswordError(t`Passwords do not match`)
     } else {
@@ -86,13 +86,13 @@ export function SignInScreen() {
     }
   }
 
-  function clearErrors() {
+  const clearErrors = () => {
     setEmailError(null)
     setPasswordError(null)
     setAuthError(null)
   }
 
-  function switchMode() {
+  const switchMode = () => {
     setMode(m => m === 'sign-in' ? 'sign-up' : 'sign-in')
     setEmail('')
     setPassword('')
@@ -100,7 +100,7 @@ export function SignInScreen() {
     clearErrors()
   }
 
-  async function handleSubmit() {
+  const handleSubmit = async () => {
     if (mode === 'sign-up' && password !== confirmPassword) {
       setPasswordError(t`Passwords do not match`)
       return
@@ -390,3 +390,5 @@ export function SignInScreen() {
     </Containers.Screen>
   )
 }
+
+export { SignInScreen }

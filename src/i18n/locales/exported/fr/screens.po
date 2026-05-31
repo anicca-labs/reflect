@@ -50,6 +50,7 @@ msgid "Bookmarked"
 msgstr "Favoris"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Cancel"
 msgstr "Annuler"
@@ -83,10 +84,12 @@ msgid "days streak"
 msgstr "jours consécutifs"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Delete"
 msgstr "Supprimer"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Delete entry?"
 msgstr "Supprimer l'entrée ?"
 
@@ -109,6 +112,10 @@ msgstr "Activer"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Enable notifications in Settings to use reminders."
 msgstr "Activez les notifications dans Réglages pour utiliser les rappels."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Entry limit reached — upgrade to keep writing"
+msgstr ""
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export"
@@ -219,6 +226,7 @@ msgid "Subscription"
 msgstr "Abonnement"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "This cannot be undone."
 msgstr "Cette action est irréversible."
 
@@ -283,5 +291,5 @@ msgid "What's one thing you want to remember about today?"
 msgstr "Quelle est la chose que vous voulez retenir de cette journée ?"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "You've used all free entries. Tap Save to unlock unlimited writing ✦"
-msgstr "Vous avez utilisé toutes vos entrées gratuites. Appuyez sur Enregistrer pour débloquer l'écriture illimitée ✦"
+#~ msgid "You've used all free entries. Tap Save to unlock unlimited writing ✦"
+#~ msgstr "Vous avez utilisé toutes vos entrées gratuites. Appuyez sur Enregistrer pour débloquer l'écriture illimitée ✦"

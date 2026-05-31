@@ -1,7 +1,7 @@
-import React, { useState, useRef, type ComponentRef } from 'react'
-import { Alert, ScrollView } from 'react-native'
+import { useState, useRef, useEffect, useCallback, type ComponentRef, type ReactNode } from 'react'
+import { Alert } from 'react-native'
 import { useFocusEffect } from 'expo-router'
-import { YStack, XStack, TextArea, Spinner } from 'tamagui'
+import { ScrollView, YStack, XStack, TextArea, Spinner } from 'tamagui'
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { BaseTouchable } from '@ksairi-org/ui-touchables'
@@ -13,12 +13,14 @@ import { usePreferencesStore } from '@/src/stores'
 import type { JournalEntry } from '@/src/types/journal'
 import { logJournalEntryCreated, logJournalEntryDeleted, logScreenView } from '@analytics'
 import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry, useRevenueCat, useToast, useStreak, getDailyPromptIndex } from '@hooks'
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withDelay, cancelAnimation } from 'react-native-reanimated'
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
+import { Ionicons } from '@expo/vector-icons'
 
-function formatDateHeading(iso: string) {
-  return format(new Date(iso), 'EEEE, MMMM d', { locale: getDateLocale() })
-}
+const formatDateHeading = (iso: string) =>
+  format(new Date(iso), 'EEEE, MMMM d', { locale: getDateLocale() })
 
-function isToday(iso: string) {
+const isToday = (iso: string) => {
   const d = new Date(iso)
   const now = new Date()
   return d.getFullYear() === now.getFullYear() &&
@@ -26,45 +28,91 @@ function isToday(iso: string) {
     d.getDate() === now.getDate()
 }
 
+interface AnimatedEntryProps {
+  children: ReactNode
+  index: number
+  animKey: number
+}
+
+const AnimatedEntry = ({ children, index, animKey }: AnimatedEntryProps) => {
+  const tx = useSharedValue(index % 2 === 0 ? -40 : 40)
+  const opacity = useSharedValue(0)
+
+  useEffect(() => {
+    cancelAnimation(tx)
+    cancelAnimation(opacity)
+    tx.value = index % 2 === 0 ? -40 : 40
+    opacity.value = 0
+    const delay = index * 100
+    tx.value = withDelay(delay, withTiming(0, { duration: 500 }))
+    opacity.value = withDelay(delay, withTiming(1, { duration: 500 }))
+  }, [animKey])
+
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateX: tx.value }],
+    opacity: opacity.value,
+  }))
+
+  return <Animated.View style={style}>{children}</Animated.View>
+}
+
+const DeleteAction = () => (
+  <YStack bg="$red10" justify="center" items="center" width={72} mb="$3" rounded="$4">
+    <Ionicons name="trash-outline" size={22} color="white" />
+  </YStack>
+)
+
 interface EntryCardProps {
   entry: JournalEntry
   onDelete: (id: string) => void
+  closeKey: number
 }
 
-function EntryCard({ entry, onDelete }: EntryCardProps) {
+const EntryCard = ({ entry, onDelete, closeKey }: EntryCardProps) => {
   const { t } = useLingui()
   const timeFormat = usePreferencesStore((s) => s.timeFormat)
+  const ref = useRef<ComponentRef<typeof ReanimatedSwipeable>>(null)
 
-  function confirmDelete() {
+  useEffect(() => {
+    if (closeKey > 0) ref.current?.reset()
+  }, [closeKey])
+
+  const handleSwipeOpen = (direction: 'left' | 'right') => {
+    if (direction !== 'right') return
     Alert.alert(
       t`Delete entry?`,
       t`This cannot be undone.`,
       [
-        { text: t`Cancel`, style: 'cancel' },
+        { text: t`Cancel`, style: 'cancel', onPress: () => ref.current?.close() },
         { text: t`Delete`, style: 'destructive', onPress: () => { onDelete(entry.id); logJournalEntryDeleted() } },
       ],
     )
   }
 
   return (
-    <YStack bg="$surface-card" rounded="$4" p="$4" mb="$3" borderWidth={1} borderColor="$borderColor">
-      <BodySm color="$text-emphasis" mb="$3">
-        {entry.content}
-      </BodySm>
-      <XStack justify="space-between" items="center">
+    <ReanimatedSwipeable
+      ref={ref}
+      renderRightActions={() => <DeleteAction />}
+      onSwipeableOpen={handleSwipeOpen}
+      rightThreshold={60}
+    >
+      <YStack bg="$surface-card" rounded="$4" p="$4" mb="$3" borderWidth={1} borderColor="$borderColor">
+        <BodySm color="$text-emphasis" mb="$3">
+          {entry.content}
+        </BodySm>
         <LabelMd color="$text-disabled">{formatEntryTime(entry.created_at, timeFormat === '24h')}</LabelMd>
-        <BaseTouchable onPress={confirmDelete} hitSlop={{ top: sizes.sm, bottom: sizes.sm, left: sizes.sm, right: sizes.sm }}>
-          <LabelMd color="$red10"><Trans>Delete</Trans></LabelMd>
-        </BaseTouchable>
-      </XStack>
-    </YStack>
+      </YStack>
+    </ReanimatedSwipeable>
   )
 }
 
 const FREE_ENTRY_LIMIT = 7
 
-export function JournalScreen() {
+const JournalScreen = () => {
   const [draft, setDraft] = useState('')
+  const [closeKey, setCloseKey] = useState(0)
+  const [animKey, setAnimKey] = useState(0)
+  const hasAnimated = useRef(false)
   const { data: entries = [], isLoading: loading, refetch } = useJournalEntries()
   const createMutation = useCreateJournalEntry()
   const deleteMutation = useDeleteJournalEntry()
@@ -74,9 +122,14 @@ export function JournalScreen() {
   const inputRef = useRef<ComponentRef<typeof TextArea>>(null)
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
+      if (!hasAnimated.current) {
+        hasAnimated.current = true
+        setAnimKey(1)
+      }
       refetch()
       logScreenView('Journal')
+      return () => setCloseKey(k => k + 1)
     }, [refetch])
   )
 
@@ -97,7 +150,7 @@ export function JournalScreen() {
   const atLimit = !isPro && entries.length >= FREE_ENTRY_LIMIT
   const showHint = !isPro && entries.length >= FREE_ENTRY_LIMIT - 2 && entries.length < FREE_ENTRY_LIMIT
 
-  async function handleSave() {
+  const handleSave = async () => {
     const trimmed = draft.trim()
     if (!trimmed) return
     if (atLimit) {
@@ -173,32 +226,34 @@ export function JournalScreen() {
 
           {atLimit ? (
             <BodySm color="$accentBackground" text="center" mt="$2">
-              <Trans>{"You've used all free entries. Tap Save to unlock unlimited writing ✦"}</Trans>
+              <Trans>Entry limit reached — upgrade to keep writing</Trans>
             </BodySm>
           ) : null}
         </YStack>
 
-        <ScrollView keyboardShouldPersistTaps="handled">
-          <YStack px="$5" pb="$8">
-            {loading && !todayEntries.length ? (
-              <YStack items="center" mt="$4">
-                <Spinner color="$accentBackground" />
-              </YStack>
-            ) : null}
+        <ScrollView flex={1} contentContainerStyle={{ paddingHorizontal: sizes.xl, paddingBottom: sizes.xl }}>
+          {loading && !todayEntries.length && (
+            <YStack items="center" mt="$4">
+              <Spinner color="$accentBackground" />
+            </YStack>
+          )}
 
-            {todayEntries.length > 0 ? (
-              <YStack>
-                <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
-                  <Trans>Today · {todayEntries.length} {todayEntries.length === 1 ? 'entry' : 'entries'}</Trans>
-                </LabelMd>
-                {todayEntries.map(entry => (
-                  <EntryCard key={entry.id} entry={entry} onDelete={(id) => deleteMutation.mutate(id)} />
-                ))}
-              </YStack>
-            ) : null}
-          </YStack>
+          {todayEntries.length > 0 && (
+            <YStack>
+              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+                <Trans>Today · {todayEntries.length} {todayEntries.length === 1 ? 'entry' : 'entries'}</Trans>
+              </LabelMd>
+              {todayEntries.map((entry, index) => (
+                <AnimatedEntry key={entry.id} index={index} animKey={animKey}>
+                  <EntryCard entry={entry} onDelete={(id) => deleteMutation.mutate(id)} closeKey={closeKey} />
+                </AnimatedEntry>
+              ))}
+            </YStack>
+          )}
         </ScrollView>
       </YStack>
     </Containers.Screen>
   )
 }
+
+export { JournalScreen }

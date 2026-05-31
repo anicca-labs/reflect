@@ -7,7 +7,7 @@ import { supabase } from '@/src/services/supabase'
 import { identifyRevenueCatUser, resetRevenueCatUser } from '@/src/services/revenue-cat'
 import { upsertDeviceToken } from '@/src/services/user-devices'
 
-async function handleAuthUrl(url: string) {
+const handleAuthUrl = async (url: string) => {
   // PKCE flow: Supabase sends ?code= in query params
   const queryParams = new URLSearchParams(url.split('?')[1] ?? '')
   const code = queryParams.get('code')
@@ -26,7 +26,7 @@ async function handleAuthUrl(url: string) {
 
 // iOS Keychain survives app deletion; AsyncStorage does not.
 // On a fresh install, purge any stale Keychain session before restoring.
-async function clearStaleKeychainOnFreshInstall() {
+const clearStaleKeychainOnFreshInstall = async () => {
   const installed = await AsyncStorage.getItem('app_installed')
   if (!installed) {
     await supabase.auth.signOut({ scope: 'local' })
@@ -34,13 +34,13 @@ async function clearStaleKeychainOnFreshInstall() {
   }
 }
 
-export function useAuthSession() {
+const useAuthSession = () => {
   const [session, setSession] = useState<Session | null | undefined>(undefined)
   const router = useRouter()
   const segments = useSegments()
 
   useEffect(() => {
-    async function init() {
+    const init = async () => {
       await clearStaleKeychainOnFreshInstall()
       const { data: { session: s } } = await supabase.auth.getSession()
       setSession(s)
@@ -72,3 +72,5 @@ export function useAuthSession() {
 
   return { session }
 }
+
+export { useAuthSession }

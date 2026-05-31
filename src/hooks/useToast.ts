@@ -23,8 +23,8 @@ type NotificationOptions = {
   duration?: number
 }
 
-export function useToast() {
-  function toast({ title, message, preset = 'done', duration = 5 }: ToastOptions) {
+const useToast = () => {
+  const toast = ({ title, message, preset = 'done', duration = 5 }: ToastOptions) => {
     if (Platform.OS === 'android') {
       ToastAndroid.showWithGravity(
         message ? `${title} — ${message}` : title,
@@ -36,7 +36,7 @@ export function useToast() {
     }
   }
 
-  function alert({ title, message, preset = 'heart', duration = 6 }: AlertOptions) {
+  const alert = ({ title, message, preset = 'heart', duration = 6 }: AlertOptions) => {
     if (Platform.OS === 'android') {
       ToastAndroid.showWithGravity(
         message ? `${title} — ${message}` : title,
@@ -48,7 +48,7 @@ export function useToast() {
     }
   }
 
-  function notification({ title, message, duration = 6 }: NotificationOptions) {
+  const notification = ({ title, message, duration = 6 }: NotificationOptions) => {
     if (Platform.OS === 'android') {
       ToastAndroid.showWithGravity(
         message ? `${title} — ${message}` : title,
@@ -68,3 +68,5 @@ export function useToast() {
 
   return { toast, alert, notification }
 }
+
+export { useToast }

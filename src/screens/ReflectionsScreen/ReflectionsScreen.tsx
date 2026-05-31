@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect, useCallback, type ComponentRef, type ReactNode } from 'react'
+import { Alert } from 'react-native'
 import { useFocusEffect } from 'expo-router'
 import { ScrollView, YStack, XStack, Spinner, Input } from 'tamagui'
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts'
@@ -12,22 +13,25 @@ import { format } from 'date-fns'
 import { getDateLocale, formatEntryTime } from '@/src/utils/date'
 import { usePreferencesStore } from '@/src/stores'
 import type { JournalEntry } from '@/src/types/journal'
-import { logScreenView } from '@analytics'
-import { useJournalEntries, useToggleBookmark, useRevenueCat } from '@hooks'
+import { logScreenView, logJournalEntryDeleted } from '@analytics'
+import { useJournalEntries, useToggleBookmark, useRevenueCat, useDeleteJournalEntry } from '@hooks'
 import { exportJournal } from '@export'
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withDelay, cancelAnimation } from 'react-native-reanimated'
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
+import { Ionicons } from '@expo/vector-icons'
 
-function formatDayLabel(iso: string) {
+const formatDayLabel = (iso: string) => {
   const d = new Date(iso)
   const isThisYear = d.getFullYear() === new Date().getFullYear()
   return format(d, isThisYear ? 'EEEE, MMMM d' : 'EEEE, MMMM d, yyyy', { locale: getDateLocale() })
 }
 
-function dateKey(iso: string) {
+const dateKey = (iso: string) => {
   const d = new Date(iso)
   return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
 }
 
-function groupByDay(entries: JournalEntry[]): { label: string; items: JournalEntry[] }[] {
+const groupByDay = (entries: JournalEntry[]): { label: string; items: JournalEntry[] }[] => {
   const map = new Map<string, { label: string; items: JournalEntry[] }>()
   for (const entry of entries) {
     const key = dateKey(entry.created_at)
@@ -39,12 +43,46 @@ function groupByDay(entries: JournalEntry[]): { label: string; items: JournalEnt
   return Array.from(map.values())
 }
 
+interface AnimatedEntryProps {
+  children: ReactNode
+  index: number
+  animKey: number
+}
+
+const AnimatedEntry = ({ children, index, animKey }: AnimatedEntryProps) => {
+  const tx = useSharedValue(index % 2 === 0 ? -40 : 40)
+  const opacity = useSharedValue(0)
+
+  useEffect(() => {
+    cancelAnimation(tx)
+    cancelAnimation(opacity)
+    tx.value = index % 2 === 0 ? -40 : 40
+    opacity.value = 0
+    const delay = index * 100
+    tx.value = withDelay(delay, withTiming(0, { duration: 500 }))
+    opacity.value = withDelay(delay, withTiming(1, { duration: 500 }))
+  }, [animKey])
+
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateX: tx.value }],
+    opacity: opacity.value,
+  }))
+
+  return <Animated.View style={style}>{children}</Animated.View>
+}
+
+const DeleteAction = () => (
+  <YStack bg="$red10" justify="center" items="center" width={72} mb="$2" rounded="$4">
+    <Ionicons name="trash-outline" size={22} color="white" />
+  </YStack>
+)
+
 interface EntryCardProps {
   entry: JournalEntry
   onToggleBookmark: (id: string, current: boolean) => void
 }
 
-function EntryCard({ entry, onToggleBookmark }: EntryCardProps) {
+const EntryCard = ({ entry, onToggleBookmark }: EntryCardProps) => {
   const timeFormat = usePreferencesStore((s) => s.timeFormat)
   return (
     <YStack
@@ -71,23 +109,69 @@ function EntryCard({ entry, onToggleBookmark }: EntryCardProps) {
   )
 }
 
-export function ReflectionsScreen() {
+interface SwipeableEntryCardProps extends EntryCardProps {
+  onDelete: (id: string) => void
+  closeKey: number
+}
+
+const SwipeableEntryCard = ({ entry, onToggleBookmark, onDelete, closeKey }: SwipeableEntryCardProps) => {
+  const { t } = useLingui()
+  const ref = useRef<ComponentRef<typeof ReanimatedSwipeable>>(null)
+
+  useEffect(() => {
+    if (closeKey > 0) ref.current?.reset()
+  }, [closeKey])
+
+  const handleSwipeOpen = (direction: 'left' | 'right') => {
+    if (direction !== 'right') return
+    Alert.alert(
+      t`Delete entry?`,
+      t`This cannot be undone.`,
+      [
+        { text: t`Cancel`, style: 'cancel', onPress: () => ref.current?.close() },
+        { text: t`Delete`, style: 'destructive', onPress: () => { onDelete(entry.id); logJournalEntryDeleted() } },
+      ],
+    )
+  }
+
+  return (
+    <ReanimatedSwipeable
+      ref={ref}
+      renderRightActions={() => <DeleteAction />}
+      onSwipeableOpen={handleSwipeOpen}
+      rightThreshold={60}
+    >
+      <EntryCard entry={entry} onToggleBookmark={onToggleBookmark} />
+    </ReanimatedSwipeable>
+  )
+}
+
+const ReflectionsScreen = () => {
   const { data: entries = [], isLoading: loading, refetch } = useJournalEntries()
   const { isPro, presentPaywall } = useRevenueCat()
   const toggleBookmarkMutation = useToggleBookmark()
+  const deleteMutation = useDeleteJournalEntry()
   const { t } = useLingui()
   const [exporting, setExporting] = useState(false)
   const [search, setSearch] = useState('')
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false)
+  const [closeKey, setCloseKey] = useState(0)
+  const [animKey, setAnimKey] = useState(0)
+  const hasAnimated = useRef(false)
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
+      if (!hasAnimated.current) {
+        hasAnimated.current = true
+        setAnimKey(1)
+      }
       refetch()
       logScreenView('Reflections')
+      return () => setCloseKey(k => k + 1)
     }, [refetch])
   )
 
-  async function handleExport() {
+  const handleExport = async () => {
     if (!isPro) {
       await presentPaywall()
       return
@@ -196,12 +280,15 @@ export function ReflectionsScreen() {
                 mb="$3">
                 {group.label}
               </LabelMd>
-              {group.items.map(entry => (
-                <EntryCard
-                  key={entry.id}
-                  entry={entry}
-                  onToggleBookmark={(id, current) => toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })}
-                />
+              {group.items.map((entry, idx) => (
+                <AnimatedEntry key={entry.id} index={idx} animKey={animKey}>
+                  <SwipeableEntryCard
+                    entry={entry}
+                    onToggleBookmark={(id, current) => toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })}
+                    onDelete={(id) => deleteMutation.mutate(id)}
+                    closeKey={closeKey}
+                  />
+                </AnimatedEntry>
               ))}
             </YStack>
           ))}
@@ -211,3 +298,5 @@ export function ReflectionsScreen() {
     </Containers.Screen>
   )
 }
+
+export { ReflectionsScreen }

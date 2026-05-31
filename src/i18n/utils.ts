@@ -17,7 +17,7 @@ const messagesByLocale: Record<string, Messages> = {
   ar: arMessages.messages,
 }
 
-function resolveLocale(value: string | null | undefined): string {
+const resolveLocale = (value: string | null | undefined): string => {
   if (!value) return defaultFallbackLocale
   if (Object.keys(messagesByLocale).includes(value)) return value
   // e.g. 'pt-PT' → try 'pt-BR'; 'zh-Hant-TW' → try 'zh'
@@ -26,8 +26,10 @@ function resolveLocale(value: string | null | undefined): string {
   return match ?? defaultFallbackLocale
 }
 
-export function setI18nLocale(locale: string) {
+const setI18nLocale = (locale: string) => {
   const validLocale = resolveLocale(locale)
   const messages = messagesByLocale[validLocale] ?? messagesByLocale[defaultFallbackLocale]
   i18n.loadAndActivate({ locale: validLocale, messages })
 }
+
+export { setI18nLocale }

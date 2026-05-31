@@ -1,10 +1,9 @@
 import type { JournalEntry } from '@/src/types/journal'
 
-function dayKey(date: Date): string {
-  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
-}
+const dayKey = (date: Date): string =>
+  `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
 
-export function computeStreak(entries: JournalEntry[]): number {
+const computeStreak = (entries: JournalEntry[]): number => {
   if (entries.length === 0) return 0
 
   const daysWithEntry = new Set(entries.map(e => dayKey(new Date(e.created_at))))
@@ -24,6 +23,6 @@ export function computeStreak(entries: JournalEntry[]): number {
   return streak
 }
 
-export function useStreak(entries: JournalEntry[]): number {
-  return computeStreak(entries)
-}
+const useStreak = (entries: JournalEntry[]): number => computeStreak(entries)
+
+export { computeStreak, useStreak }

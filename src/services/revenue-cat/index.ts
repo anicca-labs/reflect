@@ -36,9 +36,12 @@ const identifyRevenueCatUser = async (userId: string) => {
 
 const resetRevenueCatUser = async () => {
   try {
-    await Purchases.logOut()
+    const info = await Purchases.getCustomerInfo()
+    if (!info.originalAppUserId.startsWith('$RCAnonymousID:')) {
+      await Purchases.logOut()
+    }
   } catch {
-    // user was already anonymous — nothing to reset
+    // RC not configured or already anonymous — nothing to reset
   }
 }
 

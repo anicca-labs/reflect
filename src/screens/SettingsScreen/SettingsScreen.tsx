@@ -20,7 +20,7 @@ import { upsertDeviceToken } from '@/src/services/user-devices'
 
 const REMINDER_HOURS = Array.from({ length: 18 }, (_, i) => i + 6) // 6 AM → 11 PM
 
-function formatHour(h: number, use24h: boolean): string {
+const formatHour = (h: number, use24h: boolean): string => {
   if (use24h) return `${String(h).padStart(2, '0')}:00`
   const period = h < 12 ? 'AM' : 'PM'
   const display = h === 0 ? 12 : h > 12 ? h - 12 : h
@@ -29,7 +29,7 @@ function formatHour(h: number, use24h: boolean): string {
 
 const isSimulator = !Device.isDevice
 
-export function SettingsScreen() {
+const SettingsScreen = () => {
   const { isPro, isLoading: rcLoading, customerInfo, presentPaywall } = useRevenueCat()
   const { t } = useLingui()
   const { alert } = useToast()
@@ -39,11 +39,11 @@ export function SettingsScreen() {
   const [showTimePicker, setShowTimePicker] = useState(false)
   const openedSettings = useRef(false)
 
-  function showSimulatorToast() {
+  const showSimulatorToast = () => {
     alert({ title: 'Physical device only', message: 'This feature is not available on the simulator.', preset: 'error', duration: 3 })
   }
 
-  async function refreshPermissionStatus() {
+  const refreshPermissionStatus = async () => {
     if (isSimulator) return
     const status = await getNotificationPermissionStatus()
     setNotifPermission(status)
@@ -66,7 +66,7 @@ export function SettingsScreen() {
     return () => sub.remove()
   }, [])
 
-  async function handlePermissionPress() {
+  const handlePermissionPress = async () => {
     if (isSimulator) { showSimulatorToast(); return }
     if (notifPermission === 'granted') return
     if (notifPermission === 'undetermined') {
@@ -82,7 +82,7 @@ export function SettingsScreen() {
     await Linking.openSettings()
   }
 
-  function handleSignOut() {
+  const handleSignOut = () => {
     Alert.alert(
       t`Sign out`,
       t`Are you sure you want to sign out?`,
@@ -97,7 +97,7 @@ export function SettingsScreen() {
   const productId = activeEntitlement?.productIdentifier ?? ''
   const planLabel = productId.includes('annual') ? 'Pro Annual' : productId.includes('monthly') ? 'Pro Monthly' : 'Pro'
 
-  function permissionLabel(): string {
+  const permissionLabel = (): string => {
     if (isSimulator) return 'Not available on simulator'
     if (notifPermission === null) return '—'
     if (notifPermission === 'granted') return t`Granted`
@@ -105,7 +105,7 @@ export function SettingsScreen() {
     return t`Denied — tap to open Settings`
   }
 
-  function permissionColor() {
+  const permissionColor = () => {
     if (isSimulator || notifPermission === null) return '$text-disabled'
     if (notifPermission === 'granted') return '$green10'
     if (notifPermission === 'undetermined') return '$accentBackground'
@@ -326,3 +326,5 @@ export function SettingsScreen() {
     </Containers.Screen>
   )
 }
+
+export { SettingsScreen }

@@ -10,7 +10,7 @@ type LinguiClientProviderProps = {
   children: I18nProviderProps['children']
 }
 
-function detectLocale(): string {
+const detectLocale = (): string => {
   if (Platform.OS === 'ios') {
     const staleLanguages = NativeModules.SettingsManager?.settings?.AppleLanguages as string[] | undefined
     if (staleLanguages?.length) {

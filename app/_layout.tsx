@@ -5,12 +5,13 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import { TamaguiProvider } from "tamagui";
+import { TamaguiProvider, styled } from "tamagui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useColorScheme, Platform } from "react-native";
+import { useColorScheme, Platform } from "react-native"
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import tamaguiConfig from "@default-tamagui-config";
 import { LinguiClientProvider } from "@i18n";
-import { useAuthSession, useCustomFonts , useToast } from "@hooks";
+import { useAuthSession, useCustomFonts, useToast } from "@hooks";
 import { EnvBadge } from "@atoms";
 import { subscribeToForegroundMessages } from "@firebase-messaging";
 import { useEffect } from "react";
@@ -25,6 +26,8 @@ const queryClient = new QueryClient();
 
 configureRevenueCat();
 
+const GestureRoot = styled(GestureHandlerRootView, { flex: 1 })
+
 const getSplashStyle = (isDark: boolean) => ({
   backgroundColor: isDark ? themes.dark.splashBackground : themes.light.splashBackground,
 });
@@ -33,7 +36,7 @@ export const unstable_settings = {
   anchor: "(tabs)",
 };
 
-function RootLayoutNav() {
+const RootLayoutNav = () => {
   useAuthSession();
   const { notification } = useToast();
 
@@ -53,7 +56,7 @@ function RootLayoutNav() {
   );
 }
 
-function RootLayout() {
+const RootLayout = () => {
   const fontsLoaded = useCustomFonts();
   const colorScheme = useColorScheme() ?? "light";
   const isOSThemeDark = colorScheme === "dark";
@@ -63,26 +66,28 @@ function RootLayout() {
       <LinguiClientProvider>
         <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme}>
           <ThemeProvider value={isOSThemeDark ? DarkTheme : DefaultTheme}>
-            <KeyboardProvider>
-              {fontsLoaded ? <RootLayoutNav /> : null}
-              <StatusBar style="auto" />
-            </KeyboardProvider>
+            <GestureRoot>
+              <KeyboardProvider>
+                {fontsLoaded ? <RootLayoutNav /> : null}
+                <StatusBar style="auto" />
+              </KeyboardProvider>
+              <EnvBadge />
+              <SplashView
+                source={splash}
+                style={getSplashStyle(isOSThemeDark)}
+                // Android: 288dp matches imageWidth in app.config.ts — Android 12+ maximum before the icon clips.
+                // Keeps Rive start frame visually aligned with the native splash icon for a seamless transition.
+                // iOS: undefined — splash fills the full screen (enableFullScreenImage_legacy), Rive does the same via Fit.Contain.
+                animationViewStyle={
+                  Platform.OS === "android" ? { width: 288, height: 288, alignSelf: "center" } : undefined
+                }
+                fadeOutDelay={1500}
+                fadeOutDuration={500}
+              />
+            </GestureRoot>
           </ThemeProvider>
         </TamaguiProvider>
       </LinguiClientProvider>
-      <EnvBadge />
-      <SplashView
-        source={splash}
-        style={getSplashStyle(isOSThemeDark)}
-        // Android: 288dp matches imageWidth in app.config.ts — Android 12+ maximum before the icon clips.
-        // Keeps Rive start frame visually aligned with the native splash icon for a seamless transition.
-        // iOS: undefined — splash fills the full screen (enableFullScreenImage_legacy), Rive does the same via Fit.Contain.
-        animationViewStyle={
-          Platform.OS === "android" ? { width: 288, height: 288, alignSelf: "center" } : undefined
-        }
-        fadeOutDelay={1500}
-        fadeOutDuration={500}
-      />
     </QueryClientProvider>
   );
 }

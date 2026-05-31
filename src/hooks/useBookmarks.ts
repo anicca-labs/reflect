@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const STORAGE_KEY = '@reflect/bookmarks'
 
-export function useBookmarks() {
+const useBookmarks = () => {
   const [bookmarked, setBookmarked] = useState<Set<string>>(new Set())
 
   useEffect(() => {
@@ -26,3 +26,5 @@ export function useBookmarks() {
 
   return { isBookmarked, toggle }
 }
+
+export { useBookmarks }

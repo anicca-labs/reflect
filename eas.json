@@ -12,8 +12,7 @@
       }
     },
     "development-device": {
-      "developmentClient": true,
-      "distribution": "internal",
+      "extends": "development",
       "ios": {
         "simulator": false
       }
@@ -25,13 +24,13 @@
       }
     },
     "preview-simulator": {
-      "distribution": "internal",
+      "extends": "preview",
       "ios": {
         "simulator": true
       }
     },
     "preview-apk": {
-      "distribution": "internal",
+      "extends": "preview",
       "android": {
         "buildType": "apk"
       }
@@ -52,17 +51,6 @@
         "releaseStatus": "draft"
       }
     },
-    "prd-internal": {
-      "ios": {
-        "appleId": "marianoksairi@gmail.com",
-        "ascAppId": "6767607183"
-      },
-      "android": {
-        "serviceAccountKeyPath": "./eas-service-account.json",
-        "track": "internal",
-        "releaseStatus": "draft"
-      }
-    },
     "prd": {
       "ios": {
         "appleId": "marianoksairi@gmail.com",
@@ -72,6 +60,12 @@
         "serviceAccountKeyPath": "./eas-service-account.json",
         "track": "production",
         "releaseStatus": "draft"
+      }
+    },
+    "prd-internal": {
+      "extends": "prd",
+      "android": {
+        "track": "internal"
       }
     }
   }

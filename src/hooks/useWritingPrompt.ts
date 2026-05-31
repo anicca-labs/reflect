@@ -1,3 +1,4 @@
-export function getDailyPromptIndex(promptCount: number): number {
-  return Math.floor(Date.now() / 86400000) % promptCount
-}
+const getDailyPromptIndex = (promptCount: number): number =>
+  Math.floor(Date.now() / 86400000) % promptCount
+
+export { getDailyPromptIndex }

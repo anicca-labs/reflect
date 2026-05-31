@@ -35,7 +35,8 @@ function buildMultipart(
     p.body,
   ])
   chunks.push(`--${boundary}--`)
-  return chunks.join('\r\n')
+  // iOS expo-updates requires CRLF after the closing boundary
+  return chunks.join('\r\n') + '\r\n'
 }
 
 function noUpdateResponse(): Response {
@@ -52,7 +53,9 @@ function noUpdateResponse(): Response {
       headers: {
         'expo-protocol-version': '1',
         'expo-sfv-version': '0',
-        'cache-control': 'private, max-age=0',
+        'cache-control': 'no-store, no-cache, must-revalidate',
+        'pragma': 'no-cache',
+        'expires': '0',
         'content-type': `multipart/mixed; boundary="${boundary}"`,
       },
     },
@@ -123,8 +126,11 @@ Deno.serve(async (req) => {
       headers: {
         'expo-protocol-version': '1',
         'expo-sfv-version': '0',
-        'cache-control': 'private, max-age=0',
+        'cache-control': 'no-store, no-cache, must-revalidate',
+        'pragma': 'no-cache',
+        'expires': '0',
         'content-type': `multipart/mixed; boundary="${boundary}"`,
+        'vary': 'expo-current-update-id, expo-channel-name, expo-platform',
       },
     },
   )

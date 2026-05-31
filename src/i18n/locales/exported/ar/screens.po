@@ -50,6 +50,7 @@ msgid "Bookmarked"
 msgstr "المحفوظات"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Cancel"
 msgstr "إلغاء"
@@ -83,10 +84,12 @@ msgid "days streak"
 msgstr "أيام متتالية"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Delete"
 msgstr "حذف"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Delete entry?"
 msgstr "حذف التسجيل؟"
 
@@ -109,6 +112,10 @@ msgstr "تفعيل"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Enable notifications in Settings to use reminders."
 msgstr "فعّل الإشعارات في الإعدادات لاستخدام التذكيرات."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Entry limit reached — upgrade to keep writing"
+msgstr ""
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export"
@@ -219,6 +226,7 @@ msgid "Subscription"
 msgstr "الاشتراك"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "This cannot be undone."
 msgstr "لا يمكن التراجع عن هذا."
 
@@ -283,5 +291,5 @@ msgid "What's one thing you want to remember about today?"
 msgstr "ما الشيء الواحد الذي تريد أن تتذكره من اليوم؟"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "You've used all free entries. Tap Save to unlock unlimited writing ✦"
-msgstr "لقد استخدمت جميع تسجيلاتك المجانية. اضغط حفظ لفتح الكتابة غير المحدودة ✦"
+#~ msgid "You've used all free entries. Tap Save to unlock unlimited writing ✦"
+#~ msgstr "لقد استخدمت جميع تسجيلاتك المجانية. اضغط حفظ لفتح الكتابة غير المحدودة ✦"

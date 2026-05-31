@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const env = process.env.EXPO_PUBLIC_ENV;
 
-export function EnvBadge() {
+const EnvBadge = () => {
   const insets = useSafeAreaInsets();
 
   if (!env || env === "prd" || env === "production") return null;
@@ -38,3 +38,5 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 });
+
+export { EnvBadge }
