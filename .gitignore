@@ -41,6 +41,9 @@ yarn-error.*
 
 app-example
 
+# Supabase CLI temp files
+supabase/.temp/
+
 # generated native folders
 /ios
 /android
