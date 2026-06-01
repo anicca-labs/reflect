@@ -1,5 +1,4 @@
 import { BaseIcon } from "@atoms";
-import { Ionicons } from "@expo/vector-icons";
 import { LabelMd } from "@fonts";
 import { BaseTouchable } from "@ksairi-org/ui-touchables";
 import { useLingui } from "@lingui/react/macro";
@@ -73,6 +72,7 @@ const TabLayout = () => {
         name="index"
         options={{
           title: t`Journal`,
+          swipeEnabled: false,
           tabBarIcon: ({ color }: { color: string }) => (
             <BaseIcon iconName="iconPen" width={sizes.lg} height={sizes.lg} color={color} />
           ),
@@ -82,6 +82,7 @@ const TabLayout = () => {
         name="reflections"
         options={{
           title: t`Reflections`,
+          swipeEnabled: false,
           tabBarIcon: ({ color }: { color: string }) => (
             <BaseIcon iconName="iconBook" width={sizes.lg} height={sizes.lg} color={color} />
           ),
@@ -92,7 +93,7 @@ const TabLayout = () => {
         options={{
           title: t`Settings`,
           tabBarIcon: ({ color }: { color: string }) => (
-            <Ionicons name="person-outline" size={sizes.lg} color={color} />
+            <BaseIcon iconName="iconPerson" width={sizes.lg} height={sizes.lg} color={color} />
           ),
         }}
       />
