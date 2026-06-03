@@ -1,5 +1,4 @@
-import { i18n } from '@lingui/core'
-import type { Messages } from '@lingui/core'
+import { i18n, type Messages } from '@lingui/core'
 import { defaultFallbackLocale } from './config/constants'
 import * as enMessages from './locales/compiled/en'
 import * as esMessages from './locales/compiled/es'

@@ -29,6 +29,10 @@ msgstr "١٢ ساعة"
 msgid "24-hour"
 msgstr "٢٤ ساعة"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Account"
+msgstr "الحساب"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Already have an account? Sign in"
 msgstr "لديك حساب بالفعل؟ سجّل الدخول"
@@ -45,6 +49,11 @@ msgstr "تسجيل الدخول بـ Apple غير متاح على Android"
 msgid "Are you sure you want to sign out?"
 msgstr "هل أنت متأكد من تسجيل الخروج؟"
 
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "Back to sign in"
+msgstr "العودة إلى تسجيل الدخول"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Bookmarked"
 msgstr "المحفوظات"
@@ -53,9 +62,18 @@ msgstr "المحفوظات"
 msgid "Cancel"
 msgstr "إلغاء"
 
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Check your email"
 msgstr "تحقّق من بريدك الإلكتروني"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "Choose a new password."
+msgstr "اختر كلمة مرور جديدة."
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "Confirm new password"
+msgstr "تأكيد كلمة المرور الجديدة"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Confirm password"
@@ -99,6 +117,8 @@ msgstr "مرفوضة — اضغط لفتح الإعدادات"
 msgid "Don't have an account? Sign up"
 msgstr "ليس لديك حساب؟ سجّل"
 
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Email"
 msgstr "البريد الإلكتروني"
@@ -111,9 +131,13 @@ msgstr "تفعيل"
 msgid "Enable notifications in Settings to use reminders."
 msgstr "فعّل الإشعارات في الإعدادات لاستخدام التذكيرات."
 
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+msgid "Enter your email to receive a reset link."
+msgstr "أدخل بريدك الإلكتروني لتلقي رابط إعادة التعيين."
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Entry limit reached — upgrade to keep writing"
-msgstr ""
+msgstr "تم الوصول إلى حد المدخلات — قم بالترقية للاستمرار في الكتابة"
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export"
@@ -122,6 +146,10 @@ msgstr "تصدير"
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export ✦"
 msgstr "تصدير ✦"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Forgot password?"
+msgstr "نسيت كلمة المرور؟"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Free"
@@ -147,6 +175,14 @@ msgstr "المذكرة"
 msgid "Manage subscription"
 msgstr "إدارة الاشتراك"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Name"
+msgstr "الاسم"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "New password"
+msgstr "كلمة المرور الجديدة"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries match your search."
 msgstr "لا توجد تسجيلات تطابق بحثك."
@@ -159,6 +195,11 @@ msgstr "لا توجد تسجيلات بعد. ابدأ الكتابة في تبو
 msgid "Password"
 msgstr "كلمة المرور"
 
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "Password updated"
+msgstr "تم تحديث كلمة المرور"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Passwords do not match"
 msgstr "كلمات المرور غير متطابقة"
@@ -171,21 +212,22 @@ msgstr "الإذن"
 msgid "Plan"
 msgstr "الخطة"
 
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Please enter a valid email address"
 msgstr "أدخل عنوان بريد إلكتروني صالحاً"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"
-msgstr ""
+msgstr "برو"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro Annual"
-msgstr ""
+msgstr "Pro سنوي"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro Monthly"
-msgstr ""
+msgstr "Pro شهري"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Push notifications"
@@ -215,6 +257,14 @@ msgstr "البحث في التسجيلات…"
 msgid "Select reminder time"
 msgstr "اختر وقت التذكير"
 
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+msgid "Send reset link"
+msgstr "إرسال رابط إعادة التعيين"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "Set new password"
+msgstr "تعيين كلمة مرور جديدة"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Settings"
 msgstr "الإعدادات"
@@ -226,6 +276,10 @@ msgstr "تسجيل الدخول"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Sign in with Apple"
 msgstr "تسجيل الدخول بـ Apple"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "Sign in with your new password."
+msgstr "سجّل الدخول بكلمة مرورك الجديدة."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Sign out"
@@ -266,6 +320,10 @@ msgstr "الترقية إلى Pro ✦"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "We sent a confirmation link to {email}."
 msgstr "أرسلنا رابط تأكيد إلى {email}."
+
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+msgid "We sent a password reset link to {email}."
+msgstr "أرسلنا رابط إعادة تعيين كلمة المرور إلى {email}."
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Welcome back."

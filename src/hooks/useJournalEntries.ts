@@ -13,7 +13,8 @@ const useJournalEntries = () =>
         .select('*')
         .order('created_at', { ascending: false })
       if (error) throw error
-      return (data ?? []) as JournalEntry[]
+      const entries: JournalEntry[] = data ?? []
+      return entries
     },
   })
 
@@ -29,7 +30,8 @@ const useCreateJournalEntry = () => {
         .select()
         .single()
       if (error) throw error
-      return data as JournalEntry
+      const entry: JournalEntry = data
+      return entry
     },
     onSuccess: (newEntry) => {
       queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) => [newEntry, ...(old ?? [])])

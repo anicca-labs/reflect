@@ -1,7 +1,7 @@
 import { Paragraph, styled } from 'tamagui'
 
 // Display — Lora, hero moments (app title, splash text)
-export const DisplayLg = styled(Paragraph, {
+const DisplayLg = styled(Paragraph, {
   name: 'DisplayLg',
   fontFamily: '$heading',
   size: '$9',
@@ -10,7 +10,7 @@ export const DisplayLg = styled(Paragraph, {
   userSelect: 'none',
 })
 
-export const DisplayMd = styled(Paragraph, {
+const DisplayMd = styled(Paragraph, {
   name: 'DisplayMd',
   fontFamily: '$heading',
   size: '$8',
@@ -20,7 +20,7 @@ export const DisplayMd = styled(Paragraph, {
 })
 
 // Heading — Lora, section titles
-export const HeadingLg = styled(Paragraph, {
+const HeadingLg = styled(Paragraph, {
   name: 'HeadingLg',
   fontFamily: '$heading',
   size: '$7',
@@ -29,7 +29,7 @@ export const HeadingLg = styled(Paragraph, {
   userSelect: 'none',
 })
 
-export const HeadingMd = styled(Paragraph, {
+const HeadingMd = styled(Paragraph, {
   name: 'HeadingMd',
   fontFamily: '$heading',
   size: '$6',
@@ -38,7 +38,7 @@ export const HeadingMd = styled(Paragraph, {
   userSelect: 'none',
 })
 
-export const HeadingSm = styled(Paragraph, {
+const HeadingSm = styled(Paragraph, {
   name: 'HeadingSm',
   fontFamily: '$heading',
   size: '$5',
@@ -48,7 +48,7 @@ export const HeadingSm = styled(Paragraph, {
 })
 
 // Body — DM Sans, main readable content
-export const BodyLg = styled(Paragraph, {
+const BodyLg = styled(Paragraph, {
   name: 'BodyLg',
   fontFamily: '$body',
   size: '$4',
@@ -57,7 +57,7 @@ export const BodyLg = styled(Paragraph, {
   userSelect: 'none',
 })
 
-export const BodyMd = styled(Paragraph, {
+const BodyMd = styled(Paragraph, {
   name: 'BodyMd',
   fontFamily: '$body',
   size: '$3',
@@ -66,7 +66,7 @@ export const BodyMd = styled(Paragraph, {
   userSelect: 'none',
 })
 
-export const BodySm = styled(Paragraph, {
+const BodySm = styled(Paragraph, {
   name: 'BodySm',
   fontFamily: '$body',
   size: '$2',
@@ -75,7 +75,7 @@ export const BodySm = styled(Paragraph, {
   userSelect: 'none',
 })
 
-export const BodyLgBold = styled(Paragraph, {
+const BodyLgBold = styled(Paragraph, {
   name: 'BodyLgBold',
   fontFamily: '$body',
   size: '$4',
@@ -84,7 +84,7 @@ export const BodyLgBold = styled(Paragraph, {
   userSelect: 'none',
 })
 
-export const BodyMdBold = styled(Paragraph, {
+const BodyMdBold = styled(Paragraph, {
   name: 'BodyMdBold',
   fontFamily: '$body',
   size: '$3',
@@ -93,7 +93,7 @@ export const BodyMdBold = styled(Paragraph, {
   userSelect: 'none',
 })
 
-export const BodySmBold = styled(Paragraph, {
+const BodySmBold = styled(Paragraph, {
   name: 'BodySmBold',
   fontFamily: '$body',
   size: '$2',
@@ -103,7 +103,7 @@ export const BodySmBold = styled(Paragraph, {
 })
 
 // Label — DM Sans Medium, UI chrome (buttons, tabs, captions)
-export const LabelLg = styled(Paragraph, {
+const LabelLg = styled(Paragraph, {
   name: 'LabelLg',
   fontFamily: '$body',
   size: '$2',
@@ -112,7 +112,7 @@ export const LabelLg = styled(Paragraph, {
   userSelect: 'none',
 })
 
-export const LabelMd = styled(Paragraph, {
+const LabelMd = styled(Paragraph, {
   name: 'LabelMd',
   fontFamily: '$body',
   size: '$1',
@@ -121,7 +121,7 @@ export const LabelMd = styled(Paragraph, {
   userSelect: 'none',
 })
 
-export const LabelSm = styled(Paragraph, {
+const LabelSm = styled(Paragraph, {
   name: 'LabelSm',
   fontFamily: '$body',
   size: '$1',
@@ -129,3 +129,10 @@ export const LabelSm = styled(Paragraph, {
   fontWeight: '400',
   userSelect: 'none',
 })
+
+export {
+  DisplayLg, DisplayMd,
+  HeadingLg, HeadingMd, HeadingSm,
+  BodyLg, BodyMd, BodySm, BodyLgBold, BodyMdBold, BodySmBold,
+  LabelLg, LabelMd, LabelSm,
+}

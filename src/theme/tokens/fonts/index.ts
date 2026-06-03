@@ -11,7 +11,7 @@ import {
 } from '@expo-google-fonts/dm-sans'
 import { createFont } from 'tamagui'
 
-export const fontAssets = {
+const fontAssets = {
   'Lora-Regular': Lora_400Regular,
   'Lora-SemiBold': Lora_600SemiBold,
   'Lora-Bold': Lora_700Bold,
@@ -47,7 +47,9 @@ const dmSansFont = createFont({
   },
 })
 
-export const fonts = {
+const fonts = {
   heading: loraFont,
   body: dmSansFont,
 }
+
+export { fontAssets, fonts }

@@ -1,1 +1,2 @@
-export { AnimatedEntry, SwipeableDeleteWrapper } from './JournalEntry'
+export { AnimatedEntry, SwipeableDeleteWrapper, EntryPeekModal } from './JournalEntry'
+export type { SwipeableDeleteWrapperHandle } from './JournalEntry'

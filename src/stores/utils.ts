@@ -1,6 +1,5 @@
-import type { Configuration } from 'react-native-mmkv'
+import { createMMKV, type Configuration } from 'react-native-mmkv'
 import type { StateStorage } from 'zustand/middleware'
-import { createMMKV } from 'react-native-mmkv'
 
 const createZustandMmkvStorage = (configuration?: Configuration): StateStorage => {
   const mmkvStorage = createMMKV(configuration)

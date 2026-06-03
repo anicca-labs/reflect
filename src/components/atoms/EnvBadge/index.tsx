@@ -1,42 +1,47 @@
-import { View, Text, StyleSheet } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { YStack, Paragraph } from 'tamagui'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-const env = process.env.EXPO_PUBLIC_ENV;
+const Z_INDEX_ENV_BADGE = 9999
+const BADGE_RIGHT = 12
+const BADGE_TOP_OFFSET = 8
+const BADGE_BORDER_RADIUS = 999
+const BADGE_PX = 8
+const BADGE_PY = 3
+const BADGE_FONT_SIZE = 10
+const BADGE_LETTER_SPACING = 0.5
+
+const env = process.env.EXPO_PUBLIC_ENV
 
 const EnvBadge = () => {
-  const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets()
 
-  if (!env || env === "prd" || env === "production") return null;
+  if (!env || env === 'prd' || env === 'production') return null
 
-  const label = env === "stg" || env === "staging" ? "STAGING" : env.toUpperCase();
+  const label = env === 'stg' || env === 'staging' ? 'STAGING' : env.toUpperCase()
 
   return (
-    <View style={[styles.container, { top: insets.top + 8 }]} pointerEvents="none">
-      <View style={styles.badge}>
-        <Text style={styles.text}>{label}</Text>
-      </View>
-    </View>
-  );
+    <YStack
+      position="absolute"
+      right={BADGE_RIGHT}
+      top={insets.top + BADGE_TOP_OFFSET}
+      zIndex={Z_INDEX_ENV_BADGE}
+      pointerEvents="none">
+      <YStack
+        // NOTE: amber warning color — no semantic token in this project's palette
+        style={{ backgroundColor: '#F59E0B' }}
+        borderRadius={BADGE_BORDER_RADIUS}
+        px={BADGE_PX}
+        py={BADGE_PY}>
+        <Paragraph
+          color="$white"
+          fontSize={BADGE_FONT_SIZE}
+          fontWeight="700"
+          letterSpacing={BADGE_LETTER_SPACING}>
+          {label}
+        </Paragraph>
+      </YStack>
+    </YStack>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    right: 12,
-    zIndex: 9999,
-  },
-  badge: {
-    backgroundColor: "#F59E0B",
-    borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  text: {
-    color: "#fff",
-    fontSize: 10,
-    fontWeight: "700",
-    letterSpacing: 0.5,
-  },
-});
 
 export { EnvBadge }

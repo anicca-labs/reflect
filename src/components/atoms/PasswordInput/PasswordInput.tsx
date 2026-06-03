@@ -1,5 +1,5 @@
-import React, { useState, useRef, useImperativeHandle, forwardRef } from 'react'
-import { Input, XStack, useTheme, getTokenValue, styled } from 'tamagui'
+import { useState, useRef, useImperativeHandle, forwardRef, type ComponentRef } from 'react'
+import { Input, XStack, useTheme, styled } from 'tamagui'
 import { BaseTouchable } from '@ksairi-org/ui-touchables'
 import { Feather } from '@expo/vector-icons'
 
@@ -16,6 +16,9 @@ const PasswordField = styled(Input, {
   },
 })
 
+const EYE_BUTTON_WIDTH = 44
+const EYE_ICON_SIZE = 18
+
 type PasswordInputProps = {
   value: string
   onChangeText: (text: string) => void
@@ -24,12 +27,11 @@ type PasswordInputProps = {
   onSubmitEditing?: () => void
   returnKeyType?: 'done' | 'next' | 'go'
   autoComplete?: 'current-password' | 'new-password'
-  mb?: string | number
 }
 
-export type PasswordInputHandle = { focus: () => void }
+type PasswordInputHandle = { focus: () => void }
 
-export const PasswordInput = forwardRef<PasswordInputHandle, PasswordInputProps>(({
+const PasswordInput = forwardRef<PasswordInputHandle, PasswordInputProps>(({
   value,
   onChangeText,
   placeholder,
@@ -37,26 +39,20 @@ export const PasswordInput = forwardRef<PasswordInputHandle, PasswordInputProps>
   onSubmitEditing,
   returnKeyType = 'done',
   autoComplete = 'current-password',
-  mb = '$2',
 }, ref) => {
   const [visible, setVisible] = useState(false)
   const [focused, setFocused] = useState(false)
-  const inputRef = useRef<React.ElementRef<typeof Input>>(null)
+  const inputRef = useRef<ComponentRef<typeof Input>>(null)
   const theme = useTheme()
 
   useImperativeHandle(ref, () => ({
     focus: () => inputRef.current?.focus(),
   }))
 
-  const mbValue = typeof mb === 'string' && mb.startsWith('$')
-    ? getTokenValue(mb as '$1' | '$2' | '$3' | '$4' | '$5' | '$6', 'space')
-    : mb
-
   return (
     <XStack
       position="relative"
       alignSelf="stretch"
-      mb={mbValue as number}
       borderRadius="$4"
       borderWidth={1}
       borderColor={focused ? '$accentBackground' : '$borderColor'}
@@ -71,7 +67,7 @@ export const PasswordInput = forwardRef<PasswordInputHandle, PasswordInputProps>
         onSubmitEditing={onSubmitEditing}
         returnKeyType={returnKeyType}
         placeholder={placeholder}
-        pr={44}
+        pr={EYE_BUTTON_WIDTH}
         secureTextEntry={!visible}
         autoComplete={autoComplete}
         autoCapitalize="none"
@@ -85,7 +81,7 @@ export const PasswordInput = forwardRef<PasswordInputHandle, PasswordInputProps>
         onPress={() => setVisible(v => !v)}>
         <Feather
           name={visible ? 'eye-off' : 'eye'}
-          size={18}
+          size={EYE_ICON_SIZE}
           color={theme['text-placeholder'].val}
         />
       </BaseTouchable>
@@ -94,3 +90,6 @@ export const PasswordInput = forwardRef<PasswordInputHandle, PasswordInputProps>
 })
 
 PasswordInput.displayName = 'PasswordInput'
+
+export { PasswordInput }
+export type { PasswordInputHandle }

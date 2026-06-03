@@ -16,7 +16,7 @@ type UserStoreState = {
  * The library persistence hooks call `setKeyValue` after a successful social
  * sign-in to cache display-name data.
  */
-export const useUserStore = create<UserStoreState>((set) => ({
+const useUserStore = create<UserStoreState>((set) => ({
   firstName: null,
   lastName: null,
   setKeyValue: (key, value) => set({ [key]: value }),
@@ -35,13 +35,13 @@ type SwipeableStoreState = {
   endDrag: () => void
 }
 
-export const useSwipeableStore = create<SwipeableStoreState>((set) => ({
+const useSwipeableStore = create<SwipeableStoreState>((set) => ({
   activeDragCount: 0,
   startDrag: () => set((s) => ({ activeDragCount: s.activeDragCount + 1 })),
   endDrag: () => set((s) => ({ activeDragCount: Math.max(0, s.activeDragCount - 1) })),
 }))
 
-export const usePreferencesStore = create<PreferencesStoreState>()(
+const usePreferencesStore = create<PreferencesStoreState>()(
   persist(
     (set) => ({
       timeFormat: '12h',
@@ -53,3 +53,5 @@ export const usePreferencesStore = create<PreferencesStoreState>()(
     },
   ),
 )
+
+export { useUserStore, useSwipeableStore, usePreferencesStore }

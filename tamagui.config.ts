@@ -1,4 +1,4 @@
-import tamaguiConfig from '@default-tamagui-config'
+import { tamaguiConfig } from '@default-tamagui-config'
 
 type AppConfig = typeof tamaguiConfig
 

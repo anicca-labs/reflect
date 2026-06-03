@@ -1,6 +1,6 @@
 import { defaultConfig } from '@tamagui/config/v5'
 
-export const lightTheme = {
+const lightTheme = {
   ...defaultConfig.themes.light,
 
   // Surface scale — warm off-white → warm near-black
@@ -60,9 +60,11 @@ export const lightTheme = {
   shadow4: 'rgba(28, 25, 23, 0.18)',
   shadow5: 'rgba(28, 25, 23, 0.24)',
   shadow6: 'rgba(28, 25, 23, 0.32)',
+
+  peekDim: 'rgba(0,0,0,0.52)',
 }
 
-export const darkTheme = {
+const darkTheme = {
   ...defaultConfig.themes.dark,
 
   // Surface scale — warm near-black → warm off-white
@@ -120,6 +122,8 @@ export const darkTheme = {
   shadow4: 'rgba(0, 0, 0, 0.45)',
   shadow5: 'rgba(0, 0, 0, 0.55)',
   shadow6: 'rgba(0, 0, 0, 0.65)',
+
+  peekDim: 'rgba(0,0,0,0.52)',
 }
 
 const splashTokens = {
@@ -127,7 +131,9 @@ const splashTokens = {
   dark:  { splashBackground: 'hsl(30, 8%, 6%)' },     // matches dark background
 }
 
-export const themes = {
+const themes = {
   light: { ...lightTheme, ...splashTokens.light },
   dark:  { ...darkTheme,  ...splashTokens.dark  },
 }
+
+export { lightTheme, darkTheme, themes }

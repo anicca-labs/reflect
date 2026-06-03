@@ -8,7 +8,12 @@ const useBookmarks = () => {
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then(val => {
-      if (val) setBookmarked(new Set(JSON.parse(val) as string[]))
+      if (val) {
+        const parsed: unknown = JSON.parse(val)
+        if (Array.isArray(parsed)) {
+          setBookmarked(new Set(parsed.filter((x): x is string => typeof x === 'string')))
+        }
+      }
     })
   }, [])
 

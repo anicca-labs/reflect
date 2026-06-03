@@ -1,4 +1,4 @@
-export interface WeeklyReflection {
+interface WeeklyReflection {
   id: string;
   user_id: string;
   week_start: string;
@@ -7,3 +7,5 @@ export interface WeeklyReflection {
   model: string;
   created_at: string;
 }
+
+export type { WeeklyReflection }

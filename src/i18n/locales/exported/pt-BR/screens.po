@@ -29,6 +29,10 @@ msgstr "12 horas"
 msgid "24-hour"
 msgstr "24 horas"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Account"
+msgstr "Conta"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Already have an account? Sign in"
 msgstr "Já tem uma conta? Entre"
@@ -45,6 +49,11 @@ msgstr "O login com Apple não está configurado para Android"
 msgid "Are you sure you want to sign out?"
 msgstr "Tem certeza que deseja sair?"
 
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "Back to sign in"
+msgstr "Voltar para entrar"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Bookmarked"
 msgstr "Salvos"
@@ -53,9 +62,18 @@ msgstr "Salvos"
 msgid "Cancel"
 msgstr "Cancelar"
 
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Check your email"
 msgstr "Verifique seu e-mail"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "Choose a new password."
+msgstr "Escolha uma nova senha."
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "Confirm new password"
+msgstr "Confirmar nova senha"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Confirm password"
@@ -99,6 +117,8 @@ msgstr "Negado — toque para abrir Configurações"
 msgid "Don't have an account? Sign up"
 msgstr "Não tem uma conta? Cadastre-se"
 
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Email"
 msgstr "E-mail"
@@ -111,9 +131,13 @@ msgstr "Ativar"
 msgid "Enable notifications in Settings to use reminders."
 msgstr "Ative as notificações em Configurações para usar lembretes."
 
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+msgid "Enter your email to receive a reset link."
+msgstr "Digite seu e-mail para receber um link de redefinição."
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Entry limit reached — upgrade to keep writing"
-msgstr ""
+msgstr "Limite de entradas atingido — faça upgrade para continuar escrevendo"
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export"
@@ -122,6 +146,10 @@ msgstr "Exportar"
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export ✦"
 msgstr "Exportar ✦"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Forgot password?"
+msgstr "Esqueceu a senha?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Free"
@@ -147,6 +175,14 @@ msgstr "Diário"
 msgid "Manage subscription"
 msgstr "Gerenciar assinatura"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Name"
+msgstr "Nome"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "New password"
+msgstr "Nova senha"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries match your search."
 msgstr "Nenhuma entrada corresponde à sua busca."
@@ -159,6 +195,11 @@ msgstr "Sem entradas ainda. Comece a escrever na aba Diário."
 msgid "Password"
 msgstr "Senha"
 
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "Password updated"
+msgstr "Senha atualizada"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Passwords do not match"
 msgstr "As senhas não coincidem"
@@ -171,21 +212,22 @@ msgstr "Permissão"
 msgid "Plan"
 msgstr "Plano"
 
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Please enter a valid email address"
 msgstr "Insira um endereço de e-mail válido"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"
-msgstr ""
+msgstr "Pro"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro Annual"
-msgstr ""
+msgstr "Pro Anual"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro Monthly"
-msgstr ""
+msgstr "Pro Mensal"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Push notifications"
@@ -215,6 +257,14 @@ msgstr "Buscar entradas…"
 msgid "Select reminder time"
 msgstr "Selecionar horário do lembrete"
 
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+msgid "Send reset link"
+msgstr "Enviar link de redefinição"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "Set new password"
+msgstr "Definir nova senha"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Settings"
 msgstr "Configurações"
@@ -226,6 +276,10 @@ msgstr "Entrar"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Sign in with Apple"
 msgstr "Entrar com Apple"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "Sign in with your new password."
+msgstr "Entre com sua nova senha."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Sign out"
@@ -266,6 +320,10 @@ msgstr "Assinar Pro ✦"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "We sent a confirmation link to {email}."
 msgstr "Enviamos um link de confirmação para {email}."
+
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+msgid "We sent a password reset link to {email}."
+msgstr "Enviamos um link de redefinição de senha para {email}."
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Welcome back."

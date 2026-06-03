@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { AppState, Platform, StyleSheet, useColorScheme } from 'react-native'
+import { AppState, Platform, useColorScheme } from 'react-native'
 import { YStack, XStack, Input, Spinner, styled } from 'tamagui'
+import { useRouter } from 'expo-router'
 import { DisplayLg, BodySm, LabelSm, LabelLg } from '@fonts'
 import { Containers, KeyboardScrollView } from '@ksairi-org/ui-containers'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -8,6 +9,7 @@ import { BaseTouchable } from '@ksairi-org/ui-touchables'
 import { PasswordInput, PasswordInputHandle, FormField } from '@atoms'
 import { supabase } from '@/src/services/supabase'
 import { useToast } from '@hooks'
+import { HEADING_LETTER_SPACING } from '@constants'
 import { sizes } from '@theme'
 
 import {
@@ -27,10 +29,14 @@ import { FontAwesome } from '@expo/vector-icons'
 
 type Mode = 'sign-in' | 'sign-up'
 
-// NOTE: StyleSheet required — AppleButton's `style` prop only accepts StyleSheet output, not Tamagui styled()
-const socialButtonStyle = StyleSheet.create({
+const APPLE_ICON_SIZE = 20
+const GOOGLE_ICON_SIZE = 18
+const MIN_PASSWORD_LENGTH = 6
+const LINK_PRESS_OPACITY = 0.7
+
+const socialButtonStyle = {
   button: { width: '100%', height: sizes.xl },
-})
+} as const
 
 const EmailInput = styled(Input, {
   bg: '$surface-card',
@@ -64,6 +70,7 @@ const SignInScreen = () => {
   const [authError, setAuthError] = useState<string | null>(null)
   const { t } = useLingui()
   const { toast } = useToast()
+  const router = useRouter()
   const isDark = useColorScheme() === 'dark'
   const hasInitializedAppleSignIn = useRef(false)
   const prevAppState = useRef<string>('active')
@@ -243,16 +250,17 @@ const SignInScreen = () => {
     }
   }, [t])
 
-  const isReady = email.trim().length > 0 && password.length >= 6 &&
-    (mode === 'sign-in' || confirmPassword.length >= 6)
+  const isReady = email.trim().length > 0 && password.length >= MIN_PASSWORD_LENGTH &&
+    (mode === 'sign-in' || confirmPassword.length >= MIN_PASSWORD_LENGTH)
 
   return (
     <Containers.Screen shouldAutoResize={false}>
+      {/* NOTE: contentContainerStyle on KeyboardScrollView requires a plain style object */}
       <KeyboardScrollView
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: sizes.lg }}
         keyboardShouldPersistTaps="handled">
         <YStack gap="$0">
-          <DisplayLg color="$text-emphasis" letterSpacing={-0.5} mb="$2">
+          <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING} mb="$2">
             reflect
           </DisplayLg>
           <BodySm color="$text-placeholder" mb="$8">
@@ -286,7 +294,6 @@ const SignInScreen = () => {
               returnKeyType={isReady ? 'done' : mode === 'sign-up' ? 'next' : 'done'}
               placeholder={t`Password`}
               autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'}
-              mb="$0"
             />
           </FormField>
 
@@ -301,7 +308,6 @@ const SignInScreen = () => {
                 returnKeyType="done"
                 placeholder={t`Confirm password`}
                 autoComplete="new-password"
-                mb="$0"
               />
             </FormField>
           ) : null}
@@ -327,6 +333,17 @@ const SignInScreen = () => {
           </BaseTouchable>
 
           {mode === 'sign-in' ? (
+            <XStack justify="flex-end" mt="$2">
+              <BodySm
+                color="$accentBackground"
+                onPress={() => router.push('/forgot-password')}
+                pressStyle={{ opacity: LINK_PRESS_OPACITY }}>
+                <Trans>Forgot password?</Trans>
+              </BodySm>
+            </XStack>
+          ) : null}
+
+          {mode === 'sign-in' ? (
             <YStack gap="$3" mt="$6" opacity={socialLoading ? 0.6 : 1}>
             {Platform.OS === 'ios' && appleAuth.isSupported ? (
               <AppleButton
@@ -337,17 +354,19 @@ const SignInScreen = () => {
               />
             ) : null}
             {Platform.OS === 'android' && !!process.env.EXPO_PUBLIC_ANDROID_APPLE_SIGN_IN_CLIENT_ID ? (
+              // NOTE: Apple brand colors require black/white — no semantic token equivalent
               <BaseTouchable
                 onPress={handleAppleSignIn}
                 style={socialButtonStyle.button}
-                bg={isDark ? 'white' : 'black'}
+                bg={isDark ? '$white' : '$black'}
                 rounded="$4"
                 items="center"
                 justify="center"
                 flexDirection="row"
                 gap="$2">
-                <FontAwesome name="apple" size={20} color={isDark ? 'black' : 'white'} />
-                <LabelLg color={isDark ? 'black' : 'white'}><Trans>Sign in with Apple</Trans></LabelLg>
+                {/* NOTE: FontAwesome color prop is a native string, not a Tamagui token */}
+                <FontAwesome name="apple" size={APPLE_ICON_SIZE} color={isDark ? 'black' : 'white'} />
+                <LabelLg color={isDark ? '$black' : '$white'}><Trans>Sign in with Apple</Trans></LabelLg>
               </BaseTouchable>
             ) : null}
             <BaseTouchable
@@ -361,7 +380,7 @@ const SignInScreen = () => {
               justify="center"
               flexDirection="row"
               gap="$2">
-              <Svg width={18} height={18} viewBox="0 0 48 48">
+              <Svg width={GOOGLE_ICON_SIZE} height={GOOGLE_ICON_SIZE} viewBox="0 0 48 48">
                 <Path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
                 <Path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
                 <Path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
@@ -369,7 +388,7 @@ const SignInScreen = () => {
                 <Path fill="none" d="M0 0h48v48H0z" />
               </Svg>
               <LabelLg color="$text-secondary">
-                Sign in
+                <Trans>Sign in</Trans>
               </LabelLg>
             </BaseTouchable>
           </YStack>
@@ -379,7 +398,7 @@ const SignInScreen = () => {
             <BodySm
               color="$accentBackground"
               onPress={switchMode}
-              pressStyle={{ opacity: 0.7 }}>
+              pressStyle={{ opacity: LINK_PRESS_OPACITY }}>
               {mode === 'sign-in'
                 ? <Trans>Don&apos;t have an account? Sign up</Trans>
                 : <Trans>Already have an account? Sign in</Trans>}

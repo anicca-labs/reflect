@@ -1,3 +1,3 @@
 export * from './themes'
 export * from './tokens'
-export { default as tamaguiConfig } from './tamagui.config'
+export { tamaguiConfig } from './tamagui.config'

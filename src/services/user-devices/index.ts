@@ -1,7 +1,7 @@
 import { supabase } from '@/src/services/supabase'
 import { getFCMToken } from '@/src/services/firebase-messaging'
 
-export async function upsertDeviceToken(userId: string): Promise<void> {
+const upsertDeviceToken = async (userId: string): Promise<void> => {
   const fcmToken = await getFCMToken()
   if (!fcmToken) return
 
@@ -11,7 +11,7 @@ export async function upsertDeviceToken(userId: string): Promise<void> {
   )
 }
 
-export async function syncReminderToBackend(enabled: boolean, hour: number, minute: number): Promise<void> {
+const syncReminderToBackend = async (enabled: boolean, hour: number, minute: number): Promise<void> => {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return
 
@@ -32,3 +32,5 @@ export async function syncReminderToBackend(enabled: boolean, hour: number, minu
     { onConflict: 'fcm_token' },
   )
 }
+
+export { upsertDeviceToken, syncReminderToBackend }

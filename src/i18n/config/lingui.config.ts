@@ -28,4 +28,4 @@ const linguiConfig: LinguiConfig = {
   compileNamespace: 'ts',
 }
 
-export default linguiConfig
+export { linguiConfig }

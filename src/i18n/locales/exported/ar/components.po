@@ -15,16 +15,16 @@ msgstr ""
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
-msgstr ""
+msgstr "إلغاء"
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Delete"
-msgstr ""
+msgstr "حذف"
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Delete entry?"
-msgstr ""
+msgstr "حذف المدخلة؟"
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
-msgstr ""
+msgstr "لا يمكن التراجع عن هذا."

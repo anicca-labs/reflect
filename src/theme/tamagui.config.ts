@@ -23,5 +23,7 @@ const tamaguiConfig = createTamagui({
   },
 })
 
-export type AppConfig = typeof tamaguiConfig
-export default tamaguiConfig
+type AppConfig = typeof tamaguiConfig
+
+export type { AppConfig }
+export { tamaguiConfig }

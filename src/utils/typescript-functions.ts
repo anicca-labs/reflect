@@ -1,3 +1,5 @@
+// NOTE: Object.keys/values/entries always return string[]/unknown[] in TypeScript's stdlib —
+// these casts are the only way to produce typed wrappers for these methods.
 const typedKeys = <T extends object>(obj: T): (keyof T)[] =>
   Object.keys(obj) as (keyof T)[]
 

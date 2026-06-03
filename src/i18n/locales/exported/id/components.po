@@ -15,16 +15,16 @@ msgstr ""
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
-msgstr ""
+msgstr "Batal"
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Delete"
-msgstr ""
+msgstr "Hapus"
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Delete entry?"
-msgstr ""
+msgstr "Hapus entri?"
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
-msgstr ""
+msgstr "Ini tidak dapat dibatalkan."

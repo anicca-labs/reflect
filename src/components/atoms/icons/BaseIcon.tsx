@@ -1,7 +1,5 @@
-import type { XmlProps } from 'react-native-svg'
+import { SvgXml, type XmlProps } from 'react-native-svg'
 import type { ColorTokens } from 'tamagui'
-
-import { SvgXml } from 'react-native-svg'
 
 import { svgImports } from './svg-imports'
 import { sizes } from '@theme'
@@ -51,10 +49,11 @@ const BaseIcon = ({
       maxFontScaleToApply,
     })
 
-  const tokenColor = useColorTokenValue(
-    typeof color === 'string' && !color.startsWith('$') ? undefined : (color as ColorTokens)
-  )
-  const calculatedColor = typeof color === 'string' && !color.startsWith('$') ? color : tokenColor
+  const isColorToken = (c: ColorTokens | string | undefined): c is ColorTokens =>
+    typeof c === 'string' && c.startsWith('$')
+
+  const tokenColor = useColorTokenValue(isColorToken(color) ? color : undefined)
+  const calculatedColor = isColorToken(color) ? tokenColor : color
 
   return (
     <SvgXml

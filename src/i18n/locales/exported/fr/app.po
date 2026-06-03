@@ -15,12 +15,12 @@ msgstr ""
 
 #: app/(tabs)/_layout.tsx
 msgid "Journal"
-msgstr ""
+msgstr "Journal"
 
 #: app/(tabs)/_layout.tsx
 msgid "Reflections"
-msgstr ""
+msgstr "Réflexions"
 
 #: app/(tabs)/_layout.tsx
 msgid "Settings"
-msgstr ""
+msgstr "Paramètres"

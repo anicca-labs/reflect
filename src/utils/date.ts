@@ -1,7 +1,6 @@
 import { getLocales } from 'expo-localization'
-import { format } from 'date-fns'
+import { format, type Locale } from 'date-fns'
 import { ar, enUS, es, fr, id, ptBR } from 'date-fns/locale'
-import type { Locale } from 'date-fns'
 
 const localeMap: Record<string, Locale> = {
   en: enUS,

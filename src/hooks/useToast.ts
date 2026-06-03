@@ -60,6 +60,7 @@ const useToast = () => {
         title,
         message,
         preset: 'custom',
+        // NOTE: Burnt's icon API requires a raw color string, not a theme token
         icon: { ios: { name: 'bell.fill', color: '#007AFF' } },
         duration,
       })
