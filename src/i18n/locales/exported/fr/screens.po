@@ -176,6 +176,18 @@ msgid "Please enter a valid email address"
 msgstr "Veuillez saisir une adresse e-mail valide"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Pro"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Pro Annual"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Pro Monthly"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Push notifications"
 msgstr "Notifications push"
 

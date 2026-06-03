@@ -3,7 +3,7 @@
 
 # If any source file is staged, extract new i18n strings and re-stage the .po catalogs
 if git diff --cached --name-only | grep -qE '\.(tsx?|jsx?)$'; then
-  yarn lingui extract --no-watch
+  yarn lingui extract
   git add src/i18n/locales/exported/
 fi
 

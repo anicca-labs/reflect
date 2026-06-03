@@ -176,6 +176,18 @@ msgid "Please enter a valid email address"
 msgstr "Masukkan alamat email yang valid"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Pro"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Pro Annual"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Pro Monthly"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Push notifications"
 msgstr "Notifikasi push"
 
