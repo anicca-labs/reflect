@@ -140,8 +140,8 @@ msgid "How are you really feeling right now?"
 msgstr "Bagaimana perasaanmu sebenarnya saat ini?"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-#~ msgid "Journal"
-#~ msgstr "Jurnal"
+msgid "Journal"
+msgstr "Jurnal"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"

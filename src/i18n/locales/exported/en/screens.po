@@ -140,8 +140,8 @@ msgid "How are you really feeling right now?"
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-#~ msgid "Journal"
-#~ msgstr ""
+msgid "Journal"
+msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
