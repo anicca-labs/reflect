@@ -1,4 +1,6 @@
 import { useState, useRef, useCallback, type ComponentRef } from 'react'
+import { View } from 'react-native'
+import { BlurTargetView } from 'expo-blur'
 import { useFocusEffect } from 'expo-router'
 import { ScrollView, YStack, XStack, TextArea, Spinner } from 'tamagui'
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts'
@@ -8,11 +10,12 @@ import { Containers } from '@ksairi-org/ui-containers'
 import { sizes } from '@theme'
 import { format } from 'date-fns'
 import { getDateLocale, formatEntryTime } from '@/src/utils/date'
-import { usePreferencesStore } from '@/src/stores'
+import { usePreferencesStore, useSwipeableStore } from '@/src/stores'
 import type { JournalEntry } from '@/src/types/journal'
 import { logJournalEntryCreated, logScreenView } from '@analytics'
 import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry, useRevenueCat, useToast, useStreak, getDailyPromptIndex } from '@hooks'
-import { AnimatedEntry, SwipeableDeleteWrapper } from '@molecules'
+import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING, DISABLED_OPACITY, PAYWALL_SUCCESS_ALERT_DURATION } from '@constants'
+import { AnimatedEntry, SwipeableDeleteWrapper, EntryPeekModal, type SwipeableDeleteWrapperHandle } from '@molecules'
 
 const formatDateHeading = (iso: string) =>
   format(new Date(iso), 'EEEE, MMMM d', { locale: getDateLocale() })
@@ -25,23 +28,40 @@ const isToday = (iso: string) => {
     d.getDate() === now.getDate()
 }
 
+const TRUNCATE_LENGTH = 250
+const STREAK_LETTER_SPACING = -0.3
+
 interface EntryCardProps {
   entry: JournalEntry
+  index: number
   onDelete: (id: string) => void
+  onPeek: (entry: JournalEntry) => void
   closeKey: number
 }
 
-const EntryCard = ({ entry, onDelete, closeKey }: EntryCardProps) => {
+const EntryCard = ({ entry, index, onDelete, onPeek, closeKey }: EntryCardProps) => {
   const timeFormat = usePreferencesStore((s) => s.timeFormat)
+  const swipeRef = useRef<SwipeableDeleteWrapperHandle>(null)
+  const isTruncated = entry.content.length > TRUNCATE_LENGTH
+  const displayContent = isTruncated
+    ? entry.content.slice(0, TRUNCATE_LENGTH) + '…'
+    : entry.content
 
   return (
-    <SwipeableDeleteWrapper entryId={entry.id} onDelete={onDelete} closeKey={closeKey} mb="$3">
-      <YStack bg="$surface-card" rounded="$4" p="$4" mb="$3" borderWidth={1} borderColor="$borderColor">
+    <SwipeableDeleteWrapper ref={swipeRef} entryId={entry.id} onDelete={onDelete} closeKey={closeKey} index={index}>
+      <BaseTouchable
+        onPress={() => onPeek(entry)}
+        onLongPress={() => swipeRef.current?.open()}
+        bg="$surface-card"
+        rounded="$4"
+        p="$4"
+        borderWidth={1}
+        borderColor="$borderColor">
         <BodySm color="$text-emphasis" mb="$3">
-          {entry.content}
+          {displayContent}
         </BodySm>
         <LabelMd color="$text-disabled">{formatEntryTime(entry.created_at, timeFormat === '24h')}</LabelMd>
-      </YStack>
+      </BaseTouchable>
     </SwipeableDeleteWrapper>
   )
 }
@@ -52,6 +72,13 @@ const JournalScreen = () => {
   const [draft, setDraft] = useState('')
   const [closeKey, setCloseKey] = useState(0)
   const [animKey, setAnimKey] = useState(0)
+  const [peekEntry, setPeekEntry] = useState<JournalEntry | null>(null)
+
+  const handlePeek = (entry: JournalEntry) => {
+    setCloseKey(k => k + 1)
+    setPeekEntry(entry)
+  }
+  const blurTargetRef = useRef<View>(null)
   const hasAnimated = useRef(false)
   const { data: entries = [], isLoading: loading, refetch } = useJournalEntries()
   const createMutation = useCreateJournalEntry()
@@ -72,6 +99,9 @@ const JournalScreen = () => {
       return () => setCloseKey(k => k + 1)
     }, [refetch])
   )
+
+  const hasOpenCard = useSwipeableStore((s) => s.activeDragCount > 0)
+  const dismissOpenCard = () => { if (hasOpenCard) setCloseKey(k => k + 1) }
 
   const todayEntries = entries.filter(e => isToday(e.created_at))
   const streak = useStreak(entries)
@@ -96,7 +126,7 @@ const JournalScreen = () => {
     if (atLimit) {
       const purchased = await presentPaywall()
       if (!purchased) return
-      alert({ title: t`Welcome to Pro ✦`, message: t`Unlimited entries unlocked. Keep writing.`, duration: 4 })
+      alert({ title: t`Welcome to Pro ✦`, message: t`Unlimited entries unlocked. Keep writing.`, duration: PAYWALL_SUCCESS_ALERT_DURATION })
     }
     setDraft('')
     await createMutation.mutateAsync(trimmed)
@@ -105,18 +135,19 @@ const JournalScreen = () => {
 
   return (
     <Containers.Screen shouldAutoResize={false}>
+      <BlurTargetView ref={blurTargetRef} style={{ flex: 1 }}>
       <YStack flex={1}>
-        <YStack p="$5" pb="$4">
-          <LabelMd color="$text-disabled" mb="$1" textTransform="uppercase" letterSpacing={0.9}>
+        <YStack p="$5" pb="$4" onTouchStart={dismissOpenCard}>
+          <LabelMd color="$text-disabled" mb="$1" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING}>
             {formatDateHeading(new Date().toISOString())}
           </LabelMd>
           <XStack justify="space-between" items="flex-end" mb="$6">
-            <DisplayLg color="$text-emphasis" letterSpacing={-0.5}>
+            <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
               <Trans>Journal</Trans>
             </DisplayLg>
             {streak > 0 ? (
               <YStack items="flex-end">
-                <LabelMd color="$accentBackground" letterSpacing={-0.3}>
+                <LabelMd color="$accentBackground" letterSpacing={STREAK_LETTER_SPACING}>
                   {streak} {streak === 1 ? <Trans>day streak</Trans> : <Trans>days streak</Trans>} 🔥
                 </LabelMd>
               </YStack>
@@ -142,7 +173,7 @@ const JournalScreen = () => {
             onPress={handleSave}
             disabled={!hasContent || createMutation.isPending}
             bg="$accentBackground"
-            opacity={hasContent ? 1 : 0.4}
+            opacity={hasContent ? 1 : DISABLED_OPACITY}
             rounded="$4"
             py="$3"
             items="center"
@@ -171,27 +202,36 @@ const JournalScreen = () => {
           ) : null}
         </YStack>
 
-        <ScrollView flex={1} contentContainerStyle={{ paddingHorizontal: sizes.xl, paddingBottom: sizes.xl }}>
-          {loading && !todayEntries.length && (
+        {/* NOTE: contentContainerStyle on ScrollView requires a plain style object */}
+        <ScrollView flex={1} contentContainerStyle={{ paddingHorizontal: sizes.xl, paddingBottom: sizes.xl }} onTouchStart={dismissOpenCard}>
+          {loading && !todayEntries.length ? (
             <YStack items="center" mt="$4">
               <Spinner color="$accentBackground" />
             </YStack>
-          )}
+          ) : null}
 
-          {todayEntries.length > 0 && (
-            <YStack>
-              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+          {todayEntries.length > 0 ? (
+            <YStack gap="$3">
+              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING}>
                 <Trans>Today · {todayEntries.length} {todayEntries.length === 1 ? 'entry' : 'entries'}</Trans>
               </LabelMd>
               {todayEntries.map((entry, index) => (
                 <AnimatedEntry key={entry.id} index={index} animKey={animKey}>
-                  <EntryCard entry={entry} onDelete={(id) => deleteMutation.mutate(id)} closeKey={closeKey} />
+                  <EntryCard
+                    entry={entry}
+                    index={index}
+                    onDelete={(id) => deleteMutation.mutate(id)}
+                    onPeek={handlePeek}
+                    closeKey={closeKey}
+                  />
                 </AnimatedEntry>
               ))}
             </YStack>
-          )}
+          ) : null}
         </ScrollView>
       </YStack>
+      </BlurTargetView>
+      <EntryPeekModal entry={peekEntry} onClose={() => setPeekEntry(null)} blurTargetRef={blurTargetRef} />
     </Containers.Screen>
   )
 }

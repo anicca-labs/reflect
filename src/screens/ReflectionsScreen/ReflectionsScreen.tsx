@@ -1,4 +1,6 @@
-import React, { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
+import { View } from 'react-native'
+import { BlurTargetView } from 'expo-blur'
 import { useFocusEffect } from 'expo-router'
 import { ScrollView, YStack, XStack, Spinner, Input } from 'tamagui'
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts'
@@ -10,12 +12,15 @@ import { BaseIcon } from '@atoms'
 import { sizes } from '@theme'
 import { format } from 'date-fns'
 import { getDateLocale, formatEntryTime } from '@/src/utils/date'
-import { usePreferencesStore } from '@/src/stores'
+import { usePreferencesStore, useSwipeableStore } from '@/src/stores'
 import type { JournalEntry } from '@/src/types/journal'
 import { logScreenView } from '@analytics'
 import { useJournalEntries, useToggleBookmark, useRevenueCat, useDeleteJournalEntry } from '@hooks'
+import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING } from '@constants'
 import { exportJournal } from '@export'
-import { AnimatedEntry, SwipeableDeleteWrapper } from '@molecules'
+import { AnimatedEntry, SwipeableDeleteWrapper, EntryPeekModal, type SwipeableDeleteWrapperHandle } from '@molecules'
+
+const SEARCH_INPUT_HEIGHT = 44
 
 const formatDayLabel = (iso: string) => {
   const d = new Date(iso)
@@ -32,26 +37,40 @@ const groupByDay = (entries: JournalEntry[]): { label: string; items: JournalEnt
   const map = new Map<string, { label: string; items: JournalEntry[] }>()
   for (const entry of entries) {
     const key = dateKey(entry.created_at)
-    if (!map.has(key)) {
-      map.set(key, { label: formatDayLabel(entry.created_at), items: [] })
+    const existing = map.get(key)
+    if (existing) {
+      existing.items.push(entry)
+    } else {
+      map.set(key, { label: formatDayLabel(entry.created_at), items: [entry] })
     }
-    map.get(key)!.items.push(entry)
   }
   return Array.from(map.values())
 }
 
+const TRUNCATE_LENGTH = 250
+
 interface EntryCardProps {
   entry: JournalEntry
+  index: number
   onToggleBookmark: (id: string, current: boolean) => void
   onDelete: (id: string) => void
+  onPeek: (entry: JournalEntry) => void
   closeKey: number
 }
 
-const EntryCard = ({ entry, onToggleBookmark, onDelete, closeKey }: EntryCardProps) => {
+const EntryCard = ({ entry, index, onToggleBookmark, onDelete, onPeek, closeKey }: EntryCardProps) => {
   const timeFormat = usePreferencesStore((s) => s.timeFormat)
+  const swipeRef = useRef<SwipeableDeleteWrapperHandle>(null)
+  const isTruncated = entry.content.length > TRUNCATE_LENGTH
+  const displayContent = isTruncated
+    ? entry.content.slice(0, TRUNCATE_LENGTH) + '…'
+    : entry.content
+
   return (
-    <SwipeableDeleteWrapper entryId={entry.id} onDelete={onDelete} closeKey={closeKey}>
-      <YStack
+    <SwipeableDeleteWrapper ref={swipeRef} entryId={entry.id} onDelete={onDelete} closeKey={closeKey} index={index}>
+      <BaseTouchable
+        onPress={() => onPeek(entry)}
+        onLongPress={() => swipeRef.current?.open()}
         bg="$surface-card"
         rounded="$4"
         p="$4"
@@ -59,7 +78,7 @@ const EntryCard = ({ entry, onToggleBookmark, onDelete, closeKey }: EntryCardPro
         borderWidth={1}
         borderColor="$borderColor">
         <BodySm color="$text-emphasis">
-          {entry.content}
+          {displayContent}
         </BodySm>
         <XStack justify="space-between" items="center" mt="$2">
           <LabelMd color="$text-disabled">{formatEntryTime(entry.created_at, timeFormat === '24h')}</LabelMd>
@@ -71,7 +90,7 @@ const EntryCard = ({ entry, onToggleBookmark, onDelete, closeKey }: EntryCardPro
             </LabelMd>
           </BaseTouchable>
         </XStack>
-      </YStack>
+      </BaseTouchable>
     </SwipeableDeleteWrapper>
   )
 }
@@ -87,7 +106,14 @@ const ReflectionsScreen = () => {
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false)
   const [closeKey, setCloseKey] = useState(0)
   const [animKey, setAnimKey] = useState(0)
+  const [peekEntry, setPeekEntry] = useState<JournalEntry | null>(null)
+  const blurTargetRef = useRef<View>(null)
   const hasAnimated = useRef(false)
+
+  const handlePeek = (entry: JournalEntry) => {
+    setCloseKey(k => k + 1)
+    setPeekEntry(entry)
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -118,14 +144,18 @@ const ReflectionsScreen = () => {
     return true
   })
 
+  const hasOpenCard = useSwipeableStore((s) => s.activeDragCount > 0)
+  const dismissOpenCard = () => { if (hasOpenCard) setCloseKey(k => k + 1) }
+
   const groups = groupByDay(filtered)
 
   return (
     <Containers.Screen shouldAutoResize={false}>
-      <ScrollView keyboardShouldPersistTaps="handled">
+      <BlurTargetView ref={blurTargetRef} style={{ flex: 1 }}>
+      <ScrollView keyboardShouldPersistTaps="handled" onTouchStart={dismissOpenCard}>
         <YStack p="$5">
           <XStack justify="space-between" items="center" mb="$4">
-            <DisplayLg color="$text-emphasis" letterSpacing={-0.5}>
+            <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
               <Trans>Reflections</Trans>
             </DisplayLg>
             {entries.length > 0 ? (
@@ -161,7 +191,7 @@ const ReflectionsScreen = () => {
                 color="$text-emphasis"
                 rounded="$4"
                 px="$4"
-                height={44}
+                height={SEARCH_INPUT_HEIGHT}
               />
               <BaseTouchable onPress={() => setShowBookmarkedOnly(v => !v)}>
                 <XStack
@@ -206,7 +236,7 @@ const ReflectionsScreen = () => {
               <LabelMd
                 color="$text-disabled"
                 textTransform="uppercase"
-                letterSpacing={0.9}
+                letterSpacing={LABEL_LETTER_SPACING}
                 mb="$3">
                 {group.label}
               </LabelMd>
@@ -214,8 +244,10 @@ const ReflectionsScreen = () => {
                 <AnimatedEntry key={entry.id} index={idx} animKey={animKey}>
                   <EntryCard
                     entry={entry}
+                    index={idx}
                     onToggleBookmark={(id, current) => toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })}
                     onDelete={(id) => deleteMutation.mutate(id)}
+                    onPeek={handlePeek}
                     closeKey={closeKey}
                   />
                 </AnimatedEntry>
@@ -225,6 +257,13 @@ const ReflectionsScreen = () => {
 
         </YStack>
       </ScrollView>
+      </BlurTargetView>
+      <EntryPeekModal
+        entry={peekEntry}
+        onClose={() => setPeekEntry(null)}
+        onToggleBookmark={(id: string, current: boolean) => toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })}
+        blurTargetRef={blurTargetRef}
+      />
     </Containers.Screen>
   )
 }

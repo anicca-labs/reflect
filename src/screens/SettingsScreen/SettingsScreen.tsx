@@ -1,24 +1,37 @@
 import { useEffect, useRef, useState } from 'react'
-import { Alert, AppState, Linking, Modal, ScrollView, TouchableOpacity, FlatList } from 'react-native'
-import { YStack, XStack, Spinner } from 'tamagui'
+import { Alert, AppState, Linking, Modal } from 'react-native'
+import { ScrollView, YStack, XStack, Spinner, type YStackProps } from 'tamagui'
+import type { User } from '@supabase/supabase-js'
+import { GlassView, isGlassEffectAPIAvailable } from 'expo-glass-effect'
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts'
 import { Containers } from '@ksairi-org/ui-containers'
 import { BaseTouchable } from '@ksairi-org/ui-touchables'
 import { SizingAnimatedButton } from '@ksairi-org/ui-button-animated'
 import { Trans, useLingui } from '@lingui/react/macro'
+import { FlashList } from '@shopify/flash-list'
 import * as Device from 'expo-device'
 import { supabase } from '@/src/services/supabase'
 import { usePreferencesStore } from '@/src/stores'
 import { manageSubscriptions } from '@/src/services/revenue-cat'
 import { useRevenueCat, useToast, useReminder } from '@hooks'
+import { sizes } from '@theme'
 import {
   getNotificationPermissionStatus,
   requestNotificationPermission,
   type NotificationPermissionStatus,
 } from '@firebase-messaging'
 import { upsertDeviceToken } from '@/src/services/user-devices'
+import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING, DISABLED_OPACITY, PAYWALL_SUCCESS_ALERT_DURATION, SIMULATOR_TOAST_DURATION } from '@constants'
 
-const REMINDER_HOURS = Array.from({ length: 18 }, (_, i) => i + 6) // 6 AM → 11 PM
+const REMINDER_HOUR_START = 6
+const REMINDER_HOUR_COUNT = 18
+const REMINDER_HOURS = Array.from({ length: REMINDER_HOUR_COUNT }, (_, i) => i + REMINDER_HOUR_START)
+const TIME_PICKER_ITEM_PY = 12
+const TOGGLE_TRACK_WIDTH = 44
+const TOGGLE_TRACK_HEIGHT = 26
+const TOGGLE_THUMB_SIZE = 20
+const TIME_PICKER_MAX_HEIGHT = 300
+const UPGRADE_BUTTON_HEIGHT = 40
 
 const formatHour = (h: number, use24h: boolean): string => {
   if (use24h) return `${String(h).padStart(2, '0')}:00`
@@ -29,18 +42,46 @@ const formatHour = (h: number, use24h: boolean): string => {
 
 const isSimulator = !Device.isDevice
 
+type SettingsCardProps = {
+  children: React.ReactNode
+  gap?: YStackProps['gap']
+  hasGlass: boolean
+}
+
+const SettingsCard = ({ children, gap, hasGlass }: SettingsCardProps) => {
+  if (hasGlass) {
+    return (
+      <GlassView style={{ borderRadius: 12, padding: sizes.lg, overflow: 'hidden' }}>
+        <YStack gap={gap}>{children}</YStack>
+      </GlassView>
+    )
+  }
+  return (
+    <YStack bg="$surface-card" rounded="$4" p="$4" borderWidth={1} borderColor="$borderColor" gap={gap}>
+      {children}
+    </YStack>
+  )
+}
+
 const SettingsScreen = () => {
   const { isPro, isLoading: rcLoading, customerInfo, presentPaywall } = useRevenueCat()
   const { t } = useLingui()
   const { alert } = useToast()
   const { enabled: reminderEnabled, hour: reminderHour, loading: reminderLoading, toggle: toggleReminder, updateTime } = useReminder()
-  const { timeFormat, setTimeFormat } = usePreferencesStore()
+  const timeFormat = usePreferencesStore((s) => s.timeFormat)
+  const setTimeFormat = usePreferencesStore((s) => s.setTimeFormat)
+  const [hasGlass] = useState(() => isGlassEffectAPIAvailable())
   const [notifPermission, setNotifPermission] = useState<NotificationPermissionStatus | null>(null)
   const [showTimePicker, setShowTimePicker] = useState(false)
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
   const openedSettings = useRef(false)
 
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => setCurrentUser(user))
+  }, [])
+
   const showSimulatorToast = () => {
-    alert({ title: 'Physical device only', message: 'This feature is not available on the simulator.', preset: 'error', duration: 3 })
+    alert({ title: 'Physical device only', message: 'This feature is not available on the simulator.', preset: 'error', duration: SIMULATOR_TOAST_DURATION })
   }
 
   const refreshPermissionStatus = async () => {
@@ -95,10 +136,10 @@ const SettingsScreen = () => {
 
   const activeEntitlement = customerInfo?.entitlements.active['pro']
   const productId = activeEntitlement?.productIdentifier ?? ''
-  const planLabel = productId.includes('annual') ? 'Pro Annual' : productId.includes('monthly') ? 'Pro Monthly' : 'Pro'
+  const planLabel = productId.includes('annual') ? t`Pro Annual` : productId.includes('monthly') ? t`Pro Monthly` : t`Pro`
 
   const permissionLabel = (): string => {
-    if (isSimulator) return 'Not available on simulator'
+    if (isSimulator) return 'Not available on simulator' // dev/simulator-only — not wrapped per coding standards
     if (notifPermission === null) return '—'
     if (notifPermission === 'granted') return t`Granted`
     if (notifPermission === 'undetermined') return t`Enable`
@@ -113,17 +154,46 @@ const SettingsScreen = () => {
   }
 
   return (
-    <Containers.Screen>
+    <Containers.Screen shouldAutoResize={false}>
+      <YStack position="absolute" top={0} left={0} right={0} height={280} bg="$accentBackground" opacity={0.18} />
       <YStack flex={1}>
-        <ScrollView contentContainerStyle={{ padding: 24, gap: 24, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
+        {/* NOTE: contentContainerStyle on ScrollView requires a plain style object */}
+        <ScrollView
+          contentContainerStyle={{ padding: sizes.lg, gap: sizes.lg, paddingBottom: sizes.lg * 2 }}
+          showsVerticalScrollIndicator={false}>
           <YStack gap="$6">
-            <DisplayLg color="$text-emphasis" letterSpacing={-0.5}>
+            <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
               <Trans>Settings</Trans>
             </DisplayLg>
 
+            {/* Account */}
+            {currentUser ? (
+              <SettingsCard hasGlass={hasGlass}>
+                <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
+                  <Trans>Account</Trans>
+                </LabelMd>
+                {(currentUser.user_metadata?.full_name || currentUser.user_metadata?.name) ? (
+                  <XStack items="center" justify="space-between" mb="$2">
+                    <BodySm color="$text-secondary">
+                      <Trans>Name</Trans>
+                    </BodySm>
+                    <LabelMd color="$text-emphasis">
+                      {currentUser.user_metadata.full_name ?? currentUser.user_metadata.name}
+                    </LabelMd>
+                  </XStack>
+                ) : null}
+                <XStack items="center" justify="space-between">
+                  <BodySm color="$text-secondary">
+                    <Trans>Email</Trans>
+                  </BodySm>
+                  <LabelMd color="$text-secondary">{currentUser.email}</LabelMd>
+                </XStack>
+              </SettingsCard>
+            ) : null}
+
             {/* Subscription */}
-            <YStack bg="$surface-card" rounded="$4" p="$4" borderWidth={1} borderColor="$borderColor">
-              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+            <SettingsCard hasGlass={hasGlass}>
+              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Subscription</Trans>
               </LabelMd>
 
@@ -156,22 +226,22 @@ const SettingsScreen = () => {
                 <SizingAnimatedButton
                   onPress={async () => {
                     const purchased = await presentPaywall()
-                    if (purchased) alert({ title: t`Welcome to Pro ✦`, message: t`Unlimited entries unlocked. Keep writing.`, duration: 4 })
+                    if (purchased) alert({ title: t`Welcome to Pro ✦`, message: t`Unlimited entries unlocked. Keep writing.`, duration: PAYWALL_SUCCESS_ALERT_DURATION })
                   }}
                   backgroundColor="$accentBackground"
                   spinnerBackgroundColor="$accentBackground"
                   spinnerPieceColor="$accentColor"
-                  height={40}>
+                  height={UPGRADE_BUTTON_HEIGHT}>
                   <LabelLg color="$accentColor">
                     <Trans>Upgrade to Pro ✦</Trans>
                   </LabelLg>
                 </SizingAnimatedButton>
               ) : null}
-            </YStack>
+            </SettingsCard>
 
             {/* Daily reminder */}
-            <YStack bg="$surface-card" rounded="$4" p="$4" borderWidth={1} borderColor="$borderColor">
-              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+            <SettingsCard hasGlass={hasGlass}>
+              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Daily reminder</Trans>
               </LabelMd>
 
@@ -188,19 +258,19 @@ const SettingsScreen = () => {
                       toggleReminder(notifPermission === 'granted')
                     }}
                     disabled={isSimulator ? false : notifPermission !== 'granted'}
-                    opacity={isSimulator ? 1 : (notifPermission === 'granted' ? 1 : 0.4)}>
+                    opacity={isSimulator ? 1 : (notifPermission === 'granted' ? 1 : DISABLED_OPACITY)}>
                     <YStack
                       bg={reminderEnabled ? '$accentBackground' : '$surface-subtle'}
                       rounded="$10"
-                      width={44}
-                      height={26}
+                      width={TOGGLE_TRACK_WIDTH}
+                      height={TOGGLE_TRACK_HEIGHT}
                       justify="center"
                       px="$1">
                       <YStack
-                        bg="white"
+                        bg="$white"
                         rounded="$10"
-                        width={20}
-                        height={20}
+                        width={TOGGLE_THUMB_SIZE}
+                        height={TOGGLE_THUMB_SIZE}
                         alignSelf={reminderEnabled ? 'flex-end' : 'flex-start'}
                       />
                     </YStack>
@@ -221,23 +291,22 @@ const SettingsScreen = () => {
                 </BaseTouchable>
               ) : null}
 
-              {!isSimulator && notifPermission === 'denied' && (
+              {!isSimulator && notifPermission === 'denied' ? (
                 <BodySm color="$text-disabled" mt="$2">
                   <Trans>Enable notifications in Settings to use reminders.</Trans>
                 </BodySm>
-              )}
-            </YStack>
+              ) : null}
+            </SettingsCard>
 
             {/* Push notifications */}
-            <YStack bg="$surface-card" rounded="$4" p="$4" borderWidth={1} borderColor="$borderColor">
-              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+            <SettingsCard hasGlass={hasGlass}>
+              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Push notifications</Trans>
               </LabelMd>
 
               <BaseTouchable
                 onPress={handlePermissionPress}
-                disabled={notifPermission === 'granted'}
-                mb="$3">
+                disabled={notifPermission === 'granted'}>
                 <XStack items="center" justify="space-between">
                   <BodySm color="$text-secondary">
                     <Trans>Permission</Trans>
@@ -248,11 +317,11 @@ const SettingsScreen = () => {
                 </XStack>
               </BaseTouchable>
 
-            </YStack>
+            </SettingsCard>
 
             {/* Time format */}
-            <YStack bg="$surface-card" rounded="$4" p="$4" borderWidth={1} borderColor="$borderColor">
-              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+            <SettingsCard hasGlass={hasGlass}>
+              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Time format</Trans>
               </LabelMd>
               <XStack gap="$2">
@@ -271,7 +340,7 @@ const SettingsScreen = () => {
                   </BaseTouchable>
                 ))}
               </XStack>
-            </YStack>
+            </SettingsCard>
 
             {/* Sign out */}
             <BaseTouchable
@@ -296,32 +365,35 @@ const SettingsScreen = () => {
         transparent
         animationType="slide"
         onRequestClose={() => setShowTimePicker(false)}>
-        <TouchableOpacity
-          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
-          activeOpacity={1}
+        <BaseTouchable
+          flex={1}
+          bg="$peekDim"
+          justify="flex-end"
           onPress={() => setShowTimePicker(false)}>
-          <TouchableOpacity activeOpacity={1}>
+          <BaseTouchable>
             <YStack bg="$background" rounded="$4" p="$4" mx="$2" mb="$6">
-              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={0.9} mb="$3">
+              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Select reminder time</Trans>
               </LabelMd>
-              <FlatList
-                data={REMINDER_HOURS}
-                keyExtractor={h => String(h)}
-                style={{ maxHeight: 300 }}
-                renderItem={({ item: h }) => (
-                  <TouchableOpacity
-                    onPress={() => { updateTime(h, 0); setShowTimePicker(false) }}
-                    style={{ paddingVertical: 12, paddingHorizontal: 8 }}>
-                    <LabelLg color={h === reminderHour ? '$accentBackground' : '$text-emphasis'}>
-                      {formatHour(h, timeFormat === '24h')}
-                    </LabelLg>
-                  </TouchableOpacity>
-                )}
-              />
+              <YStack height={TIME_PICKER_MAX_HEIGHT}>
+                <FlashList
+                  data={REMINDER_HOURS}
+                  keyExtractor={h => String(h)}
+                  renderItem={({ item: h }) => (
+                    <BaseTouchable
+                      onPress={() => { updateTime(h, 0); setShowTimePicker(false) }}
+                      py={TIME_PICKER_ITEM_PY}
+                      px={sizes.sm}>
+                      <LabelLg color={h === reminderHour ? '$accentBackground' : '$text-emphasis'}>
+                        {formatHour(h, timeFormat === '24h')}
+                      </LabelLg>
+                    </BaseTouchable>
+                  )}
+                />
+              </YStack>
             </YStack>
-          </TouchableOpacity>
-        </TouchableOpacity>
+          </BaseTouchable>
+        </BaseTouchable>
       </Modal>
     </Containers.Screen>
   )
