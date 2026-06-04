@@ -72,7 +72,7 @@ const SignInScreen = () => {
   const [authError, setAuthError] = useState<string | null>(null)
   const { t } = useLingui()
 
-  const translateAuthError = (message: string): string => {
+  const translateAuthError = useCallback((message: string): string => {
     const lower = message.toLowerCase()
     if (lower.includes('invalid login credentials') || lower.includes('invalid credentials')) return t`Invalid email or password`
     if (lower.includes('email not confirmed')) return t`Please confirm your email before signing in`
@@ -81,7 +81,7 @@ const SignInScreen = () => {
     if (lower.includes('unable to validate email address')) return t`Please enter a valid email address`
     if (lower.includes('email rate limit exceeded') || lower.includes('too many requests')) return t`Too many attempts. Please try again later`
     return message
-  }
+  }, [t])
 
   const { toast } = useToast()
   const router = useRouter()
@@ -267,7 +267,7 @@ const SignInScreen = () => {
     } finally {
       setSocialLoading(false)
     }
-  }, [t])
+  }, [t, translateAuthError])
 
   const isReady = email.trim().length > 0 && password.length >= MIN_PASSWORD_LENGTH &&
     (mode === 'sign-in' || confirmPassword.length >= MIN_PASSWORD_LENGTH)

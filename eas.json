@@ -59,7 +59,7 @@
       "android": {
         "serviceAccountKeyPath": "./eas-service-account.json",
         "track": "production",
-        "releaseStatus": "completed"
+        "releaseStatus": "draft"
       }
     },
     "prd-internal": {

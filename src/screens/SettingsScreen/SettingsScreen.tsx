@@ -176,7 +176,7 @@ const SettingsScreen = () => {
                   <Trans>Account</Trans>
                 </LabelMd>
                 <BodySm color="$text-secondary" mb="$3">
-                  <Trans>You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro.</Trans>
+                  <Trans>You&apos;re using reflect as a guest. Sign in to sync your journal across devices and unlock Pro.</Trans>
                 </BodySm>
                 <BaseTouchable
                   onPress={() => router.push('/sign-in')}
