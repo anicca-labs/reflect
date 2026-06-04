@@ -49,7 +49,11 @@ const ForgotPasswordScreen = () => {
     setLoading(false)
 
     if (error) {
-      setEmailError(error.message)
+      const lower = error.message.toLowerCase()
+      const msg = lower.includes('email rate limit') || lower.includes('too many requests') ? t`Too many attempts. Please try again later`
+        : lower.includes('user not found') || lower.includes('unable to validate') ? t`No account found with this email`
+        : error.message
+      setEmailError(msg)
     } else {
       toast({
         title: t`Check your email`,

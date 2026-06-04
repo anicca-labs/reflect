@@ -84,7 +84,7 @@ const SettingsScreen = () => {
   }, [])
 
   const showSimulatorToast = () => {
-    alert({ title: 'Physical device only', message: 'This feature is not available on the simulator.', preset: 'error', duration: SIMULATOR_TOAST_DURATION })
+    alert({ title: t`Physical device only`, message: t`This feature is not available on the simulator.`, preset: 'error', duration: SIMULATOR_TOAST_DURATION })
   }
 
   const refreshPermissionStatus = async () => {

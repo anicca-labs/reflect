@@ -46,6 +46,10 @@ msgid "Already have an account? Sign in"
 msgstr "Sudah punya akun? Masuk"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
+msgid "An account with this email already exists"
+msgstr "Akun dengan email ini sudah ada"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Apple sign-in failed: no identity token"
 msgstr "Gagal masuk dengan Apple: tidak ada token identitas"
 
@@ -172,6 +176,10 @@ msgid "Free"
 msgstr "Gratis"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Google Play Services not available"
+msgstr "Google Play Services tidak tersedia"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google sign-in failed: no identity token"
 msgstr "Gagal masuk dengan Google: tidak ada token identitas"
 
@@ -182,6 +190,10 @@ msgstr "Diberikan"
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "How are you really feeling right now?"
 msgstr "Bagaimana perasaanmu sebenarnya saat ini?"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Invalid email or password"
+msgstr "Email atau kata sandi salah"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Journal"
@@ -199,6 +211,14 @@ msgstr "Nama"
 msgid "New password"
 msgstr "Kata sandi baru"
 
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "New password must be different from your current password"
+msgstr "Kata sandi baru harus berbeda dari kata sandi saat ini"
+
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+msgid "No account found with this email"
+msgstr "Tidak ada akun yang ditemukan dengan email ini"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries match your search."
 msgstr "Tidak ada entri yang cocok dengan pencarian Anda."
@@ -210,6 +230,11 @@ msgstr "Belum ada entri. Mulai menulis di tab Jurnal."
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
 msgstr "Kata sandi"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Password must be at least 6 characters"
+msgstr "Kata sandi harus minimal 6 karakter"
 
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Password updated"
@@ -225,8 +250,16 @@ msgid "Permission"
 msgstr "Izin"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Physical device only"
+msgstr "Hanya perangkat fisik"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Plan"
 msgstr "Paket"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Please confirm your email before signing in"
+msgstr "Harap konfirmasi email Anda sebelum masuk"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -319,6 +352,10 @@ msgstr "Langganan"
 #~ msgstr "Tindakan ini tidak dapat dibatalkan."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "This feature is not available on the simulator."
+msgstr "Fitur ini tidak tersedia di simulator."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Time"
 msgstr "Waktu"
 
@@ -327,10 +364,18 @@ msgid "Time format"
 msgstr "Format waktu"
 
 #. placeholder {0}: todayEntries.length
-#. placeholder {1}: todayEntries.length === 1 ? 'entry' : 'entries'
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Today · {0} {1}"
-msgstr "Hari ini · {0} {1}"
+msgid "Today · {0, plural, one {# entry} other {# entries}}"
+msgstr "Hari ini · {0, plural, one {# entri} other {# entri}}"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+#~ msgid "Today · {0} {1}"
+#~ msgstr "Hari ini · {0} {1}"
+
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Too many attempts. Please try again later"
+msgstr "Terlalu banyak percobaan. Silakan coba lagi nanti"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx

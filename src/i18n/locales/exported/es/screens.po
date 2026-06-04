@@ -46,6 +46,10 @@ msgid "Already have an account? Sign in"
 msgstr "¿Ya tienes cuenta? Inicia sesión"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
+msgid "An account with this email already exists"
+msgstr "Ya existe una cuenta con este correo"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Apple sign-in failed: no identity token"
 msgstr "Error al iniciar sesión con Apple: sin token de identidad"
 
@@ -172,6 +176,10 @@ msgid "Free"
 msgstr "Gratis"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Google Play Services not available"
+msgstr "Google Play Services no disponible"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google sign-in failed: no identity token"
 msgstr "Error al iniciar sesión con Google: sin token de identidad"
 
@@ -182,6 +190,10 @@ msgstr "Concedido"
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "How are you really feeling right now?"
 msgstr "¿Cómo te sientes realmente en este momento?"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Invalid email or password"
+msgstr "Correo o contraseña incorrectos"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Journal"
@@ -199,6 +211,14 @@ msgstr "Nombre"
 msgid "New password"
 msgstr "Nueva contraseña"
 
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "New password must be different from your current password"
+msgstr "La nueva contraseña debe ser diferente a la actual"
+
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+msgid "No account found with this email"
+msgstr "No se encontró ninguna cuenta con este correo"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries match your search."
 msgstr "Ninguna entrada coincide con tu búsqueda."
@@ -210,6 +230,11 @@ msgstr "Sin entradas aún. Empieza a escribir en la pestaña Diario."
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
 msgstr "Contraseña"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Password must be at least 6 characters"
+msgstr "La contraseña debe tener al menos 6 caracteres"
 
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Password updated"
@@ -225,8 +250,16 @@ msgid "Permission"
 msgstr "Permiso"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Physical device only"
+msgstr "Solo en dispositivo físico"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Plan"
 msgstr "Plan"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Please confirm your email before signing in"
+msgstr "Por favor confirma tu correo antes de iniciar sesión"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -319,6 +352,10 @@ msgstr "Suscripción"
 #~ msgstr "Esta acción no se puede deshacer."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "This feature is not available on the simulator."
+msgstr "Esta función no está disponible en el simulador."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Time"
 msgstr "Hora"
 
@@ -327,10 +364,18 @@ msgid "Time format"
 msgstr "Formato de hora"
 
 #. placeholder {0}: todayEntries.length
-#. placeholder {1}: todayEntries.length === 1 ? 'entry' : 'entries'
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Today · {0} {1}"
-msgstr "Hoy · {0} {1}"
+msgid "Today · {0, plural, one {# entry} other {# entries}}"
+msgstr "Hoy · {0, plural, one {# entrada} other {# entradas}}"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+#~ msgid "Today · {0} {1}"
+#~ msgstr "Hoy · {0} {1}"
+
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Too many attempts. Please try again later"
+msgstr "Demasiados intentos. Por favor inténtalo más tarde"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx

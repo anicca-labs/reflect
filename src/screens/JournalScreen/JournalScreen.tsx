@@ -4,7 +4,7 @@ import { BlurTargetView } from 'expo-blur'
 import { useFocusEffect, useRouter } from 'expo-router'
 import { ScrollView, YStack, XStack, TextArea, Spinner } from 'tamagui'
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans, Plural, useLingui } from '@lingui/react/macro'
 import { BaseTouchable } from '@ksairi-org/ui-touchables'
 import { Containers } from '@ksairi-org/ui-containers'
 import { sizes } from '@theme'
@@ -249,7 +249,7 @@ const JournalScreen = () => {
           {todayEntries.length > 0 ? (
             <YStack gap="$3">
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING}>
-                <Trans>Today · {todayEntries.length} {todayEntries.length === 1 ? 'entry' : 'entries'}</Trans>
+                <Trans>Today · <Plural value={todayEntries.length} one="# entry" other="# entries" /></Trans>
               </LabelMd>
               {todayEntries.map((entry, index) => (
                 <AnimatedEntry key={entry.id} index={index} animKey={animKey}>

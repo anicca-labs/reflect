@@ -17,6 +17,7 @@ import {
   appleAuth,
   appleAuthAndroid,
   AppleButton,
+  AppleError,
 } from '@invertase/react-native-apple-authentication'
 
 import {
@@ -70,6 +71,18 @@ const SignInScreen = () => {
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [authError, setAuthError] = useState<string | null>(null)
   const { t } = useLingui()
+
+  const translateAuthError = (message: string): string => {
+    const lower = message.toLowerCase()
+    if (lower.includes('invalid login credentials') || lower.includes('invalid credentials')) return t`Invalid email or password`
+    if (lower.includes('email not confirmed')) return t`Please confirm your email before signing in`
+    if (lower.includes('user already registered')) return t`An account with this email already exists`
+    if (lower.includes('password should be at least')) return t`Password must be at least 6 characters`
+    if (lower.includes('unable to validate email address')) return t`Please enter a valid email address`
+    if (lower.includes('email rate limit exceeded') || lower.includes('too many requests')) return t`Too many attempts. Please try again later`
+    return message
+  }
+
   const { toast } = useToast()
   const router = useRouter()
   const { setAnonymous } = useSessionStore()
@@ -129,7 +142,7 @@ const SignInScreen = () => {
 
     setLoading(false)
     if (error) {
-      setAuthError(error.message)
+      setAuthError(translateAuthError(error.message))
     } else if (mode === 'sign-up') {
       toast({
         title: t`Check your email`,
@@ -193,7 +206,11 @@ const SignInScreen = () => {
       if (error) throw error
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err)
-      const isCancelledIOS = message.includes('com.apple.AuthenticationServices.AuthorizationError error 1001')
+      const errCode = (err as { code?: string })?.code
+      const isCancelledIOS =
+        errCode === AppleError.CANCELED ||
+        errCode === AppleError.UNKNOWN ||
+        message.includes('com.apple.AuthenticationServices.AuthorizationError error 1001')
       const isCancelledAndroid = message.includes('E_SIGNIN_CANCELLED_ERROR')
       if (!isCancelledIOS && !isCancelledAndroid) setAuthError(message)
     } finally {
@@ -243,9 +260,9 @@ const SignInScreen = () => {
     } catch (err: unknown) {
       if (isErrorWithCode(err)) {
         const cancelled = err.code === statusCodes.SIGN_IN_CANCELLED || err.code === statusCodes.IN_PROGRESS
-        if (!cancelled) setAuthError(err.message)
+        if (!cancelled) setAuthError(err.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE ? t`Google Play Services not available` : translateAuthError(err.message))
       } else if (err instanceof Error) {
-        setAuthError(err.message)
+        setAuthError(translateAuthError(err.message))
       }
     } finally {
       setSocialLoading(false)

@@ -42,7 +42,11 @@ const ResetPasswordScreen = () => {
     setLoading(false)
 
     if (error) {
-      setPasswordError(error.message)
+      const lower = error.message.toLowerCase()
+      const msg = lower.includes('password should be at least') ? t`Password must be at least 6 characters`
+        : lower.includes('same password') ? t`New password must be different from your current password`
+        : error.message
+      setPasswordError(msg)
     } else {
       await supabase.auth.signOut()
       toast({

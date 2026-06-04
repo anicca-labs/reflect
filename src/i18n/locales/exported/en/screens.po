@@ -46,6 +46,10 @@ msgid "Already have an account? Sign in"
 msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
+msgid "An account with this email already exists"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Apple sign-in failed: no identity token"
 msgstr ""
 
@@ -172,6 +176,10 @@ msgid "Free"
 msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Google Play Services not available"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google sign-in failed: no identity token"
 msgstr ""
 
@@ -181,6 +189,10 @@ msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "How are you really feeling right now?"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Invalid email or password"
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
@@ -199,6 +211,14 @@ msgstr ""
 msgid "New password"
 msgstr ""
 
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "New password must be different from your current password"
+msgstr ""
+
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+msgid "No account found with this email"
+msgstr ""
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries match your search."
 msgstr ""
@@ -209,6 +229,11 @@ msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
+msgstr ""
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Password must be at least 6 characters"
 msgstr ""
 
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
@@ -225,7 +250,15 @@ msgid "Permission"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Physical device only"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Plan"
+msgstr ""
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Please confirm your email before signing in"
 msgstr ""
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
@@ -319,6 +352,10 @@ msgstr ""
 #~ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "This feature is not available on the simulator."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Time"
 msgstr ""
 
@@ -327,9 +364,17 @@ msgid "Time format"
 msgstr ""
 
 #. placeholder {0}: todayEntries.length
-#. placeholder {1}: todayEntries.length === 1 ? 'entry' : 'entries'
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Today · {0} {1}"
+msgid "Today · {0, plural, one {# entry} other {# entries}}"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+#~ msgid "Today · {0} {1}"
+#~ msgstr ""
+
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Too many attempts. Please try again later"
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx

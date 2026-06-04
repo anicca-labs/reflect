@@ -46,6 +46,10 @@ msgid "Already have an account? Sign in"
 msgstr "لديك حساب بالفعل؟ سجّل الدخول"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
+msgid "An account with this email already exists"
+msgstr "يوجد حساب بهذا البريد الإلكتروني بالفعل"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Apple sign-in failed: no identity token"
 msgstr "فشل تسجيل الدخول بـ Apple: لا يوجد رمز هوية"
 
@@ -172,6 +176,10 @@ msgid "Free"
 msgstr "مجاني"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Google Play Services not available"
+msgstr "خدمات Google Play غير متاحة"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google sign-in failed: no identity token"
 msgstr "فشل تسجيل الدخول بـ Google: لا يوجد رمز هوية"
 
@@ -182,6 +190,10 @@ msgstr "ممنوحة"
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "How are you really feeling right now?"
 msgstr "كيف تشعر حقاً الآن؟"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Invalid email or password"
+msgstr "البريد الإلكتروني أو كلمة المرور غير صحيحة"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Journal"
@@ -199,6 +211,14 @@ msgstr "الاسم"
 msgid "New password"
 msgstr "كلمة المرور الجديدة"
 
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+msgid "New password must be different from your current password"
+msgstr "يجب أن تكون كلمة المرور الجديدة مختلفة عن كلمة المرور الحالية"
+
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+msgid "No account found with this email"
+msgstr "لم يتم العثور على حساب بهذا البريد الإلكتروني"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries match your search."
 msgstr "لا توجد تسجيلات تطابق بحثك."
@@ -210,6 +230,11 @@ msgstr "لا توجد تسجيلات بعد. ابدأ الكتابة في تبو
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
 msgstr "كلمة المرور"
+
+#: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Password must be at least 6 characters"
+msgstr "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل"
 
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Password updated"
@@ -225,8 +250,16 @@ msgid "Permission"
 msgstr "الإذن"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Physical device only"
+msgstr "الجهاز الفعلي فقط"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Plan"
 msgstr "الخطة"
+
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Please confirm your email before signing in"
+msgstr "يرجى تأكيد بريدك الإلكتروني قبل تسجيل الدخول"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -319,6 +352,10 @@ msgstr "الاشتراك"
 #~ msgstr "لا يمكن التراجع عن هذا."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "This feature is not available on the simulator."
+msgstr "هذه الميزة غير متاحة على المحاكي."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Time"
 msgstr "الوقت"
 
@@ -327,10 +364,18 @@ msgid "Time format"
 msgstr "تنسيق الوقت"
 
 #. placeholder {0}: todayEntries.length
-#. placeholder {1}: todayEntries.length === 1 ? 'entry' : 'entries'
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Today · {0} {1}"
-msgstr "اليوم · {0} {1}"
+msgid "Today · {0, plural, one {# entry} other {# entries}}"
+msgstr "اليوم · {0, plural, one {# إدخال} two {# إدخالان} few {# إدخالات} other {# إدخالات}}"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+#~ msgid "Today · {0} {1}"
+#~ msgstr "اليوم · {0} {1}"
+
+#: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
+#: src/screens/SignInScreen/SignInScreen.tsx
+msgid "Too many attempts. Please try again later"
+msgstr "محاولات كثيرة جداً. يرجى المحاولة مرة أخرى لاحقاً"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
