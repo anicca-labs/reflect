@@ -17,7 +17,7 @@ const EnvBadge = () => {
 
   if (!env || env === 'prd' || env === 'production') return null
 
-  const label = env === 'stg' || env === 'staging' ? 'STAGING' : env.toUpperCase()
+  const label = env === 'stg' || env === 'staging' ? 'STG' : env.toUpperCase()
 
   return (
     <YStack
