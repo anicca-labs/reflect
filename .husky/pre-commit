@@ -7,7 +7,8 @@ if git diff --cached --name-only | grep -qE '\.(tsx?|jsx?)$'; then
   git add src/i18n/locales/exported/
 fi
 
-# Always recompile and re-stage compiled catalogs if they differ from HEAD
-# EAS local builds archive via git so compiled files must always be committed
+# Always recompile and re-stage both exported and compiled catalogs
+# EAS local builds archive via git so these files must always be committed
 yarn lingui compile
+git add src/i18n/locales/exported/
 git add src/i18n/locales/compiled/
