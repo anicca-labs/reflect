@@ -208,9 +208,11 @@ const SignInScreen = () => {
       const message = err instanceof Error ? err.message : String(err)
       const errCode = (err as { code?: string })?.code
       const isCancelledIOS =
-        errCode === AppleError.CANCELED ||
-        errCode === AppleError.UNKNOWN ||
-        message.includes('com.apple.AuthenticationServices.AuthorizationError error 1001')
+        Platform.OS === 'ios' && (
+          errCode === AppleError.CANCELED ||
+          errCode === AppleError.UNKNOWN ||
+          message.includes('com.apple.AuthenticationServices.AuthorizationError error 1001')
+        )
       const isCancelledAndroid = message.includes('E_SIGNIN_CANCELLED_ERROR')
       if (!isCancelledIOS && !isCancelledAndroid) setAuthError(message)
     } finally {
