@@ -79,13 +79,13 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Install Fastlane
-        run: gem install fastlane
-
       - name: Install Specific xcodeproj Gem Version
         run: |
           sudo gem uninstall xcodeproj -x --ignore-dependencies || true
           sudo gem install xcodeproj -v 1.25.1
+
+      - name: Install Fastlane
+        run: gem install fastlane
 
       - name: Setup cocoapods
         run: gem install cocoapods -v ${{ inputs.cocoapods-version }}
