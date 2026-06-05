@@ -1,6 +1,7 @@
 import { YStack, Paragraph } from 'tamagui'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
+
 const Z_INDEX_ENV_BADGE = 9999
 const BADGE_RIGHT = 12
 const BADGE_TOP_OFFSET = 8
