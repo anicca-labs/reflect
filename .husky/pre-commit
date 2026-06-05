@@ -1,8 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname "$0")/common.sh"
 
-# Always recompile and re-stage both exported and compiled catalogs
-# EAS local builds archive via git so these files must always be committed
+# Always extract, compile, and re-stage both exported and compiled catalogs.
+# lineNumbers: false in lingui.config.ts makes extract deterministic — no churn.
+# EAS local builds archive via git so these files must always be committed.
+yarn lingui extract
 yarn lingui compile
 git add src/i18n/locales/exported/
 git add src/i18n/locales/compiled/
