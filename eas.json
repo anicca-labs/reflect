@@ -38,6 +38,7 @@
     "stg": {
       "autoIncrement": true
     },
+
     "prd": {
       "autoIncrement": true
     }
