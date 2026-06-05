@@ -1,12 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname "$0")/common.sh"
 
-# If any source file is staged, extract new i18n strings and re-stage the .po catalogs
-if git diff --cached --name-only | grep -qE '\.(tsx?|jsx?)$'; then
-  yarn lingui extract
-  git add src/i18n/locales/exported/
-fi
-
 # Always recompile and re-stage both exported and compiled catalogs
 # EAS local builds archive via git so these files must always be committed
 yarn lingui compile
