@@ -23,6 +23,15 @@ on:
         options:
           - stg
           - prd
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target channel'
+        required: true
+        type: choice
+        options:
+          - stg
+          - prd
 
 jobs:
   push-ota:
