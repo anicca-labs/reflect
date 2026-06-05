@@ -4,7 +4,7 @@ import { BlurTargetView } from 'expo-blur'
 import { useFocusEffect, useRouter } from 'expo-router'
 import { ScrollView, YStack, XStack, TextArea, Spinner } from 'tamagui'
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts'
-import { Trans, Plural, useLingui } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { BaseTouchable } from '@ksairi-org/ui-touchables'
 import { Containers } from '@ksairi-org/ui-containers'
 import { sizes } from '@theme'
@@ -13,7 +13,7 @@ import { getDateLocale, formatEntryTime } from '@/src/utils/date'
 import { usePreferencesStore, useSwipeableStore, useSessionStore, useAnonymousJournalStore } from '@/src/stores'
 import type { JournalEntry } from '@/src/types/journal'
 import { logJournalEntryCreated, logScreenView } from '@analytics'
-import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry, useRevenueCat, useToast, useStreak, getDailyPromptIndex } from '@hooks'
+import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry, useToggleBookmark, useRevenueCat, useToast, useStreak, getDailyPromptIndex } from '@hooks'
 import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING, DISABLED_OPACITY, PAYWALL_SUCCESS_ALERT_DURATION } from '@constants'
 import { AnimatedEntry, SwipeableDeleteWrapper, EntryPeekModal, type SwipeableDeleteWrapperHandle } from '@molecules'
 
@@ -72,11 +72,11 @@ const JournalScreen = () => {
   const [draft, setDraft] = useState('')
   const [closeKey, setCloseKey] = useState(0)
   const [animKey, setAnimKey] = useState(0)
-  const [peekEntry, setPeekEntry] = useState<JournalEntry | null>(null)
+  const [peekEntryId, setPeekEntryId] = useState<string | null>(null)
 
   const handlePeek = (entry: JournalEntry) => {
     setCloseKey(k => k + 1)
-    setPeekEntry(entry)
+    setPeekEntryId(entry.id)
   }
   const blurTargetRef = useRef<View>(null)
   const hasAnimated = useRef(false)
@@ -88,6 +88,7 @@ const JournalScreen = () => {
   const { data: serverEntries = [], isLoading: serverLoading, refetch } = useJournalEntries()
   const createMutation = useCreateJournalEntry()
   const deleteMutation = useDeleteJournalEntry()
+  const toggleBookmarkMutation = useToggleBookmark()
   const { isPro, presentPaywall } = useRevenueCat()
   const { t } = useLingui()
   const { alert } = useToast()
@@ -95,6 +96,7 @@ const JournalScreen = () => {
 
   const entries = isAnonymous ? localEntries : serverEntries
   const loading = isAnonymous ? false : serverLoading
+  const peekEntry = peekEntryId ? (entries.find(e => e.id === peekEntryId) ?? null) : null
 
   useFocusEffect(
     useCallback(() => {
@@ -249,7 +251,9 @@ const JournalScreen = () => {
           {todayEntries.length > 0 ? (
             <YStack gap="$3">
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING}>
-                <Trans>Today · <Plural value={todayEntries.length} one="# entry" other="# entries" /></Trans>
+                {todayEntries.length === 1
+                  ? <Trans>Today · 1 entry</Trans>
+                  : <Trans>Today · {todayEntries.length} entries</Trans>}
               </LabelMd>
               {todayEntries.map((entry, index) => (
                 <AnimatedEntry key={entry.id} index={index} animKey={animKey}>
@@ -267,7 +271,12 @@ const JournalScreen = () => {
         </ScrollView>
       </YStack>
       </BlurTargetView>
-      <EntryPeekModal entry={peekEntry} onClose={() => setPeekEntry(null)} blurTargetRef={blurTargetRef} />
+      <EntryPeekModal
+        entry={peekEntry}
+        onClose={() => setPeekEntryId(null)}
+        blurTargetRef={blurTargetRef}
+        onToggleBookmark={isAnonymous ? undefined : (id, current) => toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })}
+      />
     </Containers.Screen>
   )
 }

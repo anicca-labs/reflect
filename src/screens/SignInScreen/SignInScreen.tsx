@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AppState, Platform, useColorScheme } from 'react-native'
 import { YStack, XStack, Input, Spinner, styled } from 'tamagui'
-import { useRouter } from 'expo-router'
+import { useRouter, useFocusEffect } from 'expo-router'
 import { DisplayLg, BodySm, LabelSm, LabelLg } from '@fonts'
 import { Containers, KeyboardScrollView } from '@ksairi-org/ui-containers'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -86,6 +86,20 @@ const SignInScreen = () => {
   const { toast } = useToast()
   const router = useRouter()
   const { setAnonymous } = useSessionStore()
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setEmail('')
+        setPassword('')
+        setConfirmPassword('')
+        setMode('sign-in')
+        setEmailError(null)
+        setPasswordError(null)
+        setAuthError(null)
+      }
+    }, [])
+  )
   const isDark = useColorScheme() === 'dark'
   const hasInitializedAppleSignIn = useRef(false)
   const prevAppState = useRef<string>('active')

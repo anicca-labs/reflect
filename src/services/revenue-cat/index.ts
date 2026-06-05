@@ -1,7 +1,9 @@
-import { Platform, LogBox } from 'react-native'
+import { Platform, Linking, LogBox } from 'react-native'
 import Purchases, { LOG_LEVEL } from 'react-native-purchases'
 
 LogBox.ignoreLogs(['[RevenueCat]'])
+
+const ANDROID_SUBSCRIPTIONS_URL = 'https://play.google.com/store/account/subscriptions'
 
 const isSandbox = __DEV__ || process.env.EXPO_PUBLIC_ENV === 'stg'
 
@@ -46,6 +48,10 @@ const resetRevenueCatUser = async () => {
 }
 
 const manageSubscriptions = async () => {
+  if (Platform.OS === 'android') {
+    await Linking.openURL(ANDROID_SUBSCRIPTIONS_URL)
+    return
+  }
   await Purchases.showManageSubscriptions()
 }
 

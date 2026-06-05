@@ -64,12 +64,10 @@ const useAuthSession = () => {
     const code = queryParams.get('code')
     const queryType = queryParams.get('type')
     if (code) {
+      // Set recovery flag BEFORE exchange so the SIGNED_IN nav effect sees it
+      if (queryType === 'recovery') isRecoveryMode.current = true
       await supabase.auth.exchangeCodeForSession(code)
-      // detectSessionInUrl: false means PASSWORD_RECOVERY never fires — check type ourselves
-      if (queryType === 'recovery') {
-        isRecoveryMode.current = true
-        router.replace('/reset-password')
-      }
+      if (queryType === 'recovery') router.replace('/reset-password')
       return
     }
     // Implicit flow: tokens in hash fragment
@@ -78,12 +76,10 @@ const useAuthSession = () => {
     const refreshToken = hashParams.get('refresh_token')
     const type = hashParams.get('type')
     if (accessToken && refreshToken) {
+      // Set recovery flag BEFORE setSession so the SIGNED_IN nav effect sees it
+      if (type === 'recovery') isRecoveryMode.current = true
       await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
-      // setSession fires SIGNED_IN not PASSWORD_RECOVERY — detect recovery from URL type param
-      if (type === 'recovery') {
-        isRecoveryMode.current = true
-        router.replace('/reset-password')
-      }
+      if (type === 'recovery') router.replace('/reset-password')
     }
   }, [router])
 
@@ -92,15 +88,19 @@ const useAuthSession = () => {
       // Resolve initial URL first — if it's a recovery link, set the flag before
       // setSession(null) triggers the routing effect, preventing a sign-in flash
       const initialUrl = await Linking.getInitialURL()
-      if (initialUrl) {
-        const hashType = new URLSearchParams(initialUrl.split('#')[1] ?? '').get('type')
-        const queryType = new URLSearchParams(initialUrl.split('?')[1] ?? '').get('type')
-        if (hashType === 'recovery' || queryType === 'recovery') {
-          isRecoveryMode.current = true
-        }
-      }
 
-      await clearStaleKeychainOnFreshInstall()
+      const isRecoveryUrl = !!initialUrl && (
+        new URLSearchParams(initialUrl.split('#')[1] ?? '').get('type') === 'recovery' ||
+        new URLSearchParams(initialUrl.split('?')[1] ?? '').get('type') === 'recovery'
+      )
+
+      if (isRecoveryUrl) isRecoveryMode.current = true
+
+      // Skip on recovery links: clearStaleKeychainOnFreshInstall fires SIGNED_OUT
+      // asynchronously which resets isRecoveryMode even after we re-assert it.
+      // Recovery creates a fresh session anyway so clearing stale tokens is unnecessary.
+      if (!isRecoveryUrl) await clearStaleKeychainOnFreshInstall()
+
       const { data: { session: s } } = await supabase.auth.getSession()
       setSession(s)
 

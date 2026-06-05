@@ -62,15 +62,9 @@
       },
       "android": {
         "serviceAccountKeyPath": "./eas-service-account.json",
-        "track": "production",
-        "releaseStatus": "draft"
+        "track": "alpha",
+        "releaseStatus": "completed"
       }
     },
-    "prd-internal": {
-      "extends": "prd",
-      "android": {
-        "track": "internal"
-      }
-    }
   }
 }

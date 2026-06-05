@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Alert, AppState, Linking, Modal } from 'react-native'
-import { useRouter } from 'expo-router'
+import { useRouter, useFocusEffect } from 'expo-router'
 import { ScrollView, YStack, XStack, Spinner, type YStackProps } from 'tamagui'
 import type { User } from '@supabase/supabase-js'
 import { GlassView, isGlassEffectAPIAvailable } from 'expo-glass-effect'
@@ -23,6 +23,7 @@ import {
 } from '@firebase-messaging'
 import { upsertDeviceToken } from '@/src/services/user-devices'
 import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING, DISABLED_OPACITY, PAYWALL_SUCCESS_ALERT_DURATION, SIMULATOR_TOAST_DURATION } from '@constants'
+import { AnimatedEntry } from '@molecules'
 
 const REMINDER_HOUR_START = 6
 const REMINDER_HOUR_COUNT = 18
@@ -74,6 +75,8 @@ const SettingsScreen = () => {
   const timeFormat = usePreferencesStore((s) => s.timeFormat)
   const setTimeFormat = usePreferencesStore((s) => s.setTimeFormat)
   const [hasGlass] = useState(() => isGlassEffectAPIAvailable())
+  const [animKey, setAnimKey] = useState(0)
+  const hasAnimated = useRef(false)
   const [notifPermission, setNotifPermission] = useState<NotificationPermissionStatus | null>(null)
   const [showTimePicker, setShowTimePicker] = useState(false)
   const [currentUser, setCurrentUser] = useState<User | null>(null)
@@ -82,6 +85,15 @@ const SettingsScreen = () => {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setCurrentUser(user))
   }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!hasAnimated.current) {
+        hasAnimated.current = true
+        setAnimKey(1)
+      }
+    }, [])
+  )
 
   const showSimulatorToast = () => {
     alert({ title: t`Physical device only`, message: t`This feature is not available on the simulator.`, preset: 'error', duration: SIMULATOR_TOAST_DURATION })
@@ -170,6 +182,7 @@ const SettingsScreen = () => {
             </DisplayLg>
 
             {/* Account */}
+            <AnimatedEntry index={0} animKey={animKey}>
             {isAnonymous ? (
               <SettingsCard hasGlass={hasGlass}>
                 <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
@@ -211,9 +224,11 @@ const SettingsScreen = () => {
                   <LabelMd color="$text-secondary">{currentUser.email}</LabelMd>
                 </XStack>
               </SettingsCard>
-            ) : null}
+            ) : <YStack />}
+            </AnimatedEntry>
 
             {/* Subscription */}
+            <AnimatedEntry index={1} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Subscription</Trans>
@@ -273,8 +288,10 @@ const SettingsScreen = () => {
                 </SizingAnimatedButton>
               ) : null}
             </SettingsCard>
+            </AnimatedEntry>
 
             {/* Daily reminder */}
+            <AnimatedEntry index={2} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Daily reminder</Trans>
@@ -332,8 +349,10 @@ const SettingsScreen = () => {
                 </BodySm>
               ) : null}
             </SettingsCard>
+            </AnimatedEntry>
 
             {/* Push notifications */}
+            <AnimatedEntry index={3} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Push notifications</Trans>
@@ -353,8 +372,10 @@ const SettingsScreen = () => {
               </BaseTouchable>
 
             </SettingsCard>
+            </AnimatedEntry>
 
             {/* Time format */}
+            <AnimatedEntry index={4} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Time format</Trans>
@@ -376,9 +397,11 @@ const SettingsScreen = () => {
                 ))}
               </XStack>
             </SettingsCard>
+            </AnimatedEntry>
 
             {/* Sign out / Sign in */}
-            {isAnonymous ? null : (
+            <AnimatedEntry index={5} animKey={animKey}>
+            {isAnonymous ? <YStack /> : (
               <BaseTouchable
                 onPress={handleSignOut}
                 bg="$surface-card"
@@ -392,6 +415,7 @@ const SettingsScreen = () => {
                 </LabelLg>
               </BaseTouchable>
             )}
+            </AnimatedEntry>
           </YStack>
         </ScrollView>
       </YStack>

@@ -363,14 +363,22 @@ msgstr "الوقت"
 msgid "Time format"
 msgstr "تنسيق الوقت"
 
-#. placeholder {0}: todayEntries.length
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Today · {0, plural, one {# entry} other {# entries}}"
-msgstr "اليوم · {0, plural, one {# إدخال} two {# إدخالان} few {# إدخالات} other {# إدخالات}}"
+#~ msgid "Today · {0, plural, one {# entry} other {# entries}}"
+#~ msgstr "اليوم · {0, plural, one {# إدخال} two {# إدخالان} few {# إدخالات} other {# إدخالات}}"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #~ msgid "Today · {0} {1}"
 #~ msgstr "اليوم · {0} {1}"
+
+#. placeholder {0}: todayEntries.length
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Today · {0} entries"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Today · 1 entry"
+msgstr ""
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx

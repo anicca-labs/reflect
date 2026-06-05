@@ -363,14 +363,22 @@ msgstr ""
 msgid "Time format"
 msgstr ""
 
-#. placeholder {0}: todayEntries.length
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Today · {0, plural, one {# entry} other {# entries}}"
-msgstr ""
+#~ msgid "Today · {0, plural, one {# entry} other {# entries}}"
+#~ msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #~ msgid "Today · {0} {1}"
 #~ msgstr ""
+
+#. placeholder {0}: todayEntries.length
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Today · {0} entries"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Today · 1 entry"
+msgstr ""
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx

@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect, type RefObject } from 'react'
-import { Modal, Dimensions, Share, type View } from 'react-native'
+import { BackHandler, Dimensions, Share, type View } from 'react-native'
 import { BlurView } from 'expo-blur'
 import { ScrollView, YStack, XStack } from 'tamagui'
 import { BodySm, LabelMd, LabelSm } from '@fonts'
@@ -32,12 +32,13 @@ const HIT_SLOP = { top: PEEK_HIT_SLOP_SIZE, bottom: PEEK_HIT_SLOP_SIZE, left: PE
 
 interface CardContentProps {
   displayEntry: JournalEntry | null
+  isBookmarked: boolean
   timeFormat: string
   onShare: () => void
   onToggleBookmark?: (id: string, current: boolean) => void
 }
 
-const CardContent = ({ displayEntry, timeFormat, onShare, onToggleBookmark }: CardContentProps) => (
+const CardContent = ({ displayEntry, isBookmarked, timeFormat, onShare, onToggleBookmark }: CardContentProps) => (
   <>
     <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
       <YStack p="$5" pb="$4">
@@ -67,10 +68,10 @@ const CardContent = ({ displayEntry, timeFormat, onShare, onToggleBookmark }: Ca
         </BaseTouchable>
         {onToggleBookmark && displayEntry ? (
           <BaseTouchable
-            onPress={() => onToggleBookmark(displayEntry.id, displayEntry.is_bookmarked)}
+            onPress={() => onToggleBookmark(displayEntry.id, isBookmarked)}
             hitSlop={HIT_SLOP}>
-            <LabelMd color={displayEntry.is_bookmarked ? '$accentBackground' : '$text-disabled'}>
-              {displayEntry.is_bookmarked ? '★' : '☆'}
+            <LabelMd color={isBookmarked ? '$accentBackground' : '$text-disabled'}>
+              {isBookmarked ? '★' : '☆'}
             </LabelMd>
           </BaseTouchable>
         ) : null}
@@ -81,9 +82,10 @@ const CardContent = ({ displayEntry, timeFormat, onShare, onToggleBookmark }: Ca
 
 const EntryPeekModal = ({ entry, onClose, onToggleBookmark, blurTargetRef }: EntryPeekModalProps) => {
   const timeFormat = usePreferencesStore((s) => s.timeFormat)
-  // Keep content mounted during exit animation so it doesn't vanish mid-fade
   const [displayEntry, setDisplayEntry] = useState<JournalEntry | null>(null)
+  const [isBookmarked, setIsBookmarked] = useState(false)
   const isClosing = useRef(false)
+  const openEntryId = useRef<string | null>(null)
 
   const opacity = useSharedValue(0)
   const scale = useSharedValue(CARD_SCALE_FROM)
@@ -91,15 +93,27 @@ const EntryPeekModal = ({ entry, onClose, onToggleBookmark, blurTargetRef }: Ent
 
   useEffect(() => {
     if (entry) {
+      const isNewEntry = openEntryId.current !== entry.id
+      openEntryId.current = entry.id
       isClosing.current = false
       setDisplayEntry(entry)
-      opacity.value = 0
-      scale.value = CARD_SCALE_FROM
-      translateY.value = 0
-      opacity.value = withTiming(1, { duration: ENTER_DURATION_MS })
-      scale.value = withSpring(1, { damping: 20, stiffness: 280 })
+      setIsBookmarked(entry.is_bookmarked)
+      if (isNewEntry) {
+        opacity.value = 0
+        scale.value = CARD_SCALE_FROM
+        translateY.value = 0
+        opacity.value = withTiming(1, { duration: ENTER_DURATION_MS })
+        scale.value = withSpring(1, { damping: 20, stiffness: 280 })
+      }
+    } else {
+      openEntryId.current = null
     }
   }, [entry, opacity, scale, translateY])
+
+  const handleToggleBookmark = useCallback((id: string, current: boolean) => {
+    setIsBookmarked(!current)
+    onToggleBookmark?.(id, current)
+  }, [onToggleBookmark])
 
   const handleClose = useCallback(() => {
     if (isClosing.current) return
@@ -114,10 +128,19 @@ const EntryPeekModal = ({ entry, onClose, onToggleBookmark, blurTargetRef }: Ent
     })
   }, [onClose, opacity, scale, translateY])
 
+  useEffect(() => {
+    if (!displayEntry) return
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      handleClose()
+      return true
+    })
+    return () => sub.remove()
+  }, [displayEntry, handleClose])
+
   const backdropStyle = useAnimatedStyle(() => ({ opacity: opacity.value }))
-  const cardStyle = useAnimatedStyle(() => ({
+  // Opacity is on the parent wrapper — card only needs the transform animation
+  const cardTransformStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }, { translateY: translateY.value }],
-    opacity: opacity.value,
   }))
 
   const handleShare = () => {
@@ -126,53 +149,44 @@ const EntryPeekModal = ({ entry, onClose, onToggleBookmark, blurTargetRef }: Ent
   }
 
   return (
-    <>
-      {/*
-        Blur lives in the APP layer, not inside the Modal.
-        BlurView inside a transparent Modal blurs its own (transparent) window — nothing visible.
-        Here it blurs the actual screen content behind it.
-      */}
-      {displayEntry ? (
-        <Animated.View pointerEvents="none" style={[{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }, backdropStyle]}>
-          <BlurView
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-            intensity={PEEK_BLUR_INTENSITY}
-            tint="dark"
-            blurTarget={blurTargetRef}
-            blurMethod="dimezisBlurViewSdk31Plus"
-          />
-        </Animated.View>
-      ) : null}
-      <Modal
-        transparent
-        visible={!!displayEntry}
-        animationType="none"
-        onRequestClose={handleClose}
-        statusBarTranslucent>
-        <BaseTouchable flex={1} justify="center" px="$5" onPress={handleClose} bg="$peekDim">
-          {/* onStartShouldSetResponder captures touches on the card without press feedback,
-              preventing them from reaching the outer close-on-tap touchable */}
-          <YStack onStartShouldSetResponder={() => true}>
-            <Animated.View style={cardStyle}>
-              <YStack
-                bg="$surface-card"
-                rounded="$5"
-                borderWidth={1}
-                borderColor="$borderColor"
-                maxHeight={MAX_CARD_HEIGHT}
-                overflow="hidden">
-                <CardContent
-                  displayEntry={displayEntry}
-                  timeFormat={timeFormat}
-                  onShare={handleShare}
-                  onToggleBookmark={onToggleBookmark}
-                />
-              </YStack>
-            </Animated.View>
-          </YStack>
-        </BaseTouchable>
-      </Modal>
-    </>
+    /*
+      Everything in the same app-layer compositor pass — no native Modal window boundary.
+      BlurView is always mounted so it never unmounts during the exit animation.
+      Opacity controls visibility; pointerEvents controls touch interception.
+    */
+    <Animated.View
+      pointerEvents={displayEntry ? 'box-none' : 'none'}
+      style={[{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }, backdropStyle]}>
+      <BlurView
+        pointerEvents="none"
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        intensity={PEEK_BLUR_INTENSITY}
+        tint="dark"
+        blurTarget={blurTargetRef}
+        blurMethod="dimezisBlurViewSdk31Plus"
+      />
+      <BaseTouchable flex={1} justify="center" px="$5" onPress={handleClose} bg="$peekDim">
+        <YStack onStartShouldSetResponder={() => true}>
+          <Animated.View style={cardTransformStyle}>
+            <YStack
+              bg="$surface-card"
+              rounded="$5"
+              borderWidth={1}
+              borderColor="$borderColor"
+              maxHeight={MAX_CARD_HEIGHT}
+              overflow="hidden">
+              <CardContent
+                displayEntry={entry ?? displayEntry}
+                isBookmarked={isBookmarked}
+                timeFormat={timeFormat}
+                onShare={handleShare}
+                onToggleBookmark={onToggleBookmark ? handleToggleBookmark : undefined}
+              />
+            </YStack>
+          </Animated.View>
+        </YStack>
+      </BaseTouchable>
+    </Animated.View>
   )
 }
 

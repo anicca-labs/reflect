@@ -1,6 +1,5 @@
-import { YStack, Paragraph } from 'tamagui'
+import { YStack, Text } from 'tamagui'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-
 
 const Z_INDEX_ENV_BADGE = 9999
 const BADGE_RIGHT = 12
@@ -18,7 +17,7 @@ const EnvBadge = () => {
 
   if (!env || env === 'prd' || env === 'production') return null
 
-  const label = env === 'stg' || env === 'staging' ? 'STG' : env.toUpperCase()
+  const label = env === 'stg' || env === 'staging' ? 'STAGING' : env.toUpperCase()
 
   return (
     <YStack
@@ -32,14 +31,16 @@ const EnvBadge = () => {
         style={{ backgroundColor: '#F59E0B' }}
         borderRadius={BADGE_BORDER_RADIUS}
         px={BADGE_PX}
-        py={BADGE_PY}>
-        <Paragraph
+        py={BADGE_PY}
+        overflow="visible">
+        <Text
           color="$white"
           fontSize={BADGE_FONT_SIZE}
           fontWeight="700"
-          letterSpacing={BADGE_LETTER_SPACING}>
+          letterSpacing={BADGE_LETTER_SPACING}
+          numberOfLines={1}>
           {label}
-        </Paragraph>
+        </Text>
       </YStack>
     </YStack>
   )
