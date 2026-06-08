@@ -3610,6 +3610,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lingui/babel-plugin-extract-messages@npm:6.2.0":
+  version: 6.2.0
+  resolution: "@lingui/babel-plugin-extract-messages@npm:6.2.0"
+  checksum: 10c0/f863cca7084ac0881b6f6a1979a865eecb1a18dfa0d4aee8ece06852b23a7d69fc852c7c1d504f142f68149837ff29e4ef535ce0462e5ef64456b99af1aae943
+  languageName: node
+  linkType: hard
+
 "@lingui/babel-plugin-lingui-macro@npm:6.0.0":
   version: 6.0.0
   resolution: "@lingui/babel-plugin-lingui-macro@npm:6.0.0"
@@ -3619,6 +3626,50 @@ __metadata:
     "@lingui/conf": "npm:6.0.0"
     "@lingui/message-utils": "npm:6.0.0"
   checksum: 10c0/20a2bbd59c48e45813d7b0d01bee84ffc52bd6d53227bd17a035adcca77192074f672383cb54ca4eb741c8df6310723563810be84b5f7a967d03b2b8d892217e
+  languageName: node
+  linkType: hard
+
+"@lingui/babel-plugin-lingui-macro@npm:6.2.0":
+  version: 6.2.0
+  resolution: "@lingui/babel-plugin-lingui-macro@npm:6.2.0"
+  dependencies:
+    "@babel/core": "npm:^7.20.12"
+    "@babel/types": "npm:^7.20.7"
+    "@lingui/conf": "npm:6.2.0"
+    "@lingui/message-utils": "npm:6.2.0"
+  checksum: 10c0/11fc617bc0479ceb75371811f14f643fbb2e1b9e28d7eba7640c50885d965dccdc00c58b01ba8fe6db0b4a79e9ce7f96a9bedb61812b2018f79ab96b879de399
+  languageName: node
+  linkType: hard
+
+"@lingui/cli@npm:6.2.0":
+  version: 6.2.0
+  resolution: "@lingui/cli@npm:6.2.0"
+  dependencies:
+    "@babel/core": "npm:^7.21.0"
+    "@babel/generator": "npm:^7.28.5"
+    "@babel/parser": "npm:^7.22.0"
+    "@babel/types": "npm:^7.21.2"
+    "@lingui/babel-plugin-extract-messages": "npm:6.2.0"
+    "@lingui/babel-plugin-lingui-macro": "npm:6.2.0"
+    "@lingui/conf": "npm:6.2.0"
+    "@lingui/core": "npm:6.2.0"
+    "@lingui/format-po": "npm:6.2.0"
+    "@lingui/message-utils": "npm:6.2.0"
+    chokidar: "npm:5.0.0"
+    cli-table3: "npm:^0.6.5"
+    commander: "npm:^14.0.2"
+    esbuild: "npm:^0.25.1"
+    jiti: "npm:^2.6.1"
+    micromatch: "npm:^4.0.7"
+    ms: "npm:^2.1.3"
+    normalize-path: "npm:^3.0.0"
+    ora: "npm:^9.1.0"
+    pseudolocale: "npm:^2.2.0"
+    source-map: "npm:^0.7.6"
+    tinypool: "npm:^2.1.0"
+  bin:
+    lingui: dist/lingui.js
+  checksum: 10c0/5206eb99fccd32bb6f2990e2ec1b081b50c3bcaed9ec0f26a554ee1834c507b88eb0a5235b053523af682592348613476c8943f210555a074f731e8639265297
   languageName: node
   linkType: hard
 
@@ -3666,6 +3717,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lingui/conf@npm:6.2.0":
+  version: 6.2.0
+  resolution: "@lingui/conf@npm:6.2.0"
+  dependencies:
+    jest-validate: "npm:^29.4.3"
+    jiti: "npm:^2.5.1"
+    lilconfig: "npm:^3.1.3"
+    normalize-path: "npm:^3.0.0"
+  checksum: 10c0/a388b6b7ea76346ae520132fc38e67ea302dc4a97bcc23ebce0d53cf7d5592dd23e674023c1aa9aed80e323ea0cd2ad40fb54e3c67b4219555b33208a7fe6f06
+  languageName: node
+  linkType: hard
+
 "@lingui/core@npm:6.0.0, @lingui/core@npm:^6.0.0":
   version: 6.0.0
   resolution: "@lingui/core@npm:6.0.0"
@@ -3681,6 +3744,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lingui/core@npm:6.2.0":
+  version: 6.2.0
+  resolution: "@lingui/core@npm:6.2.0"
+  dependencies:
+    "@lingui/babel-plugin-lingui-macro": "npm:6.2.0"
+    "@lingui/message-utils": "npm:6.2.0"
+  peerDependencies:
+    babel-plugin-macros: 2 || 3
+  peerDependenciesMeta:
+    babel-plugin-macros:
+      optional: true
+  checksum: 10c0/89a0738511bd9e17a43c28a707ab77c1852a26ced0cdd9e3a54bf7ae763ad063ef9f06fd0578eb994dc89b7c72a054b078fc7c283dd9621d3c6faa5513961948
+  languageName: node
+  linkType: hard
+
 "@lingui/format-po@npm:6.0.0, @lingui/format-po@npm:^6.0.0":
   version: 6.0.0
   resolution: "@lingui/format-po@npm:6.0.0"
@@ -3692,6 +3770,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lingui/format-po@npm:6.2.0":
+  version: 6.2.0
+  resolution: "@lingui/format-po@npm:6.2.0"
+  dependencies:
+    "@lingui/conf": "npm:6.2.0"
+    "@lingui/message-utils": "npm:6.2.0"
+    pofile-ts: "npm:^4.0.3"
+  checksum: 10c0/a0874c998d4e0f4645bfb921befafb2693abf7328f81ccd211fef6dc90d3f9817f61b07314833b03fa03d8b9274ebe6678d9f149945ec6eb8e8caa05bc0cc1d3
+  languageName: node
+  linkType: hard
+
 "@lingui/message-utils@npm:6.0.0":
   version: 6.0.0
   resolution: "@lingui/message-utils@npm:6.0.0"
@@ -3700,6 +3789,40 @@ __metadata:
     "@messageformat/parser": "npm:^5.0.0"
     js-sha256: "npm:^0.10.1"
   checksum: 10c0/01496f052dcde1be32878d98c5e9a75b9bd17d9e904c380b655fdd2e66e910c5d7f7e4f68f8fe03149257d330f06d3c42820060cb2694e33d93ef33f380aa5f4
+  languageName: node
+  linkType: hard
+
+"@lingui/message-utils@npm:6.2.0":
+  version: 6.2.0
+  resolution: "@lingui/message-utils@npm:6.2.0"
+  dependencies:
+    "@messageformat/date-skeleton": "npm:^1.1.0"
+    "@messageformat/parser": "npm:^5.0.0"
+    js-sha256: "npm:^0.10.1"
+  checksum: 10c0/5cd3fec785062d4d5fa6d80372f7a452250e9e2482d594fb85aed8cc815a5edac815a753f5820f40e1f110c99921b12af70ec3a67f813a9d7c2ecc579e8f8ce9
+  languageName: node
+  linkType: hard
+
+"@lingui/metro-transformer@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "@lingui/metro-transformer@npm:6.2.0"
+  dependencies:
+    "@lingui/cli": "npm:6.2.0"
+    "@lingui/conf": "npm:6.2.0"
+    memoize-one: "npm:^6.0.0"
+  peerDependencies:
+    "@expo/metro-config": "*"
+    "@react-native/metro-babel-transformer": "*"
+    expo: ">=50.0.0"
+    react-native: ">=0.73.0"
+  peerDependenciesMeta:
+    "@expo/metro-config":
+      optional: true
+    "@react-native/metro-babel-transformer":
+      optional: true
+    expo:
+      optional: true
+  checksum: 10c0/e18281d98f6136d0c364f6dd4281d85fc4ad1744e2c018b6f6f5341dc1e8d3c11eab870bcfb31b117f801c5315362931f3925b58c6e3d3c8218bf1622745a0d4
   languageName: node
   linkType: hard
 
@@ -14572,6 +14695,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pofile-ts@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "pofile-ts@npm:4.0.3"
+  checksum: 10c0/9f1a34f925e1791e6196ad61033a8ca9fe0c91546a4dd412368a3b6e563cede0555e376c49f95141685e6ceda03751fd972b9f49b99a8e767a6df44644ecc099
+  languageName: node
+  linkType: hard
+
 "pofile@npm:^1.1.4":
   version: 1.1.4
   resolution: "pofile@npm:1.1.4"
@@ -15339,6 +15469,7 @@ __metadata:
     "@lingui/cli": "npm:^6.0.0"
     "@lingui/core": "npm:^6.0.0"
     "@lingui/format-po": "npm:^6.0.0"
+    "@lingui/metro-transformer": "npm:^6.2.0"
     "@lingui/react": "npm:^6.0.0"
     "@phenomnomnominal/tsquery": "npm:^6.2.0"
     "@react-native-async-storage/async-storage": "npm:2.2.0"

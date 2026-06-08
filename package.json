@@ -61,6 +61,8 @@
     "functions:deploy:prd": "doppler run --project mobile --config prd -- supabase functions deploy --project-ref orrcfftpaxlldolavipm && doppler run --project mobile --config prd -- supabase functions deploy admin-push --no-verify-jwt --project-ref orrcfftpaxlldolavipm && doppler run --project mobile --config prd -- supabase functions deploy expo-update-manifest --no-verify-jwt --project-ref orrcfftpaxlldolavipm",
     "push-ota": "doppler run --project mobile --config ${ENV:-stg} -- bash -c 'yarn expo export --platform ios --platform android --output-dir dist && EXPO_UPDATE_CHANNEL=${ENV:-stg} EXPO_RUNTIME_VERSION=$(node -p \"require(\\\"./package.json\\\").version\") node scripts/push-ota-update.mjs'",
     "push-ota:prd": "ENV=prd yarn push-ota",
+    "encrypt-entries": "doppler run --project mobile --config ${ENV:-stg} -- node scripts/encrypt-entries.mjs",
+    "encrypt-entries:prd": "ENV=prd yarn encrypt-entries",
     "prepare": "husky"
   },
   "dependencies": {
@@ -162,6 +164,7 @@
     "@commitlint/config-conventional": "^20.5.0",
     "@lingui/cli": "^6.0.0",
     "@lingui/format-po": "^6.0.0",
+    "@lingui/metro-transformer": "^6.2.0",
     "@phenomnomnominal/tsquery": "^6.2.0",
     "@tamagui/babel-plugin": "^2.0.0-rc.41",
     "@testing-library/react-native": "^13.3.3",

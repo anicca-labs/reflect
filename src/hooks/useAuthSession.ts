@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import * as Linking from 'expo-linking'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { supabase } from '@/src/services/supabase'
+import { encryptContent } from '@/src/services/crypto'
 import { identifyRevenueCatUser, resetRevenueCatUser } from '@/src/services/revenue-cat'
 import { upsertDeviceToken } from '@/src/services/user-devices'
 import { useSessionStore, useAnonymousJournalStore } from '@/src/stores'
@@ -42,7 +43,7 @@ const migrateEntriesToServer = async (entries: JournalEntry[], userId: string) =
   if (!entries.length) return
   const rows = [...entries].reverse().map((e) => ({
     user_id: userId,
-    content: e.content,
+    content: encryptContent(e.content),
     is_bookmarked: e.is_bookmarked,
     created_at: e.created_at,
     updated_at: e.updated_at,

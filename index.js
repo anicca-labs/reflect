@@ -1,10 +1,10 @@
-import messaging from '@react-native-firebase/messaging'
+import { getMessaging, setBackgroundMessageHandler } from '@react-native-firebase/messaging'
 import * as ExpoNotifications from 'expo-notifications'
 import { Platform } from 'react-native'
 
 // Must be registered at module level before React mounts.
 // FCM automatically displays notification-payload messages — only handle data-only messages here.
-messaging().setBackgroundMessageHandler(async remoteMessage => {
+setBackgroundMessageHandler(getMessaging(), async remoteMessage => {
   if (remoteMessage.notification) return
 
   const title = remoteMessage.data?.title

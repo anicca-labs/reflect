@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/services/supabase'
+import { encryptContent, decryptContent, PREFIX } from '@/src/services/crypto'
 import type { JournalEntry } from '@/src/types/journal'
 import { useSessionStore } from '@/src/stores'
 
@@ -16,8 +17,24 @@ const useJournalEntries = () => {
         .select('*')
         .order('created_at', { ascending: false })
       if (error) throw error
-      const entries: JournalEntry[] = data ?? []
-      return entries
+      const raw = data ?? []
+
+      // Background-migrate any plaintext entries left over from before encryption was added
+      const toMigrate = raw.filter((e) => !e.content.startsWith(PREFIX))
+      if (toMigrate.length > 0) {
+        Promise.all(
+          toMigrate.map(async (e) => {
+            const encrypted = encryptContent(e.content)
+            const { error } = await supabase
+              .from('journal_entries')
+              .update({ content: encrypted })
+              .eq('id', e.id)
+            if (error) console.error('[encrypt-migration] update failed:', error.message)
+          }),
+        ).catch((err) => console.error('[encrypt-migration] failed:', err))
+      }
+
+      return raw.map((e) => ({ ...e, content: decryptContent(e.content) })) as JournalEntry[]
     },
   })
 }
@@ -30,11 +47,11 @@ const useCreateJournalEntry = () => {
       if (!user) throw new Error('Not authenticated')
       const { data, error } = await supabase
         .from('journal_entries')
-        .insert({ content, user_id: user.id })
+        .insert({ content: encryptContent(content), user_id: user.id })
         .select()
         .single()
       if (error) throw error
-      const entry: JournalEntry = data
+      const entry: JournalEntry = { ...data, content }
       return entry
     },
     onSuccess: (newEntry) => {
@@ -49,7 +66,7 @@ const useUpdateJournalEntry = () => {
     mutationFn: async ({ id, content }: { id: string; content: string }) => {
       const { error } = await supabase
         .from('journal_entries')
-        .update({ content, updated_at: new Date().toISOString() })
+        .update({ content: encryptContent(content), updated_at: new Date().toISOString() })
         .eq('id', id)
       if (error) throw error
     },
