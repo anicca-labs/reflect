@@ -1,68 +1,8 @@
 // @openapi-internal — admin-only, not callable from app clients
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import * as jose from 'https://esm.sh/jose@5'
+import { getFirebaseAccessToken, sendFcmMessage } from '../_shared/firebase.ts'
 
-const FIREBASE_PROJECT_ID = Deno.env.get('FIREBASE_PROJECT_ID')!
-const FIREBASE_CLIENT_EMAIL = Deno.env.get('FIREBASE_CLIENT_EMAIL')!
-const FIREBASE_PRIVATE_KEY = Deno.env.get('FIREBASE_PRIVATE_KEY')!.replace(/\\n/g, '\n')
 const ADMIN_SECRET = Deno.env.get('ADMIN_PUSH_SECRET')!
-
-async function getFirebaseAccessToken(): Promise<string> {
-  const privateKey = await jose.importPKCS8(FIREBASE_PRIVATE_KEY, 'RS256')
-  const now = Math.floor(Date.now() / 1000)
-  const jwt = await new jose.SignJWT({
-    scope: 'https://www.googleapis.com/auth/firebase.messaging',
-  })
-    .setProtectedHeader({ alg: 'RS256' })
-    .setIssuedAt(now)
-    .setExpirationTime(now + 3600)
-    .setIssuer(FIREBASE_CLIENT_EMAIL)
-    .setAudience('https://oauth2.googleapis.com/token')
-    .sign(privateKey)
-
-  const res = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      assertion: jwt,
-    }),
-  })
-  const { access_token } = await res.json()
-  return access_token
-}
-
-async function sendPush(
-  fcmToken: string,
-  accessToken: string,
-  title: string,
-  body: string,
-): Promise<{ ok: boolean; unregistered?: boolean; error?: string }> {
-  const res = await fetch(
-    `https://fcm.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/messages:send`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: {
-          token: fcmToken,
-          notification: { title, body },
-          android: { notification: { channel_id: 'default', sound: 'default' } },
-          apns: { payload: { aps: { sound: 'default' } } },
-        },
-      }),
-    },
-  )
-  if (!res.ok) {
-    const err = await res.text()
-    const unregistered = err.includes('UNREGISTERED') || res.status === 404
-    return { ok: false, unregistered, error: err }
-  }
-  return { ok: true }
-}
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -130,7 +70,7 @@ Deno.serve(async (req) => {
   }
 
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-  let query = supabase.from('device_tokens').select('fcm_token, user_id')
+  let query = supabase.from('device_tokens').select('fcm_token, user_id, firebase_project_id')
   if (user_id) {
     if (user_id.includes('@')) {
       const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers({ perPage: 1000 })
@@ -151,22 +91,34 @@ Deno.serve(async (req) => {
     return new Response('No matching devices found', { status: 200, headers: CORS_HEADERS })
   }
 
-  const accessToken = await getFirebaseAccessToken()
-  const results = await Promise.allSettled(
-    devices.map((d) => sendPush(d.fcm_token, accessToken, title, msgBody)),
-  )
+  // Group by Firebase project to mint one access token per project
+  const byProject = Map.groupBy(devices, d => d.firebase_project_id ?? 'reflect-8e62d')
+  const allResults: { idx: number; result: { ok: boolean; unregistered?: boolean; error?: string } }[] = []
+
+  for (const [projectId, group] of byProject) {
+    const accessToken = await getFirebaseAccessToken(projectId)
+    const results = await Promise.allSettled(
+      group.map(d => sendFcmMessage(d.fcm_token, projectId, accessToken, { title, body: msgBody }))
+    )
+    results.forEach((r, i) => {
+      const idx = devices.indexOf(group[i])
+      allResults.push({ idx, result: r.status === 'fulfilled' ? r.value : { ok: false, error: String(r.reason) } })
+    })
+  }
+
+  allResults.sort((a, b) => a.idx - b.idx)
+  const results = allResults.map(r => r.result)
 
   const staleTokens = devices
-    .filter((_, i) => results[i].status === 'fulfilled' && (results[i] as PromiseFulfilledResult<{ ok: boolean; unregistered?: boolean }>).value.unregistered)
+    .filter((_, i) => results[i].unregistered)
     .map((d) => d.fcm_token)
   if (staleTokens.length > 0) {
     await supabase.from('device_tokens').delete().in('fcm_token', staleTokens)
   }
 
-  const sent = results.filter((r) => r.status === 'fulfilled' && r.value.ok).length
+  const sent = results.filter(r => r.ok).length
   const errors = results.flatMap((r, i) => {
-    if (r.status === 'fulfilled' && !r.value.ok && !r.value.unregistered) return [`${devices[i].user_id}: ${r.value.error}`]
-    if (r.status === 'rejected') return [`${devices[i].user_id}: ${r.reason}`]
+    if (!r.ok && !r.unregistered) return [`${devices[i].user_id}: ${r.error}`]
     return []
   })
 

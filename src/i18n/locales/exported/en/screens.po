@@ -227,6 +227,10 @@ msgstr ""
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr ""
 
+#: src/hooks/useMemoryNotification.ts
+msgid "On this day"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
 msgstr ""

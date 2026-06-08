@@ -2,24 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>205855484334-vel2utu222ktvmi83olsnt66vd2ouunt.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.205855484334-vel2utu222ktvmi83olsnt66vd2ouunt</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>205855484334-f1tp6n6h1kuditdnmojf6714s7aifu7k.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDFF5ZanrjrfLdCPCEvqlIlrPMnEUVBtNE</string>
+	<string>AIzaSyAjyy-MgsXOAtj4EsQihYwmrJK_mBT14o0</string>
 	<key>GCM_SENDER_ID</key>
-	<string>205855484334</string>
+	<string>885970681168</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.reflect.stg</string>
 	<key>PROJECT_ID</key>
-	<string>reflect-8e62d</string>
+	<string>reflect-stg</string>
 	<key>STORAGE_BUCKET</key>
-	<string>reflect-8e62d.firebasestorage.app</string>
+	<string>reflect-stg.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:205855484334:ios:f485bfb5c6c2416712003f</string>
+	<string>1:885970681168:ios:9a50cc7c57490111838055</string>
 </dict>
 </plist>

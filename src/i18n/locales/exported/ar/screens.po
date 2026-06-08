@@ -227,6 +227,10 @@ msgstr "لا توجد تسجيلات تطابق بحثك."
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr "لا توجد تسجيلات بعد. ابدأ الكتابة في تبويب المذكرة."
 
+#: src/hooks/useMemoryNotification.ts
+msgid "On this day"
+msgstr "في مثل هذا اليوم"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
 msgstr "كلمة المرور"
@@ -374,11 +378,11 @@ msgstr "تنسيق الوقت"
 #. placeholder {0}: todayEntries.length
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} entries"
-msgstr ""
+msgstr "اليوم · {0} تدوينات"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · 1 entry"
-msgstr ""
+msgstr "اليوم · تدوينة واحدة"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx

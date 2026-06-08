@@ -227,6 +227,10 @@ msgstr "Tidak ada entri yang cocok dengan pencarian Anda."
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr "Belum ada entri. Mulai menulis di tab Jurnal."
 
+#: src/hooks/useMemoryNotification.ts
+msgid "On this day"
+msgstr "Pada hari ini"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
 msgstr "Kata sandi"
@@ -374,11 +378,11 @@ msgstr "Format waktu"
 #. placeholder {0}: todayEntries.length
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} entries"
-msgstr ""
+msgstr "Hari ini · {0} catatan"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · 1 entry"
-msgstr ""
+msgstr "Hari ini · 1 catatan"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx

@@ -227,6 +227,10 @@ msgstr "Aucune entrée ne correspond à votre recherche."
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr "Aucune entrée pour l'instant. Commencez à écrire dans l'onglet Journal."
 
+#: src/hooks/useMemoryNotification.ts
+msgid "On this day"
+msgstr "En ce jour"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
 msgstr "Mot de passe"
@@ -374,11 +378,11 @@ msgstr "Format de l'heure"
 #. placeholder {0}: todayEntries.length
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} entries"
-msgstr ""
+msgstr "Aujourd’hui · {0} entrées"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · 1 entry"
-msgstr ""
+msgstr "Aujourd’hui · 1 entrée"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
