@@ -2,9 +2,9 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
   "schedule": ["every weekend"],
-  "timezone": "America/New_York",
+  "timezone": "America/Buenos_Aires",
   "labels": ["dependencies"],
-  "assignees": ["ksairi-org"],
+  "assignees": ["ksairi"],
   "packageRules": [
     {
       "description": "Expo SDK — update all expo packages atomically so expo doctor never sees a mismatch",
@@ -22,7 +22,12 @@
     {
       "description": "React Native core + community packages",
       "groupName": "React Native",
-      "matchPackageNames": ["react-native", "@react-native/*", "@react-native-community/*", "react-native-*"],
+      "matchPackageNames": [
+        "react-native",
+        "@react-native/*",
+        "@react-native-community/*",
+        "react-native-*"
+      ],
       "automerge": false
     },
     {
@@ -49,7 +54,19 @@
     {
       "description": "Patch-only updates for everything else — automerge safely",
       "matchUpdateTypes": ["patch"],
-      "excludePackageNames": ["expo", "expo-*", "@expo/*", "jest-expo", "react-native", "react-native-*", "@react-native/*", "@react-native-firebase/*", "@react-native-community/*", "tamagui", "@tamagui/*"],
+      "excludePackageNames": [
+        "expo",
+        "expo-*",
+        "@expo/*",
+        "jest-expo",
+        "react-native",
+        "react-native-*",
+        "@react-native/*",
+        "@react-native-firebase/*",
+        "@react-native-community/*",
+        "tamagui",
+        "@tamagui/*"
+      ],
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
