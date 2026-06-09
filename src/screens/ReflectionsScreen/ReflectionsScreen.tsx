@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { View } from 'react-native'
 import { BlurTargetView } from 'expo-blur'
 import { useFocusEffect, useRouter } from 'expo-router'
@@ -12,7 +12,7 @@ import { BaseIcon } from '@atoms'
 import { sizes } from '@theme'
 import { format } from 'date-fns'
 import { getDateLocale, formatEntryTime } from '@/src/utils/date'
-import { usePreferencesStore, useSwipeableStore, useSessionStore, useAnonymousJournalStore } from '@/src/stores'
+import { usePreferencesStore, useSwipeableStore, useSessionStore, useAnonymousJournalStore, usePeekStore } from '@/src/stores'
 import type { JournalEntry } from '@/src/types/journal'
 import { logScreenView } from '@analytics'
 import { useJournalEntries, useToggleBookmark, useRevenueCat, useDeleteJournalEntry } from '@hooks'
@@ -119,6 +119,18 @@ const ReflectionsScreen = () => {
     setCloseKey(k => k + 1)
     setPeekEntry(entry)
   }
+
+  const pendingPeekEntryId = usePeekStore((s) => s.pendingPeekEntryId)
+  const clearPendingPeekEntryId = usePeekStore((s) => s.setPendingPeekEntryId)
+
+  useEffect(() => {
+    if (!pendingPeekEntryId || !entries.length) return
+    const entry = entries.find((e) => e.id === pendingPeekEntryId)
+    if (entry) {
+      handlePeek(entry)
+      clearPendingPeekEntryId(null)
+    }
+  }, [pendingPeekEntryId, entries])
 
   useFocusEffect(
     useCallback(() => {

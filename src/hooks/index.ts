@@ -1,4 +1,5 @@
 export * from './useAuthSession'
+export * from './useMemoryNotification'
 export * from './useCustomFonts'
 export { useJournalEntries, useCreateJournalEntry, useUpdateJournalEntry, useToggleBookmark, useDeleteJournalEntry } from './useJournalEntries'
 export * from './useReminder'
