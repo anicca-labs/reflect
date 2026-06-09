@@ -12,7 +12,7 @@ import { useColorScheme, Platform } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { tamaguiConfig } from "@default-tamagui-config";
 import { LinguiClientProvider } from "@i18n";
-import { useAuthSession, useCustomFonts, useToast } from "@hooks";
+import { useAuthSession, useCustomFonts, useToast, useMemoryNotification } from "@hooks";
 import { EnvBadge } from "@atoms";
 import { AnonMergeModal } from "@molecules";
 import { useSessionStore } from "@/src/stores";
@@ -44,6 +44,7 @@ export const unstable_settings = {
 
 const RootLayoutNav = () => {
   useAuthSession();
+  useMemoryNotification();
   const { notification } = useToast();
   const { pendingMerge, setPendingMerge } = useSessionStore();
 
