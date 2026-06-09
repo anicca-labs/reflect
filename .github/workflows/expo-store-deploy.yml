@@ -1,0 +1,28 @@
+name: Store Deploy (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      platform:
+        required: true
+        type: string
+
+jobs:
+  deploy-android:
+    if: ${{ inputs.platform == 'android' || inputs.platform == 'all' }}
+    uses: ./.github/workflows/expo-android-deploy.yml
+    secrets: inherit
+    with:
+      environment: ${{ inputs.environment }}
+      node-version: '23'
+
+  deploy-ios:
+    if: ${{ inputs.platform == 'ios' || inputs.platform == 'all' }}
+    uses: ./.github/workflows/expo-ios-deploy.yml
+    secrets: inherit
+    with:
+      environment: ${{ inputs.environment }}
+      node-version: '23'

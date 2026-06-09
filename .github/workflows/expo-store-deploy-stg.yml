@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       platform:
-        description: 'Platform (ios, android, all)'
+        description: 'Platform'
         required: true
         type: choice
         options:
@@ -23,33 +23,9 @@ on:
           - android
 
 jobs:
-  resolve-platform:
-    runs-on: ubuntu-latest
-    outputs:
-      platform: ${{ steps.config.outputs.platform }}
-    steps:
-      - id: config
-        run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            echo "platform=all" >> "$GITHUB_OUTPUT"
-          else
-            echo "platform=${{ inputs.platform }}" >> "$GITHUB_OUTPUT"
-          fi
-
-  deploy-android:
-    needs: resolve-platform
-    if: ${{ needs.resolve-platform.outputs.platform == 'android' || needs.resolve-platform.outputs.platform == 'all' }}
-    uses: ./.github/workflows/expo-android-deploy.yml
+  deploy:
+    uses: ./.github/workflows/expo-store-deploy.yml
     secrets: inherit
     with:
       environment: stg
-      node-version: '23'
-
-  deploy-ios:
-    needs: resolve-platform
-    if: ${{ needs.resolve-platform.outputs.platform == 'ios' || needs.resolve-platform.outputs.platform == 'all' }}
-    uses: ./.github/workflows/expo-ios-deploy.yml
-    secrets: inherit
-    with:
-      environment: stg
-      node-version: '23'
+      platform: ${{ github.event_name == 'push' && 'all' || inputs.platform }}
