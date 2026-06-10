@@ -167,7 +167,7 @@ const useAuthSession = () => {
       subscription.unsubscribe()
       linkingSub.remove()
     }
-  }, [handleAuthUrl, clearAnonymous, setPendingMerge])
+  }, [handleAuthUrl, clearAnonymous, setPendingMerge, router])
 
   useEffect(() => {
     if (session === undefined) return

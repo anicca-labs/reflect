@@ -277,8 +277,8 @@ msgid "Reflections"
 msgstr "Reflexiones"
 
 #: src/hooks/useMemoryNotification.ts
-msgid "Remember this?"
-msgstr "¿Recuerdas esto?"
+#~ msgid "Remember this?"
+#~ msgstr "¿Recuerdas esto?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
@@ -374,6 +374,10 @@ msgstr "Entradas ilimitadas desbloqueadas. Sigue escribiendo."
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Upgrade to Pro ✦"
 msgstr "Actualizar a Pro ✦"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+#~ msgid "Voice recognition failed"
+#~ msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "We sent a confirmation link to {email}."
