@@ -277,8 +277,8 @@ msgid "Reflections"
 msgstr "Reflexões"
 
 #: src/hooks/useMemoryNotification.ts
-msgid "Remember this?"
-msgstr "Você se lembra disso?"
+#~ msgid "Remember this?"
+#~ msgstr "Você se lembra disso?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
