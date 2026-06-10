@@ -13,9 +13,10 @@ import { getDateLocale, formatEntryTime } from '@/src/utils/date'
 import { usePreferencesStore, useSwipeableStore, useSessionStore, useAnonymousJournalStore } from '@/src/stores'
 import type { JournalEntry } from '@/src/types/journal'
 import { logJournalEntryCreated, logScreenView } from '@analytics'
-import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry, useToggleBookmark, useRevenueCat, useToast, useStreak, getDailyPromptIndex } from '@hooks'
+import { useJournalEntries, useCreateJournalEntry, useDeleteJournalEntry, useToggleBookmark, useRevenueCat, useToast, useStreak, getDailyPromptIndex, useVoiceToText } from '@hooks'
 import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING, DISABLED_OPACITY, PAYWALL_SUCCESS_ALERT_DURATION } from '@constants'
 import { AnimatedEntry, SwipeableDeleteWrapper, EntryPeekModal, type SwipeableDeleteWrapperHandle } from '@molecules'
+import { BaseIcon } from '@/src/components/atoms/icons'
 
 const formatDateHeading = (iso: string) =>
   format(new Date(iso), 'EEEE, MMMM d', { locale: getDateLocale() })
@@ -93,6 +94,16 @@ const JournalScreen = () => {
   const { t } = useLingui()
   const { alert } = useToast()
   const inputRef = useRef<ComponentRef<typeof TextArea>>(null)
+
+  const { isListening, start: startListening, stop: stopListening } = useVoiceToText({
+    onResult: (transcript) => {
+      setDraft((prev) => {
+        const separator = prev.trim().length > 0 ? ' ' : ''
+        return prev + separator + transcript
+      })
+    },
+    onError: () => alert({ title: t`Voice recognition failed`, preset: 'error' }),
+  })
 
   const entries = isAnonymous ? localEntries : serverEntries
   const loading = isAnonymous ? false : serverLoading
@@ -199,6 +210,21 @@ const JournalScreen = () => {
               fontSize="$3"
               color="$text-emphasis"
             />
+            <XStack justify="flex-end" px="$3" pb="$3">
+              <BaseTouchable
+                onPress={isListening ? stopListening : startListening}
+                bg={isListening ? '$accentBackground' : '$surface-subtle'}
+                rounded="$full"
+                p="$2"
+                hitSlop={12}>
+                <BaseIcon
+                  iconName="iconMic"
+                  color={isListening ? '$accentColor' : '$text-disabled'}
+                  width={18}
+                  height={18}
+                />
+              </BaseTouchable>
+            </XStack>
           </YStack>
 
           <BaseTouchable

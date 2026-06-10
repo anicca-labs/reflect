@@ -36,6 +36,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     infoPlist: {
       UIBackgroundModes: ["fetch", "remote-notification"],
       ITSAppUsesNonExemptEncryption: false,
+      NSMicrophoneUsageDescription: "Reflect uses your microphone to let you dictate journal entries by voice.",
+      NSSpeechRecognitionUsageDescription: "Reflect uses speech recognition to transcribe your voice into text.",
     },
     entitlements: {
       "aps-environment": "production",
@@ -53,7 +55,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     predictiveBackGestureEnabled: false,
     googleServicesFile: process.env.GOOGLE_SERVICES_JSON_PATH,
-    permissions: ["android.permission.POST_NOTIFICATIONS"],
+    permissions: [
+      "android.permission.POST_NOTIFICATIONS",
+      "android.permission.RECORD_AUDIO",
+    ],
   },
   web: {
     output: "static",
