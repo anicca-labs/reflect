@@ -85,7 +85,7 @@ const SettingsScreen = () => {
 
   useEffect(() => {
     if (!prevIsProRef.current && isPro) {
-      router.replace('/')
+      router.navigate('/')
     }
     prevIsProRef.current = isPro
   }, [isPro])
