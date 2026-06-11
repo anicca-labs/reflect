@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Alert, AppState, Linking, Modal } from 'react-native'
+import { Alert, AppState, InteractionManager, Linking, Modal } from 'react-native'
 import { useRouter, useFocusEffect } from 'expo-router'
 import { ScrollView, YStack, XStack, Spinner, type YStackProps } from 'tamagui'
 import type { User } from '@supabase/supabase-js'
@@ -280,7 +280,7 @@ const SettingsScreen = () => {
                     const purchased = await presentPaywall()
                     if (purchased) {
                       alert({ title: t`Welcome to Pro ✦`, message: t`Unlimited entries unlocked. Keep writing.`, duration: PAYWALL_SUCCESS_ALERT_DURATION })
-                      router.replace('/')
+                      InteractionManager.runAfterInteractions(() => router.replace('/'))
                     }
                   }}
                   backgroundColor="$accentBackground"
