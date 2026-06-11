@@ -280,7 +280,7 @@ const SettingsScreen = () => {
                     const purchased = await presentPaywall()
                     if (purchased) {
                       alert({ title: t`Welcome to Pro ✦`, message: t`Unlimited entries unlocked. Keep writing.`, duration: PAYWALL_SUCCESS_ALERT_DURATION })
-                      router.replace('/(tabs)/index' as never)
+                      router.replace('/')
                     }
                   }}
                   backgroundColor="$accentBackground"
