@@ -341,6 +341,10 @@ msgid "Subscription"
 msgstr "Assinatura"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Tap to restart and apply the latest update."
+msgstr "Toque para reiniciar e aplicar a atualização mais recente."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
 msgstr "Este recurso não está disponível no simulador."
 
@@ -370,6 +374,10 @@ msgstr "Muitas tentativas. Por favor tente novamente mais tarde"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Unlimited entries unlocked. Keep writing."
 msgstr "Entradas ilimitadas desbloqueadas. Continue escrevendo."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Update ready"
+msgstr "Atualização pronta"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Upgrade to Pro ✦"

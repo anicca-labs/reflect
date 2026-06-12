@@ -14,7 +14,7 @@ import * as Device from 'expo-device'
 import { supabase } from '@/src/services/supabase'
 import { usePreferencesStore, useSessionStore } from '@/src/stores'
 import { manageSubscriptions } from '@/src/services/revenue-cat'
-import { useRevenueCat, useToast, useReminder } from '@hooks'
+import { useRevenueCat, useToast, useReminder, useOtaUpdate } from '@hooks'
 import { sizes } from '@theme'
 import {
   getNotificationPermissionStatus,
@@ -66,6 +66,7 @@ const SettingsCard = ({ children, gap, hasGlass }: SettingsCardProps) => {
 }
 
 const SettingsScreen = () => {
+  const { isUpdateReady, applyUpdate } = useOtaUpdate()
   const { isPro, isLoading: rcLoading, customerInfo, presentPaywall } = useRevenueCat()
   const { t } = useLingui()
   const { alert } = useToast()
@@ -191,8 +192,24 @@ const SettingsScreen = () => {
               <Trans>Settings</Trans>
             </DisplayLg>
 
+            {/* OTA update banner */}
+            {isUpdateReady ? (
+              <AnimatedEntry index={0} animKey={animKey}>
+                <BaseTouchable onPress={applyUpdate}>
+                  <YStack bg="$accentBackground" rounded="$4" p="$4" gap="$1">
+                    <LabelMd color="$accentColor">
+                      <Trans>Update ready</Trans>
+                    </LabelMd>
+                    <BodySm color="$accentColor" opacity={0.8}>
+                      <Trans>Tap to restart and apply the latest update.</Trans>
+                    </BodySm>
+                  </YStack>
+                </BaseTouchable>
+              </AnimatedEntry>
+            ) : null}
+
             {/* Account */}
-            <AnimatedEntry index={0} animKey={animKey}>
+            <AnimatedEntry index={1} animKey={animKey}>
             {isAnonymous ? (
               <SettingsCard hasGlass={hasGlass}>
                 <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
@@ -238,7 +255,7 @@ const SettingsScreen = () => {
             </AnimatedEntry>
 
             {/* Subscription */}
-            <AnimatedEntry index={1} animKey={animKey}>
+            <AnimatedEntry index={2} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Subscription</Trans>
@@ -303,7 +320,7 @@ const SettingsScreen = () => {
             </AnimatedEntry>
 
             {/* Daily reminder */}
-            <AnimatedEntry index={2} animKey={animKey}>
+            <AnimatedEntry index={3} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Daily reminder</Trans>
@@ -364,7 +381,7 @@ const SettingsScreen = () => {
             </AnimatedEntry>
 
             {/* Push notifications */}
-            <AnimatedEntry index={3} animKey={animKey}>
+            <AnimatedEntry index={4} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Push notifications</Trans>
@@ -387,7 +404,7 @@ const SettingsScreen = () => {
             </AnimatedEntry>
 
             {/* Time format */}
-            <AnimatedEntry index={4} animKey={animKey}>
+            <AnimatedEntry index={5} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Time format</Trans>
@@ -412,7 +429,7 @@ const SettingsScreen = () => {
             </AnimatedEntry>
 
             {/* Sign out / Sign in */}
-            <AnimatedEntry index={5} animKey={animKey}>
+            <AnimatedEntry index={6} animKey={animKey}>
             {isAnonymous ? <YStack /> : (
               <BaseTouchable
                 onPress={handleSignOut}
