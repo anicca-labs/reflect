@@ -121,7 +121,10 @@ async function pushPlatform(platform, metadata, updateId, expoConfig) {
     await uploadFile(localPath, `${prefix}/${asset.path}`, contentType)
     assets.push({
       hash: sha256b64(localPath),
-      key: asset.path,
+      // expo-asset's getLocalAssetUri looks up localAssets by bare hash (e.g. "3698fdd…").
+      // expo-updates keys localAssets by whatever key we put here, so we must strip the
+      // "assets/" prefix — otherwise the key is "assets/3698fdd…" and the lookup misses.
+      key: path.basename(asset.path),
       fileExtension: `.${asset.ext}`,
       contentType,
       url: `${storageBase}/${prefix}/${asset.path}`,

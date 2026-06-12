@@ -341,6 +341,10 @@ msgid "Subscription"
 msgstr "Langganan"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Tap to restart and apply the latest update."
+msgstr "Ketuk untuk mulai ulang dan terapkan pembaruan terbaru."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
 msgstr "Fitur ini tidak tersedia di simulator."
 
@@ -372,12 +376,16 @@ msgid "Unlimited entries unlocked. Keep writing."
 msgstr "Entri tak terbatas telah dibuka. Teruslah menulis."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Update ready"
+msgstr "Pembaruan siap"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Upgrade to Pro ✦"
 msgstr "Tingkatkan ke Pro ✦"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #~ msgid "Voice recognition failed"
-#~ msgstr ""
+#~ msgstr "Pengenalan suara gagal"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "We sent a confirmation link to {email}."
@@ -413,12 +421,20 @@ msgid "What would make today a good day?"
 msgstr "Apa yang akan membuat hari ini menjadi hari yang baik?"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+msgid "What would you tell your past self today?"
+msgstr "Apa yang ingin kamu katakan kepada dirimu di masa lalu hari ini?"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's on your mind?"
 msgstr "Apa yang ada di pikiran Anda?"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's one thing you want to remember about today?"
 msgstr "Satu hal apa yang ingin kamu ingat dari hari ini?"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "What's something small that brought you joy recently?"
+msgstr "Hal kecil apa yang baru-baru ini memberimu kebahagiaan?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."

@@ -19,9 +19,9 @@ import { useSessionStore } from "@/src/stores";
 import { subscribeToForegroundMessages } from "@firebase-messaging";
 import { useEffect } from "react";
 import { SplashView } from "@ksairi-org/react-native-splash-view";
-import { themes } from "@theme";
 import { configureRevenueCat } from "@revenue-cat";
 import splash from "../assets/animations/splash.riv";
+import splashImage from "../assets/images/splash.png";
 
 setupSentry(!__DEV__);
 
@@ -34,7 +34,9 @@ const SPLASH_FADE_DELAY_MS = 1500
 const SPLASH_FADE_DURATION_MS = 500
 
 const getSplashStyle = (isDark: boolean) => ({
-  backgroundColor: isDark ? themes.dark.splashBackground : themes.light.splashBackground,
+  // Use the same hex values as SPLASH_BG_LIGHT/DARK in app.config.ts so
+  // the Animated.View background matches the native splash exactly.
+  backgroundColor: isDark ? '#110f0e' : '#F5F0E8',
 });
 
 // NOTE: Expo Router reads this named export at module scope — framework requirement
@@ -94,12 +96,13 @@ const RootLayout = () => {
               {/* NOTE: SplashView style prop requires a plain object — no Tamagui equivalent */}
               <SplashView
                 source={splash}
+                launchImageUrl={splashImage}
                 style={getSplashStyle(isOSThemeDark)}
                 // Android: SPLASH_ANDROID_SIZE matches imageWidth in app.config.ts — Android 12+ maximum before the icon clips.
                 // Keeps Rive start frame visually aligned with the native splash icon for a seamless transition.
                 // iOS: undefined — splash fills the full screen (enableFullScreenImage_legacy), Rive does the same via Fit.Contain.
                 animationViewStyle={
-                  Platform.OS === "android" ? { width: SPLASH_ANDROID_SIZE, height: SPLASH_ANDROID_SIZE, alignSelf: "center" } : undefined
+                  Platform.OS === "android" ? { width: SPLASH_ANDROID_SIZE, height: SPLASH_ANDROID_SIZE } : undefined
                 }
                 fadeOutDelay={SPLASH_FADE_DELAY_MS}
                 fadeOutDuration={SPLASH_FADE_DURATION_MS}
