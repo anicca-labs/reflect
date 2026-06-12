@@ -19,7 +19,6 @@ import { useSessionStore } from "@/src/stores";
 import { subscribeToForegroundMessages } from "@firebase-messaging";
 import { useEffect } from "react";
 import { SplashView } from "@ksairi-org/react-native-splash-view";
-import { themes } from "@theme";
 import { configureRevenueCat } from "@revenue-cat";
 import splash from "../assets/animations/splash.riv";
 import splashImage from "../assets/images/splash.png";
