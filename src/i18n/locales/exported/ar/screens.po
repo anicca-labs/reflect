@@ -432,6 +432,10 @@ msgstr "ما الذي يدور في ذهنك؟"
 msgid "What's one thing you want to remember about today?"
 msgstr "ما الشيء الواحد الذي تريد أن تتذكره من اليوم؟"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "What's something small that brought you joy recently?"
+msgstr "ما الشيء الصغير الذي جلب لك البهجة مؤخراً؟"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."
 msgstr "أنت تستخدم reflect كضيف. سجّل الدخول لمزامنة يومياتك عبر أجهزتك وفتح Pro."

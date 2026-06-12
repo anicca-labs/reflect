@@ -432,6 +432,10 @@ msgstr "Apa yang ada di pikiran Anda?"
 msgid "What's one thing you want to remember about today?"
 msgstr "Satu hal apa yang ingin kamu ingat dari hari ini?"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "What's something small that brought you joy recently?"
+msgstr "Hal kecil apa yang baru-baru ini memberimu kebahagiaan?"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."
 msgstr "Anda menggunakan reflect sebagai tamu. Masuk untuk menyinkronkan jurnal di semua perangkat dan membuka Pro."

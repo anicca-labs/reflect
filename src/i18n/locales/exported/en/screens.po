@@ -432,6 +432,10 @@ msgstr ""
 msgid "What's one thing you want to remember about today?"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "What's something small that brought you joy recently?"
+msgstr ""
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."
 msgstr ""

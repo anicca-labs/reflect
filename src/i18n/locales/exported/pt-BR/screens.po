@@ -432,6 +432,10 @@ msgstr "O que está pensando?"
 msgid "What's one thing you want to remember about today?"
 msgstr "Qual é uma coisa que você quer lembrar de hoje?"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "What's something small that brought you joy recently?"
+msgstr "O que de pequeno te trouxe alegria recentemente?"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."
 msgstr "Você está usando o reflect como convidado. Entre para sincronizar seu diário em todos os dispositivos e desbloquear o Pro."
