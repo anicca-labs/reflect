@@ -89,7 +89,7 @@ const SettingsScreen = () => {
       router.navigate('/')
     }
     prevIsProRef.current = isPro
-  }, [isPro])
+  }, [isPro, router])
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setCurrentUser(user))
@@ -108,7 +108,7 @@ const SettingsScreen = () => {
     alert({ title: t`Physical device only`, message: t`This feature is not available on the simulator.`, preset: 'error', duration: SIMULATOR_TOAST_DURATION })
   }
 
-  const refreshPermissionStatus = async () => {
+  const refreshPermissionStatus = useCallback(async () => {
     if (isSimulator) return
     const status = await getNotificationPermissionStatus()
     setNotifPermission(status)
@@ -118,7 +118,7 @@ const SettingsScreen = () => {
     } else {
       disableReminder()
     }
-  }
+  }, [disableReminder])
 
   useEffect(() => {
     refreshPermissionStatus()
@@ -131,7 +131,7 @@ const SettingsScreen = () => {
       }
     })
     return () => sub.remove()
-  }, [])
+  }, [refreshPermissionStatus])
 
   const handlePermissionPress = async () => {
     if (isSimulator) { showSimulatorToast(); return }
