@@ -341,6 +341,10 @@ msgid "Subscription"
 msgstr "Suscripción"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Tap to restart and apply the latest update."
+msgstr "Toca para reiniciar y aplicar la última actualización."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
 msgstr "Esta función no está disponible en el simulador."
 
@@ -372,12 +376,16 @@ msgid "Unlimited entries unlocked. Keep writing."
 msgstr "Entradas ilimitadas desbloqueadas. Sigue escribiendo."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Update ready"
+msgstr "Actualización lista"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Upgrade to Pro ✦"
 msgstr "Actualizar a Pro ✦"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #~ msgid "Voice recognition failed"
-#~ msgstr ""
+#~ msgstr "Error en el reconocimiento de voz"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "We sent a confirmation link to {email}."

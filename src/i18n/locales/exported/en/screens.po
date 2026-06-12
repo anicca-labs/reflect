@@ -341,6 +341,10 @@ msgid "Subscription"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Tap to restart and apply the latest update."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
 msgstr ""
 
@@ -369,6 +373,10 @@ msgstr ""
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Unlimited entries unlocked. Keep writing."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Update ready"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
