@@ -8,7 +8,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { TamaguiProvider, styled } from "tamagui";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/src/services/queryClient";
-import { useColorScheme, Platform, Alert } from "react-native"
+import { useColorScheme, Platform } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { tamaguiConfig } from "@default-tamagui-config";
 import { LinguiClientProvider } from "@i18n";
@@ -45,9 +45,6 @@ export const unstable_settings = {
 const RootLayoutNav = () => {
   useAuthSession();
   const { notification } = useToast();
-
-  // TEMP: smoke-test OTA banner — delete this block after confirming banner works
-  useEffect(() => { Alert.alert('🚀 OTA smoke test', 'This modal confirms the new bundle loaded. Delete this block once the banner is verified.') }, []);
   const { pendingMerge, setPendingMerge } = useSessionStore();
 
   useEffect(() => {
