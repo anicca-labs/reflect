@@ -3538,14 +3538,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ksairi-org/react-native-splash-view@npm:0.1.9":
-  version: 0.1.9
-  resolution: "@ksairi-org/react-native-splash-view@npm:0.1.9"
+"@ksairi-org/react-native-splash-view@npm:0.1.10":
+  version: 0.1.10
+  resolution: "@ksairi-org/react-native-splash-view@npm:0.1.10"
   peerDependencies:
     expo-splash-screen: "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/011d20ed0564ccd7798e54f5139d6630e1723f0fb7f5044f228c7311fd5f9238b669869fc0265c82e7174ef13f989c0100038f11f55571f0bc6fb14eec24e44e
+  checksum: 10c0/2596ff2dba3e1c697d079b48fec0284c66f1f003075df17eaab681a83d3457a1784bd6b89e8dbc526a4d12b2a23b51e89116eec8e3926b07f2304d538ab4b5b7
   languageName: node
   linkType: hard
 
@@ -15486,7 +15486,7 @@ __metadata:
     "@ksairi-org/react-native-auth-google": "npm:^0.1.1"
     "@ksairi-org/react-native-functions": "npm:^0.1.1"
     "@ksairi-org/react-native-hooks": "npm:^0.1.1"
-    "@ksairi-org/react-native-splash-view": "npm:0.1.9"
+    "@ksairi-org/react-native-splash-view": "npm:0.1.10"
     "@ksairi-org/react-native-ui-config": "npm:^0.1.3"
     "@ksairi-org/react-query-sdk": "npm:0.1.3"
     "@ksairi-org/ui-button": "npm:^0.1.11"
