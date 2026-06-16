@@ -7,17 +7,15 @@ const upsertDeviceToken = async (userId: string): Promise<void> => {
   const fcmToken = await getFCMToken();
   if (!fcmToken) return;
 
-  await supabase
-    .from('device_tokens')
-    .upsert(
-      {
-        user_id: userId,
-        fcm_token: fcmToken,
-        firebase_project_id: FIREBASE_PROJECT_ID,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'fcm_token' },
-    );
+  await supabase.from('device_tokens').upsert(
+    {
+      user_id: userId,
+      fcm_token: fcmToken,
+      firebase_project_id: FIREBASE_PROJECT_ID,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'fcm_token' },
+  );
 };
 
 const syncReminderToBackend = async (
