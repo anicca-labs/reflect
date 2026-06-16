@@ -1,2 +1,2 @@
-import { SignInScreen } from '@screens/SignInScreen'
-export default SignInScreen
+import { SignInScreen } from '@screens/SignInScreen';
+export default SignInScreen;

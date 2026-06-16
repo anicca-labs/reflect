@@ -1,18 +1,18 @@
-import { BaseIcon } from "@atoms";
-import { LabelMd } from "@fonts";
-import { BaseTouchable } from "@ksairi-org/ui-touchables";
-import { useLingui } from "@lingui/react/macro";
-import { useSwipeableStore } from "@/src/stores";
-import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs";
+import { BaseIcon } from '@atoms';
+import { LabelMd } from '@fonts';
+import { BaseTouchable } from '@ksairi-org/ui-touchables';
+import { useLingui } from '@lingui/react/macro';
+import { useSwipeableStore } from '@/src/stores';
+import { createMaterialTopTabNavigator } from 'expo-router/js-top-tabs';
 // Type-only import: erased at build time, so it never trips the SDK 56
 // expo-router/react-navigation runtime-resolution check.
-import type { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
-import { sizes } from "@theme";
-import * as Haptics from "expo-haptics";
-import { withLayoutContext } from "expo-router";
-import { Platform } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { XStack, YStack, useTheme } from "tamagui";
+import type { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
+import { sizes } from '@theme';
+import * as Haptics from 'expo-haptics';
+import { withLayoutContext } from 'expo-router';
+import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { XStack, YStack, useTheme } from 'tamagui';
 
 const { Navigator } = createMaterialTopTabNavigator();
 const MaterialTopTabs = withLayoutContext(Navigator);
@@ -26,15 +26,15 @@ const TabBar = ({ state, descriptors, navigation }: MaterialTopTabBarProps) => {
       {state.routes.map((route, idx) => {
         const { options } = descriptors[route.key];
         const isActive = state.index === idx;
-        const color = isActive ? "$accentBackground" : "$color8";
+        const color = isActive ? '$accentBackground' : '$color8';
         const nativeColor = isActive ? theme.accentBackground.val : theme.color8.val;
 
         const onPress = () => {
-          if (Platform.OS === "ios") {
+          if (Platform.OS === 'ios') {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           }
           const event = navigation.emit({
-            type: "tabPress",
+            type: 'tabPress',
             target: route.key,
             canPreventDefault: true,
           });

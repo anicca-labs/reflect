@@ -52,7 +52,12 @@
     "supabase": {
       "type": "stdio",
       "command": "${CLAUDE_PLUGIN_ROOT}/bin/mcp-run.sh",
-      "args": ["npx", "-y", "@supabase/mcp-server-supabase@latest", "--access-token=${SUPABASE_ACCESS_TOKEN}"]
+      "args": [
+        "npx",
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token=${SUPABASE_ACCESS_TOKEN}"
+      ]
     },
     "context7": {
       "type": "stdio",
@@ -62,7 +67,11 @@
     "revenuecat": {
       "type": "stdio",
       "command": "${CLAUDE_PLUGIN_ROOT}/bin/mcp-run.sh",
-      "args": ["bash", "-c", "exec npx -y supergateway --streamableHttp https://mcp.revenuecat.ai/mcp --oauth2Bearer \"$RC_MCP_API_KEY\""]
+      "args": [
+        "bash",
+        "-c",
+        "exec npx -y supergateway --streamableHttp https://mcp.revenuecat.ai/mcp --oauth2Bearer \"$RC_MCP_API_KEY\""
+      ]
     }
   }
 }
