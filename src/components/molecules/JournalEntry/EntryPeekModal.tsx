@@ -96,6 +96,9 @@ const EntryPeekModal = ({ entry, onClose, onToggleBookmark, blurTargetRef }: Ent
       const isNewEntry = openEntryId.current !== entry.id
       openEntryId.current = entry.id
       isClosing.current = false
+      // Syncing the entry prop into local state keeps the card rendered through
+      // the exit animation after `entry` becomes null — an intentional effect.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDisplayEntry(entry)
       setIsBookmarked(entry.is_bookmarked)
       if (isNewEntry) {
@@ -118,6 +121,8 @@ const EntryPeekModal = ({ entry, onClose, onToggleBookmark, blurTargetRef }: Ent
   const handleClose = useCallback(() => {
     if (isClosing.current) return
     isClosing.current = true
+    // Reanimated shared values are stable refs mutated outside React's data flow.
+    /* eslint-disable react-hooks/immutability */
     scale.value = withTiming(CARD_SCALE_FROM, { duration: EXIT_DURATION_MS })
     translateY.value = withTiming(40, { duration: EXIT_DURATION_MS })
     opacity.value = withTiming(0, { duration: EXIT_DURATION_MS }, (finished) => {
@@ -126,6 +131,7 @@ const EntryPeekModal = ({ entry, onClose, onToggleBookmark, blurTargetRef }: Ent
         runOnJS(onClose)()
       }
     })
+    /* eslint-enable react-hooks/immutability */
   }, [onClose, opacity, scale, translateY])
 
   useEffect(() => {

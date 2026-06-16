@@ -1,4 +1,4 @@
-import { useState, useRef, useImperativeHandle, forwardRef, type ComponentRef } from 'react'
+import { useState, useRef, useImperativeHandle, type ComponentRef, type Ref } from 'react'
 import { Input, XStack, useTheme, styled } from 'tamagui'
 import { BaseTouchable } from '@ksairi-org/ui-touchables'
 import { Feather } from '@expo/vector-icons'
@@ -31,7 +31,7 @@ type PasswordInputProps = {
 
 type PasswordInputHandle = { focus: () => void }
 
-const PasswordInput = forwardRef<PasswordInputHandle, PasswordInputProps>(({
+const PasswordInput = ({
   value,
   onChangeText,
   placeholder,
@@ -39,7 +39,8 @@ const PasswordInput = forwardRef<PasswordInputHandle, PasswordInputProps>(({
   onSubmitEditing,
   returnKeyType = 'done',
   autoComplete = 'current-password',
-}, ref) => {
+  ref,
+}: PasswordInputProps & { ref?: Ref<PasswordInputHandle> }) => {
   const [visible, setVisible] = useState(false)
   const [focused, setFocused] = useState(false)
   const inputRef = useRef<ComponentRef<typeof Input>>(null)
@@ -87,9 +88,7 @@ const PasswordInput = forwardRef<PasswordInputHandle, PasswordInputProps>(({
       </BaseTouchable>
     </XStack>
   )
-})
-
-PasswordInput.displayName = 'PasswordInput'
+}
 
 export { PasswordInput }
 export type { PasswordInputHandle }

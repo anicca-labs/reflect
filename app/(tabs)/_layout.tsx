@@ -3,10 +3,10 @@ import { LabelMd } from "@fonts";
 import { BaseTouchable } from "@ksairi-org/ui-touchables";
 import { useLingui } from "@lingui/react/macro";
 import { useSwipeableStore } from "@/src/stores";
-import {
-  createMaterialTopTabNavigator,
-  type MaterialTopTabBarProps,
-} from "@react-navigation/material-top-tabs";
+import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs";
+// Type-only import: erased at build time, so it never trips the SDK 56
+// expo-router/react-navigation runtime-resolution check.
+import type { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
 import { sizes } from "@theme";
 import * as Haptics from "expo-haptics";
 import { withLayoutContext } from "expo-router";
@@ -62,7 +62,7 @@ const TabLayout = () => {
 
   return (
     <MaterialTopTabs
-      tabBar={(props) => <TabBar {...props} />}
+      tabBar={(props: MaterialTopTabBarProps) => <TabBar {...props} />}
       tabBarPosition="bottom"
       screenOptions={{
         swipeEnabled: true,

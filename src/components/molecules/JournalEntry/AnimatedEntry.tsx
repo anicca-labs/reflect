@@ -16,7 +16,9 @@ const AnimatedEntry = ({ children, index, animKey }: AnimatedEntryProps) => {
   const tx = useSharedValue(index % 2 === 0 ? -SLIDE_OFFSET : SLIDE_OFFSET)
   const opacity = useSharedValue(0)
   const indexRef = useRef(index)
-  indexRef.current = index
+  useEffect(() => {
+    indexRef.current = index
+  }, [index])
 
   useEffect(() => {
     if (animKey === 0) return

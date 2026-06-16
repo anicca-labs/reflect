@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { syncReminderToBackend } from '@/src/services/user-devices'
 
@@ -30,19 +30,14 @@ const useReminder = () => {
     load()
   }, [])
 
-  const hourRef = useRef(hour)
-  hourRef.current = hour
-  const minuteRef = useRef(minute)
-  minuteRef.current = minute
-  const enabledRef = useRef(enabled)
-  enabledRef.current = enabled
-
-  const disable = useCallback(async () => {
-    if (!enabledRef.current) return
+  // React Compiler memoizes this closure, so it stays stable across renders
+  // without manual refs/useCallback while always reading the latest state.
+  const disable = async () => {
+    if (!enabled) return
     setEnabled(false)
     await AsyncStorage.setItem(ENABLED_KEY, 'false')
-    syncReminderToBackend(false, hourRef.current, minuteRef.current)
-  }, [])
+    syncReminderToBackend(false, hour, minute)
+  }
 
   const toggle = async (notifPermission: boolean) => {
     if (!notifPermission) return

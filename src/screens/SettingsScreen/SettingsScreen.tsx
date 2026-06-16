@@ -121,6 +121,9 @@ const SettingsScreen = () => {
   }, [disableReminder])
 
   useEffect(() => {
+    // Mount-time permission check + re-check when returning from system settings;
+    // the async status update is the intended effect of this subscription.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshPermissionStatus()
 
     const sub = AppState.addEventListener('change', (state) => {

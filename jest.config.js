@@ -1,7 +1,7 @@
 /** @type {import('jest-expo').JestExpoConfig} */
 module.exports = {
   preset: "jest-expo",
-  setupFilesAfterFramework: ["@testing-library/react-native/extend-expect"],
+  // RNTL v12.4+ includes its Jest matchers automatically — no extend-expect setup needed.
   transformIgnorePatterns: [
     "node_modules/(?!" +
       [

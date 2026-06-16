@@ -37,7 +37,10 @@ const LinguiClientProvider = ({ children }: LinguiClientProviderProps) => {
   const [isI18nReady, setIsI18nReady] = useState(false)
 
   useEffect(() => {
+    // One-time mount init: detectLocale() has side effects (reads/clears native
+    // settings) so it can't run during render; flipping ready state here is intended.
     setI18nLocale(detectLocale())
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsI18nReady(true)
   }, [])
 

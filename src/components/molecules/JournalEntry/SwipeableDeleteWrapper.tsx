@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState, forwardRef, useImperativeHandle, type ReactNode } from 'react'
+import { useRef, useEffect, useCallback, useState, useImperativeHandle, type ReactNode, type Ref } from 'react'
 import { Alert } from 'react-native'
 import { useLingui } from '@lingui/react/macro'
 import { YStack } from 'tamagui'
@@ -46,8 +46,7 @@ interface SwipeableDeleteWrapperHandle {
   open: () => void
 }
 
-const SwipeableDeleteWrapper = forwardRef<SwipeableDeleteWrapperHandle, SwipeableDeleteWrapperProps>(function SwipeableDeleteWrapper(
-  { entryId, onDelete, closeKey, index, children }, ref) {
+const SwipeableDeleteWrapper = ({ entryId, onDelete, closeKey, index, children, ref }: SwipeableDeleteWrapperProps & { ref?: Ref<SwipeableDeleteWrapperHandle> }) => {
     const { t } = useLingui()
     const startDrag = useSwipeableStore((s) => s.startDrag)
     const endDrag = useSwipeableStore((s) => s.endDrag)
@@ -57,6 +56,8 @@ const SwipeableDeleteWrapper = forwardRef<SwipeableDeleteWrapperHandle, Swipeabl
     const [showOverlay, setShowOverlay] = useState(false)
 
     const close = useCallback(() => {
+      // Reanimated shared value — stable ref mutated outside React's data flow.
+      // eslint-disable-next-line react-hooks/immutability
       translateX.value = withSpring(0, SPRING_CONFIG)
       setShowOverlay(false)
       if (isOpen.current) {
@@ -65,7 +66,8 @@ const SwipeableDeleteWrapper = forwardRef<SwipeableDeleteWrapperHandle, Swipeabl
       }
     }, [translateX, endDrag])
 
-    const confirmDelete = useCallback(() => {
+    // React Compiler memoizes this handler; not in any deps array, so no useCallback.
+    const confirmDelete = () => {
       Alert.alert(
         t`Delete entry?`,
         t`This cannot be undone.`,
@@ -74,7 +76,7 @@ const SwipeableDeleteWrapper = forwardRef<SwipeableDeleteWrapperHandle, Swipeabl
           { text: t`Delete`, style: 'destructive', onPress: () => { onDelete(entryId); logJournalEntryDeleted() } },
         ],
       )
-    }, [t, onDelete, entryId, close])
+    }
 
     useImperativeHandle(ref, () => ({
       open: () => {
@@ -88,6 +90,9 @@ const SwipeableDeleteWrapper = forwardRef<SwipeableDeleteWrapperHandle, Swipeabl
     }), [translateX, startDrag])
 
     useEffect(() => {
+      // Parent bumps closeKey to imperatively close this row — calling close()
+      // (which sets overlay state) in response is the intended behaviour.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (closeKey > 0) close()
     }, [closeKey, close])
 
@@ -129,8 +134,7 @@ const SwipeableDeleteWrapper = forwardRef<SwipeableDeleteWrapperHandle, Swipeabl
         </Animated.View>
       </YStack>
     )
-  }
-)
+}
 
 export { SwipeableDeleteWrapper }
 export type { SwipeableDeleteWrapperProps, SwipeableDeleteWrapperHandle }

@@ -106,6 +106,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     "expo-secure-store",
     "expo-updates",
+    "expo-font",
+    "expo-image",
+    "expo-localization",
+    "expo-status-bar",
+    "expo-web-browser",
   ],
   extra: {
     eas: {
