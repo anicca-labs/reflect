@@ -1,7 +1,7 @@
 {
   "name": "reflect",
   "main": "index.js",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "scripts": {
     "sync-env-vars": "doppler secrets substitute env.template.yaml --output .env --project mobile --config ${ENV:-stg}",
     "sync-design-tokens": "doppler run --project mobile --config ${ENV:-stg} -- bash -c 'if [ -z \"${FIGMA_API_KEY:-}\" ] || [ -z \"${FIGMA_FILE_ID:-}\" ]; then echo \"Skipping design token sync (no Figma project configured)\"; else FIGMA_TOKEN=$FIGMA_API_KEY figma-tamagui-sync --fileId=$FIGMA_FILE_ID --out=./src/theme; fi'",
