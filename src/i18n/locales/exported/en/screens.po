@@ -277,8 +277,8 @@ msgid "Reflections"
 msgstr ""
 
 #: src/hooks/useMemoryNotification.ts
-msgid "Remember this?"
-msgstr ""
+#~ msgid "Remember this?"
+#~ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
@@ -341,6 +341,10 @@ msgid "Subscription"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Tap to restart and apply the latest update."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
 msgstr ""
 
@@ -372,8 +376,16 @@ msgid "Unlimited entries unlocked. Keep writing."
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Update ready"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Upgrade to Pro ✦"
 msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+#~ msgid "Voice recognition failed"
+#~ msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "We sent a confirmation link to {email}."
@@ -409,11 +421,19 @@ msgid "What would make today a good day?"
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+msgid "What would you tell your past self today?"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's on your mind?"
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's one thing you want to remember about today?"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "What's something small that brought you joy recently?"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx

@@ -277,8 +277,8 @@ msgid "Reflections"
 msgstr "التأملات"
 
 #: src/hooks/useMemoryNotification.ts
-msgid "Remember this?"
-msgstr "هل تتذكر هذا؟"
+#~ msgid "Remember this?"
+#~ msgstr "هل تتذكر هذا؟"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
@@ -341,6 +341,10 @@ msgid "Subscription"
 msgstr "الاشتراك"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Tap to restart and apply the latest update."
+msgstr "اضغط لإعادة التشغيل وتطبيق آخر تحديث."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
 msgstr "هذه الميزة غير متاحة على المحاكي."
 
@@ -372,8 +376,16 @@ msgid "Unlimited entries unlocked. Keep writing."
 msgstr "تسجيلات غير محدودة. تابع الكتابة."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Update ready"
+msgstr "التحديث جاهز"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Upgrade to Pro ✦"
 msgstr "الترقية إلى Pro ✦"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+#~ msgid "Voice recognition failed"
+#~ msgstr "فشل التعرف على الصوت"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "We sent a confirmation link to {email}."
@@ -409,12 +421,20 @@ msgid "What would make today a good day?"
 msgstr "ما الذي سيجعل اليوم يوماً جيداً؟"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+msgid "What would you tell your past self today?"
+msgstr "ماذا ستقول لنفسك في الماضي اليوم؟"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's on your mind?"
 msgstr "ما الذي يدور في ذهنك؟"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's one thing you want to remember about today?"
 msgstr "ما الشيء الواحد الذي تريد أن تتذكره من اليوم؟"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "What's something small that brought you joy recently?"
+msgstr "ما الشيء الصغير الذي جلب لك البهجة مؤخراً؟"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."

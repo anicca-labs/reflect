@@ -109,7 +109,11 @@ Deno.serve(async (req) => {
     .limit(1)
     .maybeSingle() as { data: ExpoUpdate | null }
 
-  if (!update || update.id === currentUpdateId) {
+  // expo-recent-failed-update-ids is a space-separated list of UUIDs the client has
+  // already tried and failed to apply. Skip any of those so we don't crash-loop.
+  const failedIds = failedUpdateIds ? failedUpdateIds.split(' ').filter(Boolean) : []
+
+  if (!update || update.id === currentUpdateId || failedIds.includes(update.id)) {
     return noUpdateResponse()
   }
 

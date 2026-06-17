@@ -14,7 +14,7 @@ import * as Device from 'expo-device'
 import { supabase } from '@/src/services/supabase'
 import { usePreferencesStore, useSessionStore } from '@/src/stores'
 import { manageSubscriptions } from '@/src/services/revenue-cat'
-import { useRevenueCat, useToast, useReminder } from '@hooks'
+import { useRevenueCat, useToast, useReminder, useOtaUpdate } from '@hooks'
 import { sizes } from '@theme'
 import {
   getNotificationPermissionStatus,
@@ -66,12 +66,13 @@ const SettingsCard = ({ children, gap, hasGlass }: SettingsCardProps) => {
 }
 
 const SettingsScreen = () => {
+  const { isUpdateReady, applyUpdate } = useOtaUpdate()
   const { isPro, isLoading: rcLoading, customerInfo, presentPaywall } = useRevenueCat()
   const { t } = useLingui()
   const { alert } = useToast()
   const router = useRouter()
   const { isAnonymous } = useSessionStore()
-  const { enabled: reminderEnabled, hour: reminderHour, loading: reminderLoading, toggle: toggleReminder, updateTime } = useReminder()
+  const { enabled: reminderEnabled, hour: reminderHour, loading: reminderLoading, toggle: toggleReminder, disable: disableReminder, updateTime } = useReminder()
   const timeFormat = usePreferencesStore((s) => s.timeFormat)
   const setTimeFormat = usePreferencesStore((s) => s.setTimeFormat)
   const [hasGlass] = useState(() => isGlassEffectAPIAvailable())
@@ -81,6 +82,14 @@ const SettingsScreen = () => {
   const [showTimePicker, setShowTimePicker] = useState(false)
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const openedSettings = useRef(false)
+  const prevIsProRef = useRef(isPro)
+
+  useEffect(() => {
+    if (!prevIsProRef.current && isPro) {
+      router.navigate('/')
+    }
+    prevIsProRef.current = isPro
+  }, [isPro, router])
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setCurrentUser(user))
@@ -99,15 +108,17 @@ const SettingsScreen = () => {
     alert({ title: t`Physical device only`, message: t`This feature is not available on the simulator.`, preset: 'error', duration: SIMULATOR_TOAST_DURATION })
   }
 
-  const refreshPermissionStatus = async () => {
+  const refreshPermissionStatus = useCallback(async () => {
     if (isSimulator) return
     const status = await getNotificationPermissionStatus()
     setNotifPermission(status)
     if (status === 'granted') {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) upsertDeviceToken(user.id)
+    } else {
+      disableReminder()
     }
-  }
+  }, [disableReminder])
 
   useEffect(() => {
     refreshPermissionStatus()
@@ -120,7 +131,7 @@ const SettingsScreen = () => {
       }
     })
     return () => sub.remove()
-  }, [])
+  }, [refreshPermissionStatus])
 
   const handlePermissionPress = async () => {
     if (isSimulator) { showSimulatorToast(); return }
@@ -135,7 +146,12 @@ const SettingsScreen = () => {
       return
     }
     openedSettings.current = true
-    await Linking.openSettings()
+    try {
+      await Linking.openSettings()
+    } catch {
+      openedSettings.current = false
+      alert({ title: t`Couldn't open Settings`, message: t`Please open Settings manually to manage notifications.`, preset: 'error' })
+    }
   }
 
   const handleSignOut = () => {
@@ -181,8 +197,24 @@ const SettingsScreen = () => {
               <Trans>Settings</Trans>
             </DisplayLg>
 
+            {/* OTA update banner */}
+            {isUpdateReady ? (
+              <AnimatedEntry index={0} animKey={animKey}>
+                <BaseTouchable onPress={applyUpdate}>
+                  <YStack bg="$accentBackground" rounded="$4" p="$4" gap="$1">
+                    <LabelMd color="$accentColor">
+                      <Trans>Update ready</Trans>
+                    </LabelMd>
+                    <BodySm color="$accentColor" opacity={0.8}>
+                      <Trans>Tap to restart and apply the latest update.</Trans>
+                    </BodySm>
+                  </YStack>
+                </BaseTouchable>
+              </AnimatedEntry>
+            ) : null}
+
             {/* Account */}
-            <AnimatedEntry index={0} animKey={animKey}>
+            <AnimatedEntry index={1} animKey={animKey}>
             {isAnonymous ? (
               <SettingsCard hasGlass={hasGlass}>
                 <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
@@ -228,7 +260,7 @@ const SettingsScreen = () => {
             </AnimatedEntry>
 
             {/* Subscription */}
-            <AnimatedEntry index={1} animKey={animKey}>
+            <AnimatedEntry index={2} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Subscription</Trans>
@@ -276,7 +308,9 @@ const SettingsScreen = () => {
                 <SizingAnimatedButton
                   onPress={async () => {
                     const purchased = await presentPaywall()
-                    if (purchased) alert({ title: t`Welcome to Pro ✦`, message: t`Unlimited entries unlocked. Keep writing.`, duration: PAYWALL_SUCCESS_ALERT_DURATION })
+                    if (purchased) {
+                      alert({ title: t`Welcome to Pro ✦`, message: t`Unlimited entries unlocked. Keep writing.`, duration: PAYWALL_SUCCESS_ALERT_DURATION })
+                    }
                   }}
                   backgroundColor="$accentBackground"
                   spinnerBackgroundColor="$accentBackground"
@@ -291,7 +325,7 @@ const SettingsScreen = () => {
             </AnimatedEntry>
 
             {/* Daily reminder */}
-            <AnimatedEntry index={2} animKey={animKey}>
+            <AnimatedEntry index={3} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Daily reminder</Trans>
@@ -352,7 +386,7 @@ const SettingsScreen = () => {
             </AnimatedEntry>
 
             {/* Push notifications */}
-            <AnimatedEntry index={3} animKey={animKey}>
+            <AnimatedEntry index={4} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Push notifications</Trans>
@@ -375,7 +409,7 @@ const SettingsScreen = () => {
             </AnimatedEntry>
 
             {/* Time format */}
-            <AnimatedEntry index={4} animKey={animKey}>
+            <AnimatedEntry index={5} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
                 <Trans>Time format</Trans>
@@ -400,7 +434,7 @@ const SettingsScreen = () => {
             </AnimatedEntry>
 
             {/* Sign out / Sign in */}
-            <AnimatedEntry index={5} animKey={animKey}>
+            <AnimatedEntry index={6} animKey={animKey}>
             {isAnonymous ? <YStack /> : (
               <BaseTouchable
                 onPress={handleSignOut}
