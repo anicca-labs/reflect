@@ -17,7 +17,6 @@ import {
   appleAuth,
   appleAuthAndroid,
   AppleButton,
-  AppleError,
 } from '@invertase/react-native-apple-authentication'
 
 import {
@@ -223,8 +222,8 @@ const SignInScreen = () => {
       const errCode = (err as { code?: string })?.code
       const isCancelledIOS =
         Platform.OS === 'ios' && (
-          errCode === AppleError.CANCELED ||
-          errCode === AppleError.UNKNOWN ||
+          errCode === appleAuth.Error.CANCELED ||
+          errCode === appleAuth.Error.UNKNOWN ||
           message.includes('com.apple.AuthenticationServices.AuthorizationError error 1001')
         )
       const isCancelledAndroid = message.includes('E_SIGNIN_CANCELLED_ERROR')
