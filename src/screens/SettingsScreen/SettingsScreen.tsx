@@ -12,6 +12,7 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import { FlashList } from '@shopify/flash-list'
 import * as Device from 'expo-device'
 import { supabase } from '@/src/services/supabase'
+import { deleteAccount } from '@/src/services/account'
 import { usePreferencesStore, useSessionStore } from '@/src/stores'
 import { manageSubscriptions } from '@/src/services/revenue-cat'
 import { useRevenueCat, useToast, useReminder, useOtaUpdate } from '@hooks'
@@ -81,6 +82,7 @@ const SettingsScreen = () => {
   const [notifPermission, setNotifPermission] = useState<NotificationPermissionStatus | null>(null)
   const [showTimePicker, setShowTimePicker] = useState(false)
   const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   const openedSettings = useRef(false)
   const prevIsProRef = useRef(isPro)
 
@@ -156,6 +158,45 @@ const SettingsScreen = () => {
       [
         { text: t`Cancel`, style: 'cancel' },
         { text: t`Sign out`, style: 'destructive', onPress: () => supabase.auth.signOut() },
+      ],
+    )
+  }
+
+  const handleDeleteAccount = () => {
+    const subscriptionNote = isPro
+      ? '\n\n' + t`Deleting your account does not cancel your subscription. Manage it in the App Store to avoid further charges.`
+      : ''
+    Alert.alert(
+      t`Delete account`,
+      t`This permanently deletes your account and all your journal entries. This cannot be undone.` + subscriptionNote,
+      [
+        { text: t`Cancel`, style: 'cancel' },
+        {
+          text: t`Delete account`,
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              t`Are you sure?`,
+              t`Your account and journal entries will be permanently deleted.`,
+              [
+                { text: t`Cancel`, style: 'cancel' },
+                {
+                  text: t`Delete`,
+                  style: 'destructive',
+                  onPress: async () => {
+                    setIsDeleting(true)
+                    try {
+                      await deleteAccount()
+                    } catch {
+                      setIsDeleting(false)
+                      alert({ title: t`Couldn't delete account`, message: t`Something went wrong. Please try again.`, preset: 'error' })
+                    }
+                  },
+                },
+              ],
+            )
+          },
+        },
       ],
     )
   }
@@ -431,18 +472,35 @@ const SettingsScreen = () => {
             {/* Sign out / Sign in */}
             <AnimatedEntry index={6} animKey={animKey}>
             {isAnonymous ? <YStack /> : (
-              <BaseTouchable
-                onPress={handleSignOut}
-                bg="$surface-card"
-                rounded="$4"
-                py="$3"
-                items="center"
-                borderWidth={1}
-                borderColor="$borderColor">
-                <LabelLg color="$red10">
-                  <Trans>Sign out</Trans>
-                </LabelLg>
-              </BaseTouchable>
+              <YStack gap="$3">
+                <BaseTouchable
+                  onPress={handleSignOut}
+                  bg="$surface-card"
+                  rounded="$4"
+                  py="$3"
+                  items="center"
+                  borderWidth={1}
+                  borderColor="$borderColor">
+                  <LabelLg color="$red10">
+                    <Trans>Sign out</Trans>
+                  </LabelLg>
+                </BaseTouchable>
+
+                <BaseTouchable
+                  onPress={handleDeleteAccount}
+                  disabled={isDeleting}
+                  py="$3"
+                  items="center"
+                  opacity={isDeleting ? DISABLED_OPACITY : 1}>
+                  {isDeleting ? (
+                    <Spinner size="small" color="$red10" />
+                  ) : (
+                    <LabelLg color="$red10">
+                      <Trans>Delete account</Trans>
+                    </LabelLg>
+                  )}
+                </BaseTouchable>
+              </YStack>
             )}
             </AnimatedEntry>
           </YStack>

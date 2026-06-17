@@ -61,6 +61,10 @@ msgstr ""
 msgid "Are you sure you want to sign out?"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Are you sure?"
+msgstr ""
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Back to sign in"
@@ -95,6 +99,10 @@ msgstr ""
 msgid "Continue without an account"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't delete account"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr ""
@@ -113,6 +121,18 @@ msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "days streak"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Delete"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Delete account"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Deleting your account does not cancel your subscription. Manage it in the App Store to avoid further charges."
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
@@ -337,6 +357,10 @@ msgid "Sign out"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
 msgstr ""
 
@@ -346,6 +370,10 @@ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "This permanently deletes your account and all your journal entries. This cannot be undone."
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
@@ -438,4 +466,8 @@ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Your account and journal entries will be permanently deleted."
 msgstr ""
