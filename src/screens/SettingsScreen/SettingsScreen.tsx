@@ -276,20 +276,22 @@ const SettingsScreen = () => {
                   <Trans>Account</Trans>
                 </LabelMd>
                 {(currentUser.user_metadata?.full_name || currentUser.user_metadata?.name) ? (
-                  <XStack items="center" justify="space-between" mb="$2">
-                    <BodySm color="$text-secondary">
+                  <XStack items="center" justify="space-between" gap="$3" mb="$2">
+                    <BodySm color="$text-secondary" flexShrink={0}>
                       <Trans>Name</Trans>
                     </BodySm>
-                    <LabelMd color="$text-emphasis">
+                    <LabelMd color="$text-emphasis" flex={1} textAlign="right" numberOfLines={1} ellipsizeMode="tail">
                       {currentUser.user_metadata.full_name ?? currentUser.user_metadata.name}
                     </LabelMd>
                   </XStack>
                 ) : null}
-                <XStack items="center" justify="space-between">
-                  <BodySm color="$text-secondary">
+                <XStack items="center" justify="space-between" gap="$3">
+                  <BodySm color="$text-secondary" flexShrink={0}>
                     <Trans>Email</Trans>
                   </BodySm>
-                  <LabelMd color="$text-secondary">{currentUser.email}</LabelMd>
+                  <LabelMd color="$text-secondary" flex={1} textAlign="right" numberOfLines={1} ellipsizeMode="middle">
+                    {currentUser.email}
+                  </LabelMd>
                 </XStack>
               </SettingsCard>
             ) : <YStack />}
