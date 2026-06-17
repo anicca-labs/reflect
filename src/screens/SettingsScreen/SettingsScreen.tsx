@@ -148,7 +148,12 @@ const SettingsScreen = () => {
       return
     }
     openedSettings.current = true
-    await Linking.openSettings()
+    try {
+      await Linking.openSettings()
+    } catch {
+      openedSettings.current = false
+      alert({ title: t`Couldn't open Settings`, message: t`Please open Settings manually to manage notifications.`, preset: 'error' })
+    }
   }
 
   const handleSignOut = () => {
