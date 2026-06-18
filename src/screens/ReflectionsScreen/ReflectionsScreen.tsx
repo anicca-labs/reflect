@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
-import { View } from 'react-native'
+import { useState, useRef, useCallback, useEffect, type RefObject } from 'react'
+import { View, ScrollView as RNScrollView } from 'react-native'
 import { BlurTargetView } from 'expo-blur'
 import { useFocusEffect, useRouter } from 'expo-router'
 import { ScrollView, YStack, XStack, Spinner, Input } from 'tamagui'
@@ -113,7 +113,7 @@ const ReflectionsScreen = () => {
   const [animKey, setAnimKey] = useState(0)
   const [peekEntry, setPeekEntry] = useState<JournalEntry | null>(null)
   const blurTargetRef = useRef<View>(null)
-  const scrollViewRef = useRef<typeof ScrollView>(null)
+  const scrollViewRef = useRef<RNScrollView>(null)
   const groupYPositions = useRef<Map<string, number>>(new Map())
   const entryYPositions = useRef<Map<string, number>>(new Map())
   const hasAnimated = useRef(false)
@@ -133,13 +133,13 @@ const ReflectionsScreen = () => {
       handlePeek(entry)
       clearPendingPeekEntryId(null)
       setTimeout(() => {
-        const group = groups.find((g) => g.items.some((e) => e.id === entry.id))
-        const groupY = group ? (groupYPositions.current.get(group.label) ?? 0) : 0
+        const groupLabel = formatDayLabel(entry.created_at)
+        const groupY = groupYPositions.current.get(groupLabel) ?? 0
         const entryY = entryYPositions.current.get(entry.id) ?? 0
-        ;(scrollViewRef.current as any)?.scrollTo({ y: Math.max(0, groupY + entryY - 80), animated: true })
+        scrollViewRef.current?.scrollTo({ y: Math.max(0, groupY + entryY - 80), animated: true })
       }, 50)
     }
-  }, [pendingPeekEntryId, entries])
+  }, [pendingPeekEntryId, entries, clearPendingPeekEntryId])
 
   useFocusEffect(
     useCallback(() => {
@@ -182,7 +182,7 @@ const ReflectionsScreen = () => {
   return (
     <Containers.Screen shouldAutoResize={false}>
       <BlurTargetView ref={blurTargetRef} style={{ flex: 1 }}>
-      <ScrollView ref={scrollViewRef as any} keyboardShouldPersistTaps="handled" onTouchStart={dismissOpenCard}>
+      <ScrollView ref={scrollViewRef as RefObject<RNScrollView>} keyboardShouldPersistTaps="handled" onTouchStart={dismissOpenCard}>
         <YStack p="$5">
           <XStack justify="space-between" items="center" mb="$4">
             <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
@@ -272,16 +272,16 @@ const ReflectionsScreen = () => {
               </LabelMd>
               {group.items.map((entry, idx) => (
                 <AnimatedEntry key={entry.id} index={idx} animKey={animKey}>
-                  <View onLayout={(e) => entryYPositions.current.set(entry.id, e.nativeEvent.layout.y)}>
-                  <EntryCard
-                    entry={entry}
-                    index={idx}
-                    onToggleBookmark={(id, current) => isAnonymous ? toggleLocalBookmark(id) : toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })}
-                    onDelete={(id) => isAnonymous ? deleteLocalEntry(id) : deleteMutation.mutate(id)}
-                    onPeek={handlePeek}
-                    closeKey={closeKey}
-                  />
-                  </View>
+                  <YStack onLayout={(e) => entryYPositions.current.set(entry.id, e.nativeEvent.layout.y)}>
+                    <EntryCard
+                      entry={entry}
+                      index={idx}
+                      onToggleBookmark={(id, current) => isAnonymous ? toggleLocalBookmark(id) : toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })}
+                      onDelete={(id) => isAnonymous ? deleteLocalEntry(id) : deleteMutation.mutate(id)}
+                      onPeek={handlePeek}
+                      closeKey={closeKey}
+                    />
+                  </YStack>
                 </AnimatedEntry>
               ))}
             </YStack>
