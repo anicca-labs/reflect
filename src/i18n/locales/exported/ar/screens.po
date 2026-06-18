@@ -61,6 +61,14 @@ msgstr "تسجيل الدخول بـ Apple غير متاح على Android"
 msgid "Are you sure you want to sign out?"
 msgstr "هل أنت متأكد من تسجيل الخروج؟"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto"
+msgstr "تلقائي"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto (device language)"
+msgstr "تلقائي (لغة الجهاز)"
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Back to sign in"
@@ -70,6 +78,7 @@ msgstr "العودة إلى تسجيل الدخول"
 msgid "Bookmarked"
 msgstr "المحفوظات"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Cancel"
 msgstr "إلغاء"
@@ -193,6 +202,10 @@ msgstr "المذكرة"
 msgid "Manage subscription"
 msgstr "إدارة الاشتراك"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Microphone access required"
+msgstr "يلزم الوصول إلى الميكروفون"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Name"
 msgstr "الاسم"
@@ -216,6 +229,10 @@ msgstr "لا توجد تسجيلات تطابق بحثك."
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr "لا توجد تسجيلات بعد. ابدأ الكتابة في تبويب المذكرة."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Open Settings"
+msgstr "فتح الإعدادات"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
@@ -255,6 +272,10 @@ msgstr "يرجى تأكيد بريدك الإلكتروني قبل تسجيل ا
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Please enter a valid email address"
 msgstr "أدخل عنوان بريد إلكتروني صالحاً"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Preferences"
+msgstr "التفضيلات"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"
@@ -356,6 +377,10 @@ msgstr "الوقت"
 msgid "Time format"
 msgstr "تنسيق الوقت"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "To use voice input, enable microphone access for Reflect in Settings."
+msgstr "لاستخدام الإدخال الصوتي، قم بتمكين الوصول إلى الميكروفون لتطبيق Reflect في الإعدادات."
+
 #. placeholder {0}: todayEntries.length
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} entries"
@@ -382,6 +407,10 @@ msgstr "التحديث جاهز"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Upgrade to Pro ✦"
 msgstr "الترقية إلى Pro ✦"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Voice language"
+msgstr "لغة الصوت"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Voice recognition failed"

@@ -61,6 +61,14 @@ msgstr "La connexion Apple n'est pas configurée pour Android"
 msgid "Are you sure you want to sign out?"
 msgstr "Êtes-vous sûr de vouloir vous déconnecter ?"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto"
+msgstr "Auto"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto (device language)"
+msgstr "Auto (langue de l'appareil)"
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Back to sign in"
@@ -70,6 +78,7 @@ msgstr "Retour à la connexion"
 msgid "Bookmarked"
 msgstr "Favoris"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Cancel"
 msgstr "Annuler"
@@ -193,6 +202,10 @@ msgstr "Journal"
 msgid "Manage subscription"
 msgstr "Gérer l'abonnement"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Microphone access required"
+msgstr "Accès au microphone requis"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Name"
 msgstr "Nom"
@@ -216,6 +229,10 @@ msgstr "Aucune entrée ne correspond à votre recherche."
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr "Aucune entrée pour l'instant. Commencez à écrire dans l'onglet Journal."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Open Settings"
+msgstr "Ouvrir les réglages"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
@@ -255,6 +272,10 @@ msgstr "Veuillez confirmer votre email avant de vous connecter"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Please enter a valid email address"
 msgstr "Veuillez saisir une adresse e-mail valide"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Preferences"
+msgstr "Préférences"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"
@@ -356,6 +377,10 @@ msgstr "Heure"
 msgid "Time format"
 msgstr "Format de l'heure"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "To use voice input, enable microphone access for Reflect in Settings."
+msgstr "Pour utiliser la saisie vocale, activez l'accès au microphone pour Reflect dans les réglages."
+
 #. placeholder {0}: todayEntries.length
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} entries"
@@ -382,6 +407,10 @@ msgstr "Mise à jour prête"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Upgrade to Pro ✦"
 msgstr "Passer à Pro ✦"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Voice language"
+msgstr "Langue vocale"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Voice recognition failed"

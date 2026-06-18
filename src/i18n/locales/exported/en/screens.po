@@ -61,6 +61,14 @@ msgstr ""
 msgid "Are you sure you want to sign out?"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto (device language)"
+msgstr ""
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Back to sign in"
@@ -70,6 +78,7 @@ msgstr ""
 msgid "Bookmarked"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Cancel"
 msgstr ""
@@ -193,6 +202,10 @@ msgstr ""
 msgid "Manage subscription"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Microphone access required"
+msgstr ""
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Name"
 msgstr ""
@@ -215,6 +228,10 @@ msgstr ""
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries yet. Start writing in the Journal tab."
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Open Settings"
 msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -254,6 +271,10 @@ msgstr ""
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Please enter a valid email address"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Preferences"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
@@ -356,6 +377,10 @@ msgstr ""
 msgid "Time format"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "To use voice input, enable microphone access for Reflect in Settings."
+msgstr ""
+
 #. placeholder {0}: todayEntries.length
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} entries"
@@ -381,6 +406,10 @@ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Upgrade to Pro ✦"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Voice language"
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx

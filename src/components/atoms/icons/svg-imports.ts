@@ -4,6 +4,7 @@ import iconMic from './svg/iconMic.svg'
 import iconPen from './svg/iconPen.svg'
 import iconPerson from './svg/iconPerson.svg'
 import iconShare from './svg/iconShare.svg'
+import iconTrash from './svg/iconTrash.svg'
 
 const svgImports = {
   iconBell,
@@ -12,6 +13,7 @@ const svgImports = {
   iconPen,
   iconPerson,
   iconShare,
+  iconTrash,
 }
 
 export { svgImports }

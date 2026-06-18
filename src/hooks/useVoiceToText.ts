@@ -1,18 +1,15 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { NativeModules } from 'react-native'
-import Voice, { type SpeechResultsEvent, type SpeechErrorEvent } from '@react-native-voice/voice'
-
-type VoiceState = 'idle' | 'listening' | 'error'
+import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition'
+import { usePreferencesStore } from '@/src/stores'
 
 type UseVoiceToTextOptions = {
-  onResult: (transcript: string) => void
-  onError?: (error: string) => void
+  // `replaces` is the running transcript for this session — swap it instead of appending.
+  onResult: (transcript: string, replaces: string) => void
+  onError?: (message: string) => void
+  // Called when permission was previously denied and the OS won't show the dialog again.
+  onPermissionDenied?: () => void
 }
-
-const RETRY_DELAY_MS = 600
-const NOT_AVAILABLE_MESSAGE = 'Speech recognition is not available now'
-
-const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
 
 const getLocale = (): string => {
   const deviceLocale =
@@ -22,68 +19,96 @@ const getLocale = (): string => {
   return deviceLocale.replace('_', '-')
 }
 
-const useVoiceToText = ({ onResult, onError }: UseVoiceToTextOptions) => {
-  const [state, setState] = useState<VoiceState>('idle')
+const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTextOptions) => {
+  const [isListening, setIsListening] = useState(false)
   const onResultRef = useRef(onResult)
   const onErrorRef = useRef(onError)
-  const retryRef = useRef(false)
+  const onPermissionDeniedRef = useRef(onPermissionDenied)
+  onResultRef.current = onResult
+  onErrorRef.current = onError
+  onPermissionDeniedRef.current = onPermissionDenied
 
-  useEffect(() => { onResultRef.current = onResult }, [onResult])
-  useEffect(() => { onErrorRef.current = onError }, [onError])
+  const sessionTranscriptRef = useRef('')
+  const sessionEndedRef = useRef(false)
+  const userStoppedRef = useRef(false)
+  const pendingErrorRef = useRef<string | null>(null)
+  // iOS dedup: on stop(), iOS fires the same isFinal transcript a second time. Track the last
+  // committed final so we can skip it if it arrives again before `end` fires.
+  const lastFinalRef = useRef('')
 
-  useEffect(() => {
-    Voice.onSpeechResults = (e: SpeechResultsEvent) => {
-      const transcript = e.value?.[0]
-      if (transcript) onResultRef.current(transcript)
-      setState('idle')
+  useSpeechRecognitionEvent('start', () => {
+    sessionEndedRef.current = false
+    userStoppedRef.current = false
+    pendingErrorRef.current = null
+    sessionTranscriptRef.current = ''
+    lastFinalRef.current = ''
+    setIsListening(true)
+  })
+
+  useSpeechRecognitionEvent('end', () => {
+    sessionEndedRef.current = true
+    sessionTranscriptRef.current = ''
+    lastFinalRef.current = ''
+    setIsListening(false)
+    if (pendingErrorRef.current && !userStoppedRef.current) {
+      onErrorRef.current?.(pendingErrorRef.current)
     }
-    Voice.onSpeechError = async (e: SpeechErrorEvent) => {
-      const message = e.error?.message ?? 'Speech recognition failed'
-      // iOS fires "not available now" right after first permission grant while the
-      // speech framework is still initialising — retry once after a short delay.
-      if (message === NOT_AVAILABLE_MESSAGE && !retryRef.current) {
-        retryRef.current = true
-        await sleep(RETRY_DELAY_MS)
-        try {
-          await Voice.start(getLocale())
-          setState('listening')
-        } catch {
-          retryRef.current = false
-          onErrorRef.current?.(message)
-          setState('error')
-        }
-        return
+    pendingErrorRef.current = null
+  })
+
+  useSpeechRecognitionEvent('result', (event) => {
+    if (sessionEndedRef.current || userStoppedRef.current) return
+    const transcript = event.results[0]?.transcript
+    if (!transcript) return
+    if (event.isFinal) {
+      if (transcript === lastFinalRef.current) return
+      lastFinalRef.current = transcript
+      onResultRef.current(transcript, sessionTranscriptRef.current)
+      sessionTranscriptRef.current = ''
+    } else {
+      // Non-final means a new utterance is forming — reset the dedup window.
+      lastFinalRef.current = ''
+      // Android cumulative transcripts only grow within a segment. If the new transcript is
+      // shorter than what we tracked, the engine restarted internally after a natural pause
+      // without firing end/start — treat it as a fresh segment so we append, not replace.
+      if (transcript.length < sessionTranscriptRef.current.length) {
+        sessionTranscriptRef.current = ''
       }
-      retryRef.current = false
-      onErrorRef.current?.(message)
-      setState('error')
+      onResultRef.current(transcript, sessionTranscriptRef.current)
+      sessionTranscriptRef.current = transcript
     }
-    Voice.onSpeechEnd = () => setState('idle')
+  })
 
-    return () => {
-      Voice.destroy().then(() => Voice.removeAllListeners())
-    }
-  }, [])
+  useSpeechRecognitionEvent('error', (event) => {
+    pendingErrorRef.current = event.message ?? 'Speech recognition failed'
+  })
 
   const start = useCallback(async () => {
-    retryRef.current = false
-    try {
-      await Voice.start(getLocale())
-      setState('listening')
-    } catch {
-      setState('error')
+    const current = await ExpoSpeechRecognitionModule.getPermissionsAsync()
+    if (!current.granted && !current.canAskAgain) {
+      // Already denied — OS won't show the dialog again. Let the caller handle it.
+      onPermissionDeniedRef.current?.()
+      return
     }
+    const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync()
+    if (!granted) {
+      // User just denied the dialog — do nothing, don't redirect anywhere.
+      return
+    }
+    const voiceLanguage = usePreferencesStore.getState().voiceLanguage
+    ExpoSpeechRecognitionModule.start({
+      lang: voiceLanguage ?? getLocale(),
+      continuous: true,
+      interimResults: true,
+      volumeChangeEventOptions: { enabled: true, intervalMillis: 80 },
+    })
   }, [])
 
-  const stop = useCallback(async () => {
-    try {
-      await Voice.stop()
-    } catch {
-      setState('idle')
-    }
+  const stop = useCallback(() => {
+    userStoppedRef.current = true
+    sessionTranscriptRef.current = ''
+    ExpoSpeechRecognitionModule.stop()
   }, [])
-
-  const isListening = state === 'listening'
 
   return { isListening, start, stop }
 }

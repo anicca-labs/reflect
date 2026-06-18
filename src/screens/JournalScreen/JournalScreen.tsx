@@ -1,8 +1,18 @@
-import { useState, useRef, useCallback, type ComponentRef } from 'react'
-import { View } from 'react-native'
+import { useState, useRef, useCallback, useEffect, type ComponentRef } from 'react'
+import { Alert, Linking, View } from 'react-native'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withRepeat,
+  withSequence,
+  withTiming,
+  cancelAnimation,
+} from 'react-native-reanimated'
+import { useSpeechRecognitionEvent } from 'expo-speech-recognition'
 import { BlurTargetView } from 'expo-blur'
 import { useFocusEffect, useRouter } from 'expo-router'
-import { ScrollView, YStack, XStack, TextArea, Spinner } from 'tamagui'
+import { ScrollView, YStack, XStack, TextArea, Spinner, useTheme } from 'tamagui'
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { BaseTouchable } from '@ksairi-org/ui-touchables'
@@ -95,15 +105,71 @@ const JournalScreen = () => {
   const { alert } = useToast()
   const inputRef = useRef<ComponentRef<typeof TextArea>>(null)
 
+  const handleStopListening = () => {
+    stopListening()
+    setDraft((prev) => {
+      const trimmed = prev.trimEnd()
+      if (!trimmed || /[.!?,;:]$/.test(trimmed)) return prev
+      return trimmed + '.'
+    })
+  }
+
   const { isListening, start: startListening, stop: stopListening } = useVoiceToText({
-    onResult: (transcript) => {
+    onResult: (transcript, replaces) => {
       setDraft((prev) => {
+        if (replaces) {
+          const idx = prev.lastIndexOf(replaces)
+          if (idx !== -1) return prev.slice(0, idx) + transcript
+        }
         const separator = prev.trim().length > 0 ? ' ' : ''
         return prev + separator + transcript
       })
     },
-    onError: (msg) => alert({ title: t`Voice recognition failed`, message: msg, preset: 'error' }),
+    onError: () => alert({ title: t`Voice recognition failed`, preset: 'error' }),
+    onPermissionDenied: () =>
+      Alert.alert(
+        t`Microphone access required`,
+        t`To use voice input, enable microphone access for Reflect in Settings.`,
+        [
+          { text: t`Cancel`, style: 'cancel' },
+          { text: t`Open Settings`, onPress: () => Linking.openSettings() },
+        ],
+      ),
   })
+
+  const theme = useTheme()
+  const ringScale = useSharedValue(0)
+  const ringOpacity = useSharedValue(0)
+
+  useSpeechRecognitionEvent('volumechange', (event) => {
+    const vol = Math.max(0, (event.value + 2) / 12)
+    ringScale.value = withSpring(1 + vol * 0.7, { damping: 10, stiffness: 180 })
+  })
+
+  useEffect(() => {
+    if (isListening) {
+      ringScale.value = withSpring(1, { damping: 10 })
+      ringOpacity.value = withRepeat(
+        withSequence(withTiming(0.35, { duration: 700 }), withTiming(0.15, { duration: 700 })),
+        -1,
+        true,
+      )
+    } else {
+      cancelAnimation(ringScale)
+      cancelAnimation(ringOpacity)
+      ringScale.value = withTiming(0, { duration: 200 })
+      ringOpacity.value = withTiming(0, { duration: 200 })
+    }
+  }, [isListening])
+
+  const ringStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: ringScale.value }],
+    opacity: ringOpacity.value,
+  }))
+
+  const handleClearDraft = () => {
+    setDraft('')
+  }
 
   const entries = isAnonymous ? localEntries : serverEntries
   const loading = isAnonymous ? false : serverLoading
@@ -144,6 +210,7 @@ const JournalScreen = () => {
   const showHint = !isPro && entries.length >= FREE_ENTRY_LIMIT - 2 && entries.length < FREE_ENTRY_LIMIT
 
   const handleSave = async () => {
+    if (isListening) stopListening()
     const trimmed = draft.trim()
     if (!trimmed) return
 
@@ -212,20 +279,41 @@ const JournalScreen = () => {
               fontSize="$3"
               color="$text-emphasis"
             />
-            <XStack justify="flex-end" px="$3" pb="$3">
-              <BaseTouchable
-                onPress={isListening ? stopListening : startListening}
-                bg={isListening ? '$accentBackground' : '$surface-subtle'}
-                rounded="$full"
-                p="$2"
-                hitSlop={12}>
-                <BaseIcon
-                  iconName="iconMic"
-                  color={isListening ? '$accentColor' : '$text-disabled'}
-                  width={18}
-                  height={18}
+            <XStack justify="space-between" items="center" px="$3" pb="$3">
+              {hasContent ? (
+                <BaseTouchable onPress={handleClearDraft} rounded="$full" p="$2" hitSlop={12}>
+                  <BaseIcon iconName="iconTrash" color="$text-disabled" width={16} height={16} />
+                </BaseTouchable>
+              ) : (
+                <View />
+              )}
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <Animated.View
+                  style={[
+                    {
+                      position: 'absolute',
+                      width: 52,
+                      height: 52,
+                      borderRadius: 26,
+                      backgroundColor: theme.accentBackground?.val,
+                    },
+                    ringStyle,
+                  ]}
                 />
-              </BaseTouchable>
+                <BaseTouchable
+                  onPress={isListening ? handleStopListening : startListening}
+                  bg={isListening ? '$accentBackground' : '$surface-subtle'}
+                  rounded="$full"
+                  p="$2"
+                  hitSlop={12}>
+                  <BaseIcon
+                    iconName="iconMic"
+                    color={isListening ? '$accentColor' : '$text-disabled'}
+                    width={18}
+                    height={18}
+                  />
+                </BaseTouchable>
+              </View>
             </XStack>
           </YStack>
 

@@ -25,6 +25,23 @@ import { upsertDeviceToken } from '@/src/services/user-devices'
 import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING, DISABLED_OPACITY, PAYWALL_SUCCESS_ALERT_DURATION, SIMULATOR_TOAST_DURATION } from '@constants'
 import { AnimatedEntry } from '@molecules'
 
+const VOICE_LANGUAGES: { code: string; label: string }[] = [
+  { code: 'en-US', label: 'English' },
+  { code: 'es-ES', label: 'Spanish' },
+  { code: 'fr-FR', label: 'French' },
+  { code: 'pt-BR', label: 'Portuguese' },
+  { code: 'de-DE', label: 'German' },
+  { code: 'it-IT', label: 'Italian' },
+  { code: 'ar', label: 'Arabic' },
+  { code: 'zh-CN', label: 'Chinese' },
+  { code: 'ja-JP', label: 'Japanese' },
+  { code: 'ko-KR', label: 'Korean' },
+  { code: 'ru-RU', label: 'Russian' },
+  { code: 'hi-IN', label: 'Hindi' },
+  { code: 'nl-NL', label: 'Dutch' },
+  { code: 'tr-TR', label: 'Turkish' },
+]
+
 const REMINDER_HOUR_START = 6
 const REMINDER_HOUR_COUNT = 18
 const REMINDER_HOURS = Array.from({ length: REMINDER_HOUR_COUNT }, (_, i) => i + REMINDER_HOUR_START)
@@ -75,8 +92,11 @@ const SettingsScreen = () => {
   const { enabled: reminderEnabled, hour: reminderHour, loading: reminderLoading, toggle: toggleReminder, disable: disableReminder, updateTime } = useReminder()
   const timeFormat = usePreferencesStore((s) => s.timeFormat)
   const setTimeFormat = usePreferencesStore((s) => s.setTimeFormat)
+  const voiceLanguage = usePreferencesStore((s) => s.voiceLanguage)
+  const setVoiceLanguage = usePreferencesStore((s) => s.setVoiceLanguage)
   const [hasGlass] = useState(() => isGlassEffectAPIAvailable())
   const [animKey, setAnimKey] = useState(0)
+  const [showLanguagePicker, setShowLanguagePicker] = useState(false)
   const hasAnimated = useRef(false)
   const [notifPermission, setNotifPermission] = useState<NotificationPermissionStatus | null>(null)
   const [showTimePicker, setShowTimePicker] = useState(false)
@@ -159,6 +179,9 @@ const SettingsScreen = () => {
       ],
     )
   }
+
+  const getLanguageLabel = (code: string): string =>
+    VOICE_LANGUAGES.find((l) => l.code === code)?.label ?? code
 
   const activeEntitlement = customerInfo?.entitlements.active['pro']
   const productId = activeEntitlement?.productIdentifier ?? ''
@@ -403,13 +426,17 @@ const SettingsScreen = () => {
             </SettingsCard>
             </AnimatedEntry>
 
-            {/* Time format */}
+            {/* Preferences */}
             <AnimatedEntry index={5} animKey={animKey}>
             <SettingsCard hasGlass={hasGlass}>
               <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
-                <Trans>Time format</Trans>
+                <Trans>Preferences</Trans>
               </LabelMd>
-              <XStack gap="$2">
+
+              <BodySm color="$text-secondary" mb="$2">
+                <Trans>Time format</Trans>
+              </BodySm>
+              <XStack gap="$2" mb="$4">
                 {(['12h', '24h'] as const).map((fmt) => (
                   <BaseTouchable
                     key={fmt}
@@ -425,6 +452,17 @@ const SettingsScreen = () => {
                   </BaseTouchable>
                 ))}
               </XStack>
+
+              <BaseTouchable onPress={() => setShowLanguagePicker(true)}>
+                <XStack items="center" justify="space-between">
+                  <BodySm color="$text-secondary">
+                    <Trans>Voice language</Trans>
+                  </BodySm>
+                  <LabelMd color="$accentBackground">
+                    {voiceLanguage ? getLanguageLabel(voiceLanguage) : t`Auto`}
+                  </LabelMd>
+                </XStack>
+              </BaseTouchable>
             </SettingsCard>
             </AnimatedEntry>
 
@@ -448,6 +486,49 @@ const SettingsScreen = () => {
           </YStack>
         </ScrollView>
       </YStack>
+
+      {/* Language picker modal */}
+      <Modal
+        visible={showLanguagePicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowLanguagePicker(false)}>
+        <BaseTouchable
+          flex={1}
+          bg="$peekDim"
+          justify="flex-end"
+          onPress={() => setShowLanguagePicker(false)}>
+          <BaseTouchable>
+            <YStack bg="$background" rounded="$4" p="$4" mx="$2" mb="$6">
+              <LabelMd color="$text-disabled" textTransform="uppercase" letterSpacing={LABEL_LETTER_SPACING} mb="$3">
+                <Trans>Voice language</Trans>
+              </LabelMd>
+              <YStack height={TIME_PICKER_MAX_HEIGHT}>
+                <FlashList
+                  data={[{ code: null, label: t`Auto (device language)` }, ...VOICE_LANGUAGES]}
+                  keyExtractor={(item) => item.code ?? 'auto'}
+                  renderItem={({ item }) => {
+                    const isSelected = item.code === voiceLanguage
+                    return (
+                      <BaseTouchable
+                        onPress={() => {
+                          setVoiceLanguage(item.code)
+                          setShowLanguagePicker(false)
+                        }}
+                        py={TIME_PICKER_ITEM_PY}
+                        px={sizes.sm}>
+                        <LabelLg color={isSelected ? '$accentBackground' : '$text-emphasis'}>
+                          {item.label}
+                        </LabelLg>
+                      </BaseTouchable>
+                    )
+                  }}
+                />
+              </YStack>
+            </YStack>
+          </BaseTouchable>
+        </BaseTouchable>
+      </Modal>
 
       {/* Time picker modal */}
       <Modal
