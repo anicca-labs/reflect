@@ -272,7 +272,7 @@ const ReflectionsScreen = () => {
               </LabelMd>
               {group.items.map((entry, idx) => (
                 <AnimatedEntry key={entry.id} index={idx} animKey={animKey}>
-                  <YStack onLayout={(e) => entryYPositions.current.set(entry.id, e.nativeEvent.layout.y)}>
+                  <View onLayout={(e) => entryYPositions.current.set(entry.id, e.nativeEvent.layout.y)}>
                     <EntryCard
                       entry={entry}
                       index={idx}
@@ -281,7 +281,7 @@ const ReflectionsScreen = () => {
                       onPeek={handlePeek}
                       closeKey={closeKey}
                     />
-                  </YStack>
+                  </View>
                 </AnimatedEntry>
               ))}
             </YStack>
