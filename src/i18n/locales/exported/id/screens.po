@@ -95,6 +95,10 @@ msgstr "Konfirmasi kata sandi"
 msgid "Continue without an account"
 msgstr "Lanjutkan tanpa akun"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't open Settings"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "Buat akun"
@@ -257,6 +261,10 @@ msgid "Please enter a valid email address"
 msgstr "Masukkan alamat email yang valid"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Please open Settings manually to manage notifications."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"
 msgstr "Pro"
 
@@ -277,8 +285,8 @@ msgid "Reflections"
 msgstr "Refleksi"
 
 #: src/hooks/useMemoryNotification.ts
-#~ msgid "Remember this?"
-#~ msgstr "Masih ingat ini?"
+msgid "Remember this?"
+msgstr "Masih ingat ini?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"

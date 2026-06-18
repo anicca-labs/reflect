@@ -95,6 +95,10 @@ msgstr "Confirmar senha"
 msgid "Continue without an account"
 msgstr "Continuar sem conta"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't open Settings"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "Criar conta"
@@ -257,6 +261,10 @@ msgid "Please enter a valid email address"
 msgstr "Insira um endereço de e-mail válido"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Please open Settings manually to manage notifications."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"
 msgstr "Pro"
 
@@ -277,8 +285,8 @@ msgid "Reflections"
 msgstr "Reflexões"
 
 #: src/hooks/useMemoryNotification.ts
-#~ msgid "Remember this?"
-#~ msgstr "Você se lembra disso?"
+msgid "Remember this?"
+msgstr "Você se lembra disso?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
