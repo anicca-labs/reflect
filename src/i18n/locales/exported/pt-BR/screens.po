@@ -58,6 +58,10 @@ msgid "Apple sign-in is not configured for Android"
 msgstr "O login com Apple não está configurado para Android"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Arabic"
+msgstr "Árabe"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Are you sure you want to sign out?"
 msgstr "Tem certeza que deseja sair?"
 
@@ -87,6 +91,10 @@ msgstr "Cancelar"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Check your email"
 msgstr "Verifique seu e-mail"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Chinese"
+msgstr "Chinês"
 
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Choose a new password."
@@ -132,6 +140,10 @@ msgstr "Negado — toque para abrir Configurações"
 msgid "Don't have an account? Sign up"
 msgstr "Não tem uma conta? Cadastre-se"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Dutch"
+msgstr "Holandês"
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -145,6 +157,10 @@ msgstr "Ativar"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Enable notifications in Settings to use reminders."
 msgstr "Ative as notificações em Configurações para usar lembretes."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "English"
+msgstr "Inglês"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 msgid "Enter your email to receive a reset link."
@@ -174,6 +190,14 @@ msgstr "Esqueceu a senha?"
 msgid "Free"
 msgstr "Gratuito"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "French"
+msgstr "Francês"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "German"
+msgstr "Alemão"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google Play Services not available"
 msgstr "Google Play Services não disponível"
@@ -186,6 +210,10 @@ msgstr "Falha ao entrar com Google: sem token de identidade"
 msgid "Granted"
 msgstr "Concedido"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Hindi"
+msgstr "Hindi"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "How are you really feeling right now?"
 msgstr "Como você realmente está se sentindo agora?"
@@ -194,9 +222,21 @@ msgstr "Como você realmente está se sentindo agora?"
 msgid "Invalid email or password"
 msgstr "E-mail ou senha incorretos"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Italian"
+msgstr "Italiano"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Japanese"
+msgstr "Japonês"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Journal"
 msgstr "Diário"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Korean"
+msgstr "Coreano"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
@@ -274,6 +314,10 @@ msgid "Please enter a valid email address"
 msgstr "Insira um endereço de e-mail válido"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Portuguese"
+msgstr "Português"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Preferences"
 msgstr "Preferências"
 
@@ -304,6 +348,10 @@ msgstr "Reflexões"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
 msgstr "Me lembre de escrever"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Russian"
+msgstr "Russo"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Save entry"
@@ -358,6 +406,10 @@ msgid "Sign out"
 msgstr "Sair"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Spanish"
+msgstr "Espanhol"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
 msgstr "Assinatura"
 
@@ -394,6 +446,10 @@ msgstr "Hoje · 1 entrada"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Too many attempts. Please try again later"
 msgstr "Muitas tentativas. Por favor tente novamente mais tarde"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Turkish"
+msgstr "Turco"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx

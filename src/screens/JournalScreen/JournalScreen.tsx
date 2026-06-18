@@ -160,8 +160,7 @@ const JournalScreen = () => {
       ringScale.value = withTiming(0, { duration: 200 })
       ringOpacity.value = withTiming(0, { duration: 200 })
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- ringScale/ringOpacity are Reanimated shared values: stable object references, never re-created
-  }, [isListening])
+  }, [isListening, ringScale, ringOpacity])
 
   const ringStyle = useAnimatedStyle(() => ({
     transform: [{ scale: ringScale.value }],

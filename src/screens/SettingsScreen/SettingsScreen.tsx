@@ -25,22 +25,6 @@ import { upsertDeviceToken } from '@/src/services/user-devices'
 import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING, DISABLED_OPACITY, PAYWALL_SUCCESS_ALERT_DURATION, SIMULATOR_TOAST_DURATION } from '@constants'
 import { AnimatedEntry } from '@molecules'
 
-const VOICE_LANGUAGES: { code: string; label: string }[] = [
-  { code: 'en-US', label: 'English' },
-  { code: 'es-ES', label: 'Spanish' },
-  { code: 'fr-FR', label: 'French' },
-  { code: 'pt-BR', label: 'Portuguese' },
-  { code: 'de-DE', label: 'German' },
-  { code: 'it-IT', label: 'Italian' },
-  { code: 'ar', label: 'Arabic' },
-  { code: 'zh-CN', label: 'Chinese' },
-  { code: 'ja-JP', label: 'Japanese' },
-  { code: 'ko-KR', label: 'Korean' },
-  { code: 'ru-RU', label: 'Russian' },
-  { code: 'hi-IN', label: 'Hindi' },
-  { code: 'nl-NL', label: 'Dutch' },
-  { code: 'tr-TR', label: 'Turkish' },
-]
 
 const REMINDER_HOUR_START = 6
 const REMINDER_HOUR_COUNT = 18
@@ -86,6 +70,22 @@ const SettingsScreen = () => {
   const { isUpdateReady, applyUpdate } = useOtaUpdate()
   const { isPro, isLoading: rcLoading, customerInfo, presentPaywall } = useRevenueCat()
   const { t } = useLingui()
+  const voiceLanguages: { code: string; label: string }[] = [
+    { code: 'en-US', label: t`English` },
+    { code: 'es-ES', label: t`Spanish` },
+    { code: 'fr-FR', label: t`French` },
+    { code: 'pt-BR', label: t`Portuguese` },
+    { code: 'de-DE', label: t`German` },
+    { code: 'it-IT', label: t`Italian` },
+    { code: 'ar', label: t`Arabic` },
+    { code: 'zh-CN', label: t`Chinese` },
+    { code: 'ja-JP', label: t`Japanese` },
+    { code: 'ko-KR', label: t`Korean` },
+    { code: 'ru-RU', label: t`Russian` },
+    { code: 'hi-IN', label: t`Hindi` },
+    { code: 'nl-NL', label: t`Dutch` },
+    { code: 'tr-TR', label: t`Turkish` },
+  ]
   const { alert } = useToast()
   const router = useRouter()
   const { isAnonymous } = useSessionStore()
@@ -181,7 +181,7 @@ const SettingsScreen = () => {
   }
 
   const getLanguageLabel = (code: string): string =>
-    VOICE_LANGUAGES.find((l) => l.code === code)?.label ?? code
+    voiceLanguages.find((l) => l.code === code)?.label ?? code
 
   const activeEntitlement = customerInfo?.entitlements.active['pro']
   const productId = activeEntitlement?.productIdentifier ?? ''
@@ -505,7 +505,7 @@ const SettingsScreen = () => {
               </LabelMd>
               <YStack height={TIME_PICKER_MAX_HEIGHT}>
                 <FlashList
-                  data={[{ code: null, label: t`Auto (device language)` }, ...VOICE_LANGUAGES]}
+                  data={[{ code: null, label: t`Auto (device language)` }, ...voiceLanguages]}
                   keyExtractor={(item) => item.code ?? 'auto'}
                   renderItem={({ item }) => {
                     const isSelected = item.code === voiceLanguage

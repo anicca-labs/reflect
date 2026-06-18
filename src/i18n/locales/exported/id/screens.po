@@ -58,6 +58,10 @@ msgid "Apple sign-in is not configured for Android"
 msgstr "Masuk dengan Apple tidak dikonfigurasi untuk Android"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Arabic"
+msgstr "Arab"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Are you sure you want to sign out?"
 msgstr "Yakin ingin keluar?"
 
@@ -87,6 +91,10 @@ msgstr "Batal"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Check your email"
 msgstr "Periksa email Anda"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Chinese"
+msgstr "Mandarin"
 
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Choose a new password."
@@ -132,6 +140,10 @@ msgstr "Ditolak — ketuk untuk membuka Pengaturan"
 msgid "Don't have an account? Sign up"
 msgstr "Belum punya akun? Daftar"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Dutch"
+msgstr "Belanda"
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -145,6 +157,10 @@ msgstr "Aktifkan"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Enable notifications in Settings to use reminders."
 msgstr "Aktifkan notifikasi di Pengaturan untuk menggunakan pengingat."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "English"
+msgstr "Inggris"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 msgid "Enter your email to receive a reset link."
@@ -174,6 +190,14 @@ msgstr "Lupa kata sandi?"
 msgid "Free"
 msgstr "Gratis"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "French"
+msgstr "Prancis"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "German"
+msgstr "Jerman"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google Play Services not available"
 msgstr "Google Play Services tidak tersedia"
@@ -186,6 +210,10 @@ msgstr "Gagal masuk dengan Google: tidak ada token identitas"
 msgid "Granted"
 msgstr "Diberikan"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Hindi"
+msgstr "Hindi"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "How are you really feeling right now?"
 msgstr "Bagaimana perasaanmu sebenarnya saat ini?"
@@ -194,9 +222,21 @@ msgstr "Bagaimana perasaanmu sebenarnya saat ini?"
 msgid "Invalid email or password"
 msgstr "Email atau kata sandi salah"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Italian"
+msgstr "Italia"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Japanese"
+msgstr "Jepang"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Journal"
 msgstr "Jurnal"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Korean"
+msgstr "Korea"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
@@ -274,6 +314,10 @@ msgid "Please enter a valid email address"
 msgstr "Masukkan alamat email yang valid"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Portuguese"
+msgstr "Portugis"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Preferences"
 msgstr "Preferensi"
 
@@ -304,6 +348,10 @@ msgstr "Refleksi"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
 msgstr "Ingatkan saya untuk menulis"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Russian"
+msgstr "Rusia"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Save entry"
@@ -358,6 +406,10 @@ msgid "Sign out"
 msgstr "Keluar"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Spanish"
+msgstr "Spanyol"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
 msgstr "Langganan"
 
@@ -394,6 +446,10 @@ msgstr "Hari ini · 1 catatan"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Too many attempts. Please try again later"
 msgstr "Terlalu banyak percobaan. Silakan coba lagi nanti"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Turkish"
+msgstr "Turki"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx

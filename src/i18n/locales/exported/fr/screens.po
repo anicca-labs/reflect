@@ -58,6 +58,10 @@ msgid "Apple sign-in is not configured for Android"
 msgstr "La connexion Apple n'est pas configurée pour Android"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Arabic"
+msgstr "Arabe"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Are you sure you want to sign out?"
 msgstr "Êtes-vous sûr de vouloir vous déconnecter ?"
 
@@ -87,6 +91,10 @@ msgstr "Annuler"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Check your email"
 msgstr "Vérifiez votre e-mail"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Chinese"
+msgstr "Chinois"
 
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Choose a new password."
@@ -132,6 +140,10 @@ msgstr "Refusée — appuyez pour ouvrir Réglages"
 msgid "Don't have an account? Sign up"
 msgstr "Pas encore de compte ? Inscrivez-vous"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Dutch"
+msgstr "Néerlandais"
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -145,6 +157,10 @@ msgstr "Activer"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Enable notifications in Settings to use reminders."
 msgstr "Activez les notifications dans Réglages pour utiliser les rappels."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "English"
+msgstr "Anglais"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 msgid "Enter your email to receive a reset link."
@@ -174,6 +190,14 @@ msgstr "Mot de passe oublié ?"
 msgid "Free"
 msgstr "Gratuit"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "French"
+msgstr "Français"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "German"
+msgstr "Allemand"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google Play Services not available"
 msgstr "Google Play Services non disponible"
@@ -186,6 +210,10 @@ msgstr "Échec de connexion Google : aucun jeton d'identité"
 msgid "Granted"
 msgstr "Accordée"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Hindi"
+msgstr "Hindi"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "How are you really feeling right now?"
 msgstr "Comment vous sentez-vous vraiment en ce moment ?"
@@ -194,9 +222,21 @@ msgstr "Comment vous sentez-vous vraiment en ce moment ?"
 msgid "Invalid email or password"
 msgstr "Email ou mot de passe incorrect"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Italian"
+msgstr "Italien"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Japanese"
+msgstr "Japonais"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Journal"
 msgstr "Journal"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Korean"
+msgstr "Coréen"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
@@ -274,6 +314,10 @@ msgid "Please enter a valid email address"
 msgstr "Veuillez saisir une adresse e-mail valide"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Portuguese"
+msgstr "Portugais"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Preferences"
 msgstr "Préférences"
 
@@ -304,6 +348,10 @@ msgstr "Réflexions"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
 msgstr "Me rappeler d'écrire"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Russian"
+msgstr "Russe"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Save entry"
@@ -358,6 +406,10 @@ msgid "Sign out"
 msgstr "Se déconnecter"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Spanish"
+msgstr "Espagnol"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
 msgstr "Abonnement"
 
@@ -394,6 +446,10 @@ msgstr "Aujourd’hui · 1 entrée"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Too many attempts. Please try again later"
 msgstr "Trop de tentatives. Veuillez réessayer plus tard"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Turkish"
+msgstr "Turc"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
