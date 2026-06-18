@@ -113,6 +113,9 @@ const ReflectionsScreen = () => {
   const [animKey, setAnimKey] = useState(0)
   const [peekEntry, setPeekEntry] = useState<JournalEntry | null>(null)
   const blurTargetRef = useRef<View>(null)
+  const scrollViewRef = useRef<typeof ScrollView>(null)
+  const groupYPositions = useRef<Map<string, number>>(new Map())
+  const entryYPositions = useRef<Map<string, number>>(new Map())
   const hasAnimated = useRef(false)
 
   const handlePeek = (entry: JournalEntry) => {
@@ -129,6 +132,12 @@ const ReflectionsScreen = () => {
     if (entry) {
       handlePeek(entry)
       clearPendingPeekEntryId(null)
+      setTimeout(() => {
+        const group = groups.find((g) => g.items.some((e) => e.id === entry.id))
+        const groupY = group ? (groupYPositions.current.get(group.label) ?? 0) : 0
+        const entryY = entryYPositions.current.get(entry.id) ?? 0
+        ;(scrollViewRef.current as any)?.scrollTo({ y: Math.max(0, groupY + entryY - 80), animated: true })
+      }, 50)
     }
   }, [pendingPeekEntryId, entries])
 
@@ -173,7 +182,7 @@ const ReflectionsScreen = () => {
   return (
     <Containers.Screen shouldAutoResize={false}>
       <BlurTargetView ref={blurTargetRef} style={{ flex: 1 }}>
-      <ScrollView keyboardShouldPersistTaps="handled" onTouchStart={dismissOpenCard}>
+      <ScrollView ref={scrollViewRef as any} keyboardShouldPersistTaps="handled" onTouchStart={dismissOpenCard}>
         <YStack p="$5">
           <XStack justify="space-between" items="center" mb="$4">
             <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
@@ -253,7 +262,7 @@ const ReflectionsScreen = () => {
           ) : null}
 
           {groups.map(group => (
-            <YStack key={group.label} mb="$7">
+            <YStack key={group.label} mb="$7" onLayout={(e) => groupYPositions.current.set(group.label, e.nativeEvent.layout.y)}>
               <LabelMd
                 color="$text-disabled"
                 textTransform="uppercase"
@@ -263,6 +272,7 @@ const ReflectionsScreen = () => {
               </LabelMd>
               {group.items.map((entry, idx) => (
                 <AnimatedEntry key={entry.id} index={idx} animKey={animKey}>
+                  <View onLayout={(e) => entryYPositions.current.set(entry.id, e.nativeEvent.layout.y)}>
                   <EntryCard
                     entry={entry}
                     index={idx}
@@ -271,6 +281,7 @@ const ReflectionsScreen = () => {
                     onPeek={handlePeek}
                     closeKey={closeKey}
                   />
+                  </View>
                 </AnimatedEntry>
               ))}
             </YStack>
