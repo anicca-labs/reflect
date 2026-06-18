@@ -24,6 +24,7 @@ const useVoiceToText = ({ onResult, onError }: UseVoiceToTextOptions) => {
     }
     Voice.onSpeechError = (e: SpeechErrorEvent) => {
       const message = e.error?.message ?? 'Speech recognition failed'
+      console.error('[useVoiceToText] error:', JSON.stringify(e.error))
       onErrorRef.current?.(message)
       setState('error')
     }

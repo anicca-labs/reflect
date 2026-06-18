@@ -4660,7 +4660,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-voice/voice@npm:^3.2.4":
+"@react-native-voice/voice@npm:3.2.4":
   version: 3.2.4
   resolution: "@react-native-voice/voice@npm:3.2.4"
   dependencies:
@@ -4669,6 +4669,18 @@ __metadata:
   peerDependencies:
     react-native: ">= 0.60.2"
   checksum: 10c0/841c3ece3534688f9518ba0890740cad89e37bd3feb9d5f9c01991d65304885983ca01eb55590cec3b333f91c040e4ee90492ede3242989a922eee0f8a08bd04
+  languageName: node
+  linkType: hard
+
+"@react-native-voice/voice@patch:@react-native-voice/voice@npm%3A3.2.4#~/.yarn/patches/@react-native-voice-voice-npm-3.2.4-10115bd137.patch":
+  version: 3.2.4
+  resolution: "@react-native-voice/voice@patch:@react-native-voice/voice@npm%3A3.2.4#~/.yarn/patches/@react-native-voice-voice-npm-3.2.4-10115bd137.patch::version=3.2.4&hash=bff7ca"
+  dependencies:
+    "@expo/config-plugins": "npm:^2.0.0"
+    invariant: "npm:^2.2.4"
+  peerDependencies:
+    react-native: ">= 0.60.2"
+  checksum: 10c0/08796056bea4e4bb0554fe82c9584087cbd368f75be40154a37abfd16389396ee77fa4e471cfb42543feb75c46a8e0e8908e919635d5c1800ec96a3f6772a97f
   languageName: node
   linkType: hard
 
@@ -15608,7 +15620,7 @@ __metadata:
     "@react-native-firebase/app": "npm:^24.0.0"
     "@react-native-firebase/messaging": "npm:^24.0.0"
     "@react-native-google-signin/google-signin": "npm:^16.1.2"
-    "@react-native-voice/voice": "npm:^3.2.4"
+    "@react-native-voice/voice": "patch:@react-native-voice/voice@npm%3A3.2.4#~/.yarn/patches/@react-native-voice-voice-npm-3.2.4-10115bd137.patch"
     "@react-navigation/bottom-tabs": "npm:^7.4.0"
     "@react-navigation/elements": "npm:^2.6.3"
     "@react-navigation/material-top-tabs": "npm:^7.4.28"

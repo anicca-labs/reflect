@@ -102,7 +102,7 @@ const JournalScreen = () => {
         return prev + separator + transcript
       })
     },
-    onError: () => alert({ title: t`Voice recognition failed`, preset: 'error' }),
+    onError: (msg) => alert({ title: t`Voice recognition failed`, message: msg, preset: 'error' }),
   })
 
   const entries = isAnonymous ? localEntries : serverEntries
