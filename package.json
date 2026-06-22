@@ -59,6 +59,8 @@
     "postinstall": "yarn i18n:compile",
     "functions:deploy:stg": "doppler run --project mobile --config stg -- supabase functions deploy --project-ref sznlkorcninofgezkwmy && doppler run --project mobile --config stg -- supabase functions deploy admin-push --no-verify-jwt --project-ref sznlkorcninofgezkwmy && doppler run --project mobile --config stg -- supabase functions deploy expo-update-manifest --no-verify-jwt --project-ref sznlkorcninofgezkwmy",
     "functions:deploy:prd": "doppler run --project mobile --config prd -- supabase functions deploy --project-ref orrcfftpaxlldolavipm && doppler run --project mobile --config prd -- supabase functions deploy admin-push --no-verify-jwt --project-ref orrcfftpaxlldolavipm && doppler run --project mobile --config prd -- supabase functions deploy expo-update-manifest --no-verify-jwt --project-ref orrcfftpaxlldolavipm",
+    "functions:push-secrets:stg": "doppler run --project mobile --config stg -- bash scripts/push-function-secrets.sh sznlkorcninofgezkwmy",
+    "functions:push-secrets:prd": "doppler run --project mobile --config prd -- bash scripts/push-function-secrets.sh orrcfftpaxlldolavipm",
     "push-ota": "doppler run --project mobile --config ${ENV:-stg} -- bash -c 'yarn expo export --platform ios --platform android --output-dir dist && EXPO_UPDATE_CHANNEL=${ENV:-stg} EXPO_RUNTIME_VERSION=$(node -p \"require(\\\"./package.json\\\").version\") node scripts/push-ota-update.mjs'",
     "push-ota:prd": "ENV=prd yarn push-ota",
     "encrypt-entries": "doppler run --project mobile --config ${ENV:-stg} -- node scripts/encrypt-entries.mjs",

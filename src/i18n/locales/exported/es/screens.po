@@ -66,6 +66,10 @@ msgid "Are you sure you want to sign out?"
 msgstr "¿Seguro que quieres cerrar sesión?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Are you sure?"
+msgstr "¿Estás seguro?"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Auto"
 msgstr "Automático"
 
@@ -112,6 +116,14 @@ msgstr "Confirmar contraseña"
 msgid "Continue without an account"
 msgstr "Continuar sin cuenta"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't delete account"
+msgstr "No se pudo eliminar la cuenta"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't open Settings"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "Crear cuenta"
@@ -131,6 +143,18 @@ msgstr "día seguido"
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "days streak"
 msgstr "días seguidos"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Delete"
+msgstr "Eliminar"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Delete account"
+msgstr "Eliminar cuenta"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Deleting your account does not cancel your subscription. Manage it in the App Store to avoid further charges."
+msgstr "Eliminar tu cuenta no cancela tu suscripción. Gestiónala en la App Store para evitar cargos adicionales."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Denied — tap to open Settings"
@@ -314,6 +338,10 @@ msgid "Please enter a valid email address"
 msgstr "Introduce una dirección de correo válida"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Please open Settings manually to manage notifications."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Portuguese"
 msgstr "Portugués"
 
@@ -406,6 +434,10 @@ msgid "Sign out"
 msgstr "Cerrar sesión"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Something went wrong. Please try again."
+msgstr "Algo salió mal. Inténtalo de nuevo."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Spanish"
 msgstr "Español"
 
@@ -420,6 +452,10 @@ msgstr "Toca para reiniciar y aplicar la última actualización."
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
 msgstr "Esta función no está disponible en el simulador."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "This permanently deletes your account and all your journal entries. This cannot be undone."
+msgstr "Esto elimina permanentemente tu cuenta y todas las entradas de tu diario. No se puede deshacer."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Time"
@@ -524,3 +560,7 @@ msgstr "¿Qué pequeña cosa te trajo alegría últimamente?"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."
 msgstr "Estás usando reflect como invitado. Inicia sesión para sincronizar tu diario en todos tus dispositivos y desbloquear Pro."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Your account and journal entries will be permanently deleted."
+msgstr "Tu cuenta y las entradas de tu diario se eliminarán permanentemente."
