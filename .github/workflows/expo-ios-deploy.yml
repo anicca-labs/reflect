@@ -102,8 +102,9 @@ jobs:
           ENV: ${{ inputs.environment }}
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-          # Apple auth is handled by the App Store Connect API Key stored on EAS
-          # (fetched non-interactively via EXPO_TOKEN). No Apple ID / app-specific
-          # password needed.
+          # Both `eas build` and `eas submit` authenticate to Apple via the App
+          # Store Connect API Key stored on EAS, selected non-interactively (see
+          # `--non-interactive` in the deploy-store-ios script). No Apple ID /
+          # app-specific password.
           # Default 3s timeout is too short when new Swift Packages are being resolved.
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120
