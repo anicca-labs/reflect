@@ -16,6 +16,7 @@ const require = createRequire(import.meta.url)
 const { getConfig } = require('@expo/config')
 import path from 'path'
 import crypto from 'crypto'
+import { pruneOtaUpdates } from './prune-ota-updates.mjs'
 
 const SUPABASE_URL = requireEnv('SUPABASE_URL')
 const SERVICE_ROLE_KEY = requireEnv('SUPABASE_SERVICE_ROLE_KEY')
@@ -164,6 +165,11 @@ async function main() {
   // Each platform gets its own update ID so the manifest server can serve them independently
   await pushPlatform('ios', metadata, crypto.randomUUID(), expoConfig)
   await pushPlatform('android', metadata, crypto.randomUUID(), expoConfig)
+
+  // Prune superseded updates so the storage bucket can't grow unbounded (this is what
+  // previously pushed the project over its storage quota). Keeps the newest few per
+  // platform for rollback; override with OTA_RETAIN.
+  await pruneOtaUpdates()
 
   console.log('\nDone.')
 }

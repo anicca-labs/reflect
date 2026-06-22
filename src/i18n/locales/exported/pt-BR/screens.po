@@ -61,6 +61,10 @@ msgstr "O login com Apple não está configurado para Android"
 msgid "Are you sure you want to sign out?"
 msgstr "Tem certeza que deseja sair?"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Are you sure?"
+msgstr "Tem certeza?"
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Back to sign in"
@@ -96,6 +100,10 @@ msgid "Continue without an account"
 msgstr "Continuar sem conta"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't delete account"
+msgstr "Não foi possível excluir a conta"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't open Settings"
 msgstr ""
 
@@ -118,6 +126,18 @@ msgstr "dia seguido"
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "days streak"
 msgstr "dias seguidos"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Delete"
+msgstr "Excluir"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Delete account"
+msgstr "Excluir conta"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Deleting your account does not cancel your subscription. Manage it in the App Store to avoid further charges."
+msgstr "Excluir sua conta não cancela sua assinatura. Gerencie-a na App Store para evitar cobranças futuras."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Denied — tap to open Settings"
@@ -345,6 +365,10 @@ msgid "Sign out"
 msgstr "Sair"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Something went wrong. Please try again."
+msgstr "Algo deu errado. Tente novamente."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
 msgstr "Assinatura"
 
@@ -355,6 +379,10 @@ msgstr "Toque para reiniciar e aplicar a atualização mais recente."
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
 msgstr "Este recurso não está disponível no simulador."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "This permanently deletes your account and all your journal entries. This cannot be undone."
+msgstr "Isso exclui permanentemente sua conta e todas as entradas do seu diário. Não pode ser desfeito."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Time"
@@ -447,3 +475,7 @@ msgstr "O que de pequeno te trouxe alegria recentemente?"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."
 msgstr "Você está usando o reflect como convidado. Entre para sincronizar seu diário em todos os dispositivos e desbloquear o Pro."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Your account and journal entries will be permanently deleted."
+msgstr "Sua conta e as entradas do seu diário serão excluídas permanentemente."

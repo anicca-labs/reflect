@@ -61,6 +61,10 @@ msgstr "Masuk dengan Apple tidak dikonfigurasi untuk Android"
 msgid "Are you sure you want to sign out?"
 msgstr "Yakin ingin keluar?"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Are you sure?"
+msgstr "Apakah Anda yakin?"
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Back to sign in"
@@ -96,6 +100,10 @@ msgid "Continue without an account"
 msgstr "Lanjutkan tanpa akun"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't delete account"
+msgstr "Tidak dapat menghapus akun"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't open Settings"
 msgstr ""
 
@@ -118,6 +126,18 @@ msgstr "hari berturut-turut"
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "days streak"
 msgstr "hari berturut-turut"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Delete"
+msgstr "Hapus"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Delete account"
+msgstr "Hapus akun"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Deleting your account does not cancel your subscription. Manage it in the App Store to avoid further charges."
+msgstr "Menghapus akun Anda tidak membatalkan langganan Anda. Kelola di App Store untuk menghindari biaya lebih lanjut."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Denied — tap to open Settings"
@@ -345,6 +365,10 @@ msgid "Sign out"
 msgstr "Keluar"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Something went wrong. Please try again."
+msgstr "Terjadi kesalahan. Silakan coba lagi."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
 msgstr "Langganan"
 
@@ -355,6 +379,10 @@ msgstr "Ketuk untuk mulai ulang dan terapkan pembaruan terbaru."
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
 msgstr "Fitur ini tidak tersedia di simulator."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "This permanently deletes your account and all your journal entries. This cannot be undone."
+msgstr "Ini menghapus akun Anda dan semua entri jurnal Anda secara permanen. Tindakan ini tidak dapat dibatalkan."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Time"
@@ -447,3 +475,7 @@ msgstr "Hal kecil apa yang baru-baru ini memberimu kebahagiaan?"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."
 msgstr "Anda menggunakan reflect sebagai tamu. Masuk untuk menyinkronkan jurnal di semua perangkat dan membuka Pro."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Your account and journal entries will be permanently deleted."
+msgstr "Akun dan entri jurnal Anda akan dihapus secara permanen."
