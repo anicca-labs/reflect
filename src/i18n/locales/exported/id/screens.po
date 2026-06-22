@@ -103,6 +103,10 @@ msgstr "Lanjutkan tanpa akun"
 msgid "Couldn't delete account"
 msgstr "Tidak dapat menghapus akun"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't open Settings"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "Buat akun"
@@ -275,6 +279,10 @@ msgstr "Harap konfirmasi email Anda sebelum masuk"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Please enter a valid email address"
 msgstr "Masukkan alamat email yang valid"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Please open Settings manually to manage notifications."
+msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"

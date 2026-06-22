@@ -103,6 +103,10 @@ msgstr "Continuar sem conta"
 msgid "Couldn't delete account"
 msgstr "Não foi possível excluir a conta"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't open Settings"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "Criar conta"
@@ -275,6 +279,10 @@ msgstr "Por favor confirme seu e-mail antes de entrar"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Please enter a valid email address"
 msgstr "Insira um endereço de e-mail válido"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Please open Settings manually to manage notifications."
+msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"

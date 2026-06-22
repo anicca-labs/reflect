@@ -1,10 +1,9 @@
 {
-  "includeCoAuthoredBy": false,
-  "attribution": {"commit": "", "pr": ""},
-  "extraKnownMarketplaces": {
-    "ksairi-org": {"source": {"source": "github", "repo": "ksairi-org/claude"}}
+  "attribution": {
+    "commit": "",
+    "pr": ""
   },
-  "enabledPlugins": {"expo-rn-plugin@ksairi-org": true},
+  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
       "Bash(tsc:*)",
@@ -52,8 +51,13 @@
       "WebFetch(domain:registry.npmjs.org)",
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:cdn.jsdelivr.net)",
-      "WebFetch(domain:esm.sh)"
+      "WebFetch(domain:esm.sh)",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)"
     ],
     "deny": []
+  },
+  "enabledPlugins": {
+    "expo-rn-plugin@ksairi-org": true
   }
 }

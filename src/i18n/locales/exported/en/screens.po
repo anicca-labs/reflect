@@ -103,6 +103,10 @@ msgstr ""
 msgid "Couldn't delete account"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't open Settings"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr ""
@@ -274,6 +278,10 @@ msgstr ""
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Please enter a valid email address"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Please open Settings manually to manage notifications."
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
