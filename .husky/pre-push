@@ -9,3 +9,4 @@ git diff --cached --quiet src/i18n/locales/ || git commit -m "chore(i18n): recom
 
 yarn check:tsc
 yarn lint
+yarn format:check

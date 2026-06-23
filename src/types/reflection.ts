@@ -8,4 +8,4 @@ interface WeeklyReflection {
   created_at: string;
 }
 
-export type { WeeklyReflection }
+export type { WeeklyReflection };

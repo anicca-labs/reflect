@@ -1,8 +1,8 @@
-import type { ConfigContext, ExpoConfig } from "expo/config";
+import type { ConfigContext, ExpoConfig } from 'expo/config';
 
-const SPLASH_IMAGE = "./assets/images/splash.png";
-const SPLASH_BG_LIGHT = "#F5F0E8";
-const SPLASH_BG_DARK = "#110f0e";
+const SPLASH_IMAGE = './assets/images/splash.png';
+const SPLASH_BG_LIGHT = '#F5F0E8';
+const SPLASH_BG_DARK = '#110f0e';
 // 288dp is the Android 12+ maximum for windowSplashScreenAnimatedIcon — the system
 // clips the icon to a circle at this size. Must match animationViewStyle in _layout.tsx
 // so the Rive animation starts at the same visual size as the native splash icon.
@@ -10,58 +10,58 @@ const ANDROID_SPLASH_SIZE = 288;
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  owner: "ksairi-org",
-  name: process.env.DISPLAY_NAME ?? "reflect",
-  slug: "reflect",
+  owner: 'ksairi-org',
+  name: process.env.DISPLAY_NAME ?? 'reflect',
+  slug: 'reflect',
   version: config.version,
   runtimeVersion: {
-    policy: "appVersion",
+    policy: 'appVersion',
   },
   updates: {
     url: process.env.EXPO_UPDATE_URL,
-    checkAutomatically: "ON_LOAD",
+    checkAutomatically: 'ON_LOAD',
     requestHeaders: {
-      "expo-channel-name": process.env.EXPO_UPDATE_CHANNEL ?? "prd",
+      'expo-channel-name': process.env.EXPO_UPDATE_CHANNEL ?? 'prd',
     },
   },
-  orientation: "portrait",
-  icon: "./assets/images/icon.png",
-  scheme: process.env.EXPO_PUBLIC_APP_SCHEMA ?? "reflect",
-  userInterfaceStyle: "automatic",
+  orientation: 'portrait',
+  icon: './assets/images/icon.png',
+  scheme: process.env.EXPO_PUBLIC_APP_SCHEMA ?? 'reflect',
+  userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
-    bundleIdentifier: process.env.APP_IDENTIFIER ?? "com.reflect.prod",
+    bundleIdentifier: process.env.APP_IDENTIFIER ?? 'com.reflect.prod',
     googleServicesFile: process.env.GOOGLE_SERVICES_INFOPLIST_PATH,
     infoPlist: {
-      UIBackgroundModes: ["fetch", "remote-notification"],
+      UIBackgroundModes: ['fetch', 'remote-notification'],
       ITSAppUsesNonExemptEncryption: false,
     },
     entitlements: {
-      "aps-environment": "production",
-      "com.apple.developer.applesignin": ["Default"],
+      'aps-environment': 'production',
+      'com.apple.developer.applesignin': ['Default'],
       ...(process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID
-        ? { "com.apple.developer.in-app-payments": [process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID] }
+        ? { 'com.apple.developer.in-app-payments': [process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID] }
         : {}),
     },
   },
   android: {
-    package: process.env.APP_IDENTIFIER ?? "com.reflect.prod",
+    package: process.env.APP_IDENTIFIER ?? 'com.reflect.prod',
     adaptiveIcon: {
-      foregroundImage: "./assets/images/adaptive-icon.png",
+      foregroundImage: './assets/images/adaptive-icon.png',
       backgroundColor: SPLASH_BG_LIGHT,
     },
     predictiveBackGestureEnabled: false,
     googleServicesFile: process.env.GOOGLE_SERVICES_JSON_PATH,
-    permissions: ["android.permission.POST_NOTIFICATIONS"],
+    permissions: ['android.permission.POST_NOTIFICATIONS'],
   },
   web: {
-    output: "static",
-    favicon: "./assets/images/favicon.png",
+    output: 'static',
+    favicon: './assets/images/favicon.png',
   },
   plugins: [
     [
-      "expo-splash-screen",
+      'expo-splash-screen',
       {
         backgroundColor: SPLASH_BG_LIGHT,
         image: SPLASH_IMAGE,
@@ -78,43 +78,43 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
-    "expo-router",
+    'expo-router',
     [
-      "@sentry/react-native/expo",
+      '@sentry/react-native/expo',
       {
         organization: process.env.SENTRY_ORG,
         project: process.env.SENTRY_PROJECT,
       },
     ],
-    "@react-native-firebase/app",
+    '@react-native-firebase/app',
     [
-      "expo-notifications",
+      'expo-notifications',
       {
-        icon: "./assets/images/notification-icon.png",
+        icon: './assets/images/notification-icon.png',
         enableBackgroundRemoteNotifications: true,
       },
     ],
     [
-      "expo-build-properties",
+      'expo-build-properties',
       {
         android: { minSdkVersion: 24 },
         ios: {
-          useFrameworks: "static",
-          forceStaticLinking: ["RNFBApp", "RNFBAnalytics", "RNFBMessaging"],
+          useFrameworks: 'static',
+          forceStaticLinking: ['RNFBApp', 'RNFBAnalytics', 'RNFBMessaging'],
         },
       },
     ],
-    "expo-secure-store",
-    "expo-updates",
-    "expo-font",
-    "expo-image",
-    "expo-localization",
-    "expo-status-bar",
-    "expo-web-browser",
+    'expo-secure-store',
+    'expo-updates',
+    'expo-font',
+    'expo-image',
+    'expo-localization',
+    'expo-status-bar',
+    'expo-web-browser',
   ],
   extra: {
     eas: {
-      projectId: "ffe92c43-db25-4566-b08e-b8dee91b107b",
+      projectId: 'ffe92c43-db25-4566-b08e-b8dee91b107b',
     },
   },
   experiments: {

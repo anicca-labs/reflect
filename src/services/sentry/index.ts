@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react-native'
+import * as Sentry from '@sentry/react-native';
 
 const setupSentry = (isEnabled: boolean) => {
   Sentry.init({
@@ -8,10 +8,10 @@ const setupSentry = (isEnabled: boolean) => {
     enabled: isEnabled,
     maxBreadcrumbs: 150,
     beforeBreadcrumb: (breadcrumb) => {
-      if (breadcrumb.category === 'console') return null
-      return breadcrumb
+      if (breadcrumb.category === 'console') return null;
+      return breadcrumb;
     },
-  })
-}
+  });
+};
 
-export { setupSentry }
+export { setupSentry };

@@ -26,7 +26,7 @@ Supabase Edge Function → FCM HTTP v1 API
 
 ```ts
 const { status } = await Notifications.requestPermissionsAsync();
-if (status !== "granted") return;
+if (status !== 'granted') return;
 ```
 
 2. **Register token** — call the `push_notification` MCP tool with the device token and user ID to store it in the database

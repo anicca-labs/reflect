@@ -1,26 +1,26 @@
-import { SvgXml, type XmlProps } from 'react-native-svg'
-import type { ColorTokens } from 'tamagui'
+import { SvgXml, type XmlProps } from 'react-native-svg';
+import type { ColorTokens } from 'tamagui';
 
-import { svgImports } from './svg-imports'
-import { sizes } from '@theme'
-import { getImageDimensions } from '@ksairi-org/react-native-functions'
-import { useFontScale } from '@ksairi-org/react-native-hooks'
-import { useColorTokenValue } from '@ksairi-org/react-native-ui-config'
+import { svgImports } from './svg-imports';
+import { sizes } from '@theme';
+import { getImageDimensions } from '@ksairi-org/react-native-functions';
+import { useFontScale } from '@ksairi-org/react-native-hooks';
+import { useColorTokenValue } from '@ksairi-org/react-native-ui-config';
 
-type IconName = keyof typeof svgImports
+type IconName = keyof typeof svgImports;
 
 type BaseIconProps = {
-  iconName: IconName
-  color?: ColorTokens | string
-  width?: number
-  height?: number
-  autoScaleBasedOnScreenDimensions?: boolean
-  maxFontScaleToApply?: number
-  viewBox?: string
-} & Omit<XmlProps, 'width' | 'height' | 'color' | 'xml'>
+  iconName: IconName;
+  color?: ColorTokens | string;
+  width?: number;
+  height?: number;
+  autoScaleBasedOnScreenDimensions?: boolean;
+  maxFontScaleToApply?: number;
+  viewBox?: string;
+} & Omit<XmlProps, 'width' | 'height' | 'color' | 'xml'>;
 
 const isIconValid = (nameOfIcon: string | IconName): nameOfIcon is IconName =>
-  nameOfIcon in svgImports
+  nameOfIcon in svgImports;
 
 const BaseIcon = ({
   color,
@@ -34,26 +34,25 @@ const BaseIcon = ({
   ...rest
 }: BaseIconProps) => {
   if (!isIconValid(iconName)) {
-    throw new Error(`Icon ${iconName} does not exist`)
+    throw new Error(`Icon ${iconName} does not exist`);
   }
 
-  const fontScale = useFontScale()
+  const fontScale = useFontScale();
 
-  const { width: maybeScaledWidth, height: maybeScaledHeight } =
-    getImageDimensions({
-      width,
-      height,
-      autoScaleBasedOnScreenDimensions,
-      defaultSize: sizes.lg,
-      fontScale,
-      maxFontScaleToApply,
-    })
+  const { width: maybeScaledWidth, height: maybeScaledHeight } = getImageDimensions({
+    width,
+    height,
+    autoScaleBasedOnScreenDimensions,
+    defaultSize: sizes.lg,
+    fontScale,
+    maxFontScaleToApply,
+  });
 
   const isColorToken = (c: ColorTokens | string | undefined): c is ColorTokens =>
-    typeof c === 'string' && c.startsWith('$')
+    typeof c === 'string' && c.startsWith('$');
 
-  const tokenColor = useColorTokenValue(isColorToken(color) ? color : undefined)
-  const calculatedColor = isColorToken(color) ? tokenColor : color
+  const tokenColor = useColorTokenValue(isColorToken(color) ? color : undefined);
+  const calculatedColor = isColorToken(color) ? tokenColor : color;
 
   return (
     <SvgXml
@@ -65,8 +64,8 @@ const BaseIcon = ({
       viewBox={viewBox}
       {...rest}
     />
-  )
-}
+  );
+};
 
-export { BaseIcon }
-export type { IconName, BaseIconProps }
+export { BaseIcon };
+export type { IconName, BaseIconProps };
