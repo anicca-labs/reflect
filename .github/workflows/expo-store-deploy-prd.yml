@@ -29,13 +29,14 @@ jobs:
     outputs:
       platform: ${{ steps.detect.outputs.platform }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: dorny/paths-filter@v3
         id: changes
         with:
           filters: |
             native:
-              - 'package.json'
               - 'yarn.lock'
               - 'app.config.ts'
               - 'eas.json'
@@ -43,21 +44,40 @@ jobs:
               - 'google-services-prd.json'
             ios:
               - 'GoogleService-Info-prd.plist'
+      # package.json changes for many reasons (scripts, devDeps) that don't need a
+      # native rebuild — only treat it as build-worthy when the app `version` field
+      # actually changes (a release). Dependency changes are covered by yarn.lock above.
+      - id: version
+        run: |
+          BEFORE='${{ github.event.before }}'
+          if [[ -z "$BEFORE" || "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          OLD=$(git show "$BEFORE:package.json" 2>/dev/null | python3 -c "import sys,json;print(json.load(sys.stdin).get('version',''))" 2>/dev/null || echo "")
+          NEW=$(python3 -c "import json;print(json.load(open('package.json')).get('version',''))")
+          echo "old=$OLD new=$NEW"
+          # Only treat as a release when BOTH versions are readable AND differ.
+          # On non-fast-forward pushes (rebase/squash) the `before` commit is
+          # unreachable, so OLD is empty — that's "unknown", not "changed", and
+          # must not force a full build.
+          if [[ -n "$OLD" && "$OLD" != "$NEW" ]]; then echo "changed=true" >> "$GITHUB_OUTPUT"; else echo "changed=false" >> "$GITHUB_OUTPUT"; fi
       - id: detect
         run: |
-          if [[ "${{ steps.changes.outputs.native }}" == "true" ]]; then
+          if [[ "${{ steps.changes.outputs.native }}" == "true" || "${{ steps.version.outputs.changed }}" == "true" ]]; then
             echo "platform=all" >> "$GITHUB_OUTPUT"
           elif [[ "${{ steps.changes.outputs.android }}" == "true" && "${{ steps.changes.outputs.ios }}" == "true" ]]; then
             echo "platform=all" >> "$GITHUB_OUTPUT"
           elif [[ "${{ steps.changes.outputs.android }}" == "true" ]]; then
             echo "platform=android" >> "$GITHUB_OUTPUT"
-          else
+          elif [[ "${{ steps.changes.outputs.ios }}" == "true" ]]; then
             echo "platform=ios" >> "$GITHUB_OUTPUT"
+          else
+            echo "platform=none" >> "$GITHUB_OUTPUT"
           fi
 
   deploy:
     needs: [detect-platform]
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.detect-platform.outputs.platform != 'none') }}
     uses: ./.github/workflows/expo-store-deploy.yml
     secrets: inherit
     with:

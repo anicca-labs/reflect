@@ -1142,15 +1142,8 @@
 
       // ── OS detection ────────────────────────────────────────
 
-      const IOS_URL = '#app-store'; // TODO: replace with App Store URL
+      const IOS_URL = 'https://apps.apple.com/app/reflect-it/id6767607183';
       const ANDROID_URL = 'https://play.google.com/store/apps/details?id=com.reflect.prod';
-
-      function getOS() {
-        const ua = navigator.userAgent || '';
-        if (/iphone|ipad|ipod/i.test(ua)) return 'ios';
-        if (/android/i.test(ua)) return 'android';
-        return 'desktop';
-      }
 
       // Apple badge SVG (official proportions)
       const appleSVG = `<svg class="badge-icon" width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1182,9 +1175,9 @@
 
       function renderButtons(id) {
         const container = document.getElementById(id);
-        const os = getOS();
-        if (os === 'ios' || os === 'desktop') container.appendChild(buildBadge('ios'));
-        if (os === 'android' || os === 'desktop') container.appendChild(buildBadge('android'));
+        // Always show both stores, regardless of the visitor's device.
+        container.appendChild(buildBadge('ios'));
+        container.appendChild(buildBadge('android'));
       }
 
       renderButtons('heroButtons');
