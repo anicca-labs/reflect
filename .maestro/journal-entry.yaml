@@ -2,14 +2,14 @@ appId: com.marianoksairi.reflect
 ---
 # Assumes user is already logged in via login.yaml
 - launchApp
-- assertVisible: "Journal"
+- assertVisible: 'Journal'
 - tapOn:
-    text: "New Entry"
+    text: 'New Entry'
 - assertVisible: "What's on your mind?"
 - tapOn:
     text: "What's on your mind?"
-- inputText: "Today was a great day for testing."
+- inputText: 'Today was a great day for testing.'
 - tapOn:
-    text: "Save"
-- assertVisible: "Journal"
-- assertVisible: "Today was a great day for testing."
+    text: 'Save'
+- assertVisible: 'Journal'
+- assertVisible: 'Today was a great day for testing.'

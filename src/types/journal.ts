@@ -7,6 +7,6 @@ interface JournalEntry {
   updated_at: string;
 }
 
-type NewJournalEntry = Pick<JournalEntry, 'content'>
+type NewJournalEntry = Pick<JournalEntry, 'content'>;
 
-export type { JournalEntry, NewJournalEntry }
+export type { JournalEntry, NewJournalEntry };

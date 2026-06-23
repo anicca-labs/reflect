@@ -1,16 +1,16 @@
-import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
-import { createZustandMmkvStorage } from './utils'
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { createZustandMmkvStorage } from './utils';
 
-type PendingMerge = { localCount: number; serverCount: number }
+type PendingMerge = { localCount: number; serverCount: number };
 
 type SessionStoreState = {
-  isAnonymous: boolean
-  setAnonymous: () => void
-  clearAnonymous: () => void
-  pendingMerge: PendingMerge | null
-  setPendingMerge: (v: PendingMerge | null) => void
-}
+  isAnonymous: boolean;
+  setAnonymous: () => void;
+  clearAnonymous: () => void;
+  pendingMerge: PendingMerge | null;
+  setPendingMerge: (v: PendingMerge | null) => void;
+};
 
 const useSessionStore = create<SessionStoreState>()(
   persist(
@@ -27,15 +27,15 @@ const useSessionStore = create<SessionStoreState>()(
       partialize: (state) => ({ isAnonymous: state.isAnonymous }),
     },
   ),
-)
+);
 
-type UserStoreKey = 'firstName' | 'lastName'
+type UserStoreKey = 'firstName' | 'lastName';
 
 type UserStoreState = {
-  firstName: string | null
-  lastName: string | null
-  setKeyValue: (key: UserStoreKey, value: string | null) => void
-}
+  firstName: string | null;
+  lastName: string | null;
+  setKeyValue: (key: UserStoreKey, value: string | null) => void;
+};
 
 /**
  * Minimal user store that satisfies the `@stores` contract expected by
@@ -47,26 +47,26 @@ const useUserStore = create<UserStoreState>((set) => ({
   firstName: null,
   lastName: null,
   setKeyValue: (key, value) => set({ [key]: value }),
-}))
+}));
 
-type TimeFormat = '12h' | '24h'
+type TimeFormat = '12h' | '24h';
 
 type PreferencesStoreState = {
-  timeFormat: TimeFormat
-  setTimeFormat: (format: TimeFormat) => void
-}
+  timeFormat: TimeFormat;
+  setTimeFormat: (format: TimeFormat) => void;
+};
 
 type SwipeableStoreState = {
-  activeDragCount: number
-  startDrag: () => void
-  endDrag: () => void
-}
+  activeDragCount: number;
+  startDrag: () => void;
+  endDrag: () => void;
+};
 
 const useSwipeableStore = create<SwipeableStoreState>((set) => ({
   activeDragCount: 0,
   startDrag: () => set((s) => ({ activeDragCount: s.activeDragCount + 1 })),
   endDrag: () => set((s) => ({ activeDragCount: Math.max(0, s.activeDragCount - 1) })),
-}))
+}));
 
 const usePreferencesStore = create<PreferencesStoreState>()(
   persist(
@@ -79,18 +79,18 @@ const usePreferencesStore = create<PreferencesStoreState>()(
       storage: createJSONStorage(() => createZustandMmkvStorage()),
     },
   ),
-)
+);
 
 type PeekStoreState = {
-  pendingPeekEntryId: string | null
-  setPendingPeekEntryId: (id: string | null) => void
-}
+  pendingPeekEntryId: string | null;
+  setPendingPeekEntryId: (id: string | null) => void;
+};
 
 const usePeekStore = create<PeekStoreState>((set) => ({
   pendingPeekEntryId: null,
   setPendingPeekEntryId: (id) => set({ pendingPeekEntryId: id }),
-}))
+}));
 
-export { useUserStore, useSwipeableStore, usePreferencesStore, useSessionStore, usePeekStore }
-export type { PendingMerge }
-export { useAnonymousJournalStore } from './anonymousJournal'
+export { useUserStore, useSwipeableStore, usePreferencesStore, useSessionStore, usePeekStore };
+export type { PendingMerge };
+export { useAnonymousJournalStore } from './anonymousJournal';

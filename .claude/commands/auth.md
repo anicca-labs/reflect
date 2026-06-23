@@ -1,7 +1,7 @@
 ---
 name: auth
 description: Set up or debug social auth flows (Google, Apple, email) using Supabase auth
-argument-hint: "<google|apple|email|all>"
+argument-hint: '<google|apple|email|all>'
 ---
 
 Wire up authentication for `$ARGUMENTS` using Supabase auth.
@@ -10,12 +10,12 @@ Wire up authentication for `$ARGUMENTS` using Supabase auth.
 
 ## Package responsibilities
 
-| Package | Role |
-| --- | --- |
-| `@supabase/supabase-js` | Auth client, session management, token refresh |
-| `@react-native-google-signin/google-signin` | Google Sign-In adapter |
-| `expo-apple-authentication` | Apple Sign-In |
-| `expo-secure-store` | Secure session storage adapter for Supabase client |
+| Package                                     | Role                                               |
+| ------------------------------------------- | -------------------------------------------------- |
+| `@supabase/supabase-js`                     | Auth client, session management, token refresh     |
+| `@react-native-google-signin/google-signin` | Google Sign-In adapter                             |
+| `expo-apple-authentication`                 | Apple Sign-In                                      |
+| `expo-secure-store`                         | Secure session storage adapter for Supabase client |
 
 ## Required Doppler vars
 

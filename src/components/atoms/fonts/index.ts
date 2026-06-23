@@ -1,4 +1,4 @@
-import { Paragraph, styled } from 'tamagui'
+import { Paragraph, styled } from 'tamagui';
 
 // Display — Lora, hero moments (app title, splash text)
 const DisplayLg = styled(Paragraph, {
@@ -8,7 +8,7 @@ const DisplayLg = styled(Paragraph, {
   lineHeight: '$9',
   fontWeight: '700',
   userSelect: 'none',
-})
+});
 
 const DisplayMd = styled(Paragraph, {
   name: 'DisplayMd',
@@ -17,7 +17,7 @@ const DisplayMd = styled(Paragraph, {
   lineHeight: '$8',
   fontWeight: '700',
   userSelect: 'none',
-})
+});
 
 // Heading — Lora, section titles
 const HeadingLg = styled(Paragraph, {
@@ -27,7 +27,7 @@ const HeadingLg = styled(Paragraph, {
   lineHeight: '$7',
   fontWeight: '600',
   userSelect: 'none',
-})
+});
 
 const HeadingMd = styled(Paragraph, {
   name: 'HeadingMd',
@@ -36,7 +36,7 @@ const HeadingMd = styled(Paragraph, {
   lineHeight: '$6',
   fontWeight: '600',
   userSelect: 'none',
-})
+});
 
 const HeadingSm = styled(Paragraph, {
   name: 'HeadingSm',
@@ -45,7 +45,7 @@ const HeadingSm = styled(Paragraph, {
   lineHeight: '$5',
   fontWeight: '600',
   userSelect: 'none',
-})
+});
 
 // Body — DM Sans, main readable content
 const BodyLg = styled(Paragraph, {
@@ -55,7 +55,7 @@ const BodyLg = styled(Paragraph, {
   lineHeight: '$4',
   fontWeight: '400',
   userSelect: 'none',
-})
+});
 
 const BodyMd = styled(Paragraph, {
   name: 'BodyMd',
@@ -64,7 +64,7 @@ const BodyMd = styled(Paragraph, {
   lineHeight: '$3',
   fontWeight: '400',
   userSelect: 'none',
-})
+});
 
 const BodySm = styled(Paragraph, {
   name: 'BodySm',
@@ -73,7 +73,7 @@ const BodySm = styled(Paragraph, {
   lineHeight: '$2',
   fontWeight: '400',
   userSelect: 'none',
-})
+});
 
 const BodyLgBold = styled(Paragraph, {
   name: 'BodyLgBold',
@@ -82,7 +82,7 @@ const BodyLgBold = styled(Paragraph, {
   lineHeight: '$4',
   fontWeight: '700',
   userSelect: 'none',
-})
+});
 
 const BodyMdBold = styled(Paragraph, {
   name: 'BodyMdBold',
@@ -91,7 +91,7 @@ const BodyMdBold = styled(Paragraph, {
   lineHeight: '$3',
   fontWeight: '700',
   userSelect: 'none',
-})
+});
 
 const BodySmBold = styled(Paragraph, {
   name: 'BodySmBold',
@@ -100,7 +100,7 @@ const BodySmBold = styled(Paragraph, {
   lineHeight: '$2',
   fontWeight: '700',
   userSelect: 'none',
-})
+});
 
 // Label — DM Sans Medium, UI chrome (buttons, tabs, captions)
 const LabelLg = styled(Paragraph, {
@@ -110,7 +110,7 @@ const LabelLg = styled(Paragraph, {
   lineHeight: '$2',
   fontWeight: '500',
   userSelect: 'none',
-})
+});
 
 const LabelMd = styled(Paragraph, {
   name: 'LabelMd',
@@ -119,7 +119,7 @@ const LabelMd = styled(Paragraph, {
   lineHeight: '$1',
   fontWeight: '500',
   userSelect: 'none',
-})
+});
 
 const LabelSm = styled(Paragraph, {
   name: 'LabelSm',
@@ -128,11 +128,21 @@ const LabelSm = styled(Paragraph, {
   lineHeight: '$1',
   fontWeight: '400',
   userSelect: 'none',
-})
+});
 
 export {
-  DisplayLg, DisplayMd,
-  HeadingLg, HeadingMd, HeadingSm,
-  BodyLg, BodyMd, BodySm, BodyLgBold, BodyMdBold, BodySmBold,
-  LabelLg, LabelMd, LabelSm,
-}
+  DisplayLg,
+  DisplayMd,
+  HeadingLg,
+  HeadingMd,
+  HeadingSm,
+  BodyLg,
+  BodyMd,
+  BodySm,
+  BodyLgBold,
+  BodyMdBold,
+  BodySmBold,
+  LabelLg,
+  LabelMd,
+  LabelSm,
+};

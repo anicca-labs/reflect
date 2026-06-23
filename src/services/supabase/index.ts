@@ -8,22 +8,18 @@ const ExpoSecureStoreAdapter = {
   removeItem: (key: string) => SecureStore.deleteItemAsync(key),
 };
 
-const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL
-const apiKey = process.env.EXPO_PUBLIC_SUPABASE_API_KEY
-if (!serverUrl || !apiKey) throw new Error('Missing required Supabase env vars')
+const serverUrl = process.env.EXPO_PUBLIC_SERVER_URL;
+const apiKey = process.env.EXPO_PUBLIC_SUPABASE_API_KEY;
+if (!serverUrl || !apiKey) throw new Error('Missing required Supabase env vars');
 
-const supabase = createClient(
-  serverUrl,
-  apiKey,
-  {
-    auth: {
-      storage: ExpoSecureStoreAdapter,
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: false,
-    },
-    db: { schema: 'api' },
+const supabase = createClient(serverUrl, apiKey, {
+  auth: {
+    storage: ExpoSecureStoreAdapter,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
   },
-);
+  db: { schema: 'api' },
+});
 
-export { supabase }
+export { supabase };

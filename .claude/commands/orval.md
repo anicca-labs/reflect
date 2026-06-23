@@ -6,14 +6,17 @@ description: Regenerate OpenAPI hooks and explain the orval codegen workflow
 ## Workflow
 
 1. Ensure the backend OpenAPI spec is up to date:
+
    ```bash
    yarn generate:open-api-spec
    ```
 
 2. Regenerate all typed hooks:
+
    ```bash
    yarn generate:open-api-hooks
    ```
+
    This runs both steps above in sequence.
 
 3. Run `tsc --noEmit` — the generated types must compile cleanly before you use the new hooks.
@@ -34,7 +37,7 @@ description: Regenerate OpenAPI hooks and explain the orval codegen workflow
 
 ```ts
 // Use generated hooks directly
-import { useGetWallets, useCreateTransaction } from "src/api/generated";
+import { useGetWallets, useCreateTransaction } from 'src/api/generated';
 
 // Wrap for project-specific logic
 export function useWallets() {
