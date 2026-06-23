@@ -36,6 +36,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     infoPlist: {
       UIBackgroundModes: ['fetch', 'remote-notification'],
       ITSAppUsesNonExemptEncryption: false,
+      // Required by Apple (ITMS-90683): bundled SDKs reference Photo Library
+      // APIs, so a purpose string must be present even though the app itself
+      // only touches photos when you attach one to an entry.
+      NSPhotoLibraryUsageDescription:
+        'Reflect uses your photo library so you can add photos to your journal entries.',
     },
     entitlements: {
       'aps-environment': 'production',
