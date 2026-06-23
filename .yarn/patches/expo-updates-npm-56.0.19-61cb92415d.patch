@@ -1,5 +1,5 @@
 diff --git a/ios/EXUpdates/AppLoader/FileDownloader.swift b/ios/EXUpdates/AppLoader/FileDownloader.swift
-index e8f89a4c1c64aa54ff65579ce614712341b47bb7..12061da498f04b25a9d572209fed972beb224065 100644
+index db7f92a4dc8ac34febf47ee1ab184e02aa641209..ba93a2c68271f1785a0f5941f97221b0147b1924 100644
 --- a/ios/EXUpdates/AppLoader/FileDownloader.swift
 +++ b/ios/EXUpdates/AppLoader/FileDownloader.swift
 @@ -92,7 +92,7 @@ public final class FileDownloader {
@@ -11,18 +11,16 @@ index e8f89a4c1c64aa54ff65579ce614712341b47bb7..12061da498f04b25a9d572209fed972b
        logger: logger,
        updatesDirectory: updatesDirectory,
        database: database
-@@ -279,8 +279,9 @@ public final class FileDownloader {
-         errorBlock(error)
-         return
+@@ -281,6 +281,8 @@ public final class FileDownloader {
        }
--
+ 
        do {
 +        let destDir = (destinationPath as NSString).deletingLastPathComponent
 +        try FileManager.default.createDirectory(atPath: destDir, withIntermediateDirectories: true, attributes: nil)
          try data.write(to: URL(fileURLWithPath: destinationPath), options: .atomic)
          successBlock(data, response, hashBase64String)
          return
-@@ -478,7 +479,7 @@ public final class FileDownloader {
+@@ -479,7 +481,7 @@ public final class FileDownloader {
    func createManifestRequest(withURL url: URL, extraHeaders: [String: Any?]?) -> URLRequest {
      var request = URLRequest(
        url: url,
@@ -31,7 +29,7 @@ index e8f89a4c1c64aa54ff65579ce614712341b47bb7..12061da498f04b25a9d572209fed972b
        timeoutInterval: FileDownloader.DefaultTimeoutInterval
      )
      setManifestHTTPHeaderFields(request: &request, extraHeaders: extraHeaders)
-@@ -691,7 +692,7 @@ public final class FileDownloader {
+@@ -692,7 +694,7 @@ public final class FileDownloader {
    func createGenericRequest(withURL url: URL, extraHeaders: [String: Any?]) -> URLRequest {
      var request = URLRequest(
        url: url,
@@ -40,7 +38,7 @@ index e8f89a4c1c64aa54ff65579ce614712341b47bb7..12061da498f04b25a9d572209fed972b
        timeoutInterval: FileDownloader.DefaultTimeoutInterval
      )
      setHTTPHeaderFields(request: &request, extraHeaders: extraHeaders)
-@@ -1194,16 +1195,33 @@ public final class FileDownloader {
+@@ -1195,16 +1197,33 @@ public final class FileDownloader {
          return
        }
  

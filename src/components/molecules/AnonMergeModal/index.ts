@@ -1,1 +1,1 @@
-export { AnonMergeModal } from './AnonMergeModal'
+export { AnonMergeModal } from './AnonMergeModal';

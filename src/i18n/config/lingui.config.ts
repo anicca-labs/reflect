@@ -1,8 +1,8 @@
-import type { LinguiConfig } from '@lingui/conf'
-import { formatter } from '@lingui/format-po'
-import { defaultFallbackLocale, locales } from './constants'
+import type { LinguiConfig } from '@lingui/conf';
+import { formatter } from '@lingui/format-po';
+import { defaultFallbackLocale, locales } from './constants';
 
-const rootPath = 'src'
+const rootPath = 'src';
 
 const linguiConfig: LinguiConfig = {
   locales: Object.keys(locales),
@@ -16,7 +16,7 @@ const linguiConfig: LinguiConfig = {
     },
     {
       path: `${rootPath}/i18n/locales/exported/{locale}/screens`,
-      include: [`${rootPath}/screens`],
+      include: [`${rootPath}/screens`, `${rootPath}/hooks`],
     },
     {
       path: `${rootPath}/i18n/locales/exported/{locale}/components`,
@@ -26,6 +26,6 @@ const linguiConfig: LinguiConfig = {
   catalogsMergePath: `${rootPath}/i18n/locales/compiled/{locale}`,
   format: formatter({ lineNumbers: false }),
   compileNamespace: 'ts',
-}
+};
 
-export { linguiConfig }
+export { linguiConfig };
