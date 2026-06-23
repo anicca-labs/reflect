@@ -13,4 +13,5 @@ export * from './useRevenueCat';
 export * from './useStreak';
 export * from './useWritingPrompt';
 export * from './useToast';
+export * from './useVoiceToText';
 export * from './useOtaUpdate';

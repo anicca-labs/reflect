@@ -58,12 +58,24 @@ msgid "Apple sign-in is not configured for Android"
 msgstr "La connexion Apple n'est pas configurée pour Android"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Arabic"
+msgstr "Arabe"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Are you sure you want to sign out?"
 msgstr "Êtes-vous sûr de vouloir vous déconnecter ?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Are you sure?"
 msgstr "Êtes-vous sûr ?"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto"
+msgstr "Auto"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto (device language)"
+msgstr "Auto (langue de l'appareil)"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
@@ -74,6 +86,7 @@ msgstr "Retour à la connexion"
 msgid "Bookmarked"
 msgstr "Favoris"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Cancel"
 msgstr "Annuler"
@@ -82,6 +95,10 @@ msgstr "Annuler"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Check your email"
 msgstr "Vérifiez votre e-mail"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Chinese"
+msgstr "Chinois"
 
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Choose a new password."
@@ -147,6 +164,10 @@ msgstr "Refusée — appuyez pour ouvrir Réglages"
 msgid "Don't have an account? Sign up"
 msgstr "Pas encore de compte ? Inscrivez-vous"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Dutch"
+msgstr "Néerlandais"
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -160,6 +181,10 @@ msgstr "Activer"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Enable notifications in Settings to use reminders."
 msgstr "Activez les notifications dans Réglages pour utiliser les rappels."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "English"
+msgstr "Anglais"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 msgid "Enter your email to receive a reset link."
@@ -189,6 +214,14 @@ msgstr "Mot de passe oublié ?"
 msgid "Free"
 msgstr "Gratuit"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "French"
+msgstr "Français"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "German"
+msgstr "Allemand"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google Play Services not available"
 msgstr "Google Play Services non disponible"
@@ -201,6 +234,10 @@ msgstr "Échec de connexion Google : aucun jeton d'identité"
 msgid "Granted"
 msgstr "Accordée"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Hindi"
+msgstr "Hindi"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "How are you really feeling right now?"
 msgstr "Comment vous sentez-vous vraiment en ce moment ?"
@@ -209,13 +246,29 @@ msgstr "Comment vous sentez-vous vraiment en ce moment ?"
 msgid "Invalid email or password"
 msgstr "Email ou mot de passe incorrect"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Italian"
+msgstr "Italien"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Japanese"
+msgstr "Japonais"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Journal"
 msgstr "Journal"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Korean"
+msgstr "Coréen"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
 msgstr "Gérer l'abonnement"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Microphone access required"
+msgstr "Accès au microphone requis"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Name"
@@ -240,6 +293,10 @@ msgstr "Aucune entrée ne correspond à votre recherche."
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr "Aucune entrée pour l'instant. Commencez à écrire dans l'onglet Journal."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Open Settings"
+msgstr "Ouvrir les réglages"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
@@ -285,6 +342,14 @@ msgid "Please open Settings manually to manage notifications."
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Portuguese"
+msgstr "Portugais"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Preferences"
+msgstr "Préférences"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"
 msgstr "Pro"
 
@@ -311,6 +376,10 @@ msgstr "Tu te souviens de ça ?"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
 msgstr "Me rappeler d'écrire"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Russian"
+msgstr "Russe"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Save entry"
@@ -369,6 +438,10 @@ msgid "Something went wrong. Please try again."
 msgstr "Une erreur s'est produite. Veuillez réessayer."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Spanish"
+msgstr "Espagnol"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
 msgstr "Abonnement"
 
@@ -392,6 +465,10 @@ msgstr "Heure"
 msgid "Time format"
 msgstr "Format de l'heure"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "To use voice input, enable microphone access for Reflect in Settings."
+msgstr "Pour utiliser la saisie vocale, activez l'accès au microphone pour Reflect dans les réglages."
+
 #. placeholder {0}: todayEntries.length
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} entries"
@@ -406,6 +483,10 @@ msgstr "Aujourd’hui · 1 entrée"
 msgid "Too many attempts. Please try again later"
 msgstr "Trop de tentatives. Veuillez réessayer plus tard"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Turkish"
+msgstr "Turc"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Unlimited entries unlocked. Keep writing."
@@ -419,9 +500,13 @@ msgstr "Mise à jour prête"
 msgid "Upgrade to Pro ✦"
 msgstr "Passer à Pro ✦"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Voice language"
+msgstr "Langue vocale"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
-#~ msgid "Voice recognition failed"
-#~ msgstr "Échec de la reconnaissance vocale"
+msgid "Voice recognition failed"
+msgstr "Échec de la reconnaissance vocale"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "We sent a confirmation link to {email}."

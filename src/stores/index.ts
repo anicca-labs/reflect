@@ -54,6 +54,8 @@ type TimeFormat = '12h' | '24h';
 type PreferencesStoreState = {
   timeFormat: TimeFormat;
   setTimeFormat: (format: TimeFormat) => void;
+  voiceLanguage: string | null;
+  setVoiceLanguage: (lang: string | null) => void;
 };
 
 type SwipeableStoreState = {
@@ -73,6 +75,8 @@ const usePreferencesStore = create<PreferencesStoreState>()(
     (set) => ({
       timeFormat: '12h',
       setTimeFormat: (format) => set({ timeFormat: format }),
+      voiceLanguage: null,
+      setVoiceLanguage: (lang) => set({ voiceLanguage: lang }),
     }),
     {
       name: 'reflect-preferences',

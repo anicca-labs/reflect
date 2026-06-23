@@ -58,12 +58,24 @@ msgid "Apple sign-in is not configured for Android"
 msgstr "Masuk dengan Apple tidak dikonfigurasi untuk Android"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Arabic"
+msgstr "Arab"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Are you sure you want to sign out?"
 msgstr "Yakin ingin keluar?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Are you sure?"
 msgstr "Apakah Anda yakin?"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto"
+msgstr "Otomatis"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto (device language)"
+msgstr "Otomatis (bahasa perangkat)"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
@@ -74,6 +86,7 @@ msgstr "Kembali ke masuk"
 msgid "Bookmarked"
 msgstr "Disimpan"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Cancel"
 msgstr "Batal"
@@ -82,6 +95,10 @@ msgstr "Batal"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Check your email"
 msgstr "Periksa email Anda"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Chinese"
+msgstr "Mandarin"
 
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Choose a new password."
@@ -147,6 +164,10 @@ msgstr "Ditolak — ketuk untuk membuka Pengaturan"
 msgid "Don't have an account? Sign up"
 msgstr "Belum punya akun? Daftar"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Dutch"
+msgstr "Belanda"
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -160,6 +181,10 @@ msgstr "Aktifkan"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Enable notifications in Settings to use reminders."
 msgstr "Aktifkan notifikasi di Pengaturan untuk menggunakan pengingat."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "English"
+msgstr "Inggris"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 msgid "Enter your email to receive a reset link."
@@ -189,6 +214,14 @@ msgstr "Lupa kata sandi?"
 msgid "Free"
 msgstr "Gratis"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "French"
+msgstr "Prancis"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "German"
+msgstr "Jerman"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google Play Services not available"
 msgstr "Google Play Services tidak tersedia"
@@ -201,6 +234,10 @@ msgstr "Gagal masuk dengan Google: tidak ada token identitas"
 msgid "Granted"
 msgstr "Diberikan"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Hindi"
+msgstr "Hindi"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "How are you really feeling right now?"
 msgstr "Bagaimana perasaanmu sebenarnya saat ini?"
@@ -209,13 +246,29 @@ msgstr "Bagaimana perasaanmu sebenarnya saat ini?"
 msgid "Invalid email or password"
 msgstr "Email atau kata sandi salah"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Italian"
+msgstr "Italia"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Japanese"
+msgstr "Jepang"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Journal"
 msgstr "Jurnal"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Korean"
+msgstr "Korea"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
 msgstr "Kelola langganan"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Microphone access required"
+msgstr "Akses mikrofon diperlukan"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Name"
@@ -240,6 +293,10 @@ msgstr "Tidak ada entri yang cocok dengan pencarian Anda."
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr "Belum ada entri. Mulai menulis di tab Jurnal."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Open Settings"
+msgstr "Buka Pengaturan"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
@@ -285,6 +342,14 @@ msgid "Please open Settings manually to manage notifications."
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Portuguese"
+msgstr "Portugis"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Preferences"
+msgstr "Preferensi"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"
 msgstr "Pro"
 
@@ -311,6 +376,10 @@ msgstr "Masih ingat ini?"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
 msgstr "Ingatkan saya untuk menulis"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Russian"
+msgstr "Rusia"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Save entry"
@@ -369,6 +438,10 @@ msgid "Something went wrong. Please try again."
 msgstr "Terjadi kesalahan. Silakan coba lagi."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Spanish"
+msgstr "Spanyol"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
 msgstr "Langganan"
 
@@ -392,6 +465,10 @@ msgstr "Waktu"
 msgid "Time format"
 msgstr "Format waktu"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "To use voice input, enable microphone access for Reflect in Settings."
+msgstr "Untuk menggunakan input suara, aktifkan akses mikrofon untuk Reflect di Pengaturan."
+
 #. placeholder {0}: todayEntries.length
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} entries"
@@ -406,6 +483,10 @@ msgstr "Hari ini · 1 catatan"
 msgid "Too many attempts. Please try again later"
 msgstr "Terlalu banyak percobaan. Silakan coba lagi nanti"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Turkish"
+msgstr "Turki"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Unlimited entries unlocked. Keep writing."
@@ -419,9 +500,13 @@ msgstr "Pembaruan siap"
 msgid "Upgrade to Pro ✦"
 msgstr "Tingkatkan ke Pro ✦"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Voice language"
+msgstr "Bahasa suara"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
-#~ msgid "Voice recognition failed"
-#~ msgstr "Pengenalan suara gagal"
+msgid "Voice recognition failed"
+msgstr "Pengenalan suara gagal"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "We sent a confirmation link to {email}."

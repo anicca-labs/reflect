@@ -111,6 +111,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-localization',
     'expo-status-bar',
     'expo-web-browser',
+    [
+      'expo-speech-recognition',
+      {
+        microphonePermission:
+          'Reflect uses your microphone to let you dictate journal entries by voice.',
+        speechRecognitionPermission:
+          'Reflect uses speech recognition to transcribe your voice into text.',
+      },
+    ],
   ],
   extra: {
     eas: {
