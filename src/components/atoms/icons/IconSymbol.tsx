@@ -43,5 +43,5 @@ const IconSymbol = ({
   <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />
 );
 
-export { IconSymbol }
-export type { IconSymbolName }
+export { IconSymbol };
+export type { IconSymbolName };

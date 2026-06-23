@@ -1,4 +1,4 @@
-import type { Locale } from 'expo-localization'
+import type { Locale } from 'expo-localization';
 
 const locales: Record<string, string> = {
   en: 'English',
@@ -7,8 +7,8 @@ const locales: Record<string, string> = {
   fr: 'Français',
   id: 'Bahasa Indonesia',
   ar: 'العربية',
-}
+};
 
-const defaultFallbackLocale: Locale['languageTag'] = 'en'
+const defaultFallbackLocale: Locale['languageTag'] = 'en';
 
-export { locales, defaultFallbackLocale }
+export { locales, defaultFallbackLocale };

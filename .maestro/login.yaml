@@ -1,13 +1,13 @@
 appId: com.marianoksairi.reflect
 ---
 - launchApp
-- assertVisible: "Sign In"
+- assertVisible: 'Sign In'
 - tapOn:
-    text: "Email"
-- inputText: "test@example.com"
+    text: 'Email'
+- inputText: 'test@example.com'
 - tapOn:
-    text: "Password"
-- inputText: "password123"
+    text: 'Password'
+- inputText: 'password123'
 - tapOn:
-    text: "Sign In"
-- assertVisible: "Home"
+    text: 'Sign In'
+- assertVisible: 'Home'
