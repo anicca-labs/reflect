@@ -103,6 +103,10 @@ msgstr "المتابعة بدون حساب"
 msgid "Couldn't delete account"
 msgstr "تعذّر حذف الحساب"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't open Settings"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "إنشاء حساب"
@@ -277,6 +281,10 @@ msgid "Please enter a valid email address"
 msgstr "أدخل عنوان بريد إلكتروني صالحاً"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Please open Settings manually to manage notifications."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"
 msgstr "برو"
 
@@ -297,8 +305,8 @@ msgid "Reflections"
 msgstr "التأملات"
 
 #: src/hooks/useMemoryNotification.ts
-#~ msgid "Remember this?"
-#~ msgstr "هل تتذكر هذا؟"
+msgid "Remember this?"
+msgstr "هل تتذكر هذا؟"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"

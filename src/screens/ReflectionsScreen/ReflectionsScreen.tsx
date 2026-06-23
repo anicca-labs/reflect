@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
-import { View } from 'react-native';
+import { useState, useRef, useCallback, useEffect, type RefObject } from 'react';
+import { View, ScrollView as RNScrollView } from 'react-native';
 import { BlurTargetView } from 'expo-blur';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { ScrollView, YStack, XStack, Spinner, Input } from 'tamagui';
@@ -17,6 +17,7 @@ import {
   useSwipeableStore,
   useSessionStore,
   useAnonymousJournalStore,
+  usePeekStore,
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
 import { logScreenView } from '@analytics';
@@ -142,12 +143,36 @@ const ReflectionsScreen = () => {
   const [animKey, setAnimKey] = useState(0);
   const [peekEntry, setPeekEntry] = useState<JournalEntry | null>(null);
   const blurTargetRef = useRef<View>(null);
+  const scrollViewRef = useRef<RNScrollView>(null);
+  const groupYPositions = useRef<Map<string, number>>(new Map());
+  const entryYPositions = useRef<Map<string, number>>(new Map());
   const hasAnimated = useRef(false);
 
   const handlePeek = (entry: JournalEntry) => {
     setCloseKey((k) => k + 1);
     setPeekEntry(entry);
   };
+
+  const pendingPeekEntryId = usePeekStore((s) => s.pendingPeekEntryId);
+  const clearPendingPeekEntryId = usePeekStore((s) => s.setPendingPeekEntryId);
+
+  useEffect(() => {
+    if (!pendingPeekEntryId || !entries.length) return;
+    const entry = entries.find((e) => e.id === pendingPeekEntryId);
+    if (entry) {
+      // Opening the peek modal in response to an external navigation request
+      // (e.g. tapping a memory notification) is the intended effect here.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      handlePeek(entry);
+      clearPendingPeekEntryId(null);
+      setTimeout(() => {
+        const groupLabel = formatDayLabel(entry.created_at);
+        const groupY = groupYPositions.current.get(groupLabel) ?? 0;
+        const entryY = entryYPositions.current.get(entry.id) ?? 0;
+        scrollViewRef.current?.scrollTo({ y: Math.max(0, groupY + entryY - 80), animated: true });
+      }, 50);
+    }
+  }, [pendingPeekEntryId, entries, clearPendingPeekEntryId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -192,7 +217,11 @@ const ReflectionsScreen = () => {
   return (
     <Containers.Screen shouldAutoResize={false}>
       <BlurTargetView ref={blurTargetRef} style={{ flex: 1 }}>
-        <ScrollView keyboardShouldPersistTaps="handled" onTouchStart={dismissOpenCard}>
+        <ScrollView
+          ref={scrollViewRef as RefObject<RNScrollView>}
+          keyboardShouldPersistTaps="handled"
+          onTouchStart={dismissOpenCard}
+        >
           <YStack p="$5">
             <XStack justify="space-between" items="center" mb="$4">
               <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
@@ -279,7 +308,11 @@ const ReflectionsScreen = () => {
             ) : null}
 
             {groups.map((group) => (
-              <YStack key={group.label} mb="$7">
+              <YStack
+                key={group.label}
+                mb="$7"
+                onLayout={(e) => groupYPositions.current.set(group.label, e.nativeEvent.layout.y)}
+              >
                 <LabelMd
                   color="$text-disabled"
                   textTransform="uppercase"
@@ -290,20 +323,26 @@ const ReflectionsScreen = () => {
                 </LabelMd>
                 {group.items.map((entry, idx) => (
                   <AnimatedEntry key={entry.id} index={idx} animKey={animKey}>
-                    <EntryCard
-                      entry={entry}
-                      index={idx}
-                      onToggleBookmark={(id, current) =>
-                        isAnonymous
-                          ? toggleLocalBookmark(id)
-                          : toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })
+                    <View
+                      onLayout={(e) =>
+                        entryYPositions.current.set(entry.id, e.nativeEvent.layout.y)
                       }
-                      onDelete={(id) =>
-                        isAnonymous ? deleteLocalEntry(id) : deleteMutation.mutate(id)
-                      }
-                      onPeek={handlePeek}
-                      closeKey={closeKey}
-                    />
+                    >
+                      <EntryCard
+                        entry={entry}
+                        index={idx}
+                        onToggleBookmark={(id, current) =>
+                          isAnonymous
+                            ? toggleLocalBookmark(id)
+                            : toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })
+                        }
+                        onDelete={(id) =>
+                          isAnonymous ? deleteLocalEntry(id) : deleteMutation.mutate(id)
+                        }
+                        onPeek={handlePeek}
+                        closeKey={closeKey}
+                      />
+                    </View>
                   </AnimatedEntry>
                 ))}
               </YStack>
