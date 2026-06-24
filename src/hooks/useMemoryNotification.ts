@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ExpoNotifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -41,7 +42,20 @@ const useMemoryNotification = () => {
 
       if (NOTIF_TEST_MODE && !testScheduled.current) {
         testScheduled.current = true;
-        scheduleMemoryNotificationTest(entries, t`Remember this?`);
+        const testId = await scheduleMemoryNotificationTest(entries, t`Remember this?`);
+        // TEMP stg diagnostic: surface the real on-device notification state so we
+        // can see why iOS isn't delivering the test notification. Remove after.
+        const perm = await ExpoNotifications.getPermissionsAsync();
+        const scheduled = await ExpoNotifications.getAllScheduledNotificationsAsync();
+        Alert.alert(
+          'Notif diag (stg)',
+          `env=${process.env.EXPO_PUBLIC_ENV}\n` +
+            `perm.status=${perm.status}\n` +
+            `ios.status=${perm.ios?.status ?? '-'}\n` +
+            `entries=${entries.length} anon=${isAnonymous}\n` +
+            `testId=${testId ? 'set' : 'null'}\n` +
+            `scheduledCount=${scheduled.length}`,
+        );
       }
     };
     schedule();

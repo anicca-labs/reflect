@@ -61,7 +61,7 @@ const RootLayoutNav = () => {
   // device is running fresh OTA JS. No permission needed. Remove once verified.
   useEffect(() => {
     if (process.env.EXPO_PUBLIC_ENV === 'stg') {
-      Alert.alert('OTA check ✅', 'stg OTA bundle is live — marker #1');
+      Alert.alert('OTA check ✅', 'stg OTA bundle is live — marker #2');
     }
   }, []);
 
