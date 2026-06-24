@@ -107,60 +107,106 @@ const cancelDailyReminder = async (): Promise<void> => {
 const MEMORY_NOTIF_IDS_KEY = '@reflect/memory_notif_ids';
 const MEMORY_NOTIF_LAST_SCHEDULED_KEY = '@reflect/memory_notif_last_scheduled';
 
-const scheduleMemoryNotifications = async (
+const buildMemoryPreview = (content: string): string =>
+  content.length > 100 ? content.slice(0, 100) + '…' : content;
+
+// Guards against concurrent invocations within the same JS runtime. The daily
+// "already scheduled" check is a read-modify-write across many awaits, so without
+// this lock two effect runs (e.g. back-to-back React Query refetches that produce
+// new `entries` references) could both pass the guard and schedule 30 duplicate
+// notifications each — the user would then receive the same memory twice per day.
+let memorySchedulingInFlight: Promise<void> | null = null;
+
+const scheduleMemoryNotifications = (
   entries: JournalEntry[],
   title: string,
   hour = 9,
   minute = 0,
 ): Promise<void> => {
-  const existingJson = await AsyncStorage.getItem(MEMORY_NOTIF_IDS_KEY);
-  if (existingJson) {
-    const ids: string[] = JSON.parse(existingJson);
-    await Promise.all(
-      ids.map((id) => ExpoNotifications.cancelScheduledNotificationAsync(id).catch(() => {})),
-    );
-  }
+  if (memorySchedulingInFlight) return memorySchedulingInFlight;
 
-  const today = new Date().toDateString();
-  const lastScheduled = await AsyncStorage.getItem(MEMORY_NOTIF_LAST_SCHEDULED_KEY);
-  if (lastScheduled === today) return;
+  memorySchedulingInFlight = (async () => {
+    try {
+      // Check the daily guard BEFORE cancelling, otherwise a repeat call on the
+      // same day would wipe the already-scheduled notifications and then bail.
+      const today = new Date().toDateString();
+      const lastScheduled = await AsyncStorage.getItem(MEMORY_NOTIF_LAST_SCHEDULED_KEY);
+      if (lastScheduled === today) return;
 
-  const now = new Date();
-  const minAgeMs = 30 * 24 * 60 * 60 * 1000;
-  const oldEntries = entries.filter(
-    (e) => now.getTime() - new Date(e.created_at).getTime() >= minAgeMs,
-  );
+      const existingJson = await AsyncStorage.getItem(MEMORY_NOTIF_IDS_KEY);
+      if (existingJson) {
+        const ids: string[] = JSON.parse(existingJson);
+        await Promise.all(
+          ids.map((id) => ExpoNotifications.cancelScheduledNotificationAsync(id).catch(() => {})),
+        );
+      }
 
-  if (!oldEntries.length) return;
+      const now = new Date();
+      const minAgeMs = 30 * 24 * 60 * 60 * 1000;
+      const oldEntries = entries.filter(
+        (e) => now.getTime() - new Date(e.created_at).getTime() >= minAgeMs,
+      );
 
-  const shuffled = [...oldEntries].sort(() => Math.random() - 0.5);
-  const ids: string[] = [];
+      if (!oldEntries.length) return;
 
-  for (let daysAhead = 0; daysAhead < 30; daysAhead++) {
-    const targetDate = new Date(now);
-    targetDate.setDate(now.getDate() + daysAhead);
-    targetDate.setHours(hour, minute, 0, 0);
-    if (targetDate <= now) continue;
+      // Mark the day as scheduled before the await-heavy loop so any call that
+      // races in behind the in-flight lock still sees the guard and bails.
+      await AsyncStorage.setItem(MEMORY_NOTIF_LAST_SCHEDULED_KEY, today);
 
-    const entry = shuffled[daysAhead % shuffled.length];
-    const preview = entry.content.length > 100 ? entry.content.slice(0, 100) + '…' : entry.content;
+      const shuffled = [...oldEntries].sort(() => Math.random() - 0.5);
+      const ids: string[] = [];
 
-    const id = await ExpoNotifications.scheduleNotificationAsync({
-      content: {
-        title,
-        body: preview,
-        data: { entryId: entry.id, type: 'memory' },
-      },
-      trigger: {
-        type: ExpoNotifications.SchedulableTriggerInputTypes.DATE,
-        date: targetDate,
-      },
-    });
-    ids.push(id);
-  }
+      for (let daysAhead = 0; daysAhead < 30; daysAhead++) {
+        const targetDate = new Date(now);
+        targetDate.setDate(now.getDate() + daysAhead);
+        targetDate.setHours(hour, minute, 0, 0);
+        if (targetDate <= now) continue;
 
-  await AsyncStorage.setItem(MEMORY_NOTIF_IDS_KEY, JSON.stringify(ids));
-  await AsyncStorage.setItem(MEMORY_NOTIF_LAST_SCHEDULED_KEY, today);
+        const entry = shuffled[daysAhead % shuffled.length];
+
+        const id = await ExpoNotifications.scheduleNotificationAsync({
+          content: {
+            title,
+            body: buildMemoryPreview(entry.content),
+            data: { entryId: entry.id, type: 'memory' },
+          },
+          trigger: {
+            type: ExpoNotifications.SchedulableTriggerInputTypes.DATE,
+            date: targetDate,
+          },
+        });
+        ids.push(id);
+      }
+
+      await AsyncStorage.setItem(MEMORY_NOTIF_IDS_KEY, JSON.stringify(ids));
+    } finally {
+      memorySchedulingInFlight = null;
+    }
+  })();
+
+  return memorySchedulingInFlight;
+};
+
+// stg-only testing aid: fires a single memory-type notification a few seconds out
+// so the deep-link / cold-start tap flow can be exercised without waiting for 9am.
+const scheduleMemoryNotificationTest = async (
+  entries: JournalEntry[],
+  title: string,
+  delaySeconds = 15,
+): Promise<void> => {
+  if (!entries.length) return;
+  const entry = entries[Math.floor(Math.random() * entries.length)];
+  await ExpoNotifications.scheduleNotificationAsync({
+    content: {
+      title,
+      body: buildMemoryPreview(entry.content),
+      data: { entryId: entry.id, type: 'memory' },
+    },
+    trigger: {
+      type: ExpoNotifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      seconds: delaySeconds,
+    },
+  });
 };
 
 export type { NotificationPermissionStatus };
@@ -173,4 +219,5 @@ export {
   scheduleDailyReminder,
   cancelDailyReminder,
   scheduleMemoryNotifications,
+  scheduleMemoryNotificationTest,
 };
