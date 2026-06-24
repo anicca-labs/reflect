@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { InteractionManager } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ExpoNotifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -76,20 +75,16 @@ const useMemoryNotification = () => {
   // Switch to the reflections tab once there's a pending memory AND the journal
   // is available (authenticated, entries loaded). This drives the signed-out →
   // sign-in → login replay: the tap is remembered on the sign-in screen and
-  // replayed here after login; ReflectionsScreen then opens the peek modal.
+  // replayed here after login; ReflectionsScreen then opens the peek modal and
+  // clears the pending id once it finds the entry.
   //
-  // Deferred via runAfterInteractions because the post-login auth-guard does
-  // router.replace('/(tabs)') at nearly the same moment — on iOS a tab switch
-  // fired mid-transition is silently dropped, leaving the user on the journal
-  // (index) tab while ReflectionsScreen (lazy:false, so mounted) opens the peek
-  // in the unfocused reflections tab. Waiting for the transition to settle makes
-  // the switch land. (Android tolerates the immediate push, but this is safe there too.)
+  // The push must stay synchronous: ReflectionsScreen (lazy:false, always
+  // mounted) clears pendingPeekEntryId the moment it opens the peek, which
+  // re-runs this effect — so any deferred navigation would be cancelled on
+  // cleanup before it fired, and the tab switch would never land.
   useEffect(() => {
     if (!pendingPeekEntryId || isAnonymous || !entries?.length) return;
-    const task = InteractionManager.runAfterInteractions(() => {
-      router.push('/(tabs)/reflections');
-    });
-    return () => task.cancel();
+    router.push('/(tabs)/reflections');
   }, [pendingPeekEntryId, isAnonymous, entries, router]);
 };
 
