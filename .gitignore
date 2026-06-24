@@ -70,3 +70,4 @@ eas-service-account.json
 *.ipa
 *.aab
 *.app
+.claude/settings.local.json
