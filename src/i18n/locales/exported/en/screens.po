@@ -58,11 +58,23 @@ msgid "Apple sign-in is not configured for Android"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Arabic"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Are you sure you want to sign out?"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Are you sure?"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto (device language)"
 msgstr ""
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
@@ -74,6 +86,7 @@ msgstr ""
 msgid "Bookmarked"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Cancel"
 msgstr ""
@@ -81,6 +94,10 @@ msgstr ""
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Check your email"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Chinese"
 msgstr ""
 
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
@@ -101,6 +118,10 @@ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't delete account"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't open Settings"
 msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -143,6 +164,10 @@ msgstr ""
 msgid "Don't have an account? Sign up"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Dutch"
+msgstr ""
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -155,6 +180,10 @@ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Enable notifications in Settings to use reminders."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "English"
 msgstr ""
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
@@ -185,6 +214,14 @@ msgstr ""
 msgid "Free"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "French"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "German"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google Play Services not available"
 msgstr ""
@@ -197,6 +234,10 @@ msgstr ""
 msgid "Granted"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Hindi"
+msgstr ""
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "How are you really feeling right now?"
 msgstr ""
@@ -205,12 +246,28 @@ msgstr ""
 msgid "Invalid email or password"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Italian"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Japanese"
+msgstr ""
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Journal"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Korean"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Microphone access required"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
@@ -235,6 +292,10 @@ msgstr ""
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries yet. Start writing in the Journal tab."
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Open Settings"
 msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -277,6 +338,18 @@ msgid "Please enter a valid email address"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Please open Settings manually to manage notifications."
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Portuguese"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Preferences"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"
 msgstr ""
 
@@ -297,11 +370,15 @@ msgid "Reflections"
 msgstr ""
 
 #: src/hooks/useMemoryNotification.ts
-#~ msgid "Remember this?"
-#~ msgstr ""
+msgid "Remember this?"
+msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Russian"
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
@@ -361,6 +438,10 @@ msgid "Something went wrong. Please try again."
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Spanish"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
 msgstr ""
 
@@ -384,6 +465,10 @@ msgstr ""
 msgid "Time format"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "To use voice input, enable microphone access for Reflect in Settings."
+msgstr ""
+
 #. placeholder {0}: todayEntries.length
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} entries"
@@ -396,6 +481,10 @@ msgstr ""
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Too many attempts. Please try again later"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Turkish"
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
@@ -411,9 +500,13 @@ msgstr ""
 msgid "Upgrade to Pro ✦"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Voice language"
+msgstr ""
+
 #: src/screens/JournalScreen/JournalScreen.tsx
-#~ msgid "Voice recognition failed"
-#~ msgstr ""
+msgid "Voice recognition failed"
+msgstr ""
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "We sent a confirmation link to {email}."

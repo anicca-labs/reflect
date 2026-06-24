@@ -1,6 +1,6 @@
-import * as z from 'zod'
+import * as z from 'zod';
 
-const PASSWORDS_MISMATCH_ERROR = 'Passwords do not match'
+const PASSWORDS_MISMATCH_ERROR = 'Passwords do not match';
 
 const baseSchema = {
   email: z.string().email('Please enter a valid email address'),
@@ -11,9 +11,9 @@ const baseSchema = {
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
     .regex(/[0-9]/, 'Password must contain at least one number')
     .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
-}
+};
 
-const loginSchema = z.object({ ...baseSchema })
+const loginSchema = z.object({ ...baseSchema });
 
 const signUpSchema = z
   .object({
@@ -23,9 +23,9 @@ const signUpSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: PASSWORDS_MISMATCH_ERROR,
     path: ['confirmPassword'],
-  })
+  });
 
-const forgotPasswordSchema = z.object({ email: baseSchema.email })
+const forgotPasswordSchema = z.object({ email: baseSchema.email });
 
 const resetPasswordSchema = z
   .object({
@@ -35,6 +35,6 @@ const resetPasswordSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: PASSWORDS_MISMATCH_ERROR,
     path: ['confirmPassword'],
-  })
+  });
 
-export { loginSchema, signUpSchema, forgotPasswordSchema, resetPasswordSchema }
+export { loginSchema, signUpSchema, forgotPasswordSchema, resetPasswordSchema };

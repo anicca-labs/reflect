@@ -3,13 +3,9 @@ import {
   Lora_600SemiBold,
   Lora_700Bold,
   Lora_400Regular_Italic,
-} from '@expo-google-fonts/lora'
-import {
-  DMSans_400Regular,
-  DMSans_500Medium,
-  DMSans_700Bold,
-} from '@expo-google-fonts/dm-sans'
-import { createFont } from 'tamagui'
+} from '@expo-google-fonts/lora';
+import { DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
+import { createFont } from 'tamagui';
 
 const fontAssets = {
   'Lora-Regular': Lora_400Regular,
@@ -19,7 +15,7 @@ const fontAssets = {
   'DMSans-Regular': DMSans_400Regular,
   'DMSans-Medium': DMSans_500Medium,
   'DMSans-Bold': DMSans_700Bold,
-}
+};
 
 const loraFont = createFont({
   family: 'Lora',
@@ -32,7 +28,7 @@ const loraFont = createFont({
     '600': { normal: 'Lora-SemiBold' },
     '700': { normal: 'Lora-Bold' },
   },
-})
+});
 
 const dmSansFont = createFont({
   family: 'DM Sans',
@@ -45,11 +41,11 @@ const dmSansFont = createFont({
     '500': { normal: 'DMSans-Medium' },
     '700': { normal: 'DMSans-Bold' },
   },
-})
+});
 
 const fonts = {
   heading: loraFont,
   body: dmSansFont,
-}
+};
 
-export { fontAssets, fonts }
+export { fontAssets, fonts };

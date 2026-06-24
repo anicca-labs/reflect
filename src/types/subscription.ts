@@ -1,5 +1,5 @@
-import type { CustomerInfo } from 'react-native-purchases'
+import type { CustomerInfo } from 'react-native-purchases';
 
-type EntitlementId = 'premium'
+type EntitlementId = 'premium';
 
-export type { CustomerInfo, EntitlementId }
+export type { CustomerInfo, EntitlementId };

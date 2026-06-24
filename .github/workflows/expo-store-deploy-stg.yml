@@ -29,10 +29,10 @@ jobs:
     outputs:
       platform: ${{ steps.detect.outputs.platform }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: changes
         with:
           filters: |

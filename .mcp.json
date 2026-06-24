@@ -29,7 +29,11 @@
     "sentry": {
       "type": "stdio",
       "command": "${CLAUDE_PLUGIN_ROOT:-.}/bin/mcp-run.sh",
-      "args": ["bash", "-c", "exec npx -y @sentry/mcp-server@latest --access-token=\"$SENTRY_AUTH_TOKEN\" --organization-slug=\"$SENTRY_ORG\""]
+      "args": [
+        "bash",
+        "-c",
+        "exec npx -y @sentry/mcp-server@latest --access-token=\"$SENTRY_AUTH_TOKEN\" --organization-slug=\"$SENTRY_ORG\""
+      ]
     },
     "stripe": {
       "type": "stdio",
@@ -59,7 +63,11 @@
     "revenuecat": {
       "type": "stdio",
       "command": "${CLAUDE_PLUGIN_ROOT:-.}/bin/mcp-run.sh",
-      "args": ["bash", "-c", "exec npx -y supergateway --streamableHttp https://mcp.revenuecat.ai/mcp --oauth2Bearer \"$RC_MCP_API_KEY\""]
+      "args": [
+        "bash",
+        "-c",
+        "exec npx -y supergateway --streamableHttp https://mcp.revenuecat.ai/mcp --oauth2Bearer \"$RC_MCP_API_KEY\""
+      ]
     }
   }
 }

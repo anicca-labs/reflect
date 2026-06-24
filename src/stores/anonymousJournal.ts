@@ -1,15 +1,15 @@
-import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
-import { createZustandMmkvStorage } from './utils'
-import type { JournalEntry } from '@/src/types/journal'
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { createZustandMmkvStorage } from './utils';
+import type { JournalEntry } from '@/src/types/journal';
 
 type AnonymousJournalStore = {
-  entries: JournalEntry[]
-  addEntry: (content: string) => JournalEntry
-  deleteEntry: (id: string) => void
-  toggleBookmark: (id: string) => void
-  clearEntries: () => void
-}
+  entries: JournalEntry[];
+  addEntry: (content: string) => JournalEntry;
+  deleteEntry: (id: string) => void;
+  toggleBookmark: (id: string) => void;
+  clearEntries: () => void;
+};
 
 const useAnonymousJournalStore = create<AnonymousJournalStore>()(
   persist(
@@ -23,14 +23,17 @@ const useAnonymousJournalStore = create<AnonymousJournalStore>()(
           is_bookmarked: false,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-        }
-        set((s) => ({ entries: [entry, ...s.entries] }))
-        return entry
+        };
+        set((s) => ({ entries: [entry, ...s.entries] }));
+        return entry;
       },
       deleteEntry: (id) => set((s) => ({ entries: s.entries.filter((e) => e.id !== id) })),
-      toggleBookmark: (id) => set((s) => ({
-        entries: s.entries.map((e) => e.id === id ? { ...e, is_bookmarked: !e.is_bookmarked } : e),
-      })),
+      toggleBookmark: (id) =>
+        set((s) => ({
+          entries: s.entries.map((e) =>
+            e.id === id ? { ...e, is_bookmarked: !e.is_bookmarked } : e,
+          ),
+        })),
       clearEntries: () => set({ entries: [] }),
     }),
     {
@@ -38,6 +41,6 @@ const useAnonymousJournalStore = create<AnonymousJournalStore>()(
       storage: createJSONStorage(() => createZustandMmkvStorage()),
     },
   ),
-)
+);
 
-export { useAnonymousJournalStore }
+export { useAnonymousJournalStore };
