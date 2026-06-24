@@ -70,13 +70,12 @@ jobs:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
 
       - name: Push OTA update to Supabase
-        # Doppler injects SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY.
-        # EXPO_RUNTIME_VERSION is derived from package.json (keep in sync with app.config.ts version).
+        # Doppler injects SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY. The script computes
+        # the per-platform runtimeVersion via the fingerprint (app.config.ts uses
+        # `policy: 'fingerprint'`) under this same Doppler env, so it matches the build.
         run: |
-          RUNTIME_VERSION=$(node -p "require('./package.json').version")
           doppler run --project mobile --config ${{ steps.env.outputs.channel }} -- \
             bash -c "EXPO_UPDATE_CHANNEL=${{ steps.env.outputs.channel }} \
-                     EXPO_RUNTIME_VERSION=$RUNTIME_VERSION \
                      node scripts/push-ota-update.mjs"
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}

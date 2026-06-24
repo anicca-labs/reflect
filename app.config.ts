@@ -14,8 +14,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   name: process.env.DISPLAY_NAME ?? 'reflect',
   slug: 'reflect',
   version: config.version,
+  // Fingerprint policy: the runtimeVersion is a hash of the native layer (native
+  // deps, config plugins, entitlements, build properties, patches). Adding or
+  // changing native code automatically changes it, so an OTA can never be served
+  // to a binary that lacks the native module it needs — no manual version bumping.
   runtimeVersion: {
-    policy: 'appVersion',
+    policy: 'fingerprint',
   },
   updates: {
     url: process.env.EXPO_UPDATE_URL,

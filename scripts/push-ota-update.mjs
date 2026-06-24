@@ -6,11 +6,15 @@
 //   SUPABASE_URL
 //   SUPABASE_SERVICE_ROLE_KEY
 //   EXPO_UPDATE_CHANNEL   (stg | prd)
-//   EXPO_RUNTIME_VERSION  (e.g. "1.0.0" — must match app.config.ts version)
 //   DIST_DIR              (optional, defaults to ./dist)
+//
+// runtimeVersion is computed per platform via `expo-updates fingerprint:generate`
+// (app.config.ts uses `policy: 'fingerprint'`). Run this under the same Doppler env
+// as the build — config-affecting env vars change the fingerprint.
 
 import fs from 'fs';
 import { createRequire } from 'module';
+import { execFileSync } from 'child_process';
 
 const require = createRequire(import.meta.url);
 const { getConfig } = require('@expo/config');
@@ -21,7 +25,6 @@ import { pruneOtaUpdates } from './prune-ota-updates.mjs';
 const SUPABASE_URL = requireEnv('SUPABASE_URL');
 const SERVICE_ROLE_KEY = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
 const CHANNEL = requireEnv('EXPO_UPDATE_CHANNEL');
-const RUNTIME_VERSION = requireEnv('EXPO_RUNTIME_VERSION');
 const DIST_DIR = process.env.DIST_DIR ?? './dist';
 const BUCKET = 'expo-updates';
 
@@ -29,6 +32,22 @@ function requireEnv(name) {
   const val = process.env[name];
   if (!val) throw new Error(`Missing required env var: ${name}`);
   return val;
+}
+
+// runtimeVersion is the per-platform fingerprint (app.config.ts uses
+// `policy: 'fingerprint'`). This MUST be the same `expo-updates` computation the
+// EAS build embeds, and run under the SAME Doppler env as the build — env vars
+// like EXPO_UPDATE_URL are baked into the config and change the fingerprint.
+function fingerprintFor(platform) {
+  const bin = path.join('node_modules', '.bin', 'expo-updates');
+  const out = execFileSync(bin, ['fingerprint:generate', '--platform', platform], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore'],
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  const hash = JSON.parse(out).hash;
+  if (!hash) throw new Error(`Could not compute ${platform} fingerprint`);
+  return hash;
 }
 
 function sha256b64(filePath) {
@@ -95,14 +114,14 @@ async function insertUpdate(row) {
   }
 }
 
-async function pushPlatform(platform, metadata, updateId, expoConfig) {
+async function pushPlatform(platform, metadata, updateId, expoConfig, runtimeVersion) {
   const platformMeta = metadata.fileMetadata?.[platform];
   if (!platformMeta?.bundle) {
     console.log(`  no ${platform} bundle in export, skipping`);
     return;
   }
 
-  console.log(`\nPublishing ${platform} update ${updateId}...`);
+  console.log(`\nPublishing ${platform} update ${updateId} (runtimeVersion ${runtimeVersion})...`);
   const prefix = `${CHANNEL}/${updateId}`;
   const storageBase = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}`;
 
@@ -136,7 +155,7 @@ async function pushPlatform(platform, metadata, updateId, expoConfig) {
     id: updateId,
     channel: CHANNEL,
     platform,
-    runtime_version: RUNTIME_VERSION,
+    runtime_version: runtimeVersion,
     launch_asset: {
       hash: sha256b64(bundleLocalPath),
       key: platformMeta.bundle,
@@ -160,9 +179,16 @@ async function main() {
   const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
   const { exp: expoConfig } = getConfig(process.cwd(), { skipSDKVersionRequirement: true });
 
+  // Compute the native fingerprint per platform — iOS and Android differ, and each
+  // OTA must be tagged with the runtimeVersion its target binary was built with.
+  console.log('Computing native fingerprints...');
+  const iosRuntime = fingerprintFor('ios');
+  const androidRuntime = fingerprintFor('android');
+  console.log(`  ios: ${iosRuntime}\n  android: ${androidRuntime}`);
+
   // Each platform gets its own update ID so the manifest server can serve them independently
-  await pushPlatform('ios', metadata, crypto.randomUUID(), expoConfig);
-  await pushPlatform('android', metadata, crypto.randomUUID(), expoConfig);
+  await pushPlatform('ios', metadata, crypto.randomUUID(), expoConfig, iosRuntime);
+  await pushPlatform('android', metadata, crypto.randomUUID(), expoConfig, androidRuntime);
 
   // Prune superseded updates so the storage bucket can't grow unbounded (this is what
   // previously pushed the project over its storage quota). Keeps the newest few per
