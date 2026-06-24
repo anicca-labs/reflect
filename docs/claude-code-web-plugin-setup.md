@@ -188,6 +188,56 @@ Workarounds:
   web (`SKIP_PLUGIN_MARKETPLACE=true`); project `.mcp.json` servers that depend on
   `${CLAUDE_PLUGIN_ROOT}` therefore never launch."
 
+## Decoupling `.mcp.json` from the plugin (so it can load without it)
+
+The root cause above is that every `.mcp.json` command pointed at a script *inside*
+the plugin (`${CLAUDE_PLUGIN_ROOT}/bin/mcp-run.sh`). We removed that hard dependency
+so the project MCP servers can load on the web with no plugin installed:
+
+1. **Committed `bin/mcp-run.sh`** — a self-contained copy of the plugin's launcher.
+   It reads `doppler.project` / `doppler.config` from `mcp.config.json` (defaults
+   `mobile` / `stg`) and `exec`s `doppler run -p <project> -c <config> -- "$@"`.
+2. **`.mcp.json` commands → `${CLAUDE_PLUGIN_ROOT:-.}/bin/mcp-run.sh`.** The `:-`
+   fallback is a no-op locally (the plugin sets `CLAUDE_PLUGIN_ROOT`, so its own
+   launcher is used, unchanged) and resolves to the committed script on the web.
+3. **Secrets resolve inside the server process, not via Claude's `${VAR}`.** On the
+   web the secrets only exist *inside* `doppler run`, which runs *after* Claude Code
+   has already built the argv — so `${SUPABASE_ACCESS_TOKEN}` in an arg expands to
+   empty. Fixes:
+   - `supabase`: dropped `--access-token`; the server reads `SUPABASE_ACCESS_TOKEN`
+     from the (doppler-injected) env.
+   - `sentry`: runs under `bash -c` so `$SENTRY_AUTH_TOKEN` / `$SENTRY_ORG` expand
+     *after* injection.
+   - `stripe`: dropped `--api-key`; reads `STRIPE_SECRET_KEY` from env (still needs
+     the secret added in Doppler).
+   - `revenuecat` already used inner-shell `$RC_MCP_API_KEY`, so it was fine.
+
+`expo` / `database` still point at the plugin's bundled `dist/` builds, which aren't
+in the repo, so those two only work where the plugin is installed (local).
+
+### The experiment — does web actually read project `.mcp.json`?
+
+This is the one thing that can't be determined from inside a running session. To
+settle it:
+
+1. Start a **brand-new** web session on the branch with these changes (fresh, not a
+   resume — MCP servers load only at session start).
+2. Ask the assistant: *"What MCP servers and tools do you have? List any `supabase`
+   / `context7` ones."*
+
+Interpretation:
+- **Native `mcp__supabase__*` / `mcp__context7__*` appear** → web *does* read repo
+  `.mcp.json`; the decoupling worked and native MCP tools are available on the web.
+  Verify with: *"Use the supabase MCP to run `select count(*) from api.journal_entries`."*
+- **Only `github` / `Gmail` / `Google_Drive` appear** → web ignores repo `.mcp.json`
+  and uses only its managed MCP config. No repo-side fix is possible; escalate
+  (see the `SKIP_PLUGIN_MARKETPLACE` note above).
+
+Even in the success case, two things still gate individual servers: the environment
+**network allowlist** (each backend host — `*.sentry.io`, `api.stripe.com`,
+`api.figma.com`, `*.googleapis.com`, …) and **per-server secrets** in Doppler
+(`STRIPE_SECRET_KEY`, `FIGMA_API_KEY`).
+
 ## Known issue — environment settings not applying
 
 If, after setting the Setup script / Environment variables / Network access and
