@@ -135,6 +135,14 @@ const useAuthSession = () => {
           clearAnonymous();
         }
         resetRevenueCatUser();
+        // Drop the previous user's cached journal entries. Besides not leaking
+        // stale data into a signed-out session, this is what makes the memory
+        // notification replay land after login: with the cache cleared, the
+        // post-login refetch repopulates `entries` (undefined → data), which
+        // re-fires the tab-switch effect *after* the auth transition. Without it
+        // `entries` never changes across login, the effect doesn't re-run, and
+        // the user is left on the journal tab with the peek open out of view.
+        queryClient.removeQueries({ queryKey: ['journal-entries'] });
         return;
       }
 
