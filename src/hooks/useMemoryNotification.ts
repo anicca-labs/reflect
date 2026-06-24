@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Alert } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ExpoNotifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -42,20 +42,7 @@ const useMemoryNotification = () => {
 
       if (NOTIF_TEST_MODE && !testScheduled.current) {
         testScheduled.current = true;
-        const testId = await scheduleMemoryNotificationTest(entries, t`Remember this?`);
-        // TEMP stg diagnostic: surface the real on-device notification state so we
-        // can see why iOS isn't delivering the test notification. Remove after.
-        const perm = await ExpoNotifications.getPermissionsAsync();
-        const scheduled = await ExpoNotifications.getAllScheduledNotificationsAsync();
-        Alert.alert(
-          'Notif diag (stg)',
-          `env=${process.env.EXPO_PUBLIC_ENV}\n` +
-            `perm.status=${perm.status}\n` +
-            `ios.status=${perm.ios?.status ?? '-'}\n` +
-            `entries=${entries.length} anon=${isAnonymous}\n` +
-            `testId=${testId ? 'set' : 'null'}\n` +
-            `scheduledCount=${scheduled.length}`,
-        );
+        scheduleMemoryNotificationTest(entries, t`Remember this?`);
       }
     };
     schedule();
@@ -86,14 +73,23 @@ const useMemoryNotification = () => {
     return () => sub.remove();
   }, [setPendingPeekEntryId]);
 
-  // Navigate to reflections once there's a pending memory AND the journal is
-  // actually available (authenticated, entries loaded). This is what makes the
-  // signed-out → sign-in → login flow work: the tap is remembered while on the
-  // sign-in screen and replayed here after login. ReflectionsScreen opens the
-  // peek modal and clears the pending id once it finds the entry.
+  // Switch to the reflections tab once there's a pending memory AND the journal
+  // is available (authenticated, entries loaded). This drives the signed-out →
+  // sign-in → login replay: the tap is remembered on the sign-in screen and
+  // replayed here after login; ReflectionsScreen then opens the peek modal.
+  //
+  // Deferred via runAfterInteractions because the post-login auth-guard does
+  // router.replace('/(tabs)') at nearly the same moment — on iOS a tab switch
+  // fired mid-transition is silently dropped, leaving the user on the journal
+  // (index) tab while ReflectionsScreen (lazy:false, so mounted) opens the peek
+  // in the unfocused reflections tab. Waiting for the transition to settle makes
+  // the switch land. (Android tolerates the immediate push, but this is safe there too.)
   useEffect(() => {
     if (!pendingPeekEntryId || isAnonymous || !entries?.length) return;
-    router.push('/(tabs)/reflections');
+    const task = InteractionManager.runAfterInteractions(() => {
+      router.push('/(tabs)/reflections');
+    });
+    return () => task.cancel();
   }, [pendingPeekEntryId, isAnonymous, entries, router]);
 };
 
