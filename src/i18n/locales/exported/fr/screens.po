@@ -122,7 +122,7 @@ msgstr "Impossible de supprimer le compte"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't open Settings"
-msgstr ""
+msgstr "Impossible d'ouvrir Réglages"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
@@ -339,7 +339,7 @@ msgstr "Veuillez saisir une adresse e-mail valide"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Please open Settings manually to manage notifications."
-msgstr ""
+msgstr "Veuillez ouvrir Réglages manuellement pour gérer les notifications."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Portuguese"

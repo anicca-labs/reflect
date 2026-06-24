@@ -122,7 +122,7 @@ msgstr "تعذّر حذف الحساب"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't open Settings"
-msgstr ""
+msgstr "تعذّر فتح الإعدادات"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
@@ -339,7 +339,7 @@ msgstr "أدخل عنوان بريد إلكتروني صالحاً"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Please open Settings manually to manage notifications."
-msgstr ""
+msgstr "افتح الإعدادات يدويًا لإدارة الإشعارات."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Portuguese"
