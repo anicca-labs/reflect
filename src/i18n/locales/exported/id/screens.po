@@ -122,7 +122,7 @@ msgstr "Tidak dapat menghapus akun"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't open Settings"
-msgstr ""
+msgstr "Tidak dapat membuka Pengaturan"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
@@ -339,7 +339,7 @@ msgstr "Masukkan alamat email yang valid"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Please open Settings manually to manage notifications."
-msgstr ""
+msgstr "Buka Pengaturan secara manual untuk mengelola notifikasi."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Portuguese"
