@@ -13,17 +13,16 @@ const keyFromEnv = (): Uint8Array => {
 };
 
 const randomIV = (): Uint8Array => {
-  const bytes = new Uint8Array(IV_BYTES);
-  // globalThis.crypto is the correct reference in React Native / Hermes
+  // globalThis.crypto is the correct reference in React Native / Hermes.
   const c = globalThis.crypto;
-  if (c?.getRandomValues) {
-    c.getRandomValues(bytes);
-  } else {
-    // fallback: timestamp + Math.random (adequate for app-level encryption)
-    const t = Date.now();
-    for (let i = 0; i < 8; i++) bytes[i] = (t >>> (i * 8)) & 0xff;
-    for (let i = 8; i < IV_BYTES; i++) bytes[i] = Math.floor(Math.random() * 256);
+  if (!c?.getRandomValues) {
+    // AES-CTR reuses the keystream if the IV/nonce is predictable, so a weak
+    // (Date.now + Math.random) IV would be catastrophic. getRandomValues is always
+    // present under Hermes; fail loudly rather than silently degrade if it isn't.
+    throw new Error('crypto.getRandomValues unavailable — cannot generate a secure IV');
   }
+  const bytes = new Uint8Array(IV_BYTES);
+  c.getRandomValues(bytes);
   return bytes;
 };
 
@@ -64,7 +63,11 @@ const decryptContent = (value: string): string => {
     const aesCtr = new aesjs.ModeOfOperation.ctr(Array.from(key), counter);
     const plainBytes = aesCtr.decrypt(cipherBytes);
     return aesjs.utils.utf8.fromBytes(Array.from(plainBytes));
-  } catch {
+  } catch (e) {
+    // Only fails if the key rotated or the blob is corrupt. Don't swallow it
+    // silently — but still return the raw value so we never lose the user's data
+    // (a re-keyed device can still surface the ciphertext for recovery).
+    console.error('[crypto] decrypt failed:', e);
     return value;
   }
 };

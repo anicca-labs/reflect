@@ -86,6 +86,11 @@ async function uploadFile(localPath, storagePath, contentType) {
       apikey: SERVICE_ROLE_KEY,
       'Content-Type': contentType,
       'x-upsert': 'true',
+      // Don't let the Storage CDN cache OTA bundles/assets. The default is a 1h
+      // cache, which makes iOS issue conditional requests that come back 304 — the
+      // exact case the expo-updates FileDownloader patch works around. no-store keeps
+      // every update fetch fresh and lets that client patch eventually be retired.
+      'cache-control': 'no-store',
     },
     body,
   });

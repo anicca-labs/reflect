@@ -231,8 +231,13 @@ const JournalScreen = () => {
       }
       if (!isAnonymous) refetch();
       logScreenView('Journal');
-      return () => setCloseKey((k) => k + 1);
-    }, [refetch, isAnonymous]),
+      return () => {
+        setCloseKey((k) => k + 1);
+        // Stop dictation when leaving the screen (tabs stay mounted with lazy:false,
+        // so without this the mic keeps recording in the background).
+        stopListening();
+      };
+    }, [refetch, isAnonymous, stopListening]),
   );
 
   const hasOpenCard = useSwipeableStore((s) => s.activeDragCount > 0);

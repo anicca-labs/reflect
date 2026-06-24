@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { NativeModules } from 'react-native';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { usePreferencesStore } from '@/src/stores';
@@ -112,6 +112,14 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
     userStoppedRef.current = true;
     sessionTranscriptRef.current = '';
     ExpoSpeechRecognitionModule.stop();
+  }, []);
+
+  // Safety net: if the consumer unmounts while a session is live, stop the native
+  // recognition so the mic doesn't keep recording in the background.
+  useEffect(() => {
+    return () => {
+      ExpoSpeechRecognitionModule.stop();
+    };
   }, []);
 
   return { isListening, start, stop };

@@ -6,6 +6,11 @@ import { useSessionStore } from '@/src/stores';
 
 const QUERY_KEY = ['journal-entries'] as const;
 
+// One-shot guard: the legacy plaintext→encrypted migration must not re-fire on
+// every refetch (the read query should stay a pure read). Reset on failure so a
+// transient error can retry on the next fetch.
+let plaintextMigrationAttempted = false;
+
 const useJournalEntries = () => {
   const isAnonymous = useSessionStore((s) => s.isAnonymous);
   return useQuery({
@@ -21,7 +26,8 @@ const useJournalEntries = () => {
 
       // Background-migrate any plaintext entries left over from before encryption was added
       const toMigrate = raw.filter((e) => !e.content.startsWith(PREFIX));
-      if (toMigrate.length > 0) {
+      if (toMigrate.length > 0 && !plaintextMigrationAttempted) {
+        plaintextMigrationAttempted = true;
         Promise.all(
           toMigrate.map(async (e) => {
             const encrypted = encryptContent(e.content);
@@ -31,7 +37,10 @@ const useJournalEntries = () => {
               .eq('id', e.id);
             if (error) console.error('[encrypt-migration] update failed:', error.message);
           }),
-        ).catch((err) => console.error('[encrypt-migration] failed:', err));
+        ).catch((err) => {
+          plaintextMigrationAttempted = false;
+          console.error('[encrypt-migration] failed:', err);
+        });
       }
 
       return raw.map((e) => ({ ...e, content: decryptContent(e.content) })) as JournalEntry[];
