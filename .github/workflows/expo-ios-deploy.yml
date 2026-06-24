@@ -77,9 +77,7 @@ jobs:
           df -h
 
       - name: Xcode Select Version
-        uses: mobiledevops/xcode-select-version-action@v1
-        with:
-          xcode-select-version: ${{ inputs.xcode-version }}
+        run: sudo xcode-select -s /Applications/Xcode_${{ inputs.xcode-version }}.app
 
       - name: Set up ruby
         uses: ruby/setup-ruby@v1
@@ -87,7 +85,11 @@ jobs:
           bundler-cache: true
 
       - name: Install Fastlane
-        run: brew install fastlane
+        run: |
+          # Drop pre-installed taps we don't use so Homebrew's upcoming
+          # tap-trust enforcement (6.0/5.2) doesn't warn on every brew call.
+          brew untap aws/tap azure/bicep 2>/dev/null || true
+          brew install fastlane
 
       - name: Setup cocoapods
         run: gem install cocoapods -v ${{ inputs.cocoapods-version }}
