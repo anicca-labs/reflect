@@ -1,953 +1,1278 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" dir="ltr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Reflect — Your private daily journal" />
-  <title>Reflect — Your private journal</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Reflect — Your private daily journal" />
+    <title>Reflect — Your private journal</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    :root {
-      --cream: #F5F0E8;
-      --cream-dark: #EDE6D8;
-      --ink: #1C1917;
-      --ink-light: #57534E;
-      --ink-muted: #A8A29E;
-      --green: #6B9E7A;
-      --green-light: #EEF5F1;
-      --green-dark: #4A7A5A;
-    }
+      :root {
+        --cream: #f5f0e8;
+        --cream-dark: #ede6d8;
+        --ink: #1c1917;
+        --ink-light: #57534e;
+        --ink-muted: #a8a29e;
+        --green: #6b9e7a;
+        --green-light: #eef5f1;
+        --green-dark: #4a7a5a;
+      }
 
-    html { scroll-behavior: smooth; }
+      html {
+        scroll-behavior: smooth;
+      }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--cream);
-      color: var(--ink);
-      overflow-x: hidden;
-    }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: var(--cream);
+        color: var(--ink);
+        overflow-x: hidden;
+      }
 
-    /* ────────────────────────────────────────────────────────
+      /* ────────────────────────────────────────────────────────
        HERO
     ──────────────────────────────────────────────────────── */
 
-    .hero {
-      position: relative;
-      height: 100vh;
-      min-height: 600px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0 24px;
-      overflow: hidden;
-    }
+      .hero {
+        position: relative;
+        height: 100vh;
+        min-height: 600px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 24px;
+        overflow: hidden;
+      }
 
-    /* Deep layer — moves slowest (0.15x) */
-    .hero-deep {
-      position: absolute;
-      inset: -80% -20%;
-      will-change: transform;
-      pointer-events: none;
-      z-index: 0;
-    }
+      /* Deep layer — moves slowest (0.15x) */
+      .hero-deep {
+        position: absolute;
+        inset: -80% -20%;
+        will-change: transform;
+        pointer-events: none;
+        z-index: 0;
+      }
 
-    .hero-watermark {
-      position: absolute;
-      width: min(820px, 110vw);
-      height: min(820px, 110vw);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0.13;
-      object-fit: contain;
-    }
+      .hero-watermark {
+        position: absolute;
+        width: min(820px, 110vw);
+        height: min(820px, 110vw);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.13;
+        object-fit: contain;
+      }
 
-    /* Mid layer — moves at 0.6x */
-    .hero-mid {
-      position: absolute;
-      inset: -20% -10%;
-      will-change: transform;
-      pointer-events: none;
-      z-index: 1;
-    }
+      /* Mid layer — moves at 0.6x */
+      .hero-mid {
+        position: absolute;
+        inset: -20% -10%;
+        will-change: transform;
+        pointer-events: none;
+        z-index: 1;
+      }
 
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      will-change: transform;
-    }
+      .orb {
+        position: absolute;
+        border-radius: 50%;
+        will-change: transform;
+      }
 
-    .orb-a {
-      width: 480px; height: 480px;
-      background: radial-gradient(circle, rgba(107,158,122,0.18) 0%, transparent 65%);
-      top: 5%; right: -8%;
-    }
-    .orb-b {
-      width: 320px; height: 320px;
-      background: radial-gradient(circle, rgba(212,201,168,0.22) 0%, transparent 65%);
-      bottom: 10%; left: -6%;
-    }
-    .orb-c {
-      width: 180px; height: 180px;
-      background: radial-gradient(circle, rgba(107,158,122,0.15) 0%, transparent 65%);
-      top: 30%; left: 8%;
-    }
+      .orb-a {
+        width: 480px;
+        height: 480px;
+        background: radial-gradient(circle, rgba(107, 158, 122, 0.18) 0%, transparent 65%);
+        top: 5%;
+        right: -8%;
+      }
+      .orb-b {
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(circle, rgba(212, 201, 168, 0.22) 0%, transparent 65%);
+        bottom: 10%;
+        left: -6%;
+      }
+      .orb-c {
+        width: 180px;
+        height: 180px;
+        background: radial-gradient(circle, rgba(107, 158, 122, 0.15) 0%, transparent 65%);
+        top: 30%;
+        left: 8%;
+      }
 
-    /* Content — normal scroll */
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 680px;
-    }
+      /* Content — normal scroll */
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 680px;
+      }
 
-    .app-icon {
-      width: 160px; height: 160px;
-      margin: 0 auto 28px;
-      animation: float 5s ease-in-out infinite;
-      display: block;
-    }
+      .app-icon {
+        width: 160px;
+        height: 160px;
+        margin: 0 auto 28px;
+        animation: float 5s ease-in-out infinite;
+        display: block;
+      }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-9px); }
-    }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-9px);
+        }
+      }
 
-    .hero h1 {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(48px, 9vw, 80px);
-      font-weight: normal;
-      letter-spacing: -0.025em;
-      color: var(--ink);
-      margin-bottom: 20px;
-      line-height: 1.0;
-    }
+      .hero h1 {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(48px, 9vw, 80px);
+        font-weight: normal;
+        letter-spacing: -0.025em;
+        color: var(--ink);
+        margin-bottom: 20px;
+        line-height: 1;
+      }
 
-    .hero-prompt-wrapper {
-      height: 32px;
-      overflow: hidden;
-      margin-bottom: 24px;
-    }
+      .hero-prompt-wrapper {
+        height: 32px;
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
 
-    .hero-prompt {
-      font-size: clamp(15px, 2.5vw, 18px);
-      color: var(--green-dark);
-      font-style: italic;
-      opacity: 0;
-      transform: translateY(12px);
-      transition: opacity 0.45s ease, transform 0.45s ease;
-    }
+      .hero-prompt {
+        font-size: clamp(15px, 2.5vw, 18px);
+        color: var(--green-dark);
+        font-style: italic;
+        opacity: 0;
+        transform: translateY(12px);
+        transition:
+          opacity 0.45s ease,
+          transform 0.45s ease;
+      }
 
-    .hero-prompt.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+      .hero-prompt.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
 
-    .hero-sub {
-      font-size: clamp(15px, 2.5vw, 18px);
-      color: var(--ink-light);
-      line-height: 1.65;
-      margin-bottom: 44px;
-      max-width: 440px;
-      margin-left: auto;
-      margin-right: auto;
-    }
+      .hero-sub {
+        font-size: clamp(15px, 2.5vw, 18px);
+        color: var(--ink-light);
+        line-height: 1.65;
+        margin-bottom: 44px;
+        max-width: 440px;
+        margin-left: auto;
+        margin-right: auto;
+      }
 
-    /* ── Store badges ────────────────────────────────────── */
+      /* ── Store badges ────────────────────────────────────── */
 
-    .store-buttons {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+      .store-buttons {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: #000;
-      color: #fff;
-      text-decoration: none;
-      padding: 11px 18px;
-      border-radius: 11px;
-      border: 1px solid rgba(255,255,255,0.12);
-      transition: transform 0.15s, opacity 0.15s;
-      min-width: 152px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #000;
+        color: #fff;
+        text-decoration: none;
+        padding: 11px 18px;
+        border-radius: 11px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        transition:
+          transform 0.15s,
+          opacity 0.15s;
+        min-width: 152px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
 
-    .badge:hover { transform: translateY(-2px); opacity: 0.9; }
+      .badge:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+      }
 
-    .badge-icon { flex-shrink: 0; }
+      .badge-icon {
+        flex-shrink: 0;
+      }
 
-    .badge-text { text-align: left; line-height: 1.15; }
-    .badge-text .badge-line1 { display: block; font-size: 10px; font-weight: 400; opacity: 0.85; letter-spacing: 0.02em; }
-    .badge-text .badge-line2 { display: block; font-size: 18px; font-weight: 500; letter-spacing: -0.02em; }
+      .badge-text {
+        text-align: left;
+        line-height: 1.15;
+      }
+      .badge-text .badge-line1 {
+        display: block;
+        font-size: 10px;
+        font-weight: 400;
+        opacity: 0.85;
+        letter-spacing: 0.02em;
+      }
+      .badge-text .badge-line2 {
+        display: block;
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+      }
 
-    [dir="rtl"] .badge { flex-direction: row-reverse; }
-    [dir="rtl"] .badge-text { text-align: right; }
+      [dir='rtl'] .badge {
+        flex-direction: row-reverse;
+      }
+      [dir='rtl'] .badge-text {
+        text-align: right;
+      }
 
-    /* scroll cue */
-    .scroll-cue {
-      position: absolute;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
-      opacity: 0.3;
-      animation: cue-bounce 2.2s ease-in-out infinite;
-    }
+      /* scroll cue */
+      .scroll-cue {
+        position: absolute;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        opacity: 0.3;
+        animation: cue-bounce 2.2s ease-in-out infinite;
+      }
 
-    @keyframes cue-bounce {
-      0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.3; }
-      50% { transform: translateX(-50%) translateY(7px); opacity: 0.5; }
-    }
+      @keyframes cue-bounce {
+        0%,
+        100% {
+          transform: translateX(-50%) translateY(0);
+          opacity: 0.3;
+        }
+        50% {
+          transform: translateX(-50%) translateY(7px);
+          opacity: 0.5;
+        }
+      }
 
-    /* ────────────────────────────────────────────────────────
+      /* ────────────────────────────────────────────────────────
        SECTION TRANSITION STRIP
     ──────────────────────────────────────────────────────── */
 
-    .strip {
-      position: relative;
-      height: 80px;
-      overflow: hidden;
-      z-index: 3;
-    }
+      .strip {
+        position: relative;
+        height: 80px;
+        overflow: hidden;
+        z-index: 3;
+      }
 
-    .strip-deep {
-      position: absolute;
-      inset: -40% 0;
-      will-change: transform;
-      pointer-events: none;
-    }
+      .strip-deep {
+        position: absolute;
+        inset: -40% 0;
+        will-change: transform;
+        pointer-events: none;
+      }
 
-    .strip-bg {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom, var(--cream) 0%, #fff 100%);
-    }
+      .strip-bg {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, var(--cream) 0%, #fff 100%);
+      }
 
-    .strip svg {
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 100%;
-    }
+      .strip svg {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+      }
 
-    /* ────────────────────────────────────────────────────────
+      /* ────────────────────────────────────────────────────────
        FEATURES
     ──────────────────────────────────────────────────────── */
 
-    .features {
-      background: #fff;
-      padding: 72px 24px 88px;
-      position: relative;
-    }
+      .features {
+        background: #fff;
+        padding: 72px 24px 88px;
+        position: relative;
+      }
 
-    .section-eyebrow {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--green-dark);
-      text-align: center;
-      margin-bottom: 12px;
-    }
+      .section-eyebrow {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--green-dark);
+        text-align: center;
+        margin-bottom: 12px;
+      }
 
-    .section-title {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(26px, 5vw, 40px);
-      font-weight: normal;
-      text-align: center;
-      color: var(--ink);
-      margin-bottom: 56px;
-      line-height: 1.25;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    }
+      .section-title {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(26px, 5vw, 40px);
+        font-weight: normal;
+        text-align: center;
+        color: var(--ink);
+        margin-bottom: 56px;
+        line-height: 1.25;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
 
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 24px;
-      max-width: 960px;
-      margin: 0 auto;
-    }
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 24px;
+        max-width: 960px;
+        margin: 0 auto;
+      }
 
-    .feature-card {
-      background: var(--cream);
-      border-radius: 20px;
-      padding: 32px 28px;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
+      .feature-card {
+        background: var(--cream);
+        border-radius: 20px;
+        padding: 32px 28px;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
 
-    .feature-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 32px rgba(28,25,23,0.07);
-    }
+      .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 32px rgba(28, 25, 23, 0.07);
+      }
 
-    .feature-icon {
-      width: 48px; height: 48px;
-      border-radius: 13px;
-      background: var(--green-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 18px;
-      font-size: 22px;
-    }
+      .feature-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 13px;
+        background: var(--green-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+        font-size: 22px;
+      }
 
-    .feature-card h3 {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 19px;
-      font-weight: normal;
-      color: var(--ink);
-      margin-bottom: 8px;
-    }
+      .feature-card h3 {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 19px;
+        font-weight: normal;
+        color: var(--ink);
+        margin-bottom: 8px;
+      }
 
-    .feature-card p {
-      font-size: 14.5px;
-      line-height: 1.65;
-      color: var(--ink-light);
-    }
+      .feature-card p {
+        font-size: 14.5px;
+        line-height: 1.65;
+        color: var(--ink-light);
+      }
 
-    /* ────────────────────────────────────────────────────────
+      /* ────────────────────────────────────────────────────────
        PARALLAX MIDDLE SECTION
     ──────────────────────────────────────────────────────── */
 
-    .mid-section {
-      position: relative;
-      padding: 96px 24px;
-      background: var(--cream);
-      overflow: hidden;
-    }
+      .mid-section {
+        position: relative;
+        padding: 96px 24px;
+        background: var(--cream);
+        overflow: hidden;
+      }
 
-    .mid-deep {
-      position: absolute;
-      inset: -80% -20%;
-      will-change: transform;
-      pointer-events: none;
-      z-index: 0;
-    }
+      .mid-deep {
+        position: absolute;
+        inset: -80% -20%;
+        will-change: transform;
+        pointer-events: none;
+        z-index: 0;
+      }
 
-    .mid-watermark {
-      position: absolute;
-      width: 680px; height: 680px;
-      top: 50%; right: -12%;
-      transform: translateY(-50%);
-      opacity: 0.12;
-      object-fit: contain;
-    }
+      .mid-watermark {
+        position: absolute;
+        width: 680px;
+        height: 680px;
+        top: 50%;
+        right: -12%;
+        transform: translateY(-50%);
+        opacity: 0.12;
+        object-fit: contain;
+      }
 
-    .mid-orb {
-      position: absolute;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(107,158,122,0.2) 0%, transparent 65%);
-    }
+      .mid-orb {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(107, 158, 122, 0.2) 0%, transparent 65%);
+      }
 
-    .mid-orb-1 { width: 400px; height: 400px; top: -20%; left: -10%; }
-    .mid-orb-2 { width: 200px; height: 200px; bottom: -10%; right: 20%; }
+      .mid-orb-1 {
+        width: 400px;
+        height: 400px;
+        top: -20%;
+        left: -10%;
+      }
+      .mid-orb-2 {
+        width: 200px;
+        height: 200px;
+        bottom: -10%;
+        right: 20%;
+      }
 
-    .mid-inner {
-      position: relative;
-      z-index: 1;
-      max-width: 860px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      gap: 72px;
-    }
+      .mid-inner {
+        position: relative;
+        z-index: 1;
+        max-width: 860px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 72px;
+      }
 
-    @media (max-width: 680px) {
-      .mid-inner { flex-direction: column; gap: 40px; }
-      .mid-text { text-align: center; }
-      [dir="rtl"] .mid-inner { flex-direction: column; }
-    }
+      @media (max-width: 680px) {
+        .mid-inner {
+          flex-direction: column;
+          gap: 40px;
+        }
+        .mid-text {
+          text-align: center;
+        }
+        [dir='rtl'] .mid-inner {
+          flex-direction: column;
+        }
+      }
 
-    .mid-text { flex: 1; }
+      .mid-text {
+        flex: 1;
+      }
 
-    .mid-text h2 {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(24px, 4vw, 36px);
-      font-weight: normal;
-      color: var(--ink);
-      margin-bottom: 14px;
-      line-height: 1.3;
-    }
+      .mid-text h2 {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(24px, 4vw, 36px);
+        font-weight: normal;
+        color: var(--ink);
+        margin-bottom: 14px;
+        line-height: 1.3;
+      }
 
-    .mid-text p {
-      font-size: 15.5px;
-      line-height: 1.7;
-      color: var(--ink-light);
-      margin-bottom: 28px;
-    }
+      .mid-text p {
+        font-size: 15.5px;
+        line-height: 1.7;
+        color: var(--ink-light);
+        margin-bottom: 28px;
+      }
 
-    .check-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+      .check-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
 
-    .check-list li {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 14.5px;
-      color: var(--ink-light);
-    }
+      .check-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14.5px;
+        color: var(--ink-light);
+      }
 
-    .check-list li::before {
-      content: '';
-      display: block;
-      width: 20px; height: 20px;
-      min-width: 20px;
-      border-radius: 50%;
-      background: var(--green-light);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10l3.5 3.5L15 7' stroke='%234A7A5A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
-      background-size: contain;
-    }
+      .check-list li::before {
+        content: '';
+        display: block;
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        border-radius: 50%;
+        background: var(--green-light);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10l3.5 3.5L15 7' stroke='%234A7A5A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+        background-size: contain;
+      }
 
-    [dir="rtl"] .check-list li { flex-direction: row-reverse; }
+      [dir='rtl'] .check-list li {
+        flex-direction: row-reverse;
+      }
 
-    /* phone frame */
-    .phone-wrap {
-      flex-shrink: 0;
-      width: 240px;
-      animation: float 5.5s ease-in-out infinite;
-    }
+      /* phone frame */
+      .phone-wrap {
+        flex-shrink: 0;
+        width: 240px;
+        animation: float 5.5s ease-in-out infinite;
+      }
 
-    .phone-wrap svg { width: 100%; height: auto; }
+      .phone-wrap svg {
+        width: 100%;
+        height: auto;
+      }
 
-    /* ────────────────────────────────────────────────────────
+      /* ────────────────────────────────────────────────────────
        CTA SECTION
     ──────────────────────────────────────────────────────── */
 
-    .cta-section {
-      position: relative;
-      padding: 96px 24px 100px;
-      background: var(--green-dark);
-      text-align: center;
-      overflow: hidden;
-    }
+      .cta-section {
+        position: relative;
+        padding: 96px 24px 100px;
+        background: var(--green-dark);
+        text-align: center;
+        overflow: hidden;
+      }
 
-    .cta-deep {
-      position: absolute;
-      inset: -80% -20%;
-      will-change: transform;
-      pointer-events: none;
-      z-index: 0;
-    }
+      .cta-deep {
+        position: absolute;
+        inset: -80% -20%;
+        will-change: transform;
+        pointer-events: none;
+        z-index: 0;
+      }
 
-    .cta-watermark {
-      position: absolute;
-      width: 700px; height: 700px;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0.18;
-      filter: brightness(100);
-      object-fit: contain;
-    }
+      .cta-watermark {
+        position: absolute;
+        width: 700px;
+        height: 700px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.18;
+        filter: brightness(100);
+        object-fit: contain;
+      }
 
-    .cta-orb-1 {
-      position: absolute;
-      width: 500px; height: 500px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 60%);
-      top: -80px; right: -100px;
-    }
+      .cta-orb-1 {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 0%, transparent 60%);
+        top: -80px;
+        right: -100px;
+      }
 
-    .cta-orb-2 {
-      position: absolute;
-      width: 300px; height: 300px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
-      bottom: -60px; left: -60px;
-    }
+      .cta-orb-2 {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+        bottom: -60px;
+        left: -60px;
+      }
 
-    .cta-content {
-      position: relative;
-      z-index: 1;
-      max-width: 520px;
-      margin: 0 auto;
-    }
+      .cta-content {
+        position: relative;
+        z-index: 1;
+        max-width: 520px;
+        margin: 0 auto;
+      }
 
-    .cta-content h2 {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(28px, 5vw, 44px);
-      font-weight: normal;
-      color: #fff;
-      margin-bottom: 14px;
-      line-height: 1.2;
-    }
+      .cta-content h2 {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(28px, 5vw, 44px);
+        font-weight: normal;
+        color: #fff;
+        margin-bottom: 14px;
+        line-height: 1.2;
+      }
 
-    .cta-content p {
-      font-size: 16px;
-      color: rgba(255,255,255,0.7);
-      margin-bottom: 40px;
-      line-height: 1.6;
-    }
+      .cta-content p {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 40px;
+        line-height: 1.6;
+      }
 
-    .cta-section .badge {
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.25);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-    }
+      .cta-section .badge {
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+      }
 
-    .cta-section .badge:hover {
-      background: rgba(255,255,255,0.2);
-    }
+      .cta-section .badge:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
 
-    /* ────────────────────────────────────────────────────────
+      /* ────────────────────────────────────────────────────────
        FOOTER
     ──────────────────────────────────────────────────────── */
 
-    footer {
-      background: var(--ink);
-      padding: 32px 24px;
-      text-align: center;
-    }
+      footer {
+        background: var(--ink);
+        padding: 32px 24px;
+        text-align: center;
+      }
 
-    .footer-links {
-      display: flex;
-      gap: 24px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
+      .footer-links {
+        display: flex;
+        gap: 24px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
 
-    footer a {
-      color: var(--ink-muted);
-      text-decoration: none;
-      font-size: 13px;
-      transition: color 0.15s;
-    }
+      footer a {
+        color: var(--ink-muted);
+        text-decoration: none;
+        font-size: 13px;
+        transition: color 0.15s;
+      }
 
-    footer a:hover { color: #fff; }
+      footer a:hover {
+        color: #fff;
+      }
 
-    footer p { font-size: 12px; color: var(--ink-muted); opacity: 0.55; }
+      footer p {
+        font-size: 12px;
+        color: var(--ink-muted);
+        opacity: 0.55;
+      }
 
-    /* ────────────────────────────────────────────────────────
+      /* ────────────────────────────────────────────────────────
        FADE-IN
     ──────────────────────────────────────────────────────── */
 
-    .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
+      .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s ease;
+      }
 
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
-    .fade-in:nth-child(2) { transition-delay: 0.1s; }
-    .fade-in:nth-child(3) { transition-delay: 0.2s; }
-
-  </style>
-</head>
-<body>
-
-  <!-- ── HERO ──────────────────────────────────────────────── -->
-  <section class="hero" id="hero">
-
-    <!-- Deepest parallax layer (0.35×) -->
-    <div class="hero-deep" id="heroDeep">
-      <img src="adaptive-icon.png" class="hero-watermark" alt="" role="presentation" />
-    </div>
-
-    <!-- Mid parallax layer (0.6×) -->
-    <div class="hero-mid" id="heroMid">
-      <div class="orb orb-a"></div>
-      <div class="orb orb-b"></div>
-      <div class="orb orb-c"></div>
-    </div>
-
-    <!-- Content (1×) -->
-    <div class="hero-content">
-      <img src="adaptive-icon.png" class="app-icon" alt="Reflect" />
-
-      <h1 data-i18n="app_name">Reflect</h1>
-
-      <div class="hero-prompt-wrapper">
-        <p class="hero-prompt" id="heroPrompt"></p>
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .fade-in:nth-child(2) {
+        transition-delay: 0.1s;
+      }
+      .fade-in:nth-child(3) {
+        transition-delay: 0.2s;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── HERO ──────────────────────────────────────────────── -->
+    <section class="hero" id="hero">
+      <!-- Deepest parallax layer (0.35×) -->
+      <div class="hero-deep" id="heroDeep">
+        <img src="adaptive-icon.png" class="hero-watermark" alt="" role="presentation" />
       </div>
 
-      <p class="hero-sub" data-i18n="hero_sub">Daily prompts, streaks, and reflections — all in one place.</p>
-
-      <div class="store-buttons" id="heroButtons"></div>
-    </div>
-
-    <div class="scroll-cue">
-      <svg width="22" height="22" fill="none" stroke="var(--green-dark)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-        <path d="M12 5v14M5 12l7 7 7-7"/>
-      </svg>
-    </div>
-  </section>
-
-  <!-- ── FEATURES ──────────────────────────────────────────── -->
-  <section class="features">
-    <p class="section-eyebrow fade-in" data-i18n="features_label">What you get</p>
-    <h2 class="section-title fade-in" data-i18n="features_title">A journal that grows with you</h2>
-
-    <div class="features-grid">
-      <div class="feature-card fade-in">
-        <div class="feature-icon">✍️</div>
-        <h3 data-i18n="f1_title">Thoughtful prompts</h3>
-        <p data-i18n="f1_desc">Fresh questions every day to help you look inward and capture what matters.</p>
+      <!-- Mid parallax layer (0.6×) -->
+      <div class="hero-mid" id="heroMid">
+        <div class="orb orb-a"></div>
+        <div class="orb orb-b"></div>
+        <div class="orb orb-c"></div>
       </div>
 
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🔍</div>
-        <h3 data-i18n="f2_title">Your reflections</h3>
-        <p data-i18n="f2_desc">Search, bookmark, and rediscover your past entries whenever you need them.</p>
+      <!-- Content (1×) -->
+      <div class="hero-content">
+        <img src="adaptive-icon.png" class="app-icon" alt="Reflect" />
+
+        <h1 data-i18n="app_name">Reflect</h1>
+
+        <div class="hero-prompt-wrapper">
+          <p class="hero-prompt" id="heroPrompt"></p>
+        </div>
+
+        <p class="hero-sub" data-i18n="hero_sub">
+          Daily prompts, streaks, and reflections — all in one place.
+        </p>
+
+        <div class="store-buttons" id="heroButtons"></div>
       </div>
 
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🔥</div>
-        <h3 data-i18n="f3_title">Build a habit</h3>
-        <p data-i18n="f3_desc">Daily reminders and streaks keep your writing practice alive, one entry at a time.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── MID PARALLAX SECTION ──────────────────────────────── -->
-  <section class="mid-section" id="midSection">
-
-    <div class="mid-deep" id="midDeep">
-      <img src="adaptive-icon.png" class="mid-watermark" alt="" role="presentation" />
-      <div class="mid-orb mid-orb-1"></div>
-      <div class="mid-orb mid-orb-2"></div>
-    </div>
-
-    <div class="mid-inner">
-      <div class="mid-text fade-in">
-        <h2 data-i18n="mockup_title">Private by design</h2>
-        <p data-i18n="mockup_desc">Your journal lives on your account, accessible only to you. No ads, no selling your data — just a quiet space to write.</p>
-        <ul class="check-list" id="checkList"></ul>
-      </div>
-
-      <div class="phone-wrap fade-in">
-        <svg viewBox="0 0 240 480" xmlns="http://www.w3.org/2000/svg">
-          <!-- shell -->
-          <rect x="1" y="1" width="238" height="478" rx="36" fill="#1C1917" stroke="#2D2926" stroke-width="1.5"/>
-          <rect x="7" y="7" width="226" height="466" rx="30" fill="#F5F0E8"/>
-          <!-- notch -->
-          <rect x="86" y="13" width="68" height="20" rx="10" fill="#1C1917"/>
-          <!-- header -->
-          <text x="120" y="60" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#1C1917">Reflect</text>
-          <!-- streak chip -->
-          <rect x="88" y="72" width="64" height="20" rx="10" fill="#EEF5F1"/>
-          <text x="120" y="86" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#4A7A5A">🔥 7 days</text>
-          <!-- prompt card -->
-          <rect x="18" y="104" width="204" height="80" rx="14" fill="#fff" opacity="0.95"/>
-          <text x="120" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#57534E" font-style="italic">What are you</text>
-          <text x="120" y="150" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#57534E" font-style="italic">grateful for today?</text>
-          <rect x="32" y="168" width="176" height="1" rx="0.5" fill="#EDE6D8"/>
-          <!-- entry area -->
-          <rect x="18" y="200" width="204" height="160" rx="14" fill="#fff" opacity="0.95"/>
-          <rect x="32" y="218" width="130" height="7" rx="3.5" fill="#EDE6D8"/>
-          <rect x="32" y="234" width="150" height="7" rx="3.5" fill="#EDE6D8"/>
-          <rect x="32" y="250" width="90" height="7" rx="3.5" fill="#EDE6D8"/>
-          <rect x="128" y="246" width="2" height="14" rx="1" fill="#4A7A5A" opacity="0.75">
-            <animate attributeName="opacity" values="0.75;0;0.75" dur="1.1s" repeatCount="indefinite"/>
-          </rect>
-          <!-- save btn -->
-          <rect x="18" y="376" width="204" height="44" rx="13" fill="#1C1917"/>
-          <text x="120" y="403" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="600" fill="#fff">Save entry ✦</text>
-          <!-- bottom nav line -->
-          <rect x="18" y="432" width="204" height="1" fill="#EDE6D8"/>
-          <text x="80" y="458" text-anchor="middle" font-size="16">📖</text>
-          <text x="160" y="458" text-anchor="middle" font-size="16">🔍</text>
+      <div class="scroll-cue">
+        <svg
+          width="22"
+          height="22"
+          fill="none"
+          stroke="var(--green-dark)"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          viewBox="0 0 24 24"
+        >
+          <path d="M12 5v14M5 12l7 7 7-7" />
         </svg>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ── CTA ───────────────────────────────────────────────── -->
-  <section class="cta-section" id="ctaSection">
-    <div class="cta-deep" id="ctaDeep">
-      <img src="adaptive-icon.png" class="cta-watermark" alt="" role="presentation" />
-      <div class="cta-orb-1"></div>
-      <div class="cta-orb-2"></div>
-    </div>
+    <!-- ── FEATURES ──────────────────────────────────────────── -->
+    <section class="features">
+      <p class="section-eyebrow fade-in" data-i18n="features_label">What you get</p>
+      <h2 class="section-title fade-in" data-i18n="features_title">
+        A journal that grows with you
+      </h2>
 
-    <div class="cta-content fade-in">
-      <h2 data-i18n="cta_title">Start your journal today</h2>
-      <p data-i18n="cta_sub">Free to download. Your data stays private.</p>
-      <div class="store-buttons" id="ctaButtons"></div>
-    </div>
-  </section>
+      <div class="features-grid">
+        <div class="feature-card fade-in">
+          <div class="feature-icon">✍️</div>
+          <h3 data-i18n="f1_title">Thoughtful prompts</h3>
+          <p data-i18n="f1_desc">
+            Fresh questions every day to help you look inward and capture what matters.
+          </p>
+        </div>
 
-  <!-- ── FOOTER ─────────────────────────────────────────────── -->
-  <footer>
-    <div class="footer-links">
-      <a href="privacy-policy">Privacy Policy</a>
-      <a href="terms-of-service">Terms of Service</a>
-    </div>
-    <p>© 2025 Reflect. All rights reserved.</p>
-  </footer>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🔍</div>
+          <h3 data-i18n="f2_title">Your reflections</h3>
+          <p data-i18n="f2_desc">
+            Search, bookmark, and rediscover your past entries whenever you need them.
+          </p>
+        </div>
 
-  <script>
-    // ── i18n ────────────────────────────────────────────────
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🔥</div>
+          <h3 data-i18n="f3_title">Build a habit</h3>
+          <p data-i18n="f3_desc">
+            Daily reminders and streaks keep your writing practice alive, one entry at a time.
+          </p>
+        </div>
+      </div>
+    </section>
 
-    const translations = {
-      en: {
-        dir: 'ltr',
-        app_name: 'Reflect',
-        hero_sub: 'Daily prompts, streaks, and reflections — all in one place.',
-        features_label: 'What you get',
-        features_title: 'A journal that grows with you',
-        f1_title: 'Thoughtful prompts', f1_desc: 'Fresh questions every day to help you look inward and capture what matters.',
-        f2_title: 'Your reflections',   f2_desc: 'Search, bookmark, and rediscover your past entries whenever you need them.',
-        f3_title: 'Build a habit',      f3_desc: 'Daily reminders and streaks keep your writing practice alive, one entry at a time.',
-        mockup_title: 'Private by design',
-        mockup_desc: 'Your journal lives on your account, accessible only to you. No ads, no selling your data — just a quiet space to write.',
-        feature_items: ['Daily writing prompts','Streak tracking','Search & bookmarks','Daily reminders','Export your entries'],
-        cta_title: 'Start your journal today',
-        cta_sub: 'Free to download. Your data stays private.',
-        ios_line1: 'Download on the', ios_line2: 'App Store',
-        and_line1: 'Get it on',        and_line2: 'Google Play',
-        prompts: ["How are you really feeling right now?","What are you grateful for today?","What's on your mind?","What made you smile today?","What are you avoiding?","What's one thing you want to remember about today?"],
-      },
-      es: {
-        dir: 'ltr',
-        app_name: 'Reflect',
-        hero_sub: 'Preguntas diarias, rachas y reflexiones — todo en un solo lugar.',
-        features_label: 'Qué obtienes',
-        features_title: 'Un diario que crece contigo',
-        f1_title: 'Preguntas reflexivas', f1_desc: 'Nuevas preguntas cada día para ayudarte a mirar hacia adentro y capturar lo que importa.',
-        f2_title: 'Tus reflexiones',      f2_desc: 'Busca, guarda y redescubre tus entradas pasadas cuando las necesites.',
-        f3_title: 'Crea un hábito',       f3_desc: 'Recordatorios diarios y rachas mantienen tu práctica de escritura viva.',
-        mockup_title: 'Privado por diseño',
-        mockup_desc: 'Tu diario vive en tu cuenta, accesible solo para ti. Sin anuncios, sin vender tus datos — solo un espacio tranquilo para escribir.',
-        feature_items: ['Preguntas de escritura diarias','Seguimiento de racha','Búsqueda y favoritos','Recordatorios diarios','Exporta tus entradas'],
-        cta_title: 'Empieza tu diario hoy',
-        cta_sub: 'Descarga gratuita. Tus datos son privados.',
-        ios_line1: 'Descargar en', ios_line2: 'App Store',
-        and_line1: 'Disponible en', and_line2: 'Google Play',
-        prompts: ['¿Cómo te sientes realmente en este momento?','¿Por qué estás agradecido hoy?','¿Qué tienes en mente?','¿Qué te hizo sonreír hoy?','¿Qué estás evitando?','¿Qué quieres recordar de hoy?'],
-      },
-      fr: {
-        dir: 'ltr',
-        app_name: 'Reflect',
-        hero_sub: 'Questions quotidiennes, séries et réflexions — tout en un.',
-        features_label: 'Ce que vous obtenez',
-        features_title: 'Un journal qui grandit avec vous',
-        f1_title: 'Questions inspirantes', f1_desc: "De nouvelles questions chaque jour pour vous aider à réfléchir et à capturer l'essentiel.",
-        f2_title: 'Vos réflexions',        f2_desc: 'Recherchez, marquez et redécouvrez vos entrées passées quand vous en avez besoin.',
-        f3_title: 'Créez une habitude',    f3_desc: 'Rappels quotidiens et séries pour maintenir votre pratique de rédaction.',
-        mockup_title: 'Privé par conception',
-        mockup_desc: 'Votre journal vit sur votre compte, accessible uniquement à vous. Pas de pub, pas de revente — juste un espace calme pour écrire.',
-        feature_items: ["Questions d'écriture quotidiennes",'Suivi des séries','Recherche et favoris','Rappels quotidiens','Exportez vos entrées'],
-        cta_title: "Commencez votre journal aujourd'hui",
-        cta_sub: 'Téléchargement gratuit. Vos données restent privées.',
-        ios_line1: 'Télécharger sur', ios_line2: 'App Store',
-        and_line1: 'Disponible sur',  and_line2: 'Google Play',
-        prompts: ['Comment vous sentez-vous vraiment en ce moment ?',"Pour quoi êtes-vous reconnaissant aujourd'hui ?",'Qu\'avez-vous en tête ?',"Qu'est-ce qui vous a fait sourire aujourd'hui ?",'Qu\'est-ce que vous évitez ?',"Que voulez-vous retenir de cette journée ?"],
-      },
-      ar: {
-        dir: 'rtl',
-        app_name: 'Reflect',
-        hero_sub: 'أسئلة يومية وتأملات وإنجازات — كل شيء في مكان واحد.',
-        features_label: 'ماذا ستحصل',
-        features_title: 'مذكرة تنمو معك',
-        f1_title: 'أسئلة ملهمة',   f1_desc: 'أسئلة جديدة كل يوم لمساعدتك على التأمل الداخلي وتسجيل ما يهمك.',
-        f2_title: 'تأملاتك',        f2_desc: 'ابحث واحفظ وأعد اكتشاف مدخلاتك السابقة عندما تحتاجها.',
-        f3_title: 'بناء عادة',      f3_desc: 'تذكيرات يومية وإنجازات للحفاظ على ممارسة الكتابة.',
-        mockup_title: 'خصوصية بالتصميم',
-        mockup_desc: 'مذكرتك محفوظة في حسابك، لا يصل إليها غيرك. بلا إعلانات، بلا بيع بياناتك — فقط مساحة هادئة للكتابة.',
-        feature_items: ['أسئلة كتابة يومية','تتبع الإنجازات','البحث والإشارات المرجعية','تذكيرات يومية','تصدير مدخلاتك'],
-        cta_title: 'ابدأ مذكرتك اليوم',
-        cta_sub: 'تحميل مجاني. بياناتك تبقى خاصة.',
-        ios_line1: 'حمّل من', ios_line2: 'App Store',
-        and_line1: 'احصل عليه من', and_line2: 'Google Play',
-        prompts: ['كيف تشعر حقاً الآن؟','على ماذا تشكر اليوم؟','ما الذي يدور في ذهنك؟','ما الذي جعلك تبتسم اليوم؟','ما الذي تتجنبه؟','ما الذي تريد أن تتذكره عن هذا اليوم؟'],
-      },
-      id: {
-        dir: 'ltr',
-        app_name: 'Reflect',
-        hero_sub: 'Pertanyaan harian, streak, dan refleksi — semuanya di satu tempat.',
-        features_label: 'Apa yang kamu dapat',
-        features_title: 'Jurnal yang tumbuh bersamamu',
-        f1_title: 'Pertanyaan penuh makna', f1_desc: 'Pertanyaan baru setiap hari untuk membantu kamu merenung dan mencatat hal yang berarti.',
-        f2_title: 'Refleksimu',             f2_desc: 'Cari, tandai, dan temukan kembali entri lamamu kapanpun kamu butuh.',
-        f3_title: 'Bangun kebiasaan',       f3_desc: 'Pengingat harian dan streak menjaga semangat menulis tetap hidup.',
-        mockup_title: 'Privat sejak awal',
-        mockup_desc: 'Jurnalmu tersimpan di akunmu, hanya bisa diakses olehmu. Tanpa iklan, tanpa jual data — hanya ruang tenang untuk menulis.',
-        feature_items: ['Pertanyaan menulis harian','Pelacakan streak','Pencarian & bookmark','Pengingat harian','Ekspor entri kamu'],
-        cta_title: 'Mulai jurnalmu hari ini',
-        cta_sub: 'Gratis diunduh. Datamu tetap privat.',
-        ios_line1: 'Unduh di',    ios_line2: 'App Store',
-        and_line1: 'Dapatkan di', and_line2: 'Google Play',
-        prompts: ['Bagaimana perasaanmu sebenarnya saat ini?','Apa yang kamu syukuri hari ini?','Apa yang ada di pikiranmu?','Apa yang membuatmu tersenyum hari ini?','Apa yang sedang kamu hindari?','Apa yang ingin kamu ingat tentang hari ini?'],
-      },
-      'pt-BR': {
-        dir: 'ltr',
-        app_name: 'Reflect',
-        hero_sub: 'Perguntas diárias, sequências e reflexões — tudo em um só lugar.',
-        features_label: 'O que você ganha',
-        features_title: 'Um diário que cresce com você',
-        f1_title: 'Perguntas inspiradoras', f1_desc: 'Novas perguntas todos os dias para ajudar você a refletir e registrar o que importa.',
-        f2_title: 'Suas reflexões',          f2_desc: 'Pesquise, salve e redescubra suas entradas passadas quando precisar.',
-        f3_title: 'Crie um hábito',          f3_desc: 'Lembretes diários e sequências mantêm sua prática de escrita viva.',
-        mockup_title: 'Privado por design',
-        mockup_desc: 'Seu diário fica na sua conta, acessível só por você. Sem anúncios, sem venda de dados — apenas um espaço tranquilo para escrever.',
-        feature_items: ['Perguntas de escrita diárias','Rastreamento de sequência','Pesquisa e favoritos','Lembretes diários','Exporte suas entradas'],
-        cta_title: 'Comece seu diário hoje',
-        cta_sub: 'Download gratuito. Seus dados ficam privados.',
-        ios_line1: 'Baixar na',      ios_line2: 'App Store',
-        and_line1: 'Disponível no',  and_line2: 'Google Play',
-        prompts: ['Como você realmente está se sentindo agora?','Pelo que você é grato hoje?','O que está pensando?','O que te fez sorrir hoje?','O que você está evitando?','O que você quer lembrar sobre hoje?'],
-      },
-    };
+    <!-- ── MID PARALLAX SECTION ──────────────────────────────── -->
+    <section class="mid-section" id="midSection">
+      <div class="mid-deep" id="midDeep">
+        <img src="adaptive-icon.png" class="mid-watermark" alt="" role="presentation" />
+        <div class="mid-orb mid-orb-1"></div>
+        <div class="mid-orb mid-orb-2"></div>
+      </div>
 
-    function resolveLocale() {
-      const langs = navigator.languages || [navigator.language || 'en'];
-      for (const lang of langs) {
-        if (translations[lang]) return lang;
-        const base = lang.split('-')[0];
-        const match = Object.keys(translations).find(k => k === base || k.startsWith(base + '-'));
-        if (match) return match;
+      <div class="mid-inner">
+        <div class="mid-text fade-in">
+          <h2 data-i18n="mockup_title">Private by design</h2>
+          <p data-i18n="mockup_desc">
+            Your journal lives on your account, accessible only to you. No ads, no selling your data
+            — just a quiet space to write.
+          </p>
+          <ul class="check-list" id="checkList"></ul>
+        </div>
+
+        <div class="phone-wrap fade-in">
+          <svg viewBox="0 0 240 480" xmlns="http://www.w3.org/2000/svg">
+            <!-- shell -->
+            <rect
+              x="1"
+              y="1"
+              width="238"
+              height="478"
+              rx="36"
+              fill="#1C1917"
+              stroke="#2D2926"
+              stroke-width="1.5"
+            />
+            <rect x="7" y="7" width="226" height="466" rx="30" fill="#F5F0E8" />
+            <!-- notch -->
+            <rect x="86" y="13" width="68" height="20" rx="10" fill="#1C1917" />
+            <!-- header -->
+            <text
+              x="120"
+              y="60"
+              text-anchor="middle"
+              font-family="Georgia,serif"
+              font-size="20"
+              fill="#1C1917"
+            >
+              Reflect
+            </text>
+            <!-- streak chip -->
+            <rect x="88" y="72" width="64" height="20" rx="10" fill="#EEF5F1" />
+            <text
+              x="120"
+              y="86"
+              text-anchor="middle"
+              font-family="sans-serif"
+              font-size="10"
+              fill="#4A7A5A"
+            >
+              🔥 7 days
+            </text>
+            <!-- prompt card -->
+            <rect x="18" y="104" width="204" height="80" rx="14" fill="#fff" opacity="0.95" />
+            <text
+              x="120"
+              y="132"
+              text-anchor="middle"
+              font-family="Georgia,serif"
+              font-size="12"
+              fill="#57534E"
+              font-style="italic"
+            >
+              What are you
+            </text>
+            <text
+              x="120"
+              y="150"
+              text-anchor="middle"
+              font-family="Georgia,serif"
+              font-size="12"
+              fill="#57534E"
+              font-style="italic"
+            >
+              grateful for today?
+            </text>
+            <rect x="32" y="168" width="176" height="1" rx="0.5" fill="#EDE6D8" />
+            <!-- entry area -->
+            <rect x="18" y="200" width="204" height="160" rx="14" fill="#fff" opacity="0.95" />
+            <rect x="32" y="218" width="130" height="7" rx="3.5" fill="#EDE6D8" />
+            <rect x="32" y="234" width="150" height="7" rx="3.5" fill="#EDE6D8" />
+            <rect x="32" y="250" width="90" height="7" rx="3.5" fill="#EDE6D8" />
+            <rect x="128" y="246" width="2" height="14" rx="1" fill="#4A7A5A" opacity="0.75">
+              <animate
+                attributeName="opacity"
+                values="0.75;0;0.75"
+                dur="1.1s"
+                repeatCount="indefinite"
+              />
+            </rect>
+            <!-- save btn -->
+            <rect x="18" y="376" width="204" height="44" rx="13" fill="#1C1917" />
+            <text
+              x="120"
+              y="403"
+              text-anchor="middle"
+              font-family="sans-serif"
+              font-size="14"
+              font-weight="600"
+              fill="#fff"
+            >
+              Save entry ✦
+            </text>
+            <!-- bottom nav line -->
+            <rect x="18" y="432" width="204" height="1" fill="#EDE6D8" />
+            <text x="80" y="458" text-anchor="middle" font-size="16">📖</text>
+            <text x="160" y="458" text-anchor="middle" font-size="16">🔍</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ───────────────────────────────────────────────── -->
+    <section class="cta-section" id="ctaSection">
+      <div class="cta-deep" id="ctaDeep">
+        <img src="adaptive-icon.png" class="cta-watermark" alt="" role="presentation" />
+        <div class="cta-orb-1"></div>
+        <div class="cta-orb-2"></div>
+      </div>
+
+      <div class="cta-content fade-in">
+        <h2 data-i18n="cta_title">Start your journal today</h2>
+        <p data-i18n="cta_sub">Free to download. Your data stays private.</p>
+        <div class="store-buttons" id="ctaButtons"></div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ─────────────────────────────────────────────── -->
+    <footer>
+      <div class="footer-links">
+        <a href="privacy-policy">Privacy Policy</a>
+        <a href="terms-of-service">Terms of Service</a>
+      </div>
+      <p>© 2025 Reflect. All rights reserved.</p>
+    </footer>
+
+    <script>
+      // ── i18n ────────────────────────────────────────────────
+
+      const translations = {
+        en: {
+          dir: 'ltr',
+          app_name: 'Reflect',
+          hero_sub: 'Daily prompts, streaks, and reflections — all in one place.',
+          features_label: 'What you get',
+          features_title: 'A journal that grows with you',
+          f1_title: 'Thoughtful prompts',
+          f1_desc: 'Fresh questions every day to help you look inward and capture what matters.',
+          f2_title: 'Your reflections',
+          f2_desc: 'Search, bookmark, and rediscover your past entries whenever you need them.',
+          f3_title: 'Build a habit',
+          f3_desc:
+            'Daily reminders and streaks keep your writing practice alive, one entry at a time.',
+          mockup_title: 'Private by design',
+          mockup_desc:
+            'Your journal lives on your account, accessible only to you. No ads, no selling your data — just a quiet space to write.',
+          feature_items: [
+            'Daily writing prompts',
+            'Streak tracking',
+            'Search & bookmarks',
+            'Daily reminders',
+            'Export your entries',
+          ],
+          cta_title: 'Start your journal today',
+          cta_sub: 'Free to download. Your data stays private.',
+          ios_line1: 'Download on the',
+          ios_line2: 'App Store',
+          and_line1: 'Get it on',
+          and_line2: 'Google Play',
+          prompts: [
+            'How are you really feeling right now?',
+            'What are you grateful for today?',
+            "What's on your mind?",
+            'What made you smile today?',
+            'What are you avoiding?',
+            "What's one thing you want to remember about today?",
+          ],
+        },
+        es: {
+          dir: 'ltr',
+          app_name: 'Reflect',
+          hero_sub: 'Preguntas diarias, rachas y reflexiones — todo en un solo lugar.',
+          features_label: 'Qué obtienes',
+          features_title: 'Un diario que crece contigo',
+          f1_title: 'Preguntas reflexivas',
+          f1_desc:
+            'Nuevas preguntas cada día para ayudarte a mirar hacia adentro y capturar lo que importa.',
+          f2_title: 'Tus reflexiones',
+          f2_desc: 'Busca, guarda y redescubre tus entradas pasadas cuando las necesites.',
+          f3_title: 'Crea un hábito',
+          f3_desc: 'Recordatorios diarios y rachas mantienen tu práctica de escritura viva.',
+          mockup_title: 'Privado por diseño',
+          mockup_desc:
+            'Tu diario vive en tu cuenta, accesible solo para ti. Sin anuncios, sin vender tus datos — solo un espacio tranquilo para escribir.',
+          feature_items: [
+            'Preguntas de escritura diarias',
+            'Seguimiento de racha',
+            'Búsqueda y favoritos',
+            'Recordatorios diarios',
+            'Exporta tus entradas',
+          ],
+          cta_title: 'Empieza tu diario hoy',
+          cta_sub: 'Descarga gratuita. Tus datos son privados.',
+          ios_line1: 'Descargar en',
+          ios_line2: 'App Store',
+          and_line1: 'Disponible en',
+          and_line2: 'Google Play',
+          prompts: [
+            '¿Cómo te sientes realmente en este momento?',
+            '¿Por qué estás agradecido hoy?',
+            '¿Qué tienes en mente?',
+            '¿Qué te hizo sonreír hoy?',
+            '¿Qué estás evitando?',
+            '¿Qué quieres recordar de hoy?',
+          ],
+        },
+        fr: {
+          dir: 'ltr',
+          app_name: 'Reflect',
+          hero_sub: 'Questions quotidiennes, séries et réflexions — tout en un.',
+          features_label: 'Ce que vous obtenez',
+          features_title: 'Un journal qui grandit avec vous',
+          f1_title: 'Questions inspirantes',
+          f1_desc:
+            "De nouvelles questions chaque jour pour vous aider à réfléchir et à capturer l'essentiel.",
+          f2_title: 'Vos réflexions',
+          f2_desc:
+            'Recherchez, marquez et redécouvrez vos entrées passées quand vous en avez besoin.',
+          f3_title: 'Créez une habitude',
+          f3_desc: 'Rappels quotidiens et séries pour maintenir votre pratique de rédaction.',
+          mockup_title: 'Privé par conception',
+          mockup_desc:
+            'Votre journal vit sur votre compte, accessible uniquement à vous. Pas de pub, pas de revente — juste un espace calme pour écrire.',
+          feature_items: [
+            "Questions d'écriture quotidiennes",
+            'Suivi des séries',
+            'Recherche et favoris',
+            'Rappels quotidiens',
+            'Exportez vos entrées',
+          ],
+          cta_title: "Commencez votre journal aujourd'hui",
+          cta_sub: 'Téléchargement gratuit. Vos données restent privées.',
+          ios_line1: 'Télécharger sur',
+          ios_line2: 'App Store',
+          and_line1: 'Disponible sur',
+          and_line2: 'Google Play',
+          prompts: [
+            'Comment vous sentez-vous vraiment en ce moment ?',
+            "Pour quoi êtes-vous reconnaissant aujourd'hui ?",
+            "Qu'avez-vous en tête ?",
+            "Qu'est-ce qui vous a fait sourire aujourd'hui ?",
+            "Qu'est-ce que vous évitez ?",
+            'Que voulez-vous retenir de cette journée ?',
+          ],
+        },
+        ar: {
+          dir: 'rtl',
+          app_name: 'Reflect',
+          hero_sub: 'أسئلة يومية وتأملات وإنجازات — كل شيء في مكان واحد.',
+          features_label: 'ماذا ستحصل',
+          features_title: 'مذكرة تنمو معك',
+          f1_title: 'أسئلة ملهمة',
+          f1_desc: 'أسئلة جديدة كل يوم لمساعدتك على التأمل الداخلي وتسجيل ما يهمك.',
+          f2_title: 'تأملاتك',
+          f2_desc: 'ابحث واحفظ وأعد اكتشاف مدخلاتك السابقة عندما تحتاجها.',
+          f3_title: 'بناء عادة',
+          f3_desc: 'تذكيرات يومية وإنجازات للحفاظ على ممارسة الكتابة.',
+          mockup_title: 'خصوصية بالتصميم',
+          mockup_desc:
+            'مذكرتك محفوظة في حسابك، لا يصل إليها غيرك. بلا إعلانات، بلا بيع بياناتك — فقط مساحة هادئة للكتابة.',
+          feature_items: [
+            'أسئلة كتابة يومية',
+            'تتبع الإنجازات',
+            'البحث والإشارات المرجعية',
+            'تذكيرات يومية',
+            'تصدير مدخلاتك',
+          ],
+          cta_title: 'ابدأ مذكرتك اليوم',
+          cta_sub: 'تحميل مجاني. بياناتك تبقى خاصة.',
+          ios_line1: 'حمّل من',
+          ios_line2: 'App Store',
+          and_line1: 'احصل عليه من',
+          and_line2: 'Google Play',
+          prompts: [
+            'كيف تشعر حقاً الآن؟',
+            'على ماذا تشكر اليوم؟',
+            'ما الذي يدور في ذهنك؟',
+            'ما الذي جعلك تبتسم اليوم؟',
+            'ما الذي تتجنبه؟',
+            'ما الذي تريد أن تتذكره عن هذا اليوم؟',
+          ],
+        },
+        id: {
+          dir: 'ltr',
+          app_name: 'Reflect',
+          hero_sub: 'Pertanyaan harian, streak, dan refleksi — semuanya di satu tempat.',
+          features_label: 'Apa yang kamu dapat',
+          features_title: 'Jurnal yang tumbuh bersamamu',
+          f1_title: 'Pertanyaan penuh makna',
+          f1_desc:
+            'Pertanyaan baru setiap hari untuk membantu kamu merenung dan mencatat hal yang berarti.',
+          f2_title: 'Refleksimu',
+          f2_desc: 'Cari, tandai, dan temukan kembali entri lamamu kapanpun kamu butuh.',
+          f3_title: 'Bangun kebiasaan',
+          f3_desc: 'Pengingat harian dan streak menjaga semangat menulis tetap hidup.',
+          mockup_title: 'Privat sejak awal',
+          mockup_desc:
+            'Jurnalmu tersimpan di akunmu, hanya bisa diakses olehmu. Tanpa iklan, tanpa jual data — hanya ruang tenang untuk menulis.',
+          feature_items: [
+            'Pertanyaan menulis harian',
+            'Pelacakan streak',
+            'Pencarian & bookmark',
+            'Pengingat harian',
+            'Ekspor entri kamu',
+          ],
+          cta_title: 'Mulai jurnalmu hari ini',
+          cta_sub: 'Gratis diunduh. Datamu tetap privat.',
+          ios_line1: 'Unduh di',
+          ios_line2: 'App Store',
+          and_line1: 'Dapatkan di',
+          and_line2: 'Google Play',
+          prompts: [
+            'Bagaimana perasaanmu sebenarnya saat ini?',
+            'Apa yang kamu syukuri hari ini?',
+            'Apa yang ada di pikiranmu?',
+            'Apa yang membuatmu tersenyum hari ini?',
+            'Apa yang sedang kamu hindari?',
+            'Apa yang ingin kamu ingat tentang hari ini?',
+          ],
+        },
+        'pt-BR': {
+          dir: 'ltr',
+          app_name: 'Reflect',
+          hero_sub: 'Perguntas diárias, sequências e reflexões — tudo em um só lugar.',
+          features_label: 'O que você ganha',
+          features_title: 'Um diário que cresce com você',
+          f1_title: 'Perguntas inspiradoras',
+          f1_desc:
+            'Novas perguntas todos os dias para ajudar você a refletir e registrar o que importa.',
+          f2_title: 'Suas reflexões',
+          f2_desc: 'Pesquise, salve e redescubra suas entradas passadas quando precisar.',
+          f3_title: 'Crie um hábito',
+          f3_desc: 'Lembretes diários e sequências mantêm sua prática de escrita viva.',
+          mockup_title: 'Privado por design',
+          mockup_desc:
+            'Seu diário fica na sua conta, acessível só por você. Sem anúncios, sem venda de dados — apenas um espaço tranquilo para escrever.',
+          feature_items: [
+            'Perguntas de escrita diárias',
+            'Rastreamento de sequência',
+            'Pesquisa e favoritos',
+            'Lembretes diários',
+            'Exporte suas entradas',
+          ],
+          cta_title: 'Comece seu diário hoje',
+          cta_sub: 'Download gratuito. Seus dados ficam privados.',
+          ios_line1: 'Baixar na',
+          ios_line2: 'App Store',
+          and_line1: 'Disponível no',
+          and_line2: 'Google Play',
+          prompts: [
+            'Como você realmente está se sentindo agora?',
+            'Pelo que você é grato hoje?',
+            'O que está pensando?',
+            'O que te fez sorrir hoje?',
+            'O que você está evitando?',
+            'O que você quer lembrar sobre hoje?',
+          ],
+        },
+      };
+
+      function resolveLocale() {
+        const langs = navigator.languages || [navigator.language || 'en'];
+        for (const lang of langs) {
+          if (translations[lang]) return lang;
+          const base = lang.split('-')[0];
+          const match = Object.keys(translations).find(
+            (k) => k === base || k.startsWith(base + '-'),
+          );
+          if (match) return match;
+        }
+        return 'en';
       }
-      return 'en';
-    }
 
-    const locale = resolveLocale();
-    const t = translations[locale];
+      const locale = resolveLocale();
+      const t = translations[locale];
 
-    document.documentElement.lang = locale;
-    document.documentElement.dir = t.dir;
+      document.documentElement.lang = locale;
+      document.documentElement.dir = t.dir;
 
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const v = t[el.getAttribute('data-i18n')];
-      if (v) el.textContent = v;
-    });
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const v = t[el.getAttribute('data-i18n')];
+        if (v) el.textContent = v;
+      });
 
-    const checkList = document.getElementById('checkList');
-    t.feature_items.forEach(item => {
-      const li = document.createElement('li');
-      li.textContent = item;
-      checkList.appendChild(li);
-    });
+      const checkList = document.getElementById('checkList');
+      t.feature_items.forEach((item) => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        checkList.appendChild(li);
+      });
 
-    // ── OS detection ────────────────────────────────────────
+      // ── OS detection ────────────────────────────────────────
 
-    const IOS_URL     = 'https://apps.apple.com/app/reflect-it/id6767607183';
-    const ANDROID_URL = 'https://play.google.com/store/apps/details?id=com.reflect.prod';
+      const IOS_URL = 'https://apps.apple.com/app/reflect-it/id6767607183';
+      const ANDROID_URL = 'https://play.google.com/store/apps/details?id=com.reflect.prod';
 
-    // Apple badge SVG (official proportions)
-    const appleSVG = `<svg class="badge-icon" width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      // Apple badge SVG (official proportions)
+      const appleSVG = `<svg class="badge-icon" width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M18.04 13.77c-.03-3.11 2.54-4.62 2.66-4.69-1.45-2.12-3.71-2.41-4.51-2.44-1.91-.2-3.74 1.13-4.71 1.13-.98 0-2.49-1.11-4.09-1.08-2.1.03-4.04 1.23-5.12 3.1-2.19 3.8-.56 9.41 1.57 12.49 1.04 1.5 2.28 3.18 3.91 3.12 1.57-.06 2.17-.1 3.32-1 1.17.95 2.36.9 3.32 1.02 1.56-.03 2.77-1.54 3.84-3.02 1.18-1.7 1.67-3.36 1.71-3.44-.04-.02-3.87-1.48-3.9-5.19z" fill="white"/>
       <path d="M14.67 4.25C15.5 3.24 16.06 1.84 15.9.41c-1.22.05-2.69.81-3.56 1.81-.78.89-1.47 2.33-1.28 3.7 1.35.1 2.74-.68 3.61-1.67z" fill="white"/>
     </svg>`;
 
-    // Google Play badge SVG
-    const googleSVG = `<svg class="badge-icon" width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      // Google Play badge SVG
+      const googleSVG = `<svg class="badge-icon" width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M0.4 0.6C0.15 0.86 0 1.27 0 1.8v20.4c0 .53.15.94.41 1.2l.06.06L11.54 12.3v-.27L0.46.54 0.4.6z" fill="#00D2FF"/>
       <path d="M15.3 16.1l-3.76-3.8v-.27l3.77-3.8.08.05 4.46 2.53c1.27.72 1.27 1.9 0 2.63l-4.46 2.53-.09.13z" fill="#FFD700"/>
       <path d="M15.38 16.08L11.54 12.17 0.4 23.4c.42.45 1.11.5 1.89.06l13.09-7.38z" fill="#FF3D00"/>
       <path d="M15.38 8.25L2.3.87C1.5.42.82.48.4.93l11.14 11.24 3.84-3.92z" fill="#00E676"/>
     </svg>`;
 
-    function buildBadge(platform) {
-      const a = document.createElement('a');
-      a.className = 'badge';
-      a.href = platform === 'ios' ? IOS_URL : ANDROID_URL;
-      a.setAttribute('aria-label', platform === 'ios' ? t.ios_line2 : t.and_line2);
+      function buildBadge(platform) {
+        const a = document.createElement('a');
+        a.className = 'badge';
+        a.href = platform === 'ios' ? IOS_URL : ANDROID_URL;
+        a.setAttribute('aria-label', platform === 'ios' ? t.ios_line2 : t.and_line2);
 
-      const iconHtml = platform === 'ios' ? appleSVG : googleSVG;
-      const l1 = platform === 'ios' ? t.ios_line1 : t.and_line1;
-      const l2 = platform === 'ios' ? t.ios_line2 : t.and_line2;
+        const iconHtml = platform === 'ios' ? appleSVG : googleSVG;
+        const l1 = platform === 'ios' ? t.ios_line1 : t.and_line1;
+        const l2 = platform === 'ios' ? t.ios_line2 : t.and_line2;
 
-      a.innerHTML = `${iconHtml}<div class="badge-text"><span class="badge-line1">${l1}</span><span class="badge-line2">${l2}</span></div>`;
-      return a;
-    }
-
-    function renderButtons(id) {
-      const container = document.getElementById(id);
-      // Always show both stores, regardless of the visitor's device.
-      container.appendChild(buildBadge('ios'));
-      container.appendChild(buildBadge('android'));
-    }
-
-    renderButtons('heroButtons');
-    renderButtons('ctaButtons');
-
-    // ── Rotating prompts ────────────────────────────────────
-
-    const prompts = t.prompts;
-    let promptIdx = 0;
-    const promptEl = document.getElementById('heroPrompt');
-
-    function cyclePrompt() {
-      promptEl.classList.remove('visible');
-      setTimeout(() => {
-        promptEl.textContent = '“' + prompts[promptIdx] + '”';
-        promptEl.classList.add('visible');
-        promptIdx = (promptIdx + 1) % prompts.length;
-      }, 450);
-    }
-
-    cyclePrompt();
-    setInterval(cyclePrompt, 3600);
-
-    // ── Parallax ────────────────────────────────────────────
-    //
-    // Deep layers move at 0.12× scroll speed; content moves at 1×.
-    // The 88% differential is large enough to feel strongly but not dizzying.
-    // Layers use inset:-80% so they have plenty of room to travel.
-
-    const heroDeep   = document.getElementById('heroDeep');
-    const midSection = document.getElementById('midSection');
-    const midDeep    = document.getElementById('midDeep');
-    const ctaSection = document.getElementById('ctaSection');
-    const ctaDeep    = document.getElementById('ctaDeep');
-
-    let ticking = false;
-
-    function applyParallax() {
-      const sy = window.scrollY;
-
-      // Hero deep (0.12×) — large watermark lags far behind the scroll
-      heroDeep.style.transform = `translateY(${sy * 0.12}px)`;
-
-      // Mid section deep (0.12× relative to section entry)
-      const midTop    = midSection.offsetTop;
-      const midOffset = sy - midTop;
-      if (midOffset > -window.innerHeight * 1.5 && midOffset < midSection.offsetHeight + window.innerHeight) {
-        midDeep.style.transform = `translateY(${midOffset * 0.12}px)`;
+        a.innerHTML = `${iconHtml}<div class="badge-text"><span class="badge-line1">${l1}</span><span class="badge-line2">${l2}</span></div>`;
+        return a;
       }
 
-      // CTA section deep (0.12× relative to section entry)
-      const ctaTop    = ctaSection.offsetTop;
-      const ctaOffset = sy - ctaTop;
-      if (ctaOffset > -window.innerHeight * 1.5 && ctaOffset < ctaSection.offsetHeight + window.innerHeight) {
-        ctaDeep.style.transform = `translateY(${ctaOffset * 0.12}px)`;
+      function renderButtons(id) {
+        const container = document.getElementById(id);
+        // Always show both stores, regardless of the visitor's device.
+        container.appendChild(buildBadge('ios'));
+        container.appendChild(buildBadge('android'));
       }
 
-      ticking = false;
-    }
+      renderButtons('heroButtons');
+      renderButtons('ctaButtons');
 
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(applyParallax);
-        ticking = true;
+      // ── Rotating prompts ────────────────────────────────────
+
+      const prompts = t.prompts;
+      let promptIdx = 0;
+      const promptEl = document.getElementById('heroPrompt');
+
+      function cyclePrompt() {
+        promptEl.classList.remove('visible');
+        setTimeout(() => {
+          promptEl.textContent = '“' + prompts[promptIdx] + '”';
+          promptEl.classList.add('visible');
+          promptIdx = (promptIdx + 1) % prompts.length;
+        }, 450);
       }
-    }, { passive: true });
 
-    // Run once on load
-    applyParallax();
+      cyclePrompt();
+      setInterval(cyclePrompt, 3600);
 
-    // ── Intersection observer (fade-ins) ────────────────────
+      // ── Parallax ────────────────────────────────────────────
+      //
+      // Deep layers move at 0.12× scroll speed; content moves at 1×.
+      // The 88% differential is large enough to feel strongly but not dizzying.
+      // Layers use inset:-80% so they have plenty of room to travel.
 
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
-      });
-    }, { threshold: 0.12 });
+      const heroDeep = document.getElementById('heroDeep');
+      const midSection = document.getElementById('midSection');
+      const midDeep = document.getElementById('midDeep');
+      const ctaSection = document.getElementById('ctaSection');
+      const ctaDeep = document.getElementById('ctaDeep');
 
-    document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
-  </script>
-</body>
+      let ticking = false;
+
+      function applyParallax() {
+        const sy = window.scrollY;
+
+        // Hero deep (0.12×) — large watermark lags far behind the scroll
+        heroDeep.style.transform = `translateY(${sy * 0.12}px)`;
+
+        // Mid section deep (0.12× relative to section entry)
+        const midTop = midSection.offsetTop;
+        const midOffset = sy - midTop;
+        if (
+          midOffset > -window.innerHeight * 1.5 &&
+          midOffset < midSection.offsetHeight + window.innerHeight
+        ) {
+          midDeep.style.transform = `translateY(${midOffset * 0.12}px)`;
+        }
+
+        // CTA section deep (0.12× relative to section entry)
+        const ctaTop = ctaSection.offsetTop;
+        const ctaOffset = sy - ctaTop;
+        if (
+          ctaOffset > -window.innerHeight * 1.5 &&
+          ctaOffset < ctaSection.offsetHeight + window.innerHeight
+        ) {
+          ctaDeep.style.transform = `translateY(${ctaOffset * 0.12}px)`;
+        }
+
+        ticking = false;
+      }
+
+      window.addEventListener(
+        'scroll',
+        () => {
+          if (!ticking) {
+            requestAnimationFrame(applyParallax);
+            ticking = true;
+          }
+        },
+        { passive: true },
+      );
+
+      // Run once on load
+      applyParallax();
+
+      // ── Intersection observer (fade-ins) ────────────────────
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('visible');
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.12 },
+      );
+
+      document.querySelectorAll('.fade-in').forEach((el) => io.observe(el));
+    </script>
+  </body>
 </html>

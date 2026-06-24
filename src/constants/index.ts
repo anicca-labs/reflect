@@ -1,2 +1,2 @@
-export * from './zod'
-export * from './ui'
+export * from './zod';
+export * from './ui';

@@ -1,0 +1,9 @@
+# Files @expo/fingerprint hashes but that have NO effect on the native build.
+# Excluding them keeps the OTA runtimeVersion (policy: 'fingerprint') stable, so a
+# trivial edit — e.g. adding a line to .gitignore — can't silently bump the hash and
+# break OTA delivery to already-installed binaries (an OTA only applies when its
+# runtime_version exactly matches the build's embedded fingerprint).
+#
+# NOTE: adding/removing entries here CHANGES the fingerprint baseline, so it must ship
+# with a new full build — the binary and its OTAs adopt the new stable hash together.
+.gitignore

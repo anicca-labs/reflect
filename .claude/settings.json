@@ -1,10 +1,11 @@
 {
   "includeCoAuthoredBy": false,
-  "attribution": {"commit": "", "pr": ""},
+  "attribution": { "commit": "", "pr": "" },
+  "enableAllProjectMcpServers": true,
   "extraKnownMarketplaces": {
-    "ksairi-org": {"source": {"source": "github", "repo": "ksairi-org/claude"}}
+    "ksairi-org": { "source": { "source": "github", "repo": "ksairi-org/claude" } }
   },
-  "enabledPlugins": {"expo-rn-plugin@ksairi-org": true},
+  "enabledPlugins": { "expo-rn-plugin@ksairi-org": true },
   "permissions": {
     "allow": [
       "Bash(tsc:*)",

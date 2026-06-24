@@ -1,148 +1,166 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Delete Account — Reflect</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delete Account — Reflect</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #F5F0E8;
-      color: #1C1917;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 32px 16px;
-    }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: #f5f0e8;
+        color: #1c1917;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 16px;
+      }
 
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 40px 36px;
-      max-width: 480px;
-      width: 100%;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-    }
+      .card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 40px 36px;
+        max-width: 480px;
+        width: 100%;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+      }
 
-    .logo {
-      width: 52px;
-      height: 52px;
-      margin-bottom: 20px;
-    }
+      .logo {
+        width: 52px;
+        height: 52px;
+        margin-bottom: 20px;
+      }
 
-    h1 {
-      font-family: Georgia, serif;
-      font-size: 26px;
-      font-weight: normal;
-      margin-bottom: 12px;
-      color: #1C1917;
-    }
+      h1 {
+        font-family: Georgia, serif;
+        font-size: 26px;
+        font-weight: normal;
+        margin-bottom: 12px;
+        color: #1c1917;
+      }
 
-    p {
-      font-size: 15px;
-      line-height: 1.6;
-      color: #57534E;
-      margin-bottom: 16px;
-    }
+      p {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #57534e;
+        margin-bottom: 16px;
+      }
 
-    .data-list {
-      background: #F5F0E8;
-      border-radius: 10px;
-      padding: 16px 20px;
-      margin-bottom: 24px;
-    }
+      .data-list {
+        background: #f5f0e8;
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+      }
 
-    .data-list p {
-      margin-bottom: 0;
-      font-size: 14px;
-      color: #57534E;
-    }
+      .data-list p {
+        margin-bottom: 0;
+        font-size: 14px;
+        color: #57534e;
+      }
 
-    .data-list ul {
-      margin-top: 8px;
-      padding-left: 18px;
-    }
+      .data-list ul {
+        margin-top: 8px;
+        padding-left: 18px;
+      }
 
-    .data-list li {
-      font-size: 14px;
-      color: #57534E;
-      line-height: 1.7;
-    }
+      .data-list li {
+        font-size: 14px;
+        color: #57534e;
+        line-height: 1.7;
+      }
 
-    .warning {
-      font-size: 13px;
-      color: #B45309;
-      background: #FEF3C7;
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 24px;
-    }
+      .warning {
+        font-size: 13px;
+        color: #b45309;
+        background: #fef3c7;
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-bottom: 24px;
+      }
 
-    a.button {
-      display: block;
-      background: #1C1917;
-      color: #fff;
-      text-align: center;
-      padding: 14px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: opacity 0.15s;
-    }
+      a.button {
+        display: block;
+        background: #1c1917;
+        color: #fff;
+        text-align: center;
+        padding: 14px;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: opacity 0.15s;
+      }
 
-    a.button:hover { opacity: 0.85; }
+      a.button:hover {
+        opacity: 0.85;
+      }
 
-    .footer {
-      margin-top: 20px;
-      font-size: 13px;
-      color: #A8A29E;
-      text-align: center;
-    }
+      .footer {
+        margin-top: 20px;
+        font-size: 13px;
+        color: #a8a29e;
+        text-align: center;
+      }
 
-    .footer a { color: #A8A29E; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <svg class="logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="50" cy="50" r="48" fill="#F5F0E8"/>
-      <path d="M50 20 C50 20 75 35 75 55 C75 70 63 80 50 80 C37 80 25 70 25 55 C25 40 38 28 50 28 C58 28 65 35 65 43 C65 51 58 57 50 57 C44 57 40 53 40 47" stroke="#6B9E7A" stroke-width="5" stroke-linecap="round" fill="none"/>
-    </svg>
+      .footer a {
+        color: #a8a29e;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <svg class="logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="48" fill="#F5F0E8" />
+        <path
+          d="M50 20 C50 20 75 35 75 55 C75 70 63 80 50 80 C37 80 25 70 25 55 C25 40 38 28 50 28 C58 28 65 35 65 43 C65 51 58 57 50 57 C44 57 40 53 40 47"
+          stroke="#6B9E7A"
+          stroke-width="5"
+          stroke-linecap="round"
+          fill="none"
+        />
+      </svg>
 
-    <h1>Delete your account</h1>
+      <h1>Delete your account</h1>
 
-    <p>
-      You can request the permanent deletion of your Reflect account and all associated data by contacting us at the email below.
-    </p>
+      <p>
+        You can request the permanent deletion of your Reflect account and all associated data by
+        contacting us at the email below.
+      </p>
 
-    <div class="data-list">
-      <p><strong>The following data will be permanently deleted:</strong></p>
-      <ul>
-        <li>Your account (name, email address)</li>
-        <li>All journal entries</li>
-        <li>Your preferences and settings</li>
-        <li>Push notification tokens</li>
-        <li>Subscription and purchase history (RevenueCat)</li>
-      </ul>
+      <div class="data-list">
+        <p><strong>The following data will be permanently deleted:</strong></p>
+        <ul>
+          <li>Your account (name, email address)</li>
+          <li>All journal entries</li>
+          <li>Your preferences and settings</li>
+          <li>Push notification tokens</li>
+          <li>Subscription and purchase history (RevenueCat)</li>
+        </ul>
+      </div>
+
+      <p class="warning">⚠️ This action is irreversible. Deleted data cannot be recovered.</p>
+
+      <a
+        class="button"
+        href="mailto:marianoksairi@gmail.com?subject=Delete%20my%20Reflect%20account&body=Hello%2C%0A%0AI%20would%20like%20to%20permanently%20delete%20my%20Reflect%20account%20and%20all%20associated%20data.%0A%0AEmail%20address%20associated%20with%20my%20account%3A%20"
+      >
+        Request account deletion
+      </a>
+
+      <div class="footer">
+        We will process your request within 30 days.<br />
+        <a href="privacy-policy">Privacy Policy</a>
+      </div>
     </div>
-
-    <p class="warning">
-      ⚠️ This action is irreversible. Deleted data cannot be recovered.
-    </p>
-
-    <a class="button" href="mailto:marianoksairi@gmail.com?subject=Delete%20my%20Reflect%20account&body=Hello%2C%0A%0AI%20would%20like%20to%20permanently%20delete%20my%20Reflect%20account%20and%20all%20associated%20data.%0A%0AEmail%20address%20associated%20with%20my%20account%3A%20">
-      Request account deletion
-    </a>
-
-    <div class="footer">
-      We will process your request within 30 days.<br/>
-      <a href="privacy-policy">Privacy Policy</a>
-    </div>
-  </div>
-</body>
+  </body>
 </html>

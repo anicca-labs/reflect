@@ -58,12 +58,24 @@ msgid "Apple sign-in is not configured for Android"
 msgstr "El inicio de sesión con Apple no está configurado para Android"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Arabic"
+msgstr "Árabe"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Are you sure you want to sign out?"
 msgstr "¿Seguro que quieres cerrar sesión?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Are you sure?"
 msgstr "¿Estás seguro?"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto"
+msgstr "Automático"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Auto (device language)"
+msgstr "Automático (idioma del dispositivo)"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
@@ -74,6 +86,7 @@ msgstr "Volver al inicio de sesión"
 msgid "Bookmarked"
 msgstr "Guardados"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Cancel"
 msgstr "Cancelar"
@@ -82,6 +95,10 @@ msgstr "Cancelar"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Check your email"
 msgstr "Revisa tu correo"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Chinese"
+msgstr "Chino"
 
 #: src/screens/ResetPasswordScreen/ResetPasswordScreen.tsx
 msgid "Choose a new password."
@@ -102,6 +119,10 @@ msgstr "Continuar sin cuenta"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't delete account"
 msgstr "No se pudo eliminar la cuenta"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Couldn't open Settings"
+msgstr "No se pudo abrir Ajustes"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
@@ -143,6 +164,10 @@ msgstr "Denegado — toca para abrir Ajustes"
 msgid "Don't have an account? Sign up"
 msgstr "¿No tienes cuenta? Regístrate"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Dutch"
+msgstr "Neerlandés"
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
@@ -156,6 +181,10 @@ msgstr "Activar"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Enable notifications in Settings to use reminders."
 msgstr "Activa las notificaciones en Configuración para usar recordatorios."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "English"
+msgstr "Inglés"
 
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 msgid "Enter your email to receive a reset link."
@@ -185,6 +214,14 @@ msgstr "¿Olvidaste tu contraseña?"
 msgid "Free"
 msgstr "Gratis"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "French"
+msgstr "Francés"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "German"
+msgstr "Alemán"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Google Play Services not available"
 msgstr "Google Play Services no disponible"
@@ -197,6 +234,10 @@ msgstr "Error al iniciar sesión con Google: sin token de identidad"
 msgid "Granted"
 msgstr "Concedido"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Hindi"
+msgstr "Hindi"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "How are you really feeling right now?"
 msgstr "¿Cómo te sientes realmente en este momento?"
@@ -205,13 +246,29 @@ msgstr "¿Cómo te sientes realmente en este momento?"
 msgid "Invalid email or password"
 msgstr "Correo o contraseña incorrectos"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Italian"
+msgstr "Italiano"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Japanese"
+msgstr "Japonés"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Journal"
 msgstr "Diario"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Korean"
+msgstr "Coreano"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
 msgstr "Gestionar suscripción"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Microphone access required"
+msgstr "Se requiere acceso al micrófono"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Name"
@@ -236,6 +293,10 @@ msgstr "Ninguna entrada coincide con tu búsqueda."
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr "Sin entradas aún. Empieza a escribir en la pestaña Diario."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Open Settings"
+msgstr "Abrir ajustes"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Password"
@@ -277,6 +338,18 @@ msgid "Please enter a valid email address"
 msgstr "Introduce una dirección de correo válida"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Please open Settings manually to manage notifications."
+msgstr "Abre Ajustes manualmente para gestionar las notificaciones."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Portuguese"
+msgstr "Portugués"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Preferences"
+msgstr "Preferencias"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"
 msgstr "Pro"
 
@@ -297,12 +370,16 @@ msgid "Reflections"
 msgstr "Reflexiones"
 
 #: src/hooks/useMemoryNotification.ts
-#~ msgid "Remember this?"
-#~ msgstr "¿Recuerdas esto?"
+msgid "Remember this?"
+msgstr "¿Recuerdas esto?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
 msgstr "Recuérdame escribir"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Russian"
+msgstr "Ruso"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Save entry"
@@ -361,6 +438,10 @@ msgid "Something went wrong. Please try again."
 msgstr "Algo salió mal. Inténtalo de nuevo."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Spanish"
+msgstr "Español"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
 msgstr "Suscripción"
 
@@ -384,6 +465,10 @@ msgstr "Hora"
 msgid "Time format"
 msgstr "Formato de hora"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "To use voice input, enable microphone access for Reflect in Settings."
+msgstr "Para usar la entrada de voz, habilita el acceso al micrófono para Reflect en Ajustes."
+
 #. placeholder {0}: todayEntries.length
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Today · {0} entries"
@@ -398,6 +483,10 @@ msgstr "Hoy · 1 entrada"
 msgid "Too many attempts. Please try again later"
 msgstr "Demasiados intentos. Por favor inténtalo más tarde"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Turkish"
+msgstr "Turco"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Unlimited entries unlocked. Keep writing."
@@ -411,9 +500,13 @@ msgstr "Actualización lista"
 msgid "Upgrade to Pro ✦"
 msgstr "Actualizar a Pro ✦"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Voice language"
+msgstr "Idioma de voz"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
-#~ msgid "Voice recognition failed"
-#~ msgstr "Error en el reconocimiento de voz"
+msgid "Voice recognition failed"
+msgstr "Error en el reconocimiento de voz"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "We sent a confirmation link to {email}."
