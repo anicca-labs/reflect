@@ -8,7 +8,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { TamaguiProvider, styled } from 'tamagui';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/src/services/queryClient';
-import { useColorScheme, Platform } from 'react-native';
+import { useColorScheme, Platform, Alert } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { tamaguiConfig } from '@default-tamagui-config';
 import { LinguiClientProvider } from '@i18n';
@@ -56,6 +56,14 @@ const RootLayoutNav = () => {
     });
     return unsubscribe;
   }, [notification]);
+
+  // TEMP (stg-only OTA smoke test): unconditional launch alert to confirm the
+  // device is running fresh OTA JS. No permission needed. Remove once verified.
+  useEffect(() => {
+    if (process.env.EXPO_PUBLIC_ENV === 'stg') {
+      Alert.alert('OTA check ✅', 'stg OTA bundle is live — marker #1');
+    }
+  }, []);
 
   return (
     <>
