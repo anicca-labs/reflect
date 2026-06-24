@@ -3,16 +3,12 @@ import { useRouter } from 'expo-router';
 import * as ExpoNotifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLingui } from '@lingui/react/macro';
-import { scheduleMemoryNotifications, scheduleMemoryNotificationTest } from '@firebase-messaging';
+import { scheduleMemoryNotifications } from '@firebase-messaging';
 import { useJournalEntries } from './useJournalEntries';
 import { useSessionStore, usePeekStore } from '@/src/stores';
 
 const HOUR_KEY = '@reflect/reminder_hour';
 const MINUTE_KEY = '@reflect/reminder_minute';
-
-// stg-only: fire a memory notification 15s after the app opens so the full
-// schedule → tap → deep-link flow can be tested without waiting for 9am.
-const NOTIF_TEST_MODE = process.env.EXPO_PUBLIC_ENV === 'stg';
 
 const useMemoryNotification = () => {
   const router = useRouter();
@@ -21,9 +17,6 @@ const useMemoryNotification = () => {
   const { data: entries } = useJournalEntries();
   const pendingPeekEntryId = usePeekStore((s) => s.pendingPeekEntryId);
   const setPendingPeekEntryId = usePeekStore((s) => s.setPendingPeekEntryId);
-  // The schedule effect re-runs on every entries refetch; only fire the test
-  // notification once per app session so we don't queue a burst of them.
-  const testScheduled = useRef(false);
   // Tracks notification responses already recorded so the cold-start lookup and
   // the live listener never stash the same tap twice.
   const handledResponseIds = useRef<Set<string>>(new Set());
@@ -38,11 +31,6 @@ const useMemoryNotification = () => {
       const hour = hourStr ? parseInt(hourStr, 10) : 9;
       const minute = minuteStr ? parseInt(minuteStr, 10) : 0;
       scheduleMemoryNotifications(entries, t`Remember this?`, hour, minute);
-
-      if (NOTIF_TEST_MODE && !testScheduled.current) {
-        testScheduled.current = true;
-        scheduleMemoryNotificationTest(entries, t`Remember this?`);
-      }
     };
     schedule();
   }, [isAnonymous, entries, t]);

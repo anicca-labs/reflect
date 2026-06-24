@@ -186,40 +186,6 @@ const scheduleMemoryNotifications = (
   return memorySchedulingInFlight;
 };
 
-const MEMORY_NOTIF_TEST_ID_KEY = '@reflect/memory_notif_test_id';
-
-// stg-only testing aid: fires a single memory-type notification a few seconds out
-// so the deep-link / cold-start tap flow can be exercised without waiting for 9am.
-// Cancels its own previous test first so relaunching the app (e.g. twice for an
-// OTA) can't stack multiple pending test notifications. Returns the scheduled id.
-const scheduleMemoryNotificationTest = async (
-  entries: JournalEntry[],
-  title: string,
-  delaySeconds = 15,
-): Promise<string | null> => {
-  if (!entries.length) return null;
-
-  const prevId = await AsyncStorage.getItem(MEMORY_NOTIF_TEST_ID_KEY);
-  if (prevId) {
-    await ExpoNotifications.cancelScheduledNotificationAsync(prevId).catch(() => {});
-  }
-
-  const entry = entries[Math.floor(Math.random() * entries.length)];
-  const id = await ExpoNotifications.scheduleNotificationAsync({
-    content: {
-      title,
-      body: buildMemoryPreview(entry.content),
-      data: { entryId: entry.id, type: 'memory' },
-    },
-    trigger: {
-      type: ExpoNotifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-      seconds: delaySeconds,
-    },
-  });
-  await AsyncStorage.setItem(MEMORY_NOTIF_TEST_ID_KEY, id);
-  return id;
-};
-
 export type { NotificationPermissionStatus };
 export {
   getNotificationPermissionStatus,
@@ -230,5 +196,4 @@ export {
   scheduleDailyReminder,
   cancelDailyReminder,
   scheduleMemoryNotifications,
-  scheduleMemoryNotificationTest,
 };
