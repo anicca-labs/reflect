@@ -77,28 +77,53 @@ function extToContentType(ext) {
   return map[ext?.toLowerCase()] ?? 'application/octet-stream';
 }
 
-async function uploadFile(localPath, storagePath, contentType) {
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function uploadFile(localPath, storagePath, contentType, tries = 5) {
   const body = fs.readFileSync(localPath);
-  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${storagePath}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
-      apikey: SERVICE_ROLE_KEY,
-      'Content-Type': contentType,
-      'x-upsert': 'true',
-      // Don't let the Storage CDN cache OTA bundles/assets. The default is a 1h
-      // cache, which makes iOS issue conditional requests that come back 304 — the
-      // exact case the expo-updates FileDownloader patch works around. no-store keeps
-      // every update fetch fresh and lets that client patch eventually be retired.
-      'cache-control': 'no-store',
-    },
-    body,
-  });
-  if (!res.ok) {
+  let lastErr;
+  for (let attempt = 1; attempt <= tries; attempt++) {
+    let res;
+    try {
+      res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${storagePath}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+          apikey: SERVICE_ROLE_KEY,
+          'Content-Type': contentType,
+          'x-upsert': 'true',
+          // Don't let the Storage CDN cache OTA bundles/assets. The default is a 1h
+          // cache, which makes iOS issue conditional requests that come back 304 — the
+          // exact case the expo-updates FileDownloader patch works around. no-store keeps
+          // every update fetch fresh and lets that client patch eventually be retired.
+          'cache-control': 'no-store',
+        },
+        body,
+      });
+    } catch (err) {
+      // Network error — retry.
+      lastErr = err;
+      if (attempt < tries) {
+        await sleep(500 * 2 ** (attempt - 1));
+        continue;
+      }
+      throw lastErr;
+    }
+    if (res.ok) {
+      console.log(`  uploaded ${storagePath}`);
+      return;
+    }
     const text = await res.text();
-    throw new Error(`Storage upload failed [${storagePath}]: ${res.status} ${text}`);
+    // 4xx is a permanent error — fail fast. 5xx / 429 (e.g. Supabase Storage 504
+    // Gateway Time-out) is transient — retry with backoff so one flaky asset upload
+    // can't strand the whole push (which leaves a half-published, mismatched OTA).
+    if (res.status < 500 && res.status !== 429) {
+      throw new Error(`Storage upload failed [${storagePath}]: ${res.status} ${text}`);
+    }
+    lastErr = new Error(`Storage upload failed [${storagePath}]: ${res.status} ${text}`);
+    if (attempt < tries) await sleep(500 * 2 ** (attempt - 1));
   }
-  console.log(`  uploaded ${storagePath}`);
+  throw lastErr;
 }
 
 async function insertUpdate(row) {
