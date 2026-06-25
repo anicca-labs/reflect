@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { Platform } from 'react-native';
 import { getLocales } from 'expo-localization';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { usePreferencesStore } from '@/src/stores';
@@ -60,13 +61,18 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
   // iOS dedup: on stop(), iOS fires the same isFinal transcript a second time. Track the last
   // committed final so we can skip it if it arrives again before `end` fires.
   const lastFinalRef = useRef('');
-  // First-grant retry: the very first start() right after the permission dialog is granted
-  // fails on iOS with a transient error (authorization hasn't propagated to the Speech
-  // framework yet). `justGrantedRef` marks that first attempt; `retriedFreshGrantRef` ensures
-  // we only auto-retry once before surfacing a real error.
+  // First-grant handling (iOS only): the first session right after the user grants the mic +
+  // speech-recognition dialogs fails with a transient error because authorization hasn't
+  // propagated to the Speech framework yet — the mic works fine on the next tap. While this
+  // window is open we (a) delay the first start to let iOS settle, and (b) never surface an
+  // error: we retry a few times, and if it still won't start we stay silent so the user just
+  // taps the mic again instead of seeing a false-negative modal. Genuine errors still surface
+  // on that next tap, which is a normal (non-fresh-grant) start.
   const justGrantedRef = useRef(false);
-  const retriedFreshGrantRef = useRef(false);
+  const freshGrantRetriesRef = useRef(0);
   const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const FRESH_GRANT_MAX_RETRIES = 3;
+  const FRESH_GRANT_SETTLE_MS = 600;
 
   // Resolve the locale and kick off the native session. Shared by the initial start and the
   // first-grant auto-retry, so it's reachable from the 'end' handler. Stable identity (no
@@ -98,7 +104,7 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
     lastFinalRef.current = '';
     // A real session started — the fresh-grant retry window is over.
     justGrantedRef.current = false;
-    retriedFreshGrantRef.current = false;
+    freshGrantRetriesRef.current = 0;
     setIsListening(true);
   });
 
@@ -110,12 +116,14 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
     const pendingError = pendingErrorRef.current;
     pendingErrorRef.current = null;
     if (!pendingError || userStoppedRef.current) return;
-    // iOS quirk: the first start() after the user grants permission fails with a transient
-    // error even though the mic works on the next tap. Swallow that first error and retry
-    // once (after a short settle delay) instead of showing a false-negative alert.
-    if (justGrantedRef.current && !retriedFreshGrantRef.current) {
-      retriedFreshGrantRef.current = true;
-      retryTimeoutRef.current = setTimeout(() => beginSession(), 300);
+    // Inside the fresh-grant window (iOS), never surface the transient error: retry a few
+    // times with a settle delay, and once retries are exhausted stay silent — the user's
+    // next manual tap will work since authorization has settled by then.
+    if (justGrantedRef.current) {
+      if (freshGrantRetriesRef.current < FRESH_GRANT_MAX_RETRIES) {
+        freshGrantRetriesRef.current += 1;
+        retryTimeoutRef.current = setTimeout(() => beginSession(), FRESH_GRANT_SETTLE_MS);
+      }
       return;
     }
     onErrorRef.current?.(pendingError);
@@ -164,11 +172,17 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
       // User just denied the dialog — do nothing, don't redirect anywhere.
       return;
     }
-    // If we didn't already hold permission, this is the user's first grant — arm the
-    // first-start retry so the iOS authorization-propagation error doesn't surface.
-    justGrantedRef.current = !current.granted;
-    retriedFreshGrantRef.current = false;
-    beginSession();
+    // First grant = we didn't already hold permission. On iOS, delay the first start so the
+    // Speech framework has time to pick up the just-granted authorization (starting
+    // immediately throws a transient error). Android settles synchronously, so start now.
+    const freshGrant = !current.granted;
+    justGrantedRef.current = freshGrant && Platform.OS === 'ios';
+    freshGrantRetriesRef.current = 0;
+    if (justGrantedRef.current) {
+      retryTimeoutRef.current = setTimeout(() => beginSession(), FRESH_GRANT_SETTLE_MS);
+    } else {
+      beginSession();
+    }
   }, [beginSession]);
 
   const stop = useCallback(() => {
