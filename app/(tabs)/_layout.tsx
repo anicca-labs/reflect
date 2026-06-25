@@ -64,11 +64,6 @@ const TabLayout = () => {
     <MaterialTopTabs
       tabBar={(props: MaterialTopTabBarProps) => <TabBar {...props} />}
       tabBarPosition="bottom"
-      // Don't let the pager dismiss the keyboard mid-drag: doing so (via 'auto' or
-      // 'on-drag') shifts the layout and cancels the pan, so the swipe hid the
-      // keyboard but never changed tabs. With 'none' the swipe completes; the
-      // leaving screen dismisses the keyboard itself on blur (see JournalScreen).
-      keyboardDismissMode="none"
       screenOptions={{
         swipeEnabled: true,
         animationEnabled: true,

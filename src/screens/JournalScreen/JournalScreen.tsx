@@ -236,10 +236,6 @@ const JournalScreen = () => {
         // Stop dictation when leaving the screen (tabs stay mounted with lazy:false,
         // so without this the mic keeps recording in the background).
         stopListening();
-        // Hide the keyboard when swiping/navigating away. The tab pager uses
-        // keyboardDismissMode="none" so the swipe gesture isn't cancelled mid-drag
-        // by a layout shift — we dismiss here once the screen actually loses focus.
-        Keyboard.dismiss();
       };
     }, [refetch, isAnonymous, stopListening]),
   );
