@@ -45,6 +45,31 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       // only touches photos when you attach one to an entry.
       NSPhotoLibraryUsageDescription:
         'Reflect uses your photo library so you can add photos to your journal entries.',
+      // Meta's SKAdNetwork IDs — let the App Store attribute Meta-sourced
+      // installs to your ad campaigns even when ATT is denied (privacy-safe
+      // aggregate attribution). NSUserTrackingUsageDescription is injected by
+      // the react-native-fbsdk-next plugin via iosUserTrackingPermission below.
+      SKAdNetworkItems: [
+        { SKAdNetworkIdentifier: 'v9wttpbfk9.skadnetwork' },
+        { SKAdNetworkIdentifier: 'n38lu8286q.skadnetwork' },
+      ],
+    },
+    // iOS 17+ privacy manifest. Declares that the app engages in tracking and
+    // collects the device ID (IDFA) for third-party advertising — required by
+    // Apple now that the Meta SDK is bundled. The Meta/Firebase pods ship their
+    // own manifests for the APIs they call; this declares the app's posture.
+    privacyManifests: {
+      NSPrivacyTracking: true,
+      NSPrivacyCollectedDataTypes: [
+        {
+          NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeDeviceID',
+          NSPrivacyCollectedDataTypeLinked: true,
+          NSPrivacyCollectedDataTypeTracking: true,
+          NSPrivacyCollectedDataTypePurposes: [
+            'NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising',
+          ],
+        },
+      ],
     },
     entitlements: {
       'aps-environment': 'production',
@@ -129,6 +154,30 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           'Reflect uses speech recognition to transcribe your voice into text.',
       },
     ],
+    // Meta (Facebook) SDK for App Promotion / app-install attribution. Only
+    // included when an FB App ID is configured, so stg / un-keyed builds stay
+    // tracking-free. iosUserTrackingPermission injects NSUserTrackingUsageDescription
+    // (the #1 cause of ATT-related App Store rejections). advertiserIDCollection
+    // is enabled, but advertiser tracking is gated on ATT consent at runtime
+    // (see src/services/meta).
+    ...(process.env.EXPO_PUBLIC_FB_APP_ID
+      ? ([
+          [
+            'react-native-fbsdk-next',
+            {
+              appID: process.env.EXPO_PUBLIC_FB_APP_ID,
+              clientToken: process.env.EXPO_PUBLIC_FB_CLIENT_TOKEN,
+              displayName: process.env.DISPLAY_NAME ?? 'Reflect',
+              scheme: `fb${process.env.EXPO_PUBLIC_FB_APP_ID}`,
+              advertiserIDCollectionEnabled: true,
+              autoLogAppEventsEnabled: true,
+              isAutoInitEnabled: true,
+              iosUserTrackingPermission:
+                'Reflect uses this to measure ad performance and show you more relevant ads. Your journal entries are always private and never shared.',
+            },
+          ],
+        ] as [string, Record<string, unknown>][])
+      : []),
   ],
   extra: {
     eas: {
