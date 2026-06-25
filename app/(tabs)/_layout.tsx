@@ -64,6 +64,11 @@ const TabLayout = () => {
     <MaterialTopTabs
       tabBar={(props: MaterialTopTabBarProps) => <TabBar {...props} />}
       tabBarPosition="bottom"
+      // Dismiss the keyboard at the START of a drag (not when the index changes).
+      // With the default 'auto', dismissing mid-swipe shifts the layout and the
+      // pager snaps back — so a swipe-to-leave-Journal hid the keyboard but didn't
+      // navigate. 'on-drag' lets the same gesture both dismiss and change tabs.
+      keyboardDismissMode="on-drag"
       screenOptions={{
         swipeEnabled: true,
         animationEnabled: true,
