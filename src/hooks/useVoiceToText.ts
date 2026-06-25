@@ -60,6 +60,35 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
   // iOS dedup: on stop(), iOS fires the same isFinal transcript a second time. Track the last
   // committed final so we can skip it if it arrives again before `end` fires.
   const lastFinalRef = useRef('');
+  // First-grant retry: the very first start() right after the permission dialog is granted
+  // fails on iOS with a transient error (authorization hasn't propagated to the Speech
+  // framework yet). `justGrantedRef` marks that first attempt; `retriedFreshGrantRef` ensures
+  // we only auto-retry once before surfacing a real error.
+  const justGrantedRef = useRef(false);
+  const retriedFreshGrantRef = useRef(false);
+  const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Resolve the locale and kick off the native session. Shared by the initial start and the
+  // first-grant auto-retry, so it's reachable from the 'end' handler. Stable identity (no
+  // deps), so the event closures never go stale referencing it.
+  const beginSession = useCallback(async () => {
+    const voiceLanguage = usePreferencesStore.getState().voiceLanguage;
+    try {
+      const lang = await resolveSupportedLocale(voiceLanguage ?? getLocale());
+      ExpoSpeechRecognitionModule.start({
+        lang,
+        continuous: true,
+        interimResults: true,
+        volumeChangeEventOptions: { enabled: true, intervalMillis: 80 },
+      });
+    } catch (e) {
+      // A synchronous native throw (e.g. no recognition service on the device) would
+      // otherwise surface as an unhandled rejection. Route it through onError so the
+      // user sees a real message instead of a crash.
+      const message = e instanceof Error ? e.message : String(e);
+      onErrorRef.current?.(`start failed: ${message}`);
+    }
+  }, []);
 
   useSpeechRecognitionEvent('start', () => {
     sessionEndedRef.current = false;
@@ -67,6 +96,9 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
     pendingErrorRef.current = null;
     sessionTranscriptRef.current = '';
     lastFinalRef.current = '';
+    // A real session started — the fresh-grant retry window is over.
+    justGrantedRef.current = false;
+    retriedFreshGrantRef.current = false;
     setIsListening(true);
   });
 
@@ -75,10 +107,18 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
     sessionTranscriptRef.current = '';
     lastFinalRef.current = '';
     setIsListening(false);
-    if (pendingErrorRef.current && !userStoppedRef.current) {
-      onErrorRef.current?.(pendingErrorRef.current);
-    }
+    const pendingError = pendingErrorRef.current;
     pendingErrorRef.current = null;
+    if (!pendingError || userStoppedRef.current) return;
+    // iOS quirk: the first start() after the user grants permission fails with a transient
+    // error even though the mic works on the next tap. Swallow that first error and retry
+    // once (after a short settle delay) instead of showing a false-negative alert.
+    if (justGrantedRef.current && !retriedFreshGrantRef.current) {
+      retriedFreshGrantRef.current = true;
+      retryTimeoutRef.current = setTimeout(() => beginSession(), 300);
+      return;
+    }
+    onErrorRef.current?.(pendingError);
   });
 
   useSpeechRecognitionEvent('result', (event) => {
@@ -124,23 +164,12 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
       // User just denied the dialog — do nothing, don't redirect anywhere.
       return;
     }
-    const voiceLanguage = usePreferencesStore.getState().voiceLanguage;
-    try {
-      const lang = await resolveSupportedLocale(voiceLanguage ?? getLocale());
-      ExpoSpeechRecognitionModule.start({
-        lang,
-        continuous: true,
-        interimResults: true,
-        volumeChangeEventOptions: { enabled: true, intervalMillis: 80 },
-      });
-    } catch (e) {
-      // A synchronous native throw (e.g. no recognition service on the device) would
-      // otherwise surface as an unhandled rejection. Route it through onError so the
-      // user sees a real message instead of a crash.
-      const message = e instanceof Error ? e.message : String(e);
-      onErrorRef.current?.(`start failed: ${message}`);
-    }
-  }, []);
+    // If we didn't already hold permission, this is the user's first grant — arm the
+    // first-start retry so the iOS authorization-propagation error doesn't surface.
+    justGrantedRef.current = !current.granted;
+    retriedFreshGrantRef.current = false;
+    beginSession();
+  }, [beginSession]);
 
   const stop = useCallback(() => {
     userStoppedRef.current = true;
@@ -152,6 +181,7 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
   // recognition so the mic doesn't keep recording in the background.
   useEffect(() => {
     return () => {
+      if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current);
       ExpoSpeechRecognitionModule.stop();
     };
   }, []);
