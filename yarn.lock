@@ -11742,6 +11742,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-tracking-transparency@npm:^56.0.5":
+  version: 56.0.5
+  resolution: "expo-tracking-transparency@npm:56.0.5"
+  peerDependencies:
+    expo: "*"
+    react-native: "*"
+  checksum: 10c0/8b0f09bb795e8975affddc85b9c8863708087810f1f711ac954fcd197049ecb6cfc59130f83e764f6b69c0816722aadf2003ed40d913f125bdd8d04431dbb733
+  languageName: node
+  linkType: hard
+
 "expo-updates-interface@npm:~56.0.1":
   version: 56.0.2
   resolution: "expo-updates-interface@npm:56.0.2"
@@ -16097,6 +16107,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-fbsdk-next@npm:^13.4.3":
+  version: 13.4.3
+  resolution: "react-native-fbsdk-next@npm:13.4.3"
+  peerDependencies:
+    expo: ">=47.0.0"
+    react-native: ">=0.63.3"
+  peerDependenciesMeta:
+    expo:
+      optional: true
+  checksum: 10c0/58ec2a0e9ff3befe0d17f5ddd93986fd7cba7afd114fc6f0fba62063276cad4866ea7736e0d83bfc7ca75a6164a7092f673d99b3b4300c9ae53892f2935c30bb
+  languageName: node
+  linkType: hard
+
 "react-native-gesture-handler@npm:~2.31.1":
   version: 2.31.2
   resolution: "react-native-gesture-handler@npm:2.31.2"
@@ -16603,6 +16626,7 @@ __metadata:
     expo-status-bar: "npm:~56.0.4"
     expo-symbols: "npm:~56.0.6"
     expo-system-ui: "npm:~56.0.5"
+    expo-tracking-transparency: "npm:^56.0.5"
     expo-updates: "patch:expo-updates@npm%3A56.0.19#~/.yarn/patches/expo-updates-npm-56.0.19-61cb92415d.patch"
     expo-web-browser: "npm:~56.0.5"
     husky: "npm:^9.1.7"
@@ -16615,6 +16639,7 @@ __metadata:
     react-dom: "npm:19.2.3"
     react-hook-form: "npm:7.79.0"
     react-native: "npm:0.85.3"
+    react-native-fbsdk-next: "npm:^13.4.3"
     react-native-gesture-handler: "npm:~2.31.1"
     react-native-keyboard-controller: "npm:1.21.6"
     react-native-mmkv: "npm:^4.3.1"

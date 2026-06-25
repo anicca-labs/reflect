@@ -20,6 +20,7 @@ import { subscribeToForegroundMessages } from '@firebase-messaging';
 import { useEffect } from 'react';
 import { SplashView } from '@ksairi-org/react-native-splash-view';
 import { configureRevenueCat } from '@revenue-cat';
+import { initializeMeta } from '@meta';
 import splash from '../assets/animations/splash.riv';
 import splashImage from '../assets/images/splash.png';
 
@@ -56,6 +57,12 @@ const RootLayoutNav = () => {
     });
     return unsubscribe;
   }, [notification]);
+
+  // Runs once the app is active (after fonts load) so the iOS ATT prompt can
+  // present. Requests tracking consent, then initializes the Meta SDK.
+  useEffect(() => {
+    initializeMeta();
+  }, []);
 
   return (
     <>
