@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { NativeModules } from 'react-native';
+import { getLocales } from 'expo-localization';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { usePreferencesStore } from '@/src/stores';
 
@@ -12,11 +12,12 @@ type UseVoiceToTextOptions = {
 };
 
 const getLocale = (): string => {
-  const deviceLocale =
-    NativeModules.SettingsManager?.settings?.AppleLocale ??
-    NativeModules.SettingsManager?.settings?.AppleLanguages?.[0] ??
-    'en-US';
-  return deviceLocale.replace('_', '-');
+  // expo-localization reads the device's preferred language list (cross-platform) and
+  // returns BCP-47 tags. The previous NativeModules.SettingsManager path was iOS-only
+  // (undefined on Android → always 'en-US') and preferred AppleLocale (region) over the
+  // actual language, so a Spanish phone with a non-Spanish region dictated in English.
+  const [primary] = getLocales();
+  return primary?.languageTag ?? primary?.languageCode ?? 'en-US';
 };
 
 const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTextOptions) => {
