@@ -1,4 +1,5 @@
 import aesjs from 'aes-js';
+import * as Crypto from 'expo-crypto';
 
 const PREFIX = 'enc:v1:';
 const IV_BYTES = 16;
@@ -13,16 +14,13 @@ const keyFromEnv = (): Uint8Array => {
 };
 
 const randomIV = (): Uint8Array => {
-  // globalThis.crypto is the correct reference in React Native / Hermes.
-  const c = globalThis.crypto;
-  if (!c?.getRandomValues) {
-    // AES-CTR reuses the keystream if the IV/nonce is predictable, so a weak
-    // (Date.now + Math.random) IV would be catastrophic. getRandomValues is always
-    // present under Hermes; fail loudly rather than silently degrade if it isn't.
-    throw new Error('crypto.getRandomValues unavailable — cannot generate a secure IV');
-  }
+  // Hermes/React Native does NOT ship WebCrypto, so globalThis.crypto.getRandomValues
+  // is undefined unless polyfilled. expo-crypto bridges to the platform CSPRNG natively
+  // — use it directly rather than relying on a global that may not exist. AES-CTR reuses
+  // the keystream if the IV is predictable, so a weak (Date.now + Math.random) IV would
+  // be catastrophic; expo-crypto gives us real entropy.
   const bytes = new Uint8Array(IV_BYTES);
-  c.getRandomValues(bytes);
+  Crypto.getRandomValues(bytes);
   return bytes;
 };
 
