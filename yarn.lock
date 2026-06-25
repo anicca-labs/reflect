@@ -11329,6 +11329,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-crypto@npm:~56.0.4":
+  version: 56.0.4
+  resolution: "expo-crypto@npm:56.0.4"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/61f526039c7c39fea0ac8e69d1c8513565a90c0528749c4c24bf0a6d6691194c7e114afbb5648545e33530965036cdc25bb9888bab54b5c11e8354bd7e154e2b
+  languageName: node
+  linkType: hard
+
 "expo-dev-client@npm:~56.0.20":
   version: 56.0.20
   resolution: "expo-dev-client@npm:56.0.20"
@@ -16576,6 +16585,7 @@ __metadata:
     expo-blur: "npm:~56.0.3"
     expo-build-properties: "npm:~56.0.19"
     expo-constants: "npm:~56.0.18"
+    expo-crypto: "npm:~56.0.4"
     expo-dev-client: "npm:~56.0.20"
     expo-device: "npm:~56.0.4"
     expo-doctor: "npm:1.18.21"
