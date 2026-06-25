@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect, type ComponentRef } from 'react';
-import { Alert, Linking, View } from 'react-native';
+import { Alert, Keyboard, Linking, View } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -169,7 +169,7 @@ const JournalScreen = () => {
         return prev + separator + transcript;
       });
     },
-    onError: () => alert({ title: t`Voice recognition failed`, preset: 'error' }),
+    onError: (message) => alert({ title: t`Voice recognition failed`, message, preset: 'error' }),
     onPermissionDenied: () =>
       Alert.alert(
         t`Microphone access required`,
@@ -244,6 +244,12 @@ const JournalScreen = () => {
   const dismissOpenCard = () => {
     if (hasOpenCard) setCloseKey((k) => k + 1);
   };
+  // Tap-outside handler for areas that do NOT contain the TextArea (header, entries list).
+  // Putting this on the input's own ancestor would dismiss the keyboard mid-typing.
+  const dismissOutside = () => {
+    Keyboard.dismiss();
+    dismissOpenCard();
+  };
 
   const todayEntries = entries.filter((e) => isToday(e.created_at));
   const streak = useStreak(entries);
@@ -286,6 +292,7 @@ const JournalScreen = () => {
     }
 
     setDraft('');
+    Keyboard.dismiss();
 
     if (isAnonymous) {
       addLocalEntry(trimmed);
@@ -310,27 +317,30 @@ const JournalScreen = () => {
       <BlurTargetView ref={blurTargetRef} style={{ flex: 1 }}>
         <YStack flex={1}>
           <YStack p="$5" pb="$4" onTouchStart={dismissOpenCard}>
-            <LabelMd
-              color="$text-disabled"
-              mb="$1"
-              textTransform="uppercase"
-              letterSpacing={LABEL_LETTER_SPACING}
-            >
-              {formatDateHeading(new Date().toISOString())}
-            </LabelMd>
-            <XStack justify="space-between" items="flex-end" mb="$6">
-              <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
-                <Trans>Journal</Trans>
-              </DisplayLg>
-              {streak > 0 ? (
-                <YStack items="flex-end">
-                  <LabelMd color="$accentBackground" letterSpacing={STREAK_LETTER_SPACING}>
-                    {streak} {streak === 1 ? <Trans>day streak</Trans> : <Trans>days streak</Trans>}{' '}
-                    🔥
-                  </LabelMd>
-                </YStack>
-              ) : null}
-            </XStack>
+            {/* Header sits outside the TextArea, so tapping it dismisses the keyboard. */}
+            <YStack onTouchStart={dismissOutside}>
+              <LabelMd
+                color="$text-disabled"
+                mb="$1"
+                textTransform="uppercase"
+                letterSpacing={LABEL_LETTER_SPACING}
+              >
+                {formatDateHeading(new Date().toISOString())}
+              </LabelMd>
+              <XStack justify="space-between" items="flex-end" mb="$6">
+                <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
+                  <Trans>Journal</Trans>
+                </DisplayLg>
+                {streak > 0 ? (
+                  <YStack items="flex-end">
+                    <LabelMd color="$accentBackground" letterSpacing={STREAK_LETTER_SPACING}>
+                      {streak}{' '}
+                      {streak === 1 ? <Trans>day streak</Trans> : <Trans>days streak</Trans>} 🔥
+                    </LabelMd>
+                  </YStack>
+                ) : null}
+              </XStack>
+            </YStack>
 
             <YStack
               bg="$surface-card"
@@ -390,58 +400,63 @@ const JournalScreen = () => {
               </XStack>
             </YStack>
 
-            <BaseTouchable
-              onPress={handleSave}
-              disabled={!hasContent || createMutation.isPending}
-              bg="$accentBackground"
-              opacity={hasContent ? 1 : DISABLED_OPACITY}
-              rounded="$4"
-              py="$3"
-              items="center"
-              alignSelf="stretch"
-              mb={showHint || atLimit ? '$2' : '$0'}
-            >
-              {createMutation.isPending ? (
-                <Spinner color="$accentColor" />
-              ) : (
-                <LabelLg color="$accentColor">
-                  {atLimit ? <Trans>Save entry ✦</Trans> : <Trans>Save entry</Trans>}
-                </LabelLg>
-              )}
-            </BaseTouchable>
+            {/* Below the textbox: tapping here (incl. the disabled Save button or hints)
+                dismisses the keyboard. Wrapped separately so it doesn't include the TextArea. */}
+            <YStack onTouchStart={dismissOutside}>
+              <BaseTouchable
+                onPress={handleSave}
+                disabled={!hasContent || createMutation.isPending}
+                bg="$accentBackground"
+                opacity={hasContent ? 1 : DISABLED_OPACITY}
+                rounded="$4"
+                py="$3"
+                items="center"
+                alignSelf="stretch"
+                mb={showHint || atLimit ? '$2' : '$0'}
+              >
+                {createMutation.isPending ? (
+                  <Spinner color="$accentColor" />
+                ) : (
+                  <LabelLg color="$accentColor">
+                    {atLimit ? <Trans>Save entry ✦</Trans> : <Trans>Save entry</Trans>}
+                  </LabelLg>
+                )}
+              </BaseTouchable>
 
-            {showHint ? (
-              <BodySm color="$text-disabled" text="center" mt="$2">
-                {isAnonymous ? (
-                  remainingFree === 1 ? (
-                    <Trans>1 free entry left — sign up to keep writing</Trans>
+              {showHint ? (
+                <BodySm color="$text-disabled" text="center" mt="$2">
+                  {isAnonymous ? (
+                    remainingFree === 1 ? (
+                      <Trans>1 free entry left — sign up to keep writing</Trans>
+                    ) : (
+                      <Trans>{remainingFree} free entries left — sign up to keep writing</Trans>
+                    )
+                  ) : remainingFree === 1 ? (
+                    <Trans>1 free entry left — upgrade to keep writing</Trans>
                   ) : (
-                    <Trans>{remainingFree} free entries left — sign up to keep writing</Trans>
-                  )
-                ) : remainingFree === 1 ? (
-                  <Trans>1 free entry left — upgrade to keep writing</Trans>
-                ) : (
-                  <Trans>{remainingFree} free entries left — upgrade to keep writing</Trans>
-                )}
-              </BodySm>
-            ) : null}
+                    <Trans>{remainingFree} free entries left — upgrade to keep writing</Trans>
+                  )}
+                </BodySm>
+              ) : null}
 
-            {atLimit ? (
-              <BodySm color="$accentBackground" text="center" mt="$2">
-                {isAnonymous ? (
-                  <Trans>Entry limit reached — sign up for Pro to keep writing</Trans>
-                ) : (
-                  <Trans>Entry limit reached — upgrade to keep writing</Trans>
-                )}
-              </BodySm>
-            ) : null}
+              {atLimit ? (
+                <BodySm color="$accentBackground" text="center" mt="$2">
+                  {isAnonymous ? (
+                    <Trans>Entry limit reached — sign up for Pro to keep writing</Trans>
+                  ) : (
+                    <Trans>Entry limit reached — upgrade to keep writing</Trans>
+                  )}
+                </BodySm>
+              ) : null}
+            </YStack>
           </YStack>
 
           {/* NOTE: contentContainerStyle on ScrollView requires a plain style object */}
           <ScrollView
             flex={1}
             contentContainerStyle={{ paddingHorizontal: sizes.xl, paddingBottom: sizes.xl }}
-            onTouchStart={dismissOpenCard}
+            keyboardShouldPersistTaps="handled"
+            onTouchStart={dismissOutside}
           >
             {loading && !todayEntries.length ? (
               <YStack items="center" mt="$4">
