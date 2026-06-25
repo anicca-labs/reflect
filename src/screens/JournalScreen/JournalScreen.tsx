@@ -236,6 +236,10 @@ const JournalScreen = () => {
         // Stop dictation when leaving the screen (tabs stay mounted with lazy:false,
         // so without this the mic keeps recording in the background).
         stopListening();
+        // Hide the keyboard when swiping/navigating away. The tab pager uses
+        // keyboardDismissMode="none" so the swipe gesture isn't cancelled mid-drag
+        // by a layout shift — we dismiss here once the screen actually loses focus.
+        Keyboard.dismiss();
       };
     }, [refetch, isAnonymous, stopListening]),
   );
@@ -400,51 +404,55 @@ const JournalScreen = () => {
               </XStack>
             </YStack>
 
-            <BaseTouchable
-              onPress={handleSave}
-              disabled={!hasContent || createMutation.isPending}
-              bg="$accentBackground"
-              opacity={hasContent ? 1 : DISABLED_OPACITY}
-              rounded="$4"
-              py="$3"
-              items="center"
-              alignSelf="stretch"
-              mb={showHint || atLimit ? '$2' : '$0'}
-            >
-              {createMutation.isPending ? (
-                <Spinner color="$accentColor" />
-              ) : (
-                <LabelLg color="$accentColor">
-                  {atLimit ? <Trans>Save entry ✦</Trans> : <Trans>Save entry</Trans>}
-                </LabelLg>
-              )}
-            </BaseTouchable>
+            {/* Below the textbox: tapping here (incl. the disabled Save button or hints)
+                dismisses the keyboard. Wrapped separately so it doesn't include the TextArea. */}
+            <YStack onTouchStart={dismissOutside}>
+              <BaseTouchable
+                onPress={handleSave}
+                disabled={!hasContent || createMutation.isPending}
+                bg="$accentBackground"
+                opacity={hasContent ? 1 : DISABLED_OPACITY}
+                rounded="$4"
+                py="$3"
+                items="center"
+                alignSelf="stretch"
+                mb={showHint || atLimit ? '$2' : '$0'}
+              >
+                {createMutation.isPending ? (
+                  <Spinner color="$accentColor" />
+                ) : (
+                  <LabelLg color="$accentColor">
+                    {atLimit ? <Trans>Save entry ✦</Trans> : <Trans>Save entry</Trans>}
+                  </LabelLg>
+                )}
+              </BaseTouchable>
 
-            {showHint ? (
-              <BodySm color="$text-disabled" text="center" mt="$2">
-                {isAnonymous ? (
-                  remainingFree === 1 ? (
-                    <Trans>1 free entry left — sign up to keep writing</Trans>
+              {showHint ? (
+                <BodySm color="$text-disabled" text="center" mt="$2">
+                  {isAnonymous ? (
+                    remainingFree === 1 ? (
+                      <Trans>1 free entry left — sign up to keep writing</Trans>
+                    ) : (
+                      <Trans>{remainingFree} free entries left — sign up to keep writing</Trans>
+                    )
+                  ) : remainingFree === 1 ? (
+                    <Trans>1 free entry left — upgrade to keep writing</Trans>
                   ) : (
-                    <Trans>{remainingFree} free entries left — sign up to keep writing</Trans>
-                  )
-                ) : remainingFree === 1 ? (
-                  <Trans>1 free entry left — upgrade to keep writing</Trans>
-                ) : (
-                  <Trans>{remainingFree} free entries left — upgrade to keep writing</Trans>
-                )}
-              </BodySm>
-            ) : null}
+                    <Trans>{remainingFree} free entries left — upgrade to keep writing</Trans>
+                  )}
+                </BodySm>
+              ) : null}
 
-            {atLimit ? (
-              <BodySm color="$accentBackground" text="center" mt="$2">
-                {isAnonymous ? (
-                  <Trans>Entry limit reached — sign up for Pro to keep writing</Trans>
-                ) : (
-                  <Trans>Entry limit reached — upgrade to keep writing</Trans>
-                )}
-              </BodySm>
-            ) : null}
+              {atLimit ? (
+                <BodySm color="$accentBackground" text="center" mt="$2">
+                  {isAnonymous ? (
+                    <Trans>Entry limit reached — sign up for Pro to keep writing</Trans>
+                  ) : (
+                    <Trans>Entry limit reached — upgrade to keep writing</Trans>
+                  )}
+                </BodySm>
+              ) : null}
+            </YStack>
           </YStack>
 
           {/* NOTE: contentContainerStyle on ScrollView requires a plain style object */}
