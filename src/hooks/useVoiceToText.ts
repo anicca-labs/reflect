@@ -20,6 +20,26 @@ const getLocale = (): string => {
   return primary?.languageTag ?? primary?.languageCode ?? 'en-US';
 };
 
+// The recognizer only accepts locales it has a model for (iOS validates strictly and
+// throws "language-not-supported"). A device tag like "es-AR" often has no exact model,
+// so map it to any supported variant of the same language — any Spanish is far better
+// than silently dictating in English.
+const resolveSupportedLocale = async (desired: string): Promise<string> => {
+  let locales: string[] = [];
+  try {
+    ({ locales } = await ExpoSpeechRecognitionModule.getSupportedLocales({}));
+  } catch {
+    // Android <=12 returns empty (or throws without a service package) — can't validate.
+  }
+  if (!locales.length) return desired; // no list to check against; let the recognizer decide
+  if (locales.some((l) => l.toLowerCase() === desired.toLowerCase())) return desired;
+  const lang = desired.toLowerCase().split('-')[0];
+  const sameLang = locales.find((l) => l.toLowerCase().split('-')[0] === lang);
+  if (sameLang) return sameLang;
+  // Last resort: keep English if present, else the first supported locale.
+  return locales.find((l) => l.toLowerCase().startsWith('en')) ?? locales[0];
+};
+
 const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTextOptions) => {
   const [isListening, setIsListening] = useState(false);
   const onResultRef = useRef(onResult);
@@ -106,8 +126,9 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
     }
     const voiceLanguage = usePreferencesStore.getState().voiceLanguage;
     try {
+      const lang = await resolveSupportedLocale(voiceLanguage ?? getLocale());
       ExpoSpeechRecognitionModule.start({
-        lang: voiceLanguage ?? getLocale(),
+        lang,
         continuous: true,
         interimResults: true,
         volumeChangeEventOptions: { enabled: true, intervalMillis: 80 },
