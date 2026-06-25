@@ -85,7 +85,11 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
   });
 
   useSpeechRecognitionEvent('error', (event) => {
-    pendingErrorRef.current = event.message ?? 'Speech recognition failed';
+    // Include the error code (e.g. "language-not-supported", "service-not-allowed")
+    // alongside the message — on a release build this is the only way to see why
+    // recognition failed without device logs.
+    const code = event.error ? `[${event.error}] ` : '';
+    pendingErrorRef.current = `${code}${event.message ?? 'Speech recognition failed'}`;
   });
 
   const start = useCallback(async () => {
@@ -101,12 +105,20 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
       return;
     }
     const voiceLanguage = usePreferencesStore.getState().voiceLanguage;
-    ExpoSpeechRecognitionModule.start({
-      lang: voiceLanguage ?? getLocale(),
-      continuous: true,
-      interimResults: true,
-      volumeChangeEventOptions: { enabled: true, intervalMillis: 80 },
-    });
+    try {
+      ExpoSpeechRecognitionModule.start({
+        lang: voiceLanguage ?? getLocale(),
+        continuous: true,
+        interimResults: true,
+        volumeChangeEventOptions: { enabled: true, intervalMillis: 80 },
+      });
+    } catch (e) {
+      // A synchronous native throw (e.g. no recognition service on the device) would
+      // otherwise surface as an unhandled rejection. Route it through onError so the
+      // user sees a real message instead of a crash.
+      const message = e instanceof Error ? e.message : String(e);
+      onErrorRef.current?.(`start failed: ${message}`);
+    }
   }, []);
 
   const stop = useCallback(() => {

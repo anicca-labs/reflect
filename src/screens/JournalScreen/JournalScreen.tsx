@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect, type ComponentRef } from 'react';
-import { Alert, Linking, View } from 'react-native';
+import { Alert, Keyboard, Linking, View } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -169,7 +169,7 @@ const JournalScreen = () => {
         return prev + separator + transcript;
       });
     },
-    onError: () => alert({ title: t`Voice recognition failed`, preset: 'error' }),
+    onError: (message) => alert({ title: t`Voice recognition failed`, message, preset: 'error' }),
     onPermissionDenied: () =>
       Alert.alert(
         t`Microphone access required`,
@@ -244,6 +244,12 @@ const JournalScreen = () => {
   const dismissOpenCard = () => {
     if (hasOpenCard) setCloseKey((k) => k + 1);
   };
+  // Tap-outside handler for areas that do NOT contain the TextArea (header, entries list).
+  // Putting this on the input's own ancestor would dismiss the keyboard mid-typing.
+  const dismissOutside = () => {
+    Keyboard.dismiss();
+    dismissOpenCard();
+  };
 
   const todayEntries = entries.filter((e) => isToday(e.created_at));
   const streak = useStreak(entries);
@@ -286,6 +292,7 @@ const JournalScreen = () => {
     }
 
     setDraft('');
+    Keyboard.dismiss();
 
     if (isAnonymous) {
       addLocalEntry(trimmed);
@@ -310,27 +317,30 @@ const JournalScreen = () => {
       <BlurTargetView ref={blurTargetRef} style={{ flex: 1 }}>
         <YStack flex={1}>
           <YStack p="$5" pb="$4" onTouchStart={dismissOpenCard}>
-            <LabelMd
-              color="$text-disabled"
-              mb="$1"
-              textTransform="uppercase"
-              letterSpacing={LABEL_LETTER_SPACING}
-            >
-              {formatDateHeading(new Date().toISOString())}
-            </LabelMd>
-            <XStack justify="space-between" items="flex-end" mb="$6">
-              <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
-                <Trans>Journal</Trans>
-              </DisplayLg>
-              {streak > 0 ? (
-                <YStack items="flex-end">
-                  <LabelMd color="$accentBackground" letterSpacing={STREAK_LETTER_SPACING}>
-                    {streak} {streak === 1 ? <Trans>day streak</Trans> : <Trans>days streak</Trans>}{' '}
-                    🔥
-                  </LabelMd>
-                </YStack>
-              ) : null}
-            </XStack>
+            {/* Header sits outside the TextArea, so tapping it dismisses the keyboard. */}
+            <YStack onTouchStart={dismissOutside}>
+              <LabelMd
+                color="$text-disabled"
+                mb="$1"
+                textTransform="uppercase"
+                letterSpacing={LABEL_LETTER_SPACING}
+              >
+                {formatDateHeading(new Date().toISOString())}
+              </LabelMd>
+              <XStack justify="space-between" items="flex-end" mb="$6">
+                <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
+                  <Trans>Journal</Trans>
+                </DisplayLg>
+                {streak > 0 ? (
+                  <YStack items="flex-end">
+                    <LabelMd color="$accentBackground" letterSpacing={STREAK_LETTER_SPACING}>
+                      {streak}{' '}
+                      {streak === 1 ? <Trans>day streak</Trans> : <Trans>days streak</Trans>} 🔥
+                    </LabelMd>
+                  </YStack>
+                ) : null}
+              </XStack>
+            </YStack>
 
             <YStack
               bg="$surface-card"
@@ -441,7 +451,8 @@ const JournalScreen = () => {
           <ScrollView
             flex={1}
             contentContainerStyle={{ paddingHorizontal: sizes.xl, paddingBottom: sizes.xl }}
-            onTouchStart={dismissOpenCard}
+            keyboardShouldPersistTaps="handled"
+            onTouchStart={dismissOutside}
           >
             {loading && !todayEntries.length ? (
               <YStack items="center" mt="$4">
