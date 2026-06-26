@@ -54,23 +54,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         { SKAdNetworkIdentifier: 'n38lu8286q.skadnetwork' },
       ],
     },
-    // iOS 17+ privacy manifest. Declares that the app engages in tracking and
-    // collects the device ID (IDFA) for third-party advertising — required by
-    // Apple now that the Meta SDK is bundled. The Meta/Firebase pods ship their
-    // own manifests for the APIs they call; this declares the app's posture.
-    privacyManifests: {
-      NSPrivacyTracking: true,
-      NSPrivacyCollectedDataTypes: [
-        {
-          NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeDeviceID',
-          NSPrivacyCollectedDataTypeLinked: true,
-          NSPrivacyCollectedDataTypeTracking: true,
-          NSPrivacyCollectedDataTypePurposes: [
-            'NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising',
-          ],
-        },
-      ],
-    },
     entitlements: {
       'aps-environment': 'production',
       'com.apple.developer.applesignin': ['Default'],
