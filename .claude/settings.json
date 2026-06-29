@@ -55,7 +55,10 @@
       "mcp__context7__resolve-library-id",
       "mcp__context7__query-docs",
       "mcp__doppler__secrets_update",
-      "mcp__supabase__execute_sql"
+      "mcp__supabase__execute_sql",
+      "Skill(deep-research)",
+      "Skill(deep-research:*)",
+      "Workflow(deep-research)"
     ],
     "deny": []
   },
