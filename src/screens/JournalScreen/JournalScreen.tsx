@@ -145,13 +145,17 @@ const JournalScreen = () => {
   const { alert } = useToast();
   const inputRef = useRef<ComponentRef<typeof TextArea>>(null);
 
+  // Voice transcripts arrive without terminal punctuation, so close the
+  // dictated draft with a period when it doesn't already end in punctuation.
+  const withClosingPunctuation = (text: string) => {
+    const trimmed = text.trimEnd();
+    if (!trimmed || /[.!?,;:]$/.test(trimmed)) return trimmed;
+    return trimmed + '.';
+  };
+
   const handleStopListening = () => {
     stopListening();
-    setDraft((prev) => {
-      const trimmed = prev.trimEnd();
-      if (!trimmed || /[.!?,;:]$/.test(trimmed)) return prev;
-      return trimmed + '.';
-    });
+    setDraft(withClosingPunctuation);
   };
 
   const {
@@ -272,8 +276,11 @@ const JournalScreen = () => {
     !isPro && entries.length >= FREE_ENTRY_LIMIT - 2 && entries.length < FREE_ENTRY_LIMIT;
 
   const handleSave = async () => {
+    // Saving mid-dictation: close the transcript with punctuation before
+    // stopping, matching what the mic-button stop does.
+    const source = isListening ? withClosingPunctuation(draft) : draft;
     if (isListening) stopListening();
-    const trimmed = draft.trim();
+    const trimmed = source.trim();
     if (!trimmed) return;
 
     if (atLimit) {
