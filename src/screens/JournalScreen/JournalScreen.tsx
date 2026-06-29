@@ -162,6 +162,7 @@ const JournalScreen = () => {
     isListening,
     start: startListening,
     stop: stopListening,
+    clear: clearListening,
   } = useVoiceToText({
     onResult: (transcript, replaces) => {
       setDraft((prev) => {
@@ -221,6 +222,9 @@ const JournalScreen = () => {
 
   const handleClearDraft = () => {
     setDraft('');
+    // Discard any in-flight dictation too, so the cleared words aren't re-prefixed to
+    // the next utterance while recording continues.
+    clearListening();
   };
 
   const entries = isAnonymous ? localEntries : serverEntries;

@@ -55,6 +55,13 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
   /* eslint-enable react-hooks/refs */
 
   const sessionTranscriptRef = useRef('');
+  // The raw, unstripped cumulative transcript last seen from the engine. Tracked
+  // separately from sessionTranscriptRef (which holds what we actually emit) so a
+  // mid-session clear() can baseline against the true engine state.
+  const lastRawRef = useRef('');
+  // Set by clear() while listening: the engine keeps emitting pre-clear words as a
+  // cumulative prefix, so strip this baseline from subsequent results.
+  const clearedBaselineRef = useRef('');
   const sessionEndedRef = useRef(false);
   const userStoppedRef = useRef(false);
   const pendingErrorRef = useRef<string | null>(null);
@@ -101,6 +108,8 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
     userStoppedRef.current = false;
     pendingErrorRef.current = null;
     sessionTranscriptRef.current = '';
+    lastRawRef.current = '';
+    clearedBaselineRef.current = '';
     lastFinalRef.current = '';
     // A real session started — the fresh-grant retry window is over.
     justGrantedRef.current = false;
@@ -111,6 +120,8 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
   useSpeechRecognitionEvent('end', () => {
     sessionEndedRef.current = true;
     sessionTranscriptRef.current = '';
+    lastRawRef.current = '';
+    clearedBaselineRef.current = '';
     lastFinalRef.current = '';
     setIsListening(false);
     const pendingError = pendingErrorRef.current;
@@ -131,22 +142,42 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
 
   useSpeechRecognitionEvent('result', (event) => {
     if (sessionEndedRef.current || userStoppedRef.current) return;
-    const transcript = event.results[0]?.transcript;
-    if (!transcript) return;
+    const raw = event.results[0]?.transcript;
+    if (!raw) return;
+
+    // Cumulative transcripts only grow within a segment. If the raw transcript is shorter
+    // than what we last saw, the engine restarted the segment internally after a natural
+    // pause without firing end/start — treat it as a fresh segment so we append, not
+    // replace, and drop any discarded-prefix baseline (those words are gone now).
+    if (raw.length < lastRawRef.current.length) {
+      sessionTranscriptRef.current = '';
+      clearedBaselineRef.current = '';
+    }
+    lastRawRef.current = raw;
+
+    // After a mid-session clear(), the engine keeps emitting the pre-clear words as a
+    // cumulative prefix. Strip that baseline so only newly-spoken words reach the draft.
+    let transcript = raw;
+    if (clearedBaselineRef.current) {
+      if (raw.startsWith(clearedBaselineRef.current)) {
+        transcript = raw.slice(clearedBaselineRef.current.length).replace(/^\s+/, '');
+      } else {
+        // The engine no longer carries the discarded words — stop stripping.
+        clearedBaselineRef.current = '';
+      }
+    }
+
     if (event.isFinal) {
-      if (transcript === lastFinalRef.current) return;
-      lastFinalRef.current = transcript;
+      if (raw === lastFinalRef.current) return;
+      lastFinalRef.current = raw;
       onResultRef.current(transcript, sessionTranscriptRef.current);
       sessionTranscriptRef.current = '';
+      // Segment committed — the next segment starts fresh, so baseline/raw tracking reset.
+      clearedBaselineRef.current = '';
+      lastRawRef.current = '';
     } else {
       // Non-final means a new utterance is forming — reset the dedup window.
       lastFinalRef.current = '';
-      // Android cumulative transcripts only grow within a segment. If the new transcript is
-      // shorter than what we tracked, the engine restarted internally after a natural pause
-      // without firing end/start — treat it as a fresh segment so we append, not replace.
-      if (transcript.length < sessionTranscriptRef.current.length) {
-        sessionTranscriptRef.current = '';
-      }
       onResultRef.current(transcript, sessionTranscriptRef.current);
       sessionTranscriptRef.current = transcript;
     }
@@ -188,7 +219,19 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
   const stop = useCallback(() => {
     userStoppedRef.current = true;
     sessionTranscriptRef.current = '';
+    lastRawRef.current = '';
+    clearedBaselineRef.current = '';
     ExpoSpeechRecognitionModule.stop();
+  }, []);
+
+  // Discard the current session's transcript (e.g. user cleared the draft mid-dictation).
+  // While listening, the engine keeps emitting the pre-clear words cumulatively, so
+  // remember them as a baseline to strip from future results; when idle there's nothing
+  // to strip and lastRawRef is already empty.
+  const clear = useCallback(() => {
+    clearedBaselineRef.current = lastRawRef.current;
+    sessionTranscriptRef.current = '';
+    lastFinalRef.current = '';
   }, []);
 
   // Safety net: if the consumer unmounts while a session is live, stop the native
@@ -200,7 +243,7 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
     };
   }, []);
 
-  return { isListening, start, stop };
+  return { isListening, start, stop, clear };
 };
 
 export { useVoiceToText };
