@@ -1,11 +1,9 @@
 {
-  "includeCoAuthoredBy": false,
-  "attribution": { "commit": "", "pr": "" },
-  "enableAllProjectMcpServers": true,
-  "extraKnownMarketplaces": {
-    "ksairi-org": { "source": { "source": "github", "repo": "ksairi-org/claude" } }
+  "attribution": {
+    "commit": "",
+    "pr": ""
   },
-  "enabledPlugins": { "expo-rn-plugin@ksairi-org": true },
+  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
       "Bash(tsc:*)",
@@ -53,8 +51,27 @@
       "WebFetch(domain:registry.npmjs.org)",
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:cdn.jsdelivr.net)",
-      "WebFetch(domain:esm.sh)"
+      "WebFetch(domain:esm.sh)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "mcp__doppler__secrets_update",
+      "mcp__supabase__execute_sql",
+      "Skill(deep-research)",
+      "Skill(deep-research:*)",
+      "Workflow(deep-research)"
     ],
     "deny": []
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledPlugins": {
+    "expo-rn-plugin@ksairi-org": true
+  },
+  "extraKnownMarketplaces": {
+    "ksairi-org": {
+      "source": {
+        "source": "github",
+        "repo": "ksairi-org/claude"
+      }
+    }
   }
 }
