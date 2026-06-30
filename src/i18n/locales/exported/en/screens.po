@@ -564,3 +564,15 @@ msgstr ""
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."
 msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Saved offline"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "This entry will sync automatically when you're back online."
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Couldn't save entry"
+msgstr ""

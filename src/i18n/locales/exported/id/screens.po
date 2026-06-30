@@ -564,3 +564,15 @@ msgstr "Anda menggunakan reflect sebagai tamu. Masuk untuk menyinkronkan jurnal 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."
 msgstr "Akun dan entri jurnal Anda akan dihapus secara permanen."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Saved offline"
+msgstr "Disimpan offline"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "This entry will sync automatically when you're back online."
+msgstr "Entri ini akan disinkronkan secara otomatis saat Anda kembali online."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Couldn't save entry"
+msgstr "Tidak dapat menyimpan entri"
