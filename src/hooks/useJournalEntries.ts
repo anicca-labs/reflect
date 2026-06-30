@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/src/services/supabase';
+import { isTransientNetworkError } from '@/src/services/supabase/fetchWithRetry';
 import { encryptContent, decryptContent, PREFIX } from '@/src/services/crypto';
+import { isOnline } from '@/src/services/network';
 import type { JournalEntry } from '@/src/types/journal';
-import { useSessionStore } from '@/src/stores';
+import { useSessionStore, usePendingJournalStore } from '@/src/stores';
 
 const QUERY_KEY = ['journal-entries'] as const;
 
@@ -48,25 +50,55 @@ const useJournalEntries = () => {
   });
 };
 
+type CreateResult = { entry: JournalEntry; queued: boolean };
+
 const useCreateJournalEntry = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (content: string) => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-      const { data, error } = await supabase
-        .from('journal_entries')
-        .insert({ content: encryptContent(content), user_id: user.id })
-        .select()
-        .single();
-      if (error) throw error;
-      const entry: JournalEntry = { ...data, content };
-      return entry;
+    mutationFn: async (content: string): Promise<CreateResult> => {
+      // Hold the entry locally so it isn't lost; journalSync pushes it once
+      // connectivity returns.
+      const enqueueOffline = (): CreateResult => ({
+        entry: usePendingJournalStore.getState().enqueue(content),
+        queued: true,
+      });
+
+      // Skip the round-trip when we already know we're offline.
+      if (!(await isOnline())) return enqueueOffline();
+
+      try {
+        // Resolve the user from the locally-persisted session rather than
+        // getUser(): getUser() makes a network round-trip and returns a null
+        // user when connectivity is flaky (NetInfo can still report "online"),
+        // which surfaced as a spurious "Not authenticated" (REFLECT-A) and
+        // dropped the entry. getSession() reads from storage and works offline.
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        const user = session?.user;
+        // No resolvable user (signed out, or session not yet rehydrated): keep
+        // the entry in the offline outbox and let the sync flush attach it once
+        // a valid session is available, instead of throwing and losing it.
+        if (!user) return enqueueOffline();
+        const { data, error } = await supabase
+          .from('journal_entries')
+          .insert({ content: encryptContent(content), user_id: user.id })
+          .select()
+          .single();
+        if (error) throw error;
+        return { entry: { ...data, content }, queued: false };
+      } catch (err) {
+        // Lost the connection mid-save — queue it rather than drop the entry.
+        if (isTransientNetworkError(err)) return enqueueOffline();
+        throw err;
+      }
     },
-    onSuccess: (newEntry) => {
-      queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) => [newEntry, ...(old ?? [])]);
+    onSuccess: ({ entry, queued }) => {
+      // Queued entries are surfaced via the pending store + screen merge; only
+      // server-confirmed entries belong in the read-query cache.
+      if (!queued) {
+        queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) => [entry, ...(old ?? [])]);
+      }
     },
   });
 };

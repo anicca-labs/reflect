@@ -564,3 +564,15 @@ msgstr "أنت تستخدم reflect كضيف. سجّل الدخول لمزامن
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."
 msgstr "سيتم حذف حسابك ومدوّناتك نهائيًا."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Saved offline"
+msgstr "تم الحفظ دون اتصال"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "This entry will sync automatically when you're back online."
+msgstr "ستتم مزامنة هذا التسجيل تلقائيًا عند عودة الاتصال بالإنترنت."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Couldn't save entry"
+msgstr "تعذّر حفظ التسجيل"

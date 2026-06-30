@@ -7,7 +7,7 @@ import { supabase } from '@/src/services/supabase';
 import { encryptContent } from '@/src/services/crypto';
 import { identifyRevenueCatUser, resetRevenueCatUser } from '@/src/services/revenue-cat';
 import { upsertDeviceToken } from '@/src/services/user-devices';
-import { useSessionStore, useAnonymousJournalStore } from '@/src/stores';
+import { useSessionStore, useAnonymousJournalStore, usePendingJournalStore } from '@/src/stores';
 import { queryClient } from '@/src/services/queryClient';
 import type { JournalEntry } from '@/src/types/journal';
 
@@ -135,6 +135,9 @@ const useAuthSession = () => {
           clearAnonymous();
         }
         resetRevenueCatUser();
+        // Discard any unsynced offline entries so they can't leak into the next
+        // account signed in on this device.
+        usePendingJournalStore.getState().clear();
         // Drop the previous user's cached journal entries. Besides not leaking
         // stale data into a signed-out session, this is what makes the memory
         // notification replay land after login: with the cache cleared, the

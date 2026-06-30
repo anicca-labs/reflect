@@ -25,6 +25,7 @@ import {
   useSwipeableStore,
   useSessionStore,
   useAnonymousJournalStore,
+  usePendingJournalStore,
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
 import { logJournalEntryCreated, logScreenView } from '@analytics';
@@ -135,6 +136,11 @@ const JournalScreen = () => {
     addEntry: addLocalEntry,
     deleteEntry: deleteLocalEntry,
   } = useAnonymousJournalStore();
+  // Authenticated entries saved offline, awaiting sync. Shown above server
+  // entries so the user sees their writing immediately, even after a restart.
+  const pendingEntries = usePendingJournalStore((s) => s.entries);
+  const removePendingEntry = usePendingJournalStore((s) => s.remove);
+  const togglePendingBookmark = usePendingJournalStore((s) => s.toggleBookmark);
 
   const { data: serverEntries = [], isLoading: serverLoading, refetch } = useJournalEntries();
   const createMutation = useCreateJournalEntry();
@@ -227,7 +233,13 @@ const JournalScreen = () => {
     clearListening();
   };
 
-  const entries = isAnonymous ? localEntries : serverEntries;
+  // Once a pending entry syncs, its server row (same id) lands in the cache.
+  // Drop the pending copy so the list keeps a single, stable-keyed element —
+  // React updates it in place instead of remounting, so there's no flicker.
+  const serverIds = new Set(serverEntries.map((e) => e.id));
+  const unsyncedEntries = pendingEntries.filter((e) => !serverIds.has(e.id));
+  const pendingIds = new Set(unsyncedEntries.map((e) => e.id));
+  const entries = isAnonymous ? localEntries : [...unsyncedEntries, ...serverEntries];
   const loading = isAnonymous ? false : serverLoading;
   const peekEntry = peekEntryId ? (entries.find((e) => e.id === peekEntryId) ?? null) : null;
 
@@ -311,13 +323,33 @@ const JournalScreen = () => {
       return;
     }
 
-    await createMutation.mutateAsync(trimmed);
-    logJournalEntryCreated(trimmed.split(/\s+/).length);
+    try {
+      const { queued } = await createMutation.mutateAsync(trimmed);
+      logJournalEntryCreated(trimmed.split(/\s+/).length);
+      if (queued) {
+        alert({
+          title: t`Saved offline`,
+          message: t`This entry will sync automatically when you're back online.`,
+        });
+      }
+    } catch {
+      // Unexpected (non-network) failure — restore the draft so the user's
+      // writing isn't lost, and let them retry.
+      setDraft(trimmed);
+      alert({
+        title: t`Couldn't save entry`,
+        message: t`Something went wrong. Please try again.`,
+        preset: 'error',
+      });
+    }
   };
 
   const handleDelete = (id: string) => {
     if (isAnonymous) {
       deleteLocalEntry(id);
+    } else if (pendingIds.has(id)) {
+      // Not on the server yet — just drop it from the offline outbox.
+      removePendingEntry(id);
     } else {
       deleteMutation.mutate(id);
     }
@@ -511,7 +543,10 @@ const JournalScreen = () => {
         onToggleBookmark={
           isAnonymous
             ? undefined
-            : (id, current) => toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })
+            : (id, current) =>
+                pendingIds.has(id)
+                  ? togglePendingBookmark(id)
+                  : toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })
         }
       />
     </Containers.Screen>

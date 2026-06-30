@@ -15,3 +15,4 @@ export * from './useWritingPrompt';
 export * from './useToast';
 export * from './useVoiceToText';
 export * from './useOtaUpdate';
+export * from './useOfflineJournalSync';
