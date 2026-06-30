@@ -51,9 +51,39 @@ const useJournalEntries = () => {
         });
       }
 
-      return raw.map((e) => ({ ...e, content: decryptContent(e.content) })) as JournalEntry[];
+      const entries = raw.map((e) => ({
+        ...e,
+        content: decryptContent(e.content),
+      })) as JournalEntry[];
+
+      // Reconcile durable offline state against server *truth*. This is the only
+      // place tombstones/bookmark-patches are cleared — never on a write's
+      // success — so an in-flight refetch that raced a delete (and still shows
+      // the row) can't resurrect it: the tombstone stays until a read confirms
+      // the row is actually gone.
+      reconcilePendingState(entries);
+
+      return entries;
     },
   });
+};
+
+// Drop pending state the server has now confirmed: a tombstone whose row is
+// absent (deleted), and a bookmark whose server value already matches the
+// desired one (or whose row is gone).
+const reconcilePendingState = (entries: JournalEntry[]) => {
+  const byId = new Map(entries.map((e) => [e.id, e]));
+
+  const deletions = usePendingDeletionsStore.getState();
+  for (const id of deletions.ids) {
+    if (!byId.has(id)) deletions.remove(id);
+  }
+
+  const bookmarks = usePendingBookmarksStore.getState();
+  for (const id of Object.keys(bookmarks.values)) {
+    const entry = byId.get(id);
+    if (!entry || entry.is_bookmarked === bookmarks.values[id]) bookmarks.remove(id);
+  }
 };
 
 type CreateResult = { entry: JournalEntry; queued: boolean };

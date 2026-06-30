@@ -102,11 +102,13 @@ const flushPendingJournalEntries = async (): Promise<void> => {
 };
 
 /**
- * Push queued offline deletions to Supabase. For each tombstoned id we delete
- * the server row, then remove it from the read-cache and drop the tombstone —
- * in that order, so the row can't flash back in the window between clearing the
- * tombstone and the next refetch. A deletion of an already-absent row is not an
- * error in PostgREST, so re-running this is safe. Concurrent calls are coalesced.
+ * Push queued offline deletions to Supabase. We write the DELETE but DO NOT clear
+ * the tombstone here — a refetch that raced this delete (its request issued
+ * before the row was gone) could otherwise land afterwards and resurrect the row
+ * with no tombstone left to hide it. Instead we invalidate the read query; the
+ * read path (reconcilePendingState) drops the tombstone only once a fresh server
+ * read confirms the row is actually gone. Deleting an already-absent row is not
+ * an error in PostgREST, so re-running is safe. Concurrent calls are coalesced.
  */
 const flushPendingDeletions = async (): Promise<void> => {
   if (isDeleteFlushing) return;
@@ -119,19 +121,15 @@ const flushPendingDeletions = async (): Promise<void> => {
   if (!user) return; // signed out — nothing to sync against
 
   isDeleteFlushing = true;
+  let wrote = false;
   try {
-    // Oldest-first; re-check membership each iteration in case the tombstone was
-    // cleared (e.g. the entry was re-created) while we were flushing.
     const ordered = [...usePendingDeletionsStore.getState().ids].reverse();
     for (const id of ordered) {
       if (!usePendingDeletionsStore.getState().ids.includes(id)) continue;
       try {
         const { error } = await supabase.from('journal_entries').delete().eq('id', id);
         if (error) throw error;
-        queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) =>
-          (old ?? []).filter((e) => e.id !== id),
-        );
-        usePendingDeletionsStore.getState().remove(id);
+        wrote = true;
       } catch (err) {
         // Transient: keep the tombstone and retry on the next trigger.
         if (isTransientNetworkError(err)) break;
@@ -145,13 +143,17 @@ const flushPendingDeletions = async (): Promise<void> => {
   } finally {
     isDeleteFlushing = false;
   }
+  // Force a fresh, post-delete read so reconcilePendingState confirms the rows
+  // are gone and clears their tombstones — never cleared on write-success alone,
+  // which a raced refetch could otherwise undo.
+  if (wrote) queryClient.invalidateQueries({ queryKey: QUERY_KEY });
 };
 
 /**
- * Push queued offline bookmark toggles to Supabase. For each id we write the
- * desired value, mirror it into the read-cache, then drop it from the queue —
- * but only if the user hasn't toggled it again since we read it, so a newer
- * toggle isn't lost. Re-running is safe (idempotent write). Coalesced.
+ * Push queued offline bookmark toggles to Supabase. As with deletions we DON'T
+ * clear the queued value on write success — a raced refetch could revert it.
+ * We invalidate the read query and let reconcilePendingState drop the value once
+ * a fresh read shows the server already matches. Idempotent; coalesced.
  */
 const flushPendingBookmarks = async (): Promise<void> => {
   if (isBookmarkFlushing) return;
@@ -163,6 +165,7 @@ const flushPendingBookmarks = async (): Promise<void> => {
   if (!session?.user) return; // signed out — nothing to sync against
 
   isBookmarkFlushing = true;
+  let wrote = false;
   try {
     for (const id of Object.keys(usePendingBookmarksStore.getState().values)) {
       const value = usePendingBookmarksStore.getState().values[id];
@@ -173,13 +176,7 @@ const flushPendingBookmarks = async (): Promise<void> => {
           .update({ is_bookmarked: value })
           .eq('id', id);
         if (error) throw error;
-        queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) =>
-          (old ?? []).map((e) => (e.id === id ? { ...e, is_bookmarked: value } : e)),
-        );
-        // Only drop the queued value if it hasn't changed while we were writing.
-        if (usePendingBookmarksStore.getState().values[id] === value) {
-          usePendingBookmarksStore.getState().remove(id);
-        }
+        wrote = true;
       } catch (err) {
         if (isTransientNetworkError(err)) break; // retry on the next trigger
         // Non-transient (e.g. the row isn't ours): drop it so it can't wedge.
@@ -190,6 +187,7 @@ const flushPendingBookmarks = async (): Promise<void> => {
   } finally {
     isBookmarkFlushing = false;
   }
+  if (wrote) queryClient.invalidateQueries({ queryKey: QUERY_KEY });
 };
 
 export { flushPendingJournalEntries, flushPendingDeletions, flushPendingBookmarks };
