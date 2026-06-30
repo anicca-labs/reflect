@@ -58,7 +58,8 @@
       "mcp__supabase__execute_sql",
       "Skill(deep-research)",
       "Skill(deep-research:*)",
-      "Workflow(deep-research)"
+      "Workflow(deep-research)",
+      "mcp__supabase__get_project"
     ],
     "deny": []
   },
