@@ -131,13 +131,15 @@ const flushPendingDeletions = async (): Promise<void> => {
         if (error) throw error;
         wrote = true;
       } catch (err) {
-        // Transient: keep the tombstone and retry on the next trigger.
-        if (isTransientNetworkError(err)) break;
-        // Non-transient (e.g. the row isn't ours): drop the tombstone so it
-        // can't wedge the queue forever. Don't touch the cache — a later refetch
-        // reflects the true server state.
-        console.error('[journal-sync] delete flush dropped a tombstone:', err);
-        usePendingDeletionsStore.getState().remove(id);
+        // Stop and retry everything on the next trigger; keep ALL tombstones.
+        // NEVER drop a tombstone on a failed delete (a transient offline error,
+        // or a 401 in the moment after reconnect before the token refreshes) —
+        // that is exactly what resurrected rows. Only reconcilePendingState, when
+        // a server read no longer returns the row, may clear it.
+        if (!isTransientNetworkError(err)) {
+          console.error('[journal-sync] delete flush error (kept queued):', err);
+        }
+        break;
       }
     }
   } finally {
@@ -178,10 +180,14 @@ const flushPendingBookmarks = async (): Promise<void> => {
         if (error) throw error;
         wrote = true;
       } catch (err) {
-        if (isTransientNetworkError(err)) break; // retry on the next trigger
-        // Non-transient (e.g. the row isn't ours): drop it so it can't wedge.
-        console.error('[journal-sync] bookmark flush dropped a value:', err);
-        usePendingBookmarksStore.getState().remove(id);
+        // Keep ALL queued values and retry next trigger. NEVER drop a value on a
+        // failed write (a transient offline error or a post-reconnect 401 would
+        // wrongly revert the star). reconcilePendingState clears it only once a
+        // server read shows the value already matches.
+        if (!isTransientNetworkError(err)) {
+          console.error('[journal-sync] bookmark flush error (kept queued):', err);
+        }
+        break;
       }
     }
   } finally {

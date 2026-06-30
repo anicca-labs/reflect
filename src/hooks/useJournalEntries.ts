@@ -172,6 +172,7 @@ const useUpdateJournalEntry = () => {
 };
 
 const useToggleBookmark = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     // Runs regardless of connectivity (it records a durable desired value), so
     // it must never be paused by the offline manager.
@@ -180,11 +181,14 @@ const useToggleBookmark = () => {
       await flushPendingBookmarks();
     },
     onMutate: ({ id, is_bookmarked }) => {
-      // Record the desired value; the screens apply it over the server row, so
-      // the star flips instantly and a refetch can't revert it (no flicker).
-      // flushPendingBookmarks (in mutationFn) writes it to the server when online
-      // and drops it once confirmed.
+      // Record the durable desired value (the screens apply it over the server
+      // row so it survives a refetch) AND mirror it into the cache for an
+      // instant flip. flushPendingBookmarks writes it to the server when online;
+      // reconcilePendingState drops the value once the server matches.
       usePendingBookmarksStore.getState().set(id, is_bookmarked);
+      queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) =>
+        (old ?? []).map((e) => (e.id === id ? { ...e, is_bookmarked } : e)),
+      );
     },
   });
 };
