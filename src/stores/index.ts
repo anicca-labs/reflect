@@ -98,3 +98,4 @@ const usePeekStore = create<PeekStoreState>((set) => ({
 export { useUserStore, useSwipeableStore, usePreferencesStore, useSessionStore, usePeekStore };
 export type { PendingMerge };
 export { useAnonymousJournalStore } from './anonymousJournal';
+export { usePendingJournalStore, isPendingId, PENDING_ID_PREFIX } from './pendingJournal';
