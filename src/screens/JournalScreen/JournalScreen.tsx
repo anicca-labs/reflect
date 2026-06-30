@@ -27,6 +27,7 @@ import {
   useAnonymousJournalStore,
   usePendingJournalStore,
   usePendingDeletionsStore,
+  usePendingBookmarksStore,
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
 import { isOnline } from '@/src/services/network';
@@ -239,10 +240,14 @@ const JournalScreen = () => {
   // Drop the pending copy so the list keeps a single, stable-keyed element —
   // React updates it in place instead of remounting, so there's no flicker.
   // Hide rows the user deleted offline; the tombstone outlives a server refetch
-  // so they can't reappear before the delete reaches the server.
+  // so they can't reappear before the delete reaches the server. Apply pending
+  // bookmark toggles over the server rows so the star can't flicker on refetch.
   const deletedIds = usePendingDeletionsStore((s) => s.ids);
+  const bookmarkPatches = usePendingBookmarksStore((s) => s.values);
   const tombstoned = new Set(deletedIds);
-  const visibleServerEntries = serverEntries.filter((e) => !tombstoned.has(e.id));
+  const visibleServerEntries = serverEntries
+    .filter((e) => !tombstoned.has(e.id))
+    .map((e) => (e.id in bookmarkPatches ? { ...e, is_bookmarked: bookmarkPatches[e.id] } : e));
   const serverIds = new Set(visibleServerEntries.map((e) => e.id));
   const unsyncedEntries = pendingEntries.filter((e) => !serverIds.has(e.id));
   const pendingIds = new Set(unsyncedEntries.map((e) => e.id));

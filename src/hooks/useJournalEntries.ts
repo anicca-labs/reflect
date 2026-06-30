@@ -4,8 +4,13 @@ import { isTransientNetworkError } from '@/src/services/supabase/fetchWithRetry'
 import { encryptContent, decryptContent, PREFIX } from '@/src/services/crypto';
 import { isOnline } from '@/src/services/network';
 import type { JournalEntry } from '@/src/types/journal';
-import { useSessionStore, usePendingJournalStore, usePendingDeletionsStore } from '@/src/stores';
-import { flushPendingDeletions } from '@/src/services/journalSync';
+import {
+  useSessionStore,
+  usePendingJournalStore,
+  usePendingDeletionsStore,
+  usePendingBookmarksStore,
+} from '@/src/stores';
+import { flushPendingDeletions, flushPendingBookmarks } from '@/src/services/journalSync';
 
 const QUERY_KEY = ['journal-entries'] as const;
 
@@ -137,27 +142,20 @@ const useUpdateJournalEntry = () => {
 };
 
 const useToggleBookmark = () => {
-  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, is_bookmarked }: { id: string; is_bookmarked: boolean }) => {
-      const { error } = await supabase
-        .from('journal_entries')
-        .update({ is_bookmarked })
-        .eq('id', id);
-      if (error) throw error;
+    // Runs regardless of connectivity (it records a durable desired value), so
+    // it must never be paused by the offline manager.
+    networkMode: 'always',
+    mutationFn: async (_vars: { id: string; is_bookmarked: boolean }) => {
+      await flushPendingBookmarks();
     },
-    onMutate: async ({ id, is_bookmarked }) => {
-      await queryClient.cancelQueries({ queryKey: QUERY_KEY });
-      const previous = queryClient.getQueryData<JournalEntry[]>(QUERY_KEY);
-      queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) =>
-        (old ?? []).map((e) => (e.id === id ? { ...e, is_bookmarked } : e)),
-      );
-      return { previous };
+    onMutate: ({ id, is_bookmarked }) => {
+      // Record the desired value; the screens apply it over the server row, so
+      // the star flips instantly and a refetch can't revert it (no flicker).
+      // flushPendingBookmarks (in mutationFn) writes it to the server when online
+      // and drops it once confirmed.
+      usePendingBookmarksStore.getState().set(id, is_bookmarked);
     },
-    onError: (_err, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(QUERY_KEY, ctx.previous);
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 };
 

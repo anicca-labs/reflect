@@ -19,6 +19,7 @@ import {
   useAnonymousJournalStore,
   usePendingJournalStore,
   usePendingDeletionsStore,
+  usePendingBookmarksStore,
   usePeekStore,
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
@@ -138,20 +139,24 @@ const ReflectionsScreen = () => {
   const removePendingEntry = usePendingJournalStore((s) => s.remove);
   const togglePendingBookmark = usePendingJournalStore((s) => s.toggleBookmark);
   // Hide rows deleted offline; the tombstone outlives a refetch so they can't
-  // reappear before the delete reaches the server. Memoized so `entries` keeps a
-  // stable identity for the peek-scroll effect's dependency array.
+  // reappear before the delete reaches the server. Apply pending bookmark
+  // toggles over server rows so the star can't flicker on refetch. Memoized so
+  // `entries` keeps a stable identity for the peek-scroll effect's deps.
   const deletedIds = usePendingDeletionsStore((s) => s.ids);
+  const bookmarkPatches = usePendingBookmarksStore((s) => s.values);
   const { entries, pendingIds } = useMemo(() => {
     if (isAnonymous) return { entries: localEntries, pendingIds: new Set<string>() };
     const tombstoned = new Set(deletedIds);
-    const visibleServerEntries = serverEntries.filter((e) => !tombstoned.has(e.id));
+    const visibleServerEntries = serverEntries
+      .filter((e) => !tombstoned.has(e.id))
+      .map((e) => (e.id in bookmarkPatches ? { ...e, is_bookmarked: bookmarkPatches[e.id] } : e));
     const serverIds = new Set(visibleServerEntries.map((e) => e.id));
     const unsyncedEntries = pendingEntries.filter((e) => !serverIds.has(e.id));
     return {
       entries: [...unsyncedEntries, ...visibleServerEntries],
       pendingIds: new Set(unsyncedEntries.map((e) => e.id)),
     };
-  }, [isAnonymous, localEntries, serverEntries, pendingEntries, deletedIds]);
+  }, [isAnonymous, localEntries, serverEntries, pendingEntries, deletedIds, bookmarkPatches]);
   const loading = isAnonymous ? false : serverLoading;
   const { isPro, presentPaywall } = useRevenueCat();
   const toggleBookmarkMutation = useToggleBookmark();

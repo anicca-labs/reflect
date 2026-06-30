@@ -12,6 +12,7 @@ import {
   useAnonymousJournalStore,
   usePendingJournalStore,
   usePendingDeletionsStore,
+  usePendingBookmarksStore,
 } from '@/src/stores';
 import { queryClient, persister } from '@/src/services/queryClient';
 import type { JournalEntry } from '@/src/types/journal';
@@ -144,6 +145,7 @@ const useAuthSession = () => {
         // account signed in on this device.
         usePendingJournalStore.getState().clear();
         usePendingDeletionsStore.getState().clear();
+        usePendingBookmarksStore.getState().clear();
         // Drop the previous user's cached journal entries. Besides not leaking
         // stale data into a signed-out session, this is what makes the memory
         // notification replay land after login: with the cache cleared, the

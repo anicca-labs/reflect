@@ -100,3 +100,4 @@ export type { PendingMerge };
 export { useAnonymousJournalStore } from './anonymousJournal';
 export { usePendingJournalStore } from './pendingJournal';
 export { usePendingDeletionsStore } from './pendingDeletions';
+export { usePendingBookmarksStore } from './pendingBookmarks';

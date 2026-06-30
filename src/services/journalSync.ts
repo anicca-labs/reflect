@@ -2,7 +2,11 @@ import { supabase } from '@/src/services/supabase';
 import { encryptContent } from '@/src/services/crypto';
 import { queryClient } from '@/src/services/queryClient';
 import { isTransientNetworkError } from '@/src/services/supabase/fetchWithRetry';
-import { usePendingJournalStore, usePendingDeletionsStore } from '@/src/stores';
+import {
+  usePendingJournalStore,
+  usePendingDeletionsStore,
+  usePendingBookmarksStore,
+} from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
 
 const QUERY_KEY = ['journal-entries'] as const;
@@ -18,6 +22,7 @@ const isFreeLimitError = (err: unknown): boolean =>
 // guard they'd race and double-insert the same queued entry.
 let isFlushing = false;
 let isDeleteFlushing = false;
+let isBookmarkFlushing = false;
 
 /**
  * Push queued offline entries to Supabase, oldest first so server ordering
@@ -142,4 +147,49 @@ const flushPendingDeletions = async (): Promise<void> => {
   }
 };
 
-export { flushPendingJournalEntries, flushPendingDeletions };
+/**
+ * Push queued offline bookmark toggles to Supabase. For each id we write the
+ * desired value, mirror it into the read-cache, then drop it from the queue —
+ * but only if the user hasn't toggled it again since we read it, so a newer
+ * toggle isn't lost. Re-running is safe (idempotent write). Coalesced.
+ */
+const flushPendingBookmarks = async (): Promise<void> => {
+  if (isBookmarkFlushing) return;
+  if (Object.keys(usePendingBookmarksStore.getState().values).length === 0) return;
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.user) return; // signed out — nothing to sync against
+
+  isBookmarkFlushing = true;
+  try {
+    for (const id of Object.keys(usePendingBookmarksStore.getState().values)) {
+      const value = usePendingBookmarksStore.getState().values[id];
+      if (value === undefined) continue;
+      try {
+        const { error } = await supabase
+          .from('journal_entries')
+          .update({ is_bookmarked: value })
+          .eq('id', id);
+        if (error) throw error;
+        queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) =>
+          (old ?? []).map((e) => (e.id === id ? { ...e, is_bookmarked: value } : e)),
+        );
+        // Only drop the queued value if it hasn't changed while we were writing.
+        if (usePendingBookmarksStore.getState().values[id] === value) {
+          usePendingBookmarksStore.getState().remove(id);
+        }
+      } catch (err) {
+        if (isTransientNetworkError(err)) break; // retry on the next trigger
+        // Non-transient (e.g. the row isn't ours): drop it so it can't wedge.
+        console.error('[journal-sync] bookmark flush dropped a value:', err);
+        usePendingBookmarksStore.getState().remove(id);
+      }
+    }
+  } finally {
+    isBookmarkFlushing = false;
+  }
+};
+
+export { flushPendingJournalEntries, flushPendingDeletions, flushPendingBookmarks };
