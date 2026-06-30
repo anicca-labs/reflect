@@ -22,9 +22,12 @@ const flushPendingJournalEntries = async (): Promise<void> => {
   if (isFlushing) return;
   if (usePendingJournalStore.getState().entries.length === 0) return;
 
+  // Resolve the user from the local session (no network round-trip); getUser()
+  // can return null on a flaky connection and needlessly skip a flush.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user;
   if (!user) return; // signed out — nothing to sync against
 
   isFlushing = true;

@@ -67,10 +67,19 @@ const useCreateJournalEntry = () => {
       if (!(await isOnline())) return enqueueOffline();
 
       try {
+        // Resolve the user from the locally-persisted session rather than
+        // getUser(): getUser() makes a network round-trip and returns a null
+        // user when connectivity is flaky (NetInfo can still report "online"),
+        // which surfaced as a spurious "Not authenticated" (REFLECT-A) and
+        // dropped the entry. getSession() reads from storage and works offline.
         const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) throw new Error('Not authenticated');
+          data: { session },
+        } = await supabase.auth.getSession();
+        const user = session?.user;
+        // No resolvable user (signed out, or session not yet rehydrated): keep
+        // the entry in the offline outbox and let the sync flush attach it once
+        // a valid session is available, instead of throwing and losing it.
+        if (!user) return enqueueOffline();
         const { data, error } = await supabase
           .from('journal_entries')
           .insert({ content: encryptContent(content), user_id: user.id })
