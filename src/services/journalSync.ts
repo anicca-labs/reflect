@@ -35,21 +35,30 @@ const flushPendingJournalEntries = async (): Promise<void> => {
     for (const item of ordered) {
       if (!usePendingJournalStore.getState().entries.some((e) => e.id === item.id)) continue;
       try {
+        // Upsert on the client-assigned id so a retried flush (e.g. the app
+        // died after inserting but before dequeuing) is idempotent rather than
+        // failing on a duplicate-key violation.
         const { data, error } = await supabase
           .from('journal_entries')
-          .insert({
-            content: encryptContent(item.content),
-            user_id: user.id,
-            is_bookmarked: item.is_bookmarked,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-          })
+          .upsert(
+            {
+              id: item.id,
+              content: encryptContent(item.content),
+              user_id: user.id,
+              is_bookmarked: item.is_bookmarked,
+              created_at: item.created_at,
+              updated_at: item.updated_at,
+            },
+            { onConflict: 'id' },
+          )
           .select()
           .single();
         if (error) throw error;
 
         const synced: JournalEntry = { ...data, content: item.content };
-        usePendingJournalStore.getState().remove(item.id);
+        // Add the server row to the cache *before* dequeuing. The screens dedupe
+        // pending vs. server by id, so while both briefly hold this id only one
+        // stable-keyed card renders — no blank frame, no remount, no flicker.
         queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) => {
           const list = old ?? [];
           if (list.some((e) => e.id === synced.id)) return list;
@@ -57,6 +66,7 @@ const flushPendingJournalEntries = async (): Promise<void> => {
             (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
           );
         });
+        usePendingJournalStore.getState().remove(item.id);
       } catch (err) {
         // Keep this and the remaining entries queued; retry on the next trigger.
         if (!isTransientNetworkError(err)) {
