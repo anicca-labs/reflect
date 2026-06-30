@@ -369,7 +369,16 @@ msgstr "Pro Mensual"
 msgid "Push notifications"
 msgstr "Notificaciones push"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Reconnect to delete your account."
+msgstr "Vuelve a conectarte para eliminar tu cuenta."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Reconnect to sign out."
+msgstr "Vuelve a conectarte para cerrar sesión."
+
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Reconnect to upgrade to Pro and keep writing."
 msgstr "Vuelve a conectarte para mejorar a Pro y seguir escribiendo."
 
@@ -575,6 +584,7 @@ msgid "What's something small that brought you joy recently?"
 msgstr "¿Qué pequeña cosa te trajo alegría últimamente?"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're offline"
 msgstr "Sin conexión"
 

@@ -369,7 +369,16 @@ msgstr "Pro شهري"
 msgid "Push notifications"
 msgstr "الإشعارات الفورية"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Reconnect to delete your account."
+msgstr "أعد الاتصال لحذف حسابك."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Reconnect to sign out."
+msgstr "أعد الاتصال لتسجيل الخروج."
+
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Reconnect to upgrade to Pro and keep writing."
 msgstr "أعد الاتصال للترقية إلى Pro ومتابعة الكتابة."
 
@@ -575,6 +584,7 @@ msgid "What's something small that brought you joy recently?"
 msgstr "ما الشيء الصغير الذي جلب لك البهجة مؤخراً؟"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're offline"
 msgstr "أنت غير متصل"
 
