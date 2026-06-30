@@ -8,7 +8,7 @@ import { encryptContent } from '@/src/services/crypto';
 import { identifyRevenueCatUser, resetRevenueCatUser } from '@/src/services/revenue-cat';
 import { upsertDeviceToken } from '@/src/services/user-devices';
 import { useSessionStore, useAnonymousJournalStore, usePendingJournalStore } from '@/src/stores';
-import { queryClient } from '@/src/services/queryClient';
+import { queryClient, persister } from '@/src/services/queryClient';
 import type { JournalEntry } from '@/src/types/journal';
 
 // Set before calling signOut() when the intent is to return to anonymous mode
@@ -146,6 +146,10 @@ const useAuthSession = () => {
         // `entries` never changes across login, the effect doesn't re-run, and
         // the user is left on the journal tab with the peek open out of view.
         queryClient.removeQueries({ queryKey: ['journal-entries'] });
+        // Wipe the on-disk copy too. The persister writes on a throttle, so an
+        // app kill right after sign-out could otherwise leave the previous
+        // user's entries on disk to restore on next launch.
+        persister.removeClient();
         return;
       }
 

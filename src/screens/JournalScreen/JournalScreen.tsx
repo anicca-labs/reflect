@@ -288,6 +288,10 @@ const JournalScreen = () => {
   const hasContent = draft.trim().length > 0;
   const remainingFree = Math.max(0, FREE_ENTRY_LIMIT - entries.length);
   const atLimit = !isPro && entries.length >= FREE_ENTRY_LIMIT;
+  // Until the server list has loaded at least once (no cache yet, still
+  // fetching), `entries` undercounts to just the pending queue — a free user
+  // would slip past the limit. Hold saves until the real count is known.
+  const countPending = !isPro && !isAnonymous && serverLoading && serverEntries.length === 0;
   const showHint =
     !isPro && entries.length >= FREE_ENTRY_LIMIT - 2 && entries.length < FREE_ENTRY_LIMIT;
 
@@ -448,7 +452,7 @@ const JournalScreen = () => {
             <YStack onTouchStart={dismissOutside}>
               <BaseTouchable
                 onPress={handleSave}
-                disabled={!hasContent || createMutation.isPending}
+                disabled={!hasContent || createMutation.isPending || countPending}
                 bg="$accentBackground"
                 opacity={hasContent ? 1 : DISABLED_OPACITY}
                 rounded="$4"

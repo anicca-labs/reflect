@@ -124,6 +124,10 @@ msgstr ""
 msgid "Couldn't open Settings"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Couldn't save entry"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr ""
@@ -389,6 +393,10 @@ msgstr ""
 msgid "Save entry ✦"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Saved offline"
+msgstr ""
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Search entries…"
 msgstr ""
@@ -433,6 +441,7 @@ msgstr ""
 msgid "Sign out"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Something went wrong. Please try again."
 msgstr ""
@@ -447,6 +456,10 @@ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Tap to restart and apply the latest update."
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "This entry will sync automatically when you're back online."
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
@@ -563,16 +576,4 @@ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."
-msgstr ""
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Saved offline"
-msgstr ""
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "This entry will sync automatically when you're back online."
-msgstr ""
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Couldn't save entry"
 msgstr ""

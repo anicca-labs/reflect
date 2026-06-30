@@ -124,6 +124,10 @@ msgstr "Não foi possível excluir a conta"
 msgid "Couldn't open Settings"
 msgstr "Não foi possível abrir Configurações"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Couldn't save entry"
+msgstr "Não foi possível salvar a entrada"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "Criar conta"
@@ -389,6 +393,10 @@ msgstr "Salvar entrada"
 msgid "Save entry ✦"
 msgstr "Salvar entrada ✦"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Saved offline"
+msgstr "Salvo offline"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Search entries…"
 msgstr "Buscar entradas…"
@@ -433,6 +441,7 @@ msgstr "Entre com sua nova senha."
 msgid "Sign out"
 msgstr "Sair"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Something went wrong. Please try again."
 msgstr "Algo deu errado. Tente novamente."
@@ -448,6 +457,10 @@ msgstr "Assinatura"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Tap to restart and apply the latest update."
 msgstr "Toque para reiniciar e aplicar a atualização mais recente."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "This entry will sync automatically when you're back online."
+msgstr "Esta entrada será sincronizada automaticamente quando você estiver online novamente."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
@@ -564,15 +577,3 @@ msgstr "Você está usando o reflect como convidado. Entre para sincronizar seu 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."
 msgstr "Sua conta e as entradas do seu diário serão excluídas permanentemente."
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Saved offline"
-msgstr "Salvo offline"
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "This entry will sync automatically when you're back online."
-msgstr "Esta entrada será sincronizada automaticamente quando você estiver online novamente."
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Couldn't save entry"
-msgstr "Não foi possível salvar a entrada"

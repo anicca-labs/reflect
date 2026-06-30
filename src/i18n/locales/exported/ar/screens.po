@@ -124,6 +124,10 @@ msgstr "تعذّر حذف الحساب"
 msgid "Couldn't open Settings"
 msgstr "تعذّر فتح الإعدادات"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Couldn't save entry"
+msgstr "تعذّر حفظ التسجيل"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "إنشاء حساب"
@@ -389,6 +393,10 @@ msgstr "حفظ التسجيل"
 msgid "Save entry ✦"
 msgstr "حفظ التسجيل ✦"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Saved offline"
+msgstr "تم الحفظ دون اتصال"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Search entries…"
 msgstr "البحث في التسجيلات…"
@@ -433,6 +441,7 @@ msgstr "سجّل الدخول بكلمة مرورك الجديدة."
 msgid "Sign out"
 msgstr "تسجيل الخروج"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Something went wrong. Please try again."
 msgstr "حدث خطأ ما. يُرجى المحاولة مرة أخرى."
@@ -448,6 +457,10 @@ msgstr "الاشتراك"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Tap to restart and apply the latest update."
 msgstr "اضغط لإعادة التشغيل وتطبيق آخر تحديث."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "This entry will sync automatically when you're back online."
+msgstr "ستتم مزامنة هذا التسجيل تلقائيًا عند عودة الاتصال بالإنترنت."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
@@ -564,15 +577,3 @@ msgstr "أنت تستخدم reflect كضيف. سجّل الدخول لمزامن
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."
 msgstr "سيتم حذف حسابك ومدوّناتك نهائيًا."
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Saved offline"
-msgstr "تم الحفظ دون اتصال"
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "This entry will sync automatically when you're back online."
-msgstr "ستتم مزامنة هذا التسجيل تلقائيًا عند عودة الاتصال بالإنترنت."
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Couldn't save entry"
-msgstr "تعذّر حفظ التسجيل"

@@ -124,6 +124,10 @@ msgstr "Impossible de supprimer le compte"
 msgid "Couldn't open Settings"
 msgstr "Impossible d'ouvrir Réglages"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Couldn't save entry"
+msgstr "Impossible d'enregistrer l'entrée"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "Créer un compte"
@@ -389,6 +393,10 @@ msgstr "Enregistrer"
 msgid "Save entry ✦"
 msgstr "Enregistrer ✦"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Saved offline"
+msgstr "Enregistré hors ligne"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Search entries…"
 msgstr "Rechercher des entrées…"
@@ -433,6 +441,7 @@ msgstr "Connectez-vous avec votre nouveau mot de passe."
 msgid "Sign out"
 msgstr "Se déconnecter"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Something went wrong. Please try again."
 msgstr "Une erreur s'est produite. Veuillez réessayer."
@@ -448,6 +457,10 @@ msgstr "Abonnement"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Tap to restart and apply the latest update."
 msgstr "Appuyez pour redémarrer et appliquer la dernière mise à jour."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "This entry will sync automatically when you're back online."
+msgstr "Cette entrée se synchronisera automatiquement dès que vous serez de nouveau en ligne."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
@@ -564,15 +577,3 @@ msgstr "Vous utilisez reflect en tant qu'invité. Connectez-vous pour synchronis
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."
 msgstr "Votre compte et les entrées de votre journal seront définitivement supprimés."
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Saved offline"
-msgstr "Enregistré hors ligne"
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "This entry will sync automatically when you're back online."
-msgstr "Cette entrée se synchronisera automatiquement dès que vous serez de nouveau en ligne."
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Couldn't save entry"
-msgstr "Impossible d'enregistrer l'entrée"

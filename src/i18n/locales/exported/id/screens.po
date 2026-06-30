@@ -124,6 +124,10 @@ msgstr "Tidak dapat menghapus akun"
 msgid "Couldn't open Settings"
 msgstr "Tidak dapat membuka Pengaturan"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Couldn't save entry"
+msgstr "Tidak dapat menyimpan entri"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "Buat akun"
@@ -389,6 +393,10 @@ msgstr "Simpan entri"
 msgid "Save entry ✦"
 msgstr "Simpan entri ✦"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Saved offline"
+msgstr "Disimpan offline"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Search entries…"
 msgstr "Cari entri…"
@@ -433,6 +441,7 @@ msgstr "Masuk dengan kata sandi baru Anda."
 msgid "Sign out"
 msgstr "Keluar"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Something went wrong. Please try again."
 msgstr "Terjadi kesalahan. Silakan coba lagi."
@@ -448,6 +457,10 @@ msgstr "Langganan"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Tap to restart and apply the latest update."
 msgstr "Ketuk untuk mulai ulang dan terapkan pembaruan terbaru."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "This entry will sync automatically when you're back online."
+msgstr "Entri ini akan disinkronkan secara otomatis saat Anda kembali online."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
@@ -564,15 +577,3 @@ msgstr "Anda menggunakan reflect sebagai tamu. Masuk untuk menyinkronkan jurnal 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."
 msgstr "Akun dan entri jurnal Anda akan dihapus secara permanen."
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Saved offline"
-msgstr "Disimpan offline"
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "This entry will sync automatically when you're back online."
-msgstr "Entri ini akan disinkronkan secara otomatis saat Anda kembali online."
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Couldn't save entry"
-msgstr "Tidak dapat menyimpan entri"
