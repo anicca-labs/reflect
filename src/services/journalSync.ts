@@ -7,6 +7,12 @@ import type { JournalEntry } from '@/src/types/journal';
 
 const QUERY_KEY = ['journal-entries'] as const;
 
+// The server-side limit trigger raises this exact message; PostgREST surfaces it
+// in the error. Used to tell "limit reached" apart from a transient failure.
+const isFreeLimitError = (err: unknown): boolean =>
+  typeof (err as { message?: unknown })?.message === 'string' &&
+  (err as { message: string }).message.includes('free_entry_limit_reached');
+
 // A single in-flight flush at a time. The reconnect listener, the app-state
 // listener and the on-mount call can all fire near-simultaneously; without this
 // guard they'd race and double-insert the same queued entry.
@@ -71,6 +77,12 @@ const flushPendingJournalEntries = async (): Promise<void> => {
         });
         usePendingJournalStore.getState().remove(item.id);
       } catch (err) {
+        // The server enforces the free-entry limit (enforce_free_entry_limit
+        // trigger). A free user who got entries into the outbox beyond the limit
+        // (e.g. their Pro lapsed while offline) will be rejected here. That's not
+        // transient and won't resolve by retrying, so stop without logging it as
+        // an error — the entries stay queued and will sync if they upgrade.
+        if (isFreeLimitError(err)) break;
         // Keep this and the remaining entries queued; retry on the next trigger.
         if (!isTransientNetworkError(err)) {
           console.error('[journal-sync] flush halted on non-transient error:', err);
