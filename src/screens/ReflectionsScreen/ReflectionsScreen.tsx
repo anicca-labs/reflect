@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, type RefObject } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo, type RefObject } from 'react';
 import { View, ScrollView as RNScrollView } from 'react-native';
 import { BlurTargetView } from 'expo-blur';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -138,14 +138,20 @@ const ReflectionsScreen = () => {
   const removePendingEntry = usePendingJournalStore((s) => s.remove);
   const togglePendingBookmark = usePendingJournalStore((s) => s.toggleBookmark);
   // Hide rows deleted offline; the tombstone outlives a refetch so they can't
-  // reappear before the delete reaches the server.
+  // reappear before the delete reaches the server. Memoized so `entries` keeps a
+  // stable identity for the peek-scroll effect's dependency array.
   const deletedIds = usePendingDeletionsStore((s) => s.ids);
-  const tombstoned = new Set(deletedIds);
-  const visibleServerEntries = serverEntries.filter((e) => !tombstoned.has(e.id));
-  const serverIds = new Set(visibleServerEntries.map((e) => e.id));
-  const unsyncedEntries = pendingEntries.filter((e) => !serverIds.has(e.id));
-  const pendingIds = new Set(unsyncedEntries.map((e) => e.id));
-  const entries = isAnonymous ? localEntries : [...unsyncedEntries, ...visibleServerEntries];
+  const { entries, pendingIds } = useMemo(() => {
+    if (isAnonymous) return { entries: localEntries, pendingIds: new Set<string>() };
+    const tombstoned = new Set(deletedIds);
+    const visibleServerEntries = serverEntries.filter((e) => !tombstoned.has(e.id));
+    const serverIds = new Set(visibleServerEntries.map((e) => e.id));
+    const unsyncedEntries = pendingEntries.filter((e) => !serverIds.has(e.id));
+    return {
+      entries: [...unsyncedEntries, ...visibleServerEntries],
+      pendingIds: new Set(unsyncedEntries.map((e) => e.id)),
+    };
+  }, [isAnonymous, localEntries, serverEntries, pendingEntries, deletedIds]);
   const loading = isAnonymous ? false : serverLoading;
   const { isPro, presentPaywall } = useRevenueCat();
   const toggleBookmarkMutation = useToggleBookmark();
