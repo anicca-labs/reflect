@@ -9,7 +9,7 @@ export const TRANSIENT_NETWORK_ERRORS = [
   'connection appears to be offline',
 ];
 
-const isTransient = (err: unknown): boolean => {
+export const isTransientNetworkError = (err: unknown): boolean => {
   const message = (err instanceof Error ? err.message : String(err)).toLowerCase();
   return TRANSIENT_NETWORK_ERRORS.some((m) => message.includes(m));
 };
@@ -21,7 +21,7 @@ export const fetchWithRetry: typeof fetch = async (input, init) => {
       return await fetch(input, init);
     } catch (err) {
       lastError = err;
-      if (!isTransient(err)) throw err;
+      if (!isTransientNetworkError(err)) throw err;
       await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)));
     }
   }
