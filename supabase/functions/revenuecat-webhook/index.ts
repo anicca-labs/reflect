@@ -1,3 +1,4 @@
+// @openapi-internal — called only by RevenueCat's webhook, not by app clients
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // Mirrors RevenueCat entitlement state into api.entitlements so the database can
