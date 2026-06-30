@@ -564,3 +564,15 @@ msgstr "Vous utilisez reflect en tant qu'invité. Connectez-vous pour synchronis
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."
 msgstr "Votre compte et les entrées de votre journal seront définitivement supprimés."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Saved offline"
+msgstr "Enregistré hors ligne"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "This entry will sync automatically when you're back online."
+msgstr "Cette entrée se synchronisera automatiquement dès que vous serez de nouveau en ligne."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Couldn't save entry"
+msgstr "Impossible d'enregistrer l'entrée"
