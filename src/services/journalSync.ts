@@ -43,6 +43,7 @@ const flushPendingJournalEntries = async (): Promise<void> => {
   if (!user) return; // signed out — nothing to sync against
 
   isFlushing = true;
+  let wrote = false;
   try {
     // Snapshot oldest-first; re-check membership each iteration in case the
     // entry was deleted from the queue while we were flushing.
@@ -71,9 +72,9 @@ const flushPendingJournalEntries = async (): Promise<void> => {
         if (error) throw error;
 
         const synced: JournalEntry = { ...data, content: item.content };
-        // Add the server row to the cache *before* dequeuing. The screens dedupe
-        // pending vs. server by id, so while both briefly hold this id only one
-        // stable-keyed card renders — no blank frame, no remount, no flicker.
+        // Add the server row to the cache. The screens dedupe pending vs. server
+        // by id, so while both briefly hold this id only one stable-keyed card
+        // renders — no blank frame, no remount, no flicker.
         queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) => {
           const list = old ?? [];
           if (list.some((e) => e.id === synced.id)) return list;
@@ -81,7 +82,12 @@ const flushPendingJournalEntries = async (): Promise<void> => {
             (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
           );
         });
-        usePendingJournalStore.getState().remove(item.id);
+        wrote = true;
+        // Do NOT dequeue here. A server refetch that raced this insert can
+        // overwrite the cache *without* the new row; if it were already removed
+        // from the outbox, the entry would vanish until the next read. Keep it
+        // queued — the screens dedupe it against the server copy by id — and let
+        // reconcilePendingState drop it once a server read confirms it landed.
       } catch (err) {
         // The server enforces the free-entry limit (enforce_free_entry_limit
         // trigger). A free user who got entries into the outbox beyond the limit
@@ -99,6 +105,10 @@ const flushPendingJournalEntries = async (): Promise<void> => {
   } finally {
     isFlushing = false;
   }
+  // Force a fresh read so reconcilePendingState can confirm the inserted rows
+  // landed and dequeue them — they are NOT dequeued on write-success (a raced
+  // refetch could otherwise drop a just-synced row from the cache).
+  if (wrote) queryClient.invalidateQueries({ queryKey: QUERY_KEY });
 };
 
 /**

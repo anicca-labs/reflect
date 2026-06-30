@@ -74,6 +74,15 @@ const useJournalEntries = () => {
 const reconcilePendingState = (entries: JournalEntry[]) => {
   const byId = new Map(entries.map((e) => [e.id, e]));
 
+  // A queued offline entry whose id is now on the server has synced — drop the
+  // outbox copy (its id matches the server row, so the screens already render a
+  // single card). Kept until confirmed so a refetch that raced the insert can't
+  // make it vanish.
+  const creations = usePendingJournalStore.getState();
+  for (const e of creations.entries) {
+    if (byId.has(e.id)) creations.remove(e.id);
+  }
+
   const deletions = usePendingDeletionsStore.getState();
   for (const id of deletions.ids) {
     if (!byId.has(id)) deletions.remove(id);
