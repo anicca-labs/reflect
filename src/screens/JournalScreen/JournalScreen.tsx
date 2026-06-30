@@ -26,6 +26,7 @@ import {
   useSessionStore,
   useAnonymousJournalStore,
   usePendingJournalStore,
+  usePendingDeletionsStore,
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
 import { isOnline } from '@/src/services/network';
@@ -237,10 +238,15 @@ const JournalScreen = () => {
   // Once a pending entry syncs, its server row (same id) lands in the cache.
   // Drop the pending copy so the list keeps a single, stable-keyed element —
   // React updates it in place instead of remounting, so there's no flicker.
-  const serverIds = new Set(serverEntries.map((e) => e.id));
+  // Hide rows the user deleted offline; the tombstone outlives a server refetch
+  // so they can't reappear before the delete reaches the server.
+  const deletedIds = usePendingDeletionsStore((s) => s.ids);
+  const tombstoned = new Set(deletedIds);
+  const visibleServerEntries = serverEntries.filter((e) => !tombstoned.has(e.id));
+  const serverIds = new Set(visibleServerEntries.map((e) => e.id));
   const unsyncedEntries = pendingEntries.filter((e) => !serverIds.has(e.id));
   const pendingIds = new Set(unsyncedEntries.map((e) => e.id));
-  const entries = isAnonymous ? localEntries : [...unsyncedEntries, ...serverEntries];
+  const entries = isAnonymous ? localEntries : [...unsyncedEntries, ...visibleServerEntries];
   const loading = isAnonymous ? false : serverLoading;
   const peekEntry = peekEntryId ? (entries.find((e) => e.id === peekEntryId) ?? null) : null;
 

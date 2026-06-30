@@ -2,7 +2,7 @@ import { supabase } from '@/src/services/supabase';
 import { encryptContent } from '@/src/services/crypto';
 import { queryClient } from '@/src/services/queryClient';
 import { isTransientNetworkError } from '@/src/services/supabase/fetchWithRetry';
-import { usePendingJournalStore } from '@/src/stores';
+import { usePendingJournalStore, usePendingDeletionsStore } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
 
 const QUERY_KEY = ['journal-entries'] as const;
@@ -17,6 +17,7 @@ const isFreeLimitError = (err: unknown): boolean =>
 // listener and the on-mount call can all fire near-simultaneously; without this
 // guard they'd race and double-insert the same queued entry.
 let isFlushing = false;
+let isDeleteFlushing = false;
 
 /**
  * Push queued offline entries to Supabase, oldest first so server ordering
@@ -95,4 +96,50 @@ const flushPendingJournalEntries = async (): Promise<void> => {
   }
 };
 
-export { flushPendingJournalEntries };
+/**
+ * Push queued offline deletions to Supabase. For each tombstoned id we delete
+ * the server row, then remove it from the read-cache and drop the tombstone —
+ * in that order, so the row can't flash back in the window between clearing the
+ * tombstone and the next refetch. A deletion of an already-absent row is not an
+ * error in PostgREST, so re-running this is safe. Concurrent calls are coalesced.
+ */
+const flushPendingDeletions = async (): Promise<void> => {
+  if (isDeleteFlushing) return;
+  if (usePendingDeletionsStore.getState().ids.length === 0) return;
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user;
+  if (!user) return; // signed out — nothing to sync against
+
+  isDeleteFlushing = true;
+  try {
+    // Oldest-first; re-check membership each iteration in case the tombstone was
+    // cleared (e.g. the entry was re-created) while we were flushing.
+    const ordered = [...usePendingDeletionsStore.getState().ids].reverse();
+    for (const id of ordered) {
+      if (!usePendingDeletionsStore.getState().ids.includes(id)) continue;
+      try {
+        const { error } = await supabase.from('journal_entries').delete().eq('id', id);
+        if (error) throw error;
+        queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) =>
+          (old ?? []).filter((e) => e.id !== id),
+        );
+        usePendingDeletionsStore.getState().remove(id);
+      } catch (err) {
+        // Transient: keep the tombstone and retry on the next trigger.
+        if (isTransientNetworkError(err)) break;
+        // Non-transient (e.g. the row isn't ours): drop the tombstone so it
+        // can't wedge the queue forever. Don't touch the cache — a later refetch
+        // reflects the true server state.
+        console.error('[journal-sync] delete flush dropped a tombstone:', err);
+        usePendingDeletionsStore.getState().remove(id);
+      }
+    }
+  } finally {
+    isDeleteFlushing = false;
+  }
+};
+
+export { flushPendingJournalEntries, flushPendingDeletions };

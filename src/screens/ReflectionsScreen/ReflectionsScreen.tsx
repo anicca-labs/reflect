@@ -18,6 +18,7 @@ import {
   useSessionStore,
   useAnonymousJournalStore,
   usePendingJournalStore,
+  usePendingDeletionsStore,
   usePeekStore,
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
@@ -136,10 +137,15 @@ const ReflectionsScreen = () => {
   const pendingEntries = usePendingJournalStore((s) => s.entries);
   const removePendingEntry = usePendingJournalStore((s) => s.remove);
   const togglePendingBookmark = usePendingJournalStore((s) => s.toggleBookmark);
-  const serverIds = new Set(serverEntries.map((e) => e.id));
+  // Hide rows deleted offline; the tombstone outlives a refetch so they can't
+  // reappear before the delete reaches the server.
+  const deletedIds = usePendingDeletionsStore((s) => s.ids);
+  const tombstoned = new Set(deletedIds);
+  const visibleServerEntries = serverEntries.filter((e) => !tombstoned.has(e.id));
+  const serverIds = new Set(visibleServerEntries.map((e) => e.id));
   const unsyncedEntries = pendingEntries.filter((e) => !serverIds.has(e.id));
   const pendingIds = new Set(unsyncedEntries.map((e) => e.id));
-  const entries = isAnonymous ? localEntries : [...unsyncedEntries, ...serverEntries];
+  const entries = isAnonymous ? localEntries : [...unsyncedEntries, ...visibleServerEntries];
   const loading = isAnonymous ? false : serverLoading;
   const { isPro, presentPaywall } = useRevenueCat();
   const toggleBookmarkMutation = useToggleBookmark();

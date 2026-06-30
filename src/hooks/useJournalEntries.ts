@@ -4,7 +4,8 @@ import { isTransientNetworkError } from '@/src/services/supabase/fetchWithRetry'
 import { encryptContent, decryptContent, PREFIX } from '@/src/services/crypto';
 import { isOnline } from '@/src/services/network';
 import type { JournalEntry } from '@/src/types/journal';
-import { useSessionStore, usePendingJournalStore } from '@/src/stores';
+import { useSessionStore, usePendingJournalStore, usePendingDeletionsStore } from '@/src/stores';
+import { flushPendingDeletions } from '@/src/services/journalSync';
 
 const QUERY_KEY = ['journal-entries'] as const;
 
@@ -163,22 +164,30 @@ const useToggleBookmark = () => {
 const useDeleteJournalEntry = () => {
   const queryClient = useQueryClient();
   return useMutation({
+    // Runs regardless of connectivity (it records a durable tombstone), so it
+    // must never be paused by the offline manager.
+    networkMode: 'always',
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('journal_entries').delete().eq('id', id);
-      if (error) throw error;
+      // Tombstone first: this is what makes the delete stick. It survives a
+      // refetch, background/foreground and restart, and the screens filter it
+      // out — so the row can't be resurrected by a server read before the
+      // delete reaches the server. flushPendingDeletions does the actual DELETE
+      // now if we're online, or leaves it queued for journalSync otherwise.
+      usePendingDeletionsStore.getState().add(id);
+      await flushPendingDeletions();
     },
     onMutate: async (id) => {
+      // Immediate optimistic removal so the card disappears the instant it's
+      // swiped, before the (async) tombstone write settles.
       await queryClient.cancelQueries({ queryKey: QUERY_KEY });
-      const previous = queryClient.getQueryData<JournalEntry[]>(QUERY_KEY);
       queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) =>
         (old ?? []).filter((e) => e.id !== id),
       );
-      return { previous };
     },
-    onError: (_err, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(QUERY_KEY, ctx.previous);
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    // No onError revert and no onSettled invalidate: the tombstone keeps the row
+    // hidden and retries on the next flush, so reverting would wrongly re-show a
+    // row the user deleted, and an invalidate-refetch would just return it
+    // (harmless — the screens filter it — but a needless round-trip).
   });
 };
 

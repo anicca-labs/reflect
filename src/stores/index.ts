@@ -99,3 +99,4 @@ export { useUserStore, useSwipeableStore, usePreferencesStore, useSessionStore, 
 export type { PendingMerge };
 export { useAnonymousJournalStore } from './anonymousJournal';
 export { usePendingJournalStore } from './pendingJournal';
+export { usePendingDeletionsStore } from './pendingDeletions';
