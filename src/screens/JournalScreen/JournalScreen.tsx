@@ -26,7 +26,6 @@ import {
   useSessionStore,
   useAnonymousJournalStore,
   usePendingJournalStore,
-  isPendingId,
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
 import { logJournalEntryCreated, logScreenView } from '@analytics';
@@ -234,7 +233,13 @@ const JournalScreen = () => {
     clearListening();
   };
 
-  const entries = isAnonymous ? localEntries : [...pendingEntries, ...serverEntries];
+  // Once a pending entry syncs, its server row (same id) lands in the cache.
+  // Drop the pending copy so the list keeps a single, stable-keyed element —
+  // React updates it in place instead of remounting, so there's no flicker.
+  const serverIds = new Set(serverEntries.map((e) => e.id));
+  const unsyncedEntries = pendingEntries.filter((e) => !serverIds.has(e.id));
+  const pendingIds = new Set(unsyncedEntries.map((e) => e.id));
+  const entries = isAnonymous ? localEntries : [...unsyncedEntries, ...serverEntries];
   const loading = isAnonymous ? false : serverLoading;
   const peekEntry = peekEntryId ? (entries.find((e) => e.id === peekEntryId) ?? null) : null;
 
@@ -342,7 +347,7 @@ const JournalScreen = () => {
   const handleDelete = (id: string) => {
     if (isAnonymous) {
       deleteLocalEntry(id);
-    } else if (isPendingId(id)) {
+    } else if (pendingIds.has(id)) {
       // Not on the server yet — just drop it from the offline outbox.
       removePendingEntry(id);
     } else {
@@ -539,7 +544,7 @@ const JournalScreen = () => {
           isAnonymous
             ? undefined
             : (id, current) =>
-                isPendingId(id)
+                pendingIds.has(id)
                   ? togglePendingBookmark(id)
                   : toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })
         }

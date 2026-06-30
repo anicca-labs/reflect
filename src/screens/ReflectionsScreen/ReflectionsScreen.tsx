@@ -17,6 +17,7 @@ import {
   useSwipeableStore,
   useSessionStore,
   useAnonymousJournalStore,
+  usePendingJournalStore,
   usePeekStore,
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
@@ -129,7 +130,16 @@ const ReflectionsScreen = () => {
     toggleBookmark: toggleLocalBookmark,
   } = useAnonymousJournalStore();
   const { data: serverEntries = [], isLoading: serverLoading, refetch } = useJournalEntries();
-  const entries = isAnonymous ? localEntries : serverEntries;
+  // Include entries saved offline (awaiting sync), de-duped against synced
+  // server rows by id so a just-synced entry keeps a single, stable-keyed
+  // element and doesn't flicker.
+  const pendingEntries = usePendingJournalStore((s) => s.entries);
+  const removePendingEntry = usePendingJournalStore((s) => s.remove);
+  const togglePendingBookmark = usePendingJournalStore((s) => s.toggleBookmark);
+  const serverIds = new Set(serverEntries.map((e) => e.id));
+  const unsyncedEntries = pendingEntries.filter((e) => !serverIds.has(e.id));
+  const pendingIds = new Set(unsyncedEntries.map((e) => e.id));
+  const entries = isAnonymous ? localEntries : [...unsyncedEntries, ...serverEntries];
   const loading = isAnonymous ? false : serverLoading;
   const { isPro, presentPaywall } = useRevenueCat();
   const toggleBookmarkMutation = useToggleBookmark();
@@ -334,10 +344,16 @@ const ReflectionsScreen = () => {
                         onToggleBookmark={(id, current) =>
                           isAnonymous
                             ? toggleLocalBookmark(id)
-                            : toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })
+                            : pendingIds.has(id)
+                              ? togglePendingBookmark(id)
+                              : toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })
                         }
                         onDelete={(id) =>
-                          isAnonymous ? deleteLocalEntry(id) : deleteMutation.mutate(id)
+                          isAnonymous
+                            ? deleteLocalEntry(id)
+                            : pendingIds.has(id)
+                              ? removePendingEntry(id)
+                              : deleteMutation.mutate(id)
                         }
                         onPeek={handlePeek}
                         closeKey={closeKey}
@@ -356,7 +372,9 @@ const ReflectionsScreen = () => {
         onToggleBookmark={(id: string, current: boolean) =>
           isAnonymous
             ? toggleLocalBookmark(id)
-            : toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })
+            : pendingIds.has(id)
+              ? togglePendingBookmark(id)
+              : toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })
         }
         blurTargetRef={blurTargetRef}
       />
