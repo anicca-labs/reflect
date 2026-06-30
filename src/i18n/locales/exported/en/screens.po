@@ -369,6 +369,10 @@ msgstr ""
 msgid "Push notifications"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Reconnect to upgrade to Pro and keep writing."
+msgstr ""
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Reflections"
 msgstr ""
@@ -568,6 +572,10 @@ msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's something small that brought you joy recently?"
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "You're offline"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx

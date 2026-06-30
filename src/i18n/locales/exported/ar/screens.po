@@ -369,6 +369,10 @@ msgstr "Pro شهري"
 msgid "Push notifications"
 msgstr "الإشعارات الفورية"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Reconnect to upgrade to Pro and keep writing."
+msgstr "أعد الاتصال للترقية إلى Pro ومتابعة الكتابة."
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Reflections"
 msgstr "التأملات"
@@ -569,6 +573,10 @@ msgstr "ما الشيء الواحد الذي تريد أن تتذكره من ا
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's something small that brought you joy recently?"
 msgstr "ما الشيء الصغير الذي جلب لك البهجة مؤخراً؟"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "You're offline"
+msgstr "أنت غير متصل"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."

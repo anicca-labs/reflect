@@ -369,6 +369,10 @@ msgstr "Pro Bulanan"
 msgid "Push notifications"
 msgstr "Notifikasi push"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Reconnect to upgrade to Pro and keep writing."
+msgstr "Sambungkan kembali untuk meningkatkan ke Pro dan terus menulis."
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Reflections"
 msgstr "Refleksi"
@@ -569,6 +573,10 @@ msgstr "Satu hal apa yang ingin kamu ingat dari hari ini?"
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's something small that brought you joy recently?"
 msgstr "Hal kecil apa yang baru-baru ini memberimu kebahagiaan?"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "You're offline"
+msgstr "Anda sedang offline"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."

@@ -55,6 +55,11 @@ type CreateResult = { entry: JournalEntry; queued: boolean };
 const useCreateJournalEntry = () => {
   const queryClient = useQueryClient();
   return useMutation({
+    // This mutation handles connectivity itself (checks isOnline and queues to
+    // the offline outbox). Without 'always', React Query's onlineManager pauses
+    // it while offline, so the offline-save code never runs and the Save button
+    // spins forever. 'always' lets it run regardless of network state.
+    networkMode: 'always',
     mutationFn: async (content: string): Promise<CreateResult> => {
       // Hold the entry locally so it isn't lost; journalSync pushes it once
       // connectivity returns.

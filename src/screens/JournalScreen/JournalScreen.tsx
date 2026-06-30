@@ -28,6 +28,7 @@ import {
   usePendingJournalStore,
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
+import { isOnline } from '@/src/services/network';
 import { logJournalEntryCreated, logScreenView } from '@analytics';
 import {
   useJournalEntries,
@@ -307,6 +308,17 @@ const JournalScreen = () => {
       if (isAnonymous) {
         // Anonymous user hit the limit — send them to sign up for Pro
         router.push('/sign-in');
+        return;
+      }
+      // Upgrading needs the store (StoreKit / Play Billing), which can't
+      // complete a purchase offline. Presenting the paywall here would be a dead
+      // end, so tell the user to reconnect instead.
+      if (!(await isOnline())) {
+        alert({
+          title: t`You're offline`,
+          message: t`Reconnect to upgrade to Pro and keep writing.`,
+          preset: 'error',
+        });
         return;
       }
       const purchased = await presentPaywall();
