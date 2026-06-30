@@ -1,0 +1,12 @@
+-- Close bucket enumeration on the public `expo-updates` storage bucket.
+--
+-- The "Public read access" policy granted SELECT on storage.objects to the
+-- `public` role for this bucket, which let anyone with the (public) anon key
+-- LIST every object via /storage/v1/object/list. OTA delivery does NOT need it:
+-- the app fetches assets by exact public URL (/storage/v1/object/public/...),
+-- which is served by the bucket's `public` flag and bypasses RLS. The publish
+-- pipeline uses the service role (bypasses RLS) for uploads and pruning.
+--
+-- Proven safe on staging, which has never had this policy and serves OTA fine.
+-- Idempotent: a no-op anywhere the policy is already absent (e.g. staging).
+drop policy if exists "Public read access" on storage.objects;
