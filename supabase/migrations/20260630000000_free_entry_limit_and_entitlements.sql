@@ -55,6 +55,15 @@ declare
   is_pro_active boolean;
   entry_count integer;
 begin
+  -- An idempotent re-sync from the offline outbox arrives as an upsert
+  -- (INSERT ... ON CONFLICT DO UPDATE). A BEFORE INSERT trigger fires *before*
+  -- the conflict is resolved, so it would otherwise re-count and could reject a
+  -- retry of an already-stored row. Updating an existing row never adds an
+  -- entry, so skip the limit check when this id is already present.
+  if exists (select 1 from api.journal_entries where id = new.id) then
+    return new;
+  end if;
+
   select e.is_pro and (e.expires_at is null or e.expires_at > now())
     into is_pro_active
     from api.entitlements e
@@ -84,9 +93,9 @@ $$;
 -- callable as a SECURITY DEFINER RPC by anon/authenticated.
 revoke execute on function api.enforce_free_entry_limit() from public;
 
--- BEFORE INSERT only: re-syncs from the offline outbox arrive as upserts that
--- resolve to UPDATE on conflict, which must not be blocked. New inserts are
--- what the limit governs.
+-- BEFORE INSERT: the function short-circuits when the row id already exists, so
+-- idempotent upsert re-syncs from the offline outbox are never blocked; only a
+-- genuinely new entry is counted against the limit.
 drop trigger if exists enforce_free_entry_limit on api.journal_entries;
 create trigger enforce_free_entry_limit
   before insert on api.journal_entries

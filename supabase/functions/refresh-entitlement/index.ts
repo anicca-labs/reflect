@@ -49,13 +49,15 @@ Deno.serve(async (req) => {
 
   const isPro = !!pro;
   // active_entitlements only returns currently-active grants, so isPro is already
-  // authoritative. Parse expires_at when present (RC V2 uses epoch ms); fall back
-  // to null (= no known expiry) rather than risk a bad past date that would wrongly
-  // block a paying user. The webhook keeps the precise expiry current afterward.
+  // authoritative. Only trust expires_at if it parses to a FUTURE instant — a
+  // mis-parsed value (e.g. epoch seconds read as ms) could land in the past and
+  // wrongly mark a paying user expired in the trigger's `expires_at > now()`
+  // check. On any doubt, leave it null (= active); the webhook sets the precise
+  // expiry, and a later refresh flips is_pro=false once the grant truly lapses.
   let expiresAt: string | null = null;
   if (pro?.expires_at != null) {
     const d = new Date(pro.expires_at);
-    if (!Number.isNaN(d.getTime())) expiresAt = d.toISOString();
+    if (!Number.isNaN(d.getTime()) && d.getTime() > Date.now()) expiresAt = d.toISOString();
   }
 
   const admin = createClient(supabaseUrl, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
