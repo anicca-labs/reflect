@@ -9,6 +9,7 @@ import { supabase } from '@/src/services/supabase';
 import { useRevenueCat, useToast } from '@hooks';
 import { useAnonymousJournalStore, useSessionStore } from '@/src/stores';
 import { migrateEntriesToServer, signOutToAnonymous } from '@/src/hooks/useAuthSession';
+import { refreshEntitlement } from '@/src/services/entitlements';
 import {
   HEADING_LETTER_SPACING,
   PAYWALL_SUCCESS_ALERT_DURATION,
@@ -60,6 +61,11 @@ const AnonMergeModal = ({ visible, localCount, serverCount, onClose }: AnonMerge
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) return;
+      // Sync Pro into api.entitlements before migrating — the server limit trigger
+      // reads it, and the webhook that normally writes it lands too late for the
+      // bulk insert that follows. Without this the "merge all" over-limit insert
+      // is rejected right after a successful purchase.
+      await refreshEntitlement();
       await migrateEntriesToServer(localEntries, user.id);
       clearEntries();
       invalidate();

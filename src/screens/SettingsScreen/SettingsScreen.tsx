@@ -16,6 +16,7 @@ import { isOnline } from '@/src/services/network';
 import { deleteAccount } from '@/src/services/account';
 import { usePreferencesStore, useSessionStore } from '@/src/stores';
 import { manageSubscriptions } from '@/src/services/revenue-cat';
+import { refreshEntitlement } from '@/src/services/entitlements';
 import { useRevenueCat, useToast, useReminder, useOtaUpdate } from '@hooks';
 import { sizes } from '@theme';
 import {
@@ -481,6 +482,7 @@ const SettingsScreen = () => {
                         return;
                       const purchased = await presentPaywall();
                       if (purchased) {
+                        await refreshEntitlement();
                         alert({
                           title: t`Welcome to Pro ✦`,
                           message: t`Unlimited entries unlocked. Keep writing.`,

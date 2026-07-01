@@ -20,6 +20,7 @@ import {
   flushPendingDeletions,
   flushPendingBookmarks,
 } from '@/src/services/journalSync';
+import { refreshEntitlement } from '@/src/services/entitlements';
 import type { JournalEntry } from '@/src/types/journal';
 
 // Set before calling signOut() when the intent is to return to anonymous mode
@@ -195,6 +196,10 @@ const useAuthSession = () => {
         flushPendingJournalEntries();
         flushPendingDeletions();
         flushPendingBookmarks();
+        // Ensure a returning Pro user's entitlement row is current server-side
+        // (self-heals if a webhook was ever missed), so the limit trigger sees
+        // their Pro status without waiting for the next RevenueCat event.
+        refreshEntitlement();
 
         // Migrate any locally-saved anonymous entries
         const { entries: localEntries } = useAnonymousJournalStore.getState();

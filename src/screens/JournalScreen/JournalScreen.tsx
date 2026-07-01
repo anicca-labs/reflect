@@ -31,6 +31,7 @@ import {
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
 import { isOnline } from '@/src/services/network';
+import { refreshEntitlement } from '@/src/services/entitlements';
 import { logJournalEntryCreated, logScreenView } from '@analytics';
 import {
   useJournalEntries,
@@ -334,6 +335,9 @@ const JournalScreen = () => {
       }
       const purchased = await presentPaywall();
       if (!purchased) return;
+      // Sync Pro to the server before saving this entry — the limit trigger reads
+      // api.entitlements, and the webhook that writes it lands after this insert.
+      await refreshEntitlement();
       alert({
         title: t`Welcome to Pro ✦`,
         message: t`Unlimited entries unlocked. Keep writing.`,
