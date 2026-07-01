@@ -7,8 +7,19 @@ import { supabase } from '@/src/services/supabase';
 import { encryptContent } from '@/src/services/crypto';
 import { identifyRevenueCatUser, resetRevenueCatUser } from '@/src/services/revenue-cat';
 import { upsertDeviceToken } from '@/src/services/user-devices';
-import { useSessionStore, useAnonymousJournalStore, usePendingJournalStore } from '@/src/stores';
-import { queryClient } from '@/src/services/queryClient';
+import {
+  useSessionStore,
+  useAnonymousJournalStore,
+  usePendingJournalStore,
+  usePendingDeletionsStore,
+  usePendingBookmarksStore,
+} from '@/src/stores';
+import { queryClient, persister } from '@/src/services/queryClient';
+import {
+  flushPendingJournalEntries,
+  flushPendingDeletions,
+  flushPendingBookmarks,
+} from '@/src/services/journalSync';
 import type { JournalEntry } from '@/src/types/journal';
 
 // Set before calling signOut() when the intent is to return to anonymous mode
@@ -126,6 +137,22 @@ const useAuthSession = () => {
     } = supabase.auth.onAuthStateChange(async (event, s) => {
       setSession(s);
 
+      // Keep the offline outbox keyed to its owner for EVERY session-bearing
+      // event (INITIAL_SESSION on cold start, SIGNED_IN, TOKEN_REFRESHED…), not
+      // just SIGNED_IN — otherwise a restored session never stamps an owner and a
+      // later different sign-in could inherit the previous user's queued work. If
+      // a different account appears, drop that work before adopting the outbox.
+      if (s?.user) {
+        const uid = s.user.id;
+        const owner = useSessionStore.getState().outboxOwnerId;
+        if (owner && owner !== uid) {
+          usePendingJournalStore.getState().clear();
+          usePendingDeletionsStore.getState().clear();
+          usePendingBookmarksStore.getState().clear();
+        }
+        useSessionStore.getState().setOutboxOwnerId(uid);
+      }
+
       if (event === 'SIGNED_OUT') {
         isRecoveryMode.current = false;
         if (_keepAnonymousOnSignOut) {
@@ -135,9 +162,13 @@ const useAuthSession = () => {
           clearAnonymous();
         }
         resetRevenueCatUser();
-        // Discard any unsynced offline entries so they can't leak into the next
-        // account signed in on this device.
-        usePendingJournalStore.getState().clear();
+        // The offline outbox (unsynced creates/deletes/bookmarks) is intentionally
+        // PRESERVED across sign-out. An involuntary sign-out (an expired/revoked
+        // refresh token) fires SIGNED_OUT too, and wiping here would silently
+        // destroy a user's unsynced writing. It stays keyed to its owner
+        // (outboxOwnerId) and is reconciled when the next session appears —
+        // flushed if the same user returns, cleared if a different account signs
+        // in — and the flushes refuse to sync an outbox owned by another user.
         // Drop the previous user's cached journal entries. Besides not leaking
         // stale data into a signed-out session, this is what makes the memory
         // notification replay land after login: with the cache cleared, the
@@ -146,6 +177,10 @@ const useAuthSession = () => {
         // `entries` never changes across login, the effect doesn't re-run, and
         // the user is left on the journal tab with the peek open out of view.
         queryClient.removeQueries({ queryKey: ['journal-entries'] });
+        // Wipe the on-disk copy too. The persister writes on a throttle, so an
+        // app kill right after sign-out could otherwise leave the previous
+        // user's entries on disk to restore on next launch.
+        persister.removeClient();
         return;
       }
 
@@ -153,6 +188,13 @@ const useAuthSession = () => {
         const userId = s.user.id;
         identifyRevenueCatUser(userId);
         upsertDeviceToken(userId);
+
+        // The outbox owner is reconciled above. Signing in doesn't trip the
+        // periodic flush triggers, so drain any outbox this returning user kept
+        // from a previous (e.g. expired) session now.
+        flushPendingJournalEntries();
+        flushPendingDeletions();
+        flushPendingBookmarks();
 
         // Migrate any locally-saved anonymous entries
         const { entries: localEntries } = useAnonymousJournalStore.getState();

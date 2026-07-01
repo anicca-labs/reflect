@@ -124,6 +124,10 @@ msgstr "Não foi possível excluir a conta"
 msgid "Couldn't open Settings"
 msgstr "Não foi possível abrir Configurações"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Couldn't save entry"
+msgstr "Não foi possível salvar a entrada"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "Criar conta"
@@ -365,6 +369,19 @@ msgstr "Pro Mensal"
 msgid "Push notifications"
 msgstr "Notificações push"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Reconnect to delete your account."
+msgstr "Reconecte-se para excluir sua conta."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Reconnect to sign out."
+msgstr "Reconecte-se para sair."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Reconnect to upgrade to Pro and keep writing."
+msgstr "Reconecte-se para fazer upgrade para o Pro e continuar escrevendo."
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Reflections"
 msgstr "Reflexões"
@@ -388,6 +405,10 @@ msgstr "Salvar entrada"
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Save entry ✦"
 msgstr "Salvar entrada ✦"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Saved offline"
+msgstr "Salvo offline"
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Search entries…"
@@ -433,6 +454,7 @@ msgstr "Entre com sua nova senha."
 msgid "Sign out"
 msgstr "Sair"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Something went wrong. Please try again."
 msgstr "Algo deu errado. Tente novamente."
@@ -448,6 +470,10 @@ msgstr "Assinatura"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Tap to restart and apply the latest update."
 msgstr "Toque para reiniciar e aplicar a atualização mais recente."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "This entry will sync automatically when you're back online."
+msgstr "Esta entrada será sincronizada automaticamente quando você estiver online novamente."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
@@ -557,6 +583,11 @@ msgstr "Qual é uma coisa que você quer lembrar de hoje?"
 msgid "What's something small that brought you joy recently?"
 msgstr "O que de pequeno te trouxe alegria recentemente?"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "You're offline"
+msgstr "Você está offline"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."
 msgstr "Você está usando o reflect como convidado. Entre para sincronizar seu diário em todos os dispositivos e desbloquear o Pro."
@@ -564,15 +595,3 @@ msgstr "Você está usando o reflect como convidado. Entre para sincronizar seu 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."
 msgstr "Sua conta e as entradas do seu diário serão excluídas permanentemente."
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Saved offline"
-msgstr "Salvo offline"
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "This entry will sync automatically when you're back online."
-msgstr "Esta entrada será sincronizada automaticamente quando você estiver online novamente."
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Couldn't save entry"
-msgstr "Não foi possível salvar a entrada"

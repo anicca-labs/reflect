@@ -6,8 +6,8 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { TamaguiProvider, styled } from 'tamagui';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '@/src/services/queryClient';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { queryClient, persister, CACHE_MAX_AGE } from '@/src/services/queryClient';
 import { useColorScheme, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { tamaguiConfig } from '@default-tamagui-config';
@@ -98,7 +98,18 @@ const RootLayout = () => {
   const isOSThemeDark = colorScheme === 'dark';
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{
+        persister,
+        maxAge: CACHE_MAX_AGE,
+        // Only the journal list is worth keeping on disk; everything else
+        // (paywall state, etc.) stays in-memory and refetches on launch.
+        dehydrateOptions: {
+          shouldDehydrateQuery: (query) => query.queryKey[0] === 'journal-entries',
+        },
+      }}
+    >
       <LinguiClientProvider>
         <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme}>
           <ThemeProvider value={isOSThemeDark ? DarkTheme : DefaultTheme}>
@@ -128,7 +139,7 @@ const RootLayout = () => {
           </ThemeProvider>
         </TamaguiProvider>
       </LinguiClientProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 };
 

@@ -124,6 +124,10 @@ msgstr "Tidak dapat menghapus akun"
 msgid "Couldn't open Settings"
 msgstr "Tidak dapat membuka Pengaturan"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Couldn't save entry"
+msgstr "Tidak dapat menyimpan entri"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Create account"
 msgstr "Buat akun"
@@ -365,6 +369,19 @@ msgstr "Pro Bulanan"
 msgid "Push notifications"
 msgstr "Notifikasi push"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Reconnect to delete your account."
+msgstr "Sambungkan kembali untuk menghapus akun Anda."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Reconnect to sign out."
+msgstr "Sambungkan kembali untuk keluar."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Reconnect to upgrade to Pro and keep writing."
+msgstr "Sambungkan kembali untuk meningkatkan ke Pro dan terus menulis."
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Reflections"
 msgstr "Refleksi"
@@ -388,6 +405,10 @@ msgstr "Simpan entri"
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Save entry ✦"
 msgstr "Simpan entri ✦"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Saved offline"
+msgstr "Disimpan offline"
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Search entries…"
@@ -433,6 +454,7 @@ msgstr "Masuk dengan kata sandi baru Anda."
 msgid "Sign out"
 msgstr "Keluar"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Something went wrong. Please try again."
 msgstr "Terjadi kesalahan. Silakan coba lagi."
@@ -448,6 +470,10 @@ msgstr "Langganan"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Tap to restart and apply the latest update."
 msgstr "Ketuk untuk mulai ulang dan terapkan pembaruan terbaru."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "This entry will sync automatically when you're back online."
+msgstr "Entri ini akan disinkronkan secara otomatis saat Anda kembali online."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "This feature is not available on the simulator."
@@ -557,6 +583,11 @@ msgstr "Satu hal apa yang ingin kamu ingat dari hari ini?"
 msgid "What's something small that brought you joy recently?"
 msgstr "Hal kecil apa yang baru-baru ini memberimu kebahagiaan?"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "You're offline"
+msgstr "Anda sedang offline"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."
 msgstr "Anda menggunakan reflect sebagai tamu. Masuk untuk menyinkronkan jurnal di semua perangkat dan membuka Pro."
@@ -564,15 +595,3 @@ msgstr "Anda menggunakan reflect sebagai tamu. Masuk untuk menyinkronkan jurnal 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."
 msgstr "Akun dan entri jurnal Anda akan dihapus secara permanen."
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Saved offline"
-msgstr "Disimpan offline"
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "This entry will sync automatically when you're back online."
-msgstr "Entri ini akan disinkronkan secara otomatis saat Anda kembali online."
-
-#: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Couldn't save entry"
-msgstr "Tidak dapat menyimpan entri"

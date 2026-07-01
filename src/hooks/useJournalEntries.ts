@@ -4,7 +4,13 @@ import { isTransientNetworkError } from '@/src/services/supabase/fetchWithRetry'
 import { encryptContent, decryptContent, PREFIX } from '@/src/services/crypto';
 import { isOnline } from '@/src/services/network';
 import type { JournalEntry } from '@/src/types/journal';
-import { useSessionStore, usePendingJournalStore } from '@/src/stores';
+import {
+  useSessionStore,
+  usePendingJournalStore,
+  usePendingDeletionsStore,
+  usePendingBookmarksStore,
+} from '@/src/stores';
+import { flushPendingDeletions, flushPendingBookmarks } from '@/src/services/journalSync';
 
 const QUERY_KEY = ['journal-entries'] as const;
 
@@ -45,9 +51,48 @@ const useJournalEntries = () => {
         });
       }
 
-      return raw.map((e) => ({ ...e, content: decryptContent(e.content) })) as JournalEntry[];
+      const entries = raw.map((e) => ({
+        ...e,
+        content: decryptContent(e.content),
+      })) as JournalEntry[];
+
+      // Reconcile durable offline state against server *truth*. This is the only
+      // place tombstones/bookmark-patches are cleared — never on a write's
+      // success — so an in-flight refetch that raced a delete (and still shows
+      // the row) can't resurrect it: the tombstone stays until a read confirms
+      // the row is actually gone.
+      reconcilePendingState(entries);
+
+      return entries;
     },
   });
+};
+
+// Drop pending state the server has now confirmed: a tombstone whose row is
+// absent (deleted), and a bookmark whose server value already matches the
+// desired one (or whose row is gone).
+const reconcilePendingState = (entries: JournalEntry[]) => {
+  const byId = new Map(entries.map((e) => [e.id, e]));
+
+  // A queued offline entry whose id is now on the server has synced — drop the
+  // outbox copy (its id matches the server row, so the screens already render a
+  // single card). Kept until confirmed so a refetch that raced the insert can't
+  // make it vanish.
+  const creations = usePendingJournalStore.getState();
+  for (const e of creations.entries) {
+    if (byId.has(e.id)) creations.remove(e.id);
+  }
+
+  const deletions = usePendingDeletionsStore.getState();
+  for (const id of deletions.ids) {
+    if (!byId.has(id)) deletions.remove(id);
+  }
+
+  const bookmarks = usePendingBookmarksStore.getState();
+  for (const id of Object.keys(bookmarks.values)) {
+    const entry = byId.get(id);
+    if (!entry || entry.is_bookmarked === bookmarks.values[id]) bookmarks.remove(id);
+  }
 };
 
 type CreateResult = { entry: JournalEntry; queued: boolean };
@@ -55,6 +100,11 @@ type CreateResult = { entry: JournalEntry; queued: boolean };
 const useCreateJournalEntry = () => {
   const queryClient = useQueryClient();
   return useMutation({
+    // This mutation handles connectivity itself (checks isOnline and queues to
+    // the offline outbox). Without 'always', React Query's onlineManager pauses
+    // it while offline, so the offline-save code never runs and the Save button
+    // spins forever. 'always' lets it run regardless of network state.
+    networkMode: 'always',
     mutationFn: async (content: string): Promise<CreateResult> => {
       // Hold the entry locally so it isn't lost; journalSync pushes it once
       // connectivity returns.
@@ -133,47 +183,52 @@ const useUpdateJournalEntry = () => {
 const useToggleBookmark = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, is_bookmarked }: { id: string; is_bookmarked: boolean }) => {
-      const { error } = await supabase
-        .from('journal_entries')
-        .update({ is_bookmarked })
-        .eq('id', id);
-      if (error) throw error;
+    // Runs regardless of connectivity (it records a durable desired value), so
+    // it must never be paused by the offline manager.
+    networkMode: 'always',
+    mutationFn: async (_vars: { id: string; is_bookmarked: boolean }) => {
+      await flushPendingBookmarks();
     },
-    onMutate: async ({ id, is_bookmarked }) => {
-      await queryClient.cancelQueries({ queryKey: QUERY_KEY });
-      const previous = queryClient.getQueryData<JournalEntry[]>(QUERY_KEY);
+    onMutate: ({ id, is_bookmarked }) => {
+      // Record the durable desired value (the screens apply it over the server
+      // row so it survives a refetch) AND mirror it into the cache for an
+      // instant flip. flushPendingBookmarks writes it to the server when online;
+      // reconcilePendingState drops the value once the server matches.
+      usePendingBookmarksStore.getState().set(id, is_bookmarked);
       queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) =>
         (old ?? []).map((e) => (e.id === id ? { ...e, is_bookmarked } : e)),
       );
-      return { previous };
     },
-    onError: (_err, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(QUERY_KEY, ctx.previous);
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 };
 
 const useDeleteJournalEntry = () => {
   const queryClient = useQueryClient();
   return useMutation({
+    // Runs regardless of connectivity (it records a durable tombstone), so it
+    // must never be paused by the offline manager.
+    networkMode: 'always',
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('journal_entries').delete().eq('id', id);
-      if (error) throw error;
+      // Tombstone first: this is what makes the delete stick. It survives a
+      // refetch, background/foreground and restart, and the screens filter it
+      // out — so the row can't be resurrected by a server read before the
+      // delete reaches the server. flushPendingDeletions does the actual DELETE
+      // now if we're online, or leaves it queued for journalSync otherwise.
+      usePendingDeletionsStore.getState().add(id);
+      await flushPendingDeletions();
     },
     onMutate: async (id) => {
+      // Immediate optimistic removal so the card disappears the instant it's
+      // swiped, before the (async) tombstone write settles.
       await queryClient.cancelQueries({ queryKey: QUERY_KEY });
-      const previous = queryClient.getQueryData<JournalEntry[]>(QUERY_KEY);
       queryClient.setQueryData<JournalEntry[]>(QUERY_KEY, (old) =>
         (old ?? []).filter((e) => e.id !== id),
       );
-      return { previous };
     },
-    onError: (_err, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(QUERY_KEY, ctx.previous);
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    // No onError revert and no onSettled invalidate: the tombstone keeps the row
+    // hidden and retries on the next flush, so reverting would wrongly re-show a
+    // row the user deleted, and an invalidate-refetch would just return it
+    // (harmless — the screens filter it — but a needless round-trip).
   });
 };
 

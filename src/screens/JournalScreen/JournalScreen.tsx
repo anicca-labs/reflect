@@ -26,8 +26,11 @@ import {
   useSessionStore,
   useAnonymousJournalStore,
   usePendingJournalStore,
+  usePendingDeletionsStore,
+  usePendingBookmarksStore,
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
+import { isOnline } from '@/src/services/network';
 import { logJournalEntryCreated, logScreenView } from '@analytics';
 import {
   useJournalEntries,
@@ -236,10 +239,19 @@ const JournalScreen = () => {
   // Once a pending entry syncs, its server row (same id) lands in the cache.
   // Drop the pending copy so the list keeps a single, stable-keyed element —
   // React updates it in place instead of remounting, so there's no flicker.
-  const serverIds = new Set(serverEntries.map((e) => e.id));
+  // Hide rows the user deleted offline; the tombstone outlives a server refetch
+  // so they can't reappear before the delete reaches the server. Apply pending
+  // bookmark toggles over the server rows so the star can't flicker on refetch.
+  const deletedIds = usePendingDeletionsStore((s) => s.ids);
+  const bookmarkPatches = usePendingBookmarksStore((s) => s.values);
+  const tombstoned = new Set(deletedIds);
+  const visibleServerEntries = serverEntries
+    .filter((e) => !tombstoned.has(e.id))
+    .map((e) => (e.id in bookmarkPatches ? { ...e, is_bookmarked: bookmarkPatches[e.id] } : e));
+  const serverIds = new Set(visibleServerEntries.map((e) => e.id));
   const unsyncedEntries = pendingEntries.filter((e) => !serverIds.has(e.id));
   const pendingIds = new Set(unsyncedEntries.map((e) => e.id));
-  const entries = isAnonymous ? localEntries : [...unsyncedEntries, ...serverEntries];
+  const entries = isAnonymous ? localEntries : [...unsyncedEntries, ...visibleServerEntries];
   const loading = isAnonymous ? false : serverLoading;
   const peekEntry = peekEntryId ? (entries.find((e) => e.id === peekEntryId) ?? null) : null;
 
@@ -288,6 +300,10 @@ const JournalScreen = () => {
   const hasContent = draft.trim().length > 0;
   const remainingFree = Math.max(0, FREE_ENTRY_LIMIT - entries.length);
   const atLimit = !isPro && entries.length >= FREE_ENTRY_LIMIT;
+  // Until the server list has loaded at least once (no cache yet, still
+  // fetching), `entries` undercounts to just the pending queue — a free user
+  // would slip past the limit. Hold saves until the real count is known.
+  const countPending = !isPro && !isAnonymous && serverLoading && serverEntries.length === 0;
   const showHint =
     !isPro && entries.length >= FREE_ENTRY_LIMIT - 2 && entries.length < FREE_ENTRY_LIMIT;
 
@@ -303,6 +319,17 @@ const JournalScreen = () => {
       if (isAnonymous) {
         // Anonymous user hit the limit — send them to sign up for Pro
         router.push('/sign-in');
+        return;
+      }
+      // Upgrading needs the store (StoreKit / Play Billing), which can't
+      // complete a purchase offline. Presenting the paywall here would be a dead
+      // end, so tell the user to reconnect instead.
+      if (!(await isOnline())) {
+        alert({
+          title: t`You're offline`,
+          message: t`Reconnect to upgrade to Pro and keep writing.`,
+          preset: 'error',
+        });
         return;
       }
       const purchased = await presentPaywall();
@@ -448,7 +475,7 @@ const JournalScreen = () => {
             <YStack onTouchStart={dismissOutside}>
               <BaseTouchable
                 onPress={handleSave}
-                disabled={!hasContent || createMutation.isPending}
+                disabled={!hasContent || createMutation.isPending || countPending}
                 bg="$accentBackground"
                 opacity={hasContent ? 1 : DISABLED_OPACITY}
                 rounded="$4"

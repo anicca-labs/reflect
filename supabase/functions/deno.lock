@@ -1,9 +1,11 @@
 {
   "version": "5",
   "redirects": {
+    "https://esm.sh/@supabase/supabase-js@2": "https://esm.sh/@supabase/supabase-js@2.110.0",
     "https://esm.sh/jose@5": "https://esm.sh/jose@5.10.0"
   },
   "remote": {
+    "https://esm.sh/@supabase/supabase-js@2.110.0": "b99c0ce7729f9de7797f836b93ab9ec94f1cfe079b4f937fa4144fe13525e979",
     "https://esm.sh/jose@5.10.0": "43705c1f40e5191081bcac2851ad8265f03c23bf751f9b84260ac2874f8ce209",
     "https://esm.sh/jose@5.10.0/denonext/base64url.mjs": "539aace7c49b2261745da4ec543d941618d11a294c4e7799d6face203aebfc45",
     "https://esm.sh/jose@5.10.0/denonext/decode/protected_header.mjs": "73ce892cbc903722e5628006b329d836d29af384eeb99e18f4e8ad3888d5c241",

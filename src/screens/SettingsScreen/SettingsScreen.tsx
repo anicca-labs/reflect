@@ -12,6 +12,7 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { FlashList } from '@shopify/flash-list';
 import * as Device from 'expo-device';
 import { supabase } from '@/src/services/supabase';
+import { isOnline } from '@/src/services/network';
 import { deleteAccount } from '@/src/services/account';
 import { usePreferencesStore, useSessionStore } from '@/src/stores';
 import { manageSubscriptions } from '@/src/services/revenue-cat';
@@ -217,7 +218,17 @@ const SettingsScreen = () => {
     }
   };
 
-  const handleSignOut = () => {
+  // Several actions here need the server (purchases, token revocation, account
+  // deletion). Offline they'd either dead-end or, for sign-out, wipe the
+  // unsynced offline outbox. Gate them behind a connectivity check + toast.
+  const requireOnline = async (message: string): Promise<boolean> => {
+    if (await isOnline()) return true;
+    alert({ title: t`You're offline`, message, preset: 'error' });
+    return false;
+  };
+
+  const handleSignOut = async () => {
+    if (!(await requireOnline(t`Reconnect to sign out.`))) return;
     Alert.alert(t`Sign out`, t`Are you sure you want to sign out?`, [
       { text: t`Cancel`, style: 'cancel' },
       { text: t`Sign out`, style: 'destructive', onPress: () => supabase.auth.signOut() },
@@ -227,7 +238,8 @@ const SettingsScreen = () => {
   const getLanguageLabel = (code: string): string =>
     voiceLanguages.find((l) => l.code === code)?.label ?? code;
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
+    if (!(await requireOnline(t`Reconnect to delete your account.`))) return;
     const subscriptionNote = isPro
       ? '\n\n' +
         t`Deleting your account does not cancel your subscription. Manage it in the App Store to avoid further charges.`
@@ -465,6 +477,8 @@ const SettingsScreen = () => {
                 {!rcLoading && !isPro && !isAnonymous ? (
                   <SizingAnimatedButton
                     onPress={async () => {
+                      if (!(await requireOnline(t`Reconnect to upgrade to Pro and keep writing.`)))
+                        return;
                       const purchased = await presentPaywall();
                       if (purchased) {
                         alert({
