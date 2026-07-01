@@ -83,6 +83,17 @@ const flushPendingJournalEntries = async (): Promise<void> => {
           .single();
         if (error) throw error;
 
+        // If the user deleted this entry from the outbox while the upsert was
+        // in flight (a swipe-delete during reconnect sync), it must NOT land on
+        // the server with no tombstone — that would resurrect it on the next
+        // read. Undo the insert and skip it. (It can only leave the outbox here
+        // via user deletion: reconcile can't have dropped it, since it wasn't on
+        // the server until this very upsert.)
+        if (!usePendingJournalStore.getState().entries.some((e) => e.id === item.id)) {
+          await supabase.from('journal_entries').delete().eq('id', item.id);
+          continue;
+        }
+
         const synced: JournalEntry = { ...data, content: item.content };
         // Add the server row to the cache. The screens dedupe pending vs. server
         // by id, so while both briefly hold this id only one stable-keyed card
