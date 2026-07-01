@@ -10,6 +10,12 @@ type SessionStoreState = {
   clearAnonymous: () => void;
   pendingMerge: PendingMerge | null;
   setPendingMerge: (v: PendingMerge | null) => void;
+  // The user id that owns the persisted offline outbox (pending creates/deletes/
+  // bookmarks). Lets the outbox survive an involuntary sign-out (expired token)
+  // and sync when the same user returns, while never leaking into a different
+  // account signed in on the same device.
+  outboxOwnerId: string | null;
+  setOutboxOwnerId: (id: string | null) => void;
 };
 
 const useSessionStore = create<SessionStoreState>()(
@@ -20,11 +26,16 @@ const useSessionStore = create<SessionStoreState>()(
       clearAnonymous: () => set({ isAnonymous: false }),
       pendingMerge: null,
       setPendingMerge: (v) => set({ pendingMerge: v }),
+      outboxOwnerId: null,
+      setOutboxOwnerId: (id) => set({ outboxOwnerId: id }),
     }),
     {
       name: 'reflect-session',
       storage: createJSONStorage(() => createZustandMmkvStorage()),
-      partialize: (state) => ({ isAnonymous: state.isAnonymous }),
+      partialize: (state) => ({
+        isAnonymous: state.isAnonymous,
+        outboxOwnerId: state.outboxOwnerId,
+      }),
     },
   ),
 );

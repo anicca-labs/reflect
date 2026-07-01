@@ -6,10 +6,21 @@ import {
   usePendingJournalStore,
   usePendingDeletionsStore,
   usePendingBookmarksStore,
+  useSessionStore,
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
 
 const QUERY_KEY = ['journal-entries'] as const;
+
+// Refuse to sync an outbox that belongs to a different user than the one now
+// signed in. The auth handler clears a foreign outbox on SIGNED_IN, but this
+// closes the race where a flush trigger fires during the sign-in transition —
+// a user's private entries must never sync into someone else's account.
+// (A null owner is legacy/first-run and is allowed to adopt the current user.)
+const outboxBelongsTo = (userId: string): boolean => {
+  const owner = useSessionStore.getState().outboxOwnerId;
+  return !owner || owner === userId;
+};
 
 // The server-side limit trigger raises this exact message; PostgREST surfaces it
 // in the error. Used to tell "limit reached" apart from a transient failure.
@@ -41,6 +52,7 @@ const flushPendingJournalEntries = async (): Promise<void> => {
   } = await supabase.auth.getSession();
   const user = session?.user;
   if (!user) return; // signed out — nothing to sync against
+  if (!outboxBelongsTo(user.id)) return; // outbox belongs to a different account
 
   isFlushing = true;
   let wrote = false;
@@ -129,6 +141,7 @@ const flushPendingDeletions = async (): Promise<void> => {
   } = await supabase.auth.getSession();
   const user = session?.user;
   if (!user) return; // signed out — nothing to sync against
+  if (!outboxBelongsTo(user.id)) return; // outbox belongs to a different account
 
   isDeleteFlushing = true;
   let wrote = false;
@@ -175,6 +188,7 @@ const flushPendingBookmarks = async (): Promise<void> => {
     data: { session },
   } = await supabase.auth.getSession();
   if (!session?.user) return; // signed out — nothing to sync against
+  if (!outboxBelongsTo(session.user.id)) return; // outbox belongs to another account
 
   isBookmarkFlushing = true;
   let wrote = false;
