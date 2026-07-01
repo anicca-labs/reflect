@@ -152,6 +152,11 @@ const useAuthSession = () => {
           usePendingBookmarksStore.getState().clear();
         }
         useSessionStore.getState().setOutboxOwnerId(uid);
+        // Keep this user's server-side entitlement current on cold start
+        // (INITIAL_SESSION) as well as sign-in — not just SIGNED_IN — so a
+        // returning Pro user whose webhook was ever missed self-heals before the
+        // limit trigger sees them. Skipped on TOKEN_REFRESHED to avoid hammering.
+        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') refreshEntitlement();
       }
 
       if (event === 'SIGNED_OUT') {
@@ -190,16 +195,13 @@ const useAuthSession = () => {
         identifyRevenueCatUser(userId);
         upsertDeviceToken(userId);
 
-        // The outbox owner is reconciled above. Signing in doesn't trip the
-        // periodic flush triggers, so drain any outbox this returning user kept
-        // from a previous (e.g. expired) session now.
+        // The outbox owner and entitlement refresh are handled in the
+        // session-bearing block above. Signing in doesn't trip the periodic flush
+        // triggers, so drain any outbox this returning user kept from a previous
+        // (e.g. expired) session now.
         flushPendingJournalEntries();
         flushPendingDeletions();
         flushPendingBookmarks();
-        // Ensure a returning Pro user's entitlement row is current server-side
-        // (self-heals if a webhook was ever missed), so the limit trigger sees
-        // their Pro status without waiting for the next RevenueCat event.
-        refreshEntitlement();
 
         // Migrate any locally-saved anonymous entries
         const { entries: localEntries } = useAnonymousJournalStore.getState();
