@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { withTiming, type EntryExitAnimationFunction } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { YStack } from 'tamagui';
 import { Trans } from '@lingui/react/macro';
@@ -22,10 +22,18 @@ const Z_INDEX_BANNER = 9990;
 type Mode = 'hidden' | 'offline' | 'reconnected';
 
 /**
- * A top strip that animates down when the device goes offline (red, persistent)
+ * A top strip that slides down when the device goes offline (red, persistent)
  * and, on reconnect, briefly shows a green "Back online" confirmation before
- * sliding back up. Mounted once, high in the tree. Purely informational —
- * pointerEvents="none" so it never intercepts touches.
+ * sliding back up. Purely informational — pointerEvents="none" so it never
+ * intercepts touches.
+ *
+ * IMPORTANT: it renders `null` while online (the common case) instead of sitting
+ * off-screen mounted. A persistent animated view at the root was reparented by
+ * Fabric when the view tree re-mounted on a navigation/activity transition (e.g.
+ * "Continue without account" or returning from Google Sign-In), crashing with
+ * "child already has a parent" (Sentry REFLECT-B). Keeping the view out of the
+ * tree unless it's actually needed removes that surface — the enter/exit
+ * animations then only ever run on a network change, never during navigation.
  */
 const NetworkStatusBanner = () => {
   const insets = useSafeAreaInsets();
@@ -51,8 +59,8 @@ const NetworkStatusBanner = () => {
         setMode('offline');
       } else if (prev === false) {
         // Reconnected after being offline: green confirmation, then auto-hide.
-        // (prev === false gates out the normal online cold start, which must
-        // show nothing.)
+        // (prev === false gates out the normal online cold start, which shows
+        // nothing.)
         clearHideTimer();
         setMode('reconnected');
         hideTimer.current = setTimeout(() => setMode('hidden'), RECONNECTED_VISIBLE_MS);
@@ -65,43 +73,56 @@ const NetworkStatusBanner = () => {
     };
   }, []);
 
-  const visible = mode !== 'hidden';
+  // Absent from the view tree entirely while online — see the note above.
+  if (mode === 'hidden') return null;
+
   // The strip fills from the very top (under the status bar) down past the safe
   // area, so its content sits clear of the notch/status bar.
   const totalHeight = BANNER_CONTENT_HEIGHT + insets.top;
-
-  const progress = useSharedValue(0);
-  useEffect(() => {
-    progress.value = withTiming(visible ? 1 : 0, { duration: SLIDE_DURATION_MS });
-  }, [visible, progress]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: (progress.value - 1) * totalHeight }],
-  }));
-
-  // Keep the green while sliding away after a reconnect (mode flips to 'hidden'
-  // for the exit animation, but the colour should stay green, not flash red).
+  // Keep the green while sliding away after a reconnect (mode is 'reconnected'
+  // during the exit, so the colour stays green rather than flashing red).
   const backgroundColor = mode === 'offline' ? OFFLINE_COLOR : ONLINE_COLOR;
+
+  // Slide exactly the banner's own height (the built-in Slide presets travel a
+  // full window height, which makes a 30px strip snap in only at the very end).
+  const entering: EntryExitAnimationFunction = () => {
+    'worklet';
+    return {
+      initialValues: { transform: [{ translateY: -totalHeight }] },
+      animations: { transform: [{ translateY: withTiming(0, { duration: SLIDE_DURATION_MS }) }] },
+    };
+  };
+  const exiting: EntryExitAnimationFunction = () => {
+    'worklet';
+    return {
+      initialValues: { transform: [{ translateY: 0 }] },
+      animations: {
+        transform: [{ translateY: withTiming(-totalHeight, { duration: SLIDE_DURATION_MS }) }],
+      },
+    };
+  };
 
   return (
     <Animated.View
+      entering={entering}
+      exiting={exiting}
       pointerEvents="none"
-      style={[
-        {
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: totalHeight,
-          paddingTop: insets.top,
-          backgroundColor,
-          zIndex: Z_INDEX_BANNER,
-        },
-        animatedStyle,
-      ]}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: totalHeight,
+        paddingTop: insets.top,
+        backgroundColor,
+        zIndex: Z_INDEX_BANNER,
+      }}
     >
-      <YStack flex={1} items="center" justify="center">
-        <LabelMd color="$white">
+      <YStack flex={1} items="center" justify="center" px="$4">
+        {/* numberOfLines={1}: with larger font-scaling "Back online" can wrap to a
+            second line, which the short strip then clips — showing just "Back".
+            Pin it to one line. */}
+        <LabelMd color="$white" numberOfLines={1}>
           {mode === 'offline' ? <Trans>No connection</Trans> : <Trans>Back online</Trans>}
         </LabelMd>
       </YStack>
