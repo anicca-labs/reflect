@@ -64,3 +64,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+        with:
+          # GitHub's Pages backend is intermittently slow to finish publishing;
+          # the 10-minute default aborts a deployment that's still in_progress.
+          # 20 minutes rides out the slow window instead of failing a good build.
+          timeout: 1200000
