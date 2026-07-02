@@ -2,11 +2,10 @@
 // sign-in to sync entitlement state immediately, without waiting on the
 // RevenueCat webhook. Invoked via supabase.functions.invoke, not the typed SDK.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
-const PRO_ENTITLEMENT = 'pro';
+import { fetchProState } from '../_shared/revenuecat.ts';
 
 // Resolves the caller's Pro state from RevenueCat's authoritative API and mirrors
-// it into api.entitlements. This is what makes "buy Pro → immediately add a
+// it into api.entitlements. This is what makes "buy Pro → immediately add an
 // entry" work: the server-side limit trigger reads api.entitlements, and the
 // webhook that normally populates it lands seconds later — too late for the
 // insert that fires right after purchase. This closes that gap synchronously.
@@ -28,37 +27,8 @@ Deno.serve(async (req) => {
   } = await userClient.auth.getUser();
   if (userError || !user) return new Response('Unauthorized', { status: 401 });
 
-  const rcKey = Deno.env.get('REVENUECAT_API_KEY');
-  const projectId = Deno.env.get('REVENUECAT_PROJECT_ID');
-  if (!rcKey || !projectId) return new Response('RevenueCat not configured', { status: 500 });
-
-  // The RevenueCat app_user_id is the Supabase user id (Purchases.logIn(userId)).
-  const rcRes = await fetch(
-    `https://api.revenuecat.com/v2/projects/${projectId}/customers/${user.id}/active_entitlements`,
-    { headers: { Authorization: `Bearer ${rcKey}` } },
-  );
-  if (!rcRes.ok) {
-    // 404 = customer not seen by RevenueCat yet (never purchased). Treat as free.
-    if (rcRes.status !== 404) return new Response('RevenueCat error', { status: 502 });
-  }
-  const body = rcRes.ok ? await rcRes.json() : { items: [] };
-  const pro = (body.items ?? []).find(
-    (e: { entitlement_id?: string; lookup_key?: string }) =>
-      e.entitlement_id === PRO_ENTITLEMENT || e.lookup_key === PRO_ENTITLEMENT,
-  ) as { expires_at?: number | string | null } | undefined;
-
-  const isPro = !!pro;
-  // active_entitlements only returns currently-active grants, so isPro is already
-  // authoritative. Only trust expires_at if it parses to a FUTURE instant — a
-  // mis-parsed value (e.g. epoch seconds read as ms) could land in the past and
-  // wrongly mark a paying user expired in the trigger's `expires_at > now()`
-  // check. On any doubt, leave it null (= active); the webhook sets the precise
-  // expiry, and a later refresh flips is_pro=false once the grant truly lapses.
-  let expiresAt: string | null = null;
-  if (pro?.expires_at != null) {
-    const d = new Date(pro.expires_at);
-    if (!Number.isNaN(d.getTime()) && d.getTime() > Date.now()) expiresAt = d.toISOString();
-  }
+  const state = await fetchProState(user.id);
+  if (!state) return new Response('RevenueCat unavailable', { status: 502 });
 
   const admin = createClient(supabaseUrl, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
     db: { schema: 'api' },
@@ -66,16 +36,19 @@ Deno.serve(async (req) => {
   const { error } = await admin.from('entitlements').upsert(
     {
       user_id: user.id,
-      is_pro: isPro,
-      expires_at: expiresAt,
+      is_pro: state.isPro,
+      expires_at: state.expiresAt,
       event_type: 'client_refresh',
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'user_id' },
   );
-  if (error) return new Response(error.message, { status: 500 });
+  if (error) {
+    console.error('[refresh-entitlement] upsert failed:', error.message);
+    return new Response('Internal error', { status: 500 });
+  }
 
-  return new Response(JSON.stringify({ is_pro: isPro }), {
+  return new Response(JSON.stringify({ is_pro: state.isPro }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
   });
