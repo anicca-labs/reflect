@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Get Reflect — your private daily journal. Download for iOS or Android." />
+    <meta name="robots" content="index, follow" />
+    <title>Get Reflect</title>
+
+    <!-- Open Graph — so the link looks good when shared / in Instagram -->
+    <meta property="og:title" content="Get Reflect" />
+    <meta property="og:description" content="Your private daily journal — download for iOS or Android." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://reflects.sytes.net/get" />
+    <meta property="og:image" content="https://reflects.sytes.net/icon.png" />
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --cream: #f5f0e8;
+        --ink: #1c1917;
+        --ink-light: #57534e;
+        --green-dark: #4a7a5a;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: var(--cream);
+        color: var(--ink);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 24px;
+        text-align: center;
+      }
+
+      .card {
+        max-width: 420px;
+        width: 100%;
+      }
+
+      .app-icon {
+        width: 108px;
+        height: 108px;
+        border-radius: 24px;
+        margin: 0 auto 24px;
+        display: block;
+        box-shadow: 0 8px 28px rgba(28, 25, 23, 0.12);
+      }
+
+      h1 {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 40px;
+        font-weight: normal;
+        letter-spacing: -0.025em;
+        margin-bottom: 12px;
+        line-height: 1;
+      }
+
+      .sub {
+        font-size: 16px;
+        color: var(--ink-light);
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+
+      .redirecting {
+        font-size: 14px;
+        color: var(--green-dark);
+        font-style: italic;
+        margin-bottom: 24px;
+        min-height: 20px;
+      }
+
+      .store-buttons {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #000;
+        color: #fff;
+        text-decoration: none;
+        padding: 11px 18px;
+        border-radius: 11px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        transition:
+          transform 0.15s,
+          opacity 0.15s;
+        min-width: 152px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .badge:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+      }
+
+      .badge-icon {
+        flex-shrink: 0;
+      }
+
+      .badge-text {
+        text-align: left;
+        line-height: 1.15;
+      }
+      .badge-text .badge-line1 {
+        display: block;
+        font-size: 10px;
+        font-weight: 400;
+        opacity: 0.85;
+        letter-spacing: 0.02em;
+      }
+      .badge-text .badge-line2 {
+        display: block;
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img src="../icon.png" class="app-icon" alt="Reflect" />
+      <h1>Reflect</h1>
+      <p class="sub" id="sub">Your private daily journal — prompts, streaks, and reflections.</p>
+      <p class="redirecting" id="redirecting"></p>
+      <div class="store-buttons" id="buttons"></div>
+    </div>
+
+    <script>
+      // ── Store links (kept in sync with the landing page) ────────
+      const IOS_URL = 'https://apps.apple.com/app/reflect-it/id6767607183';
+      const ANDROID_URL = 'https://play.google.com/store/apps/details?id=com.reflect.prod';
+
+      // ── Badge SVGs ──────────────────────────────────────────────
+      const appleSVG = `<svg class="badge-icon" width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.04 13.77c-.03-3.11 2.54-4.62 2.66-4.69-1.45-2.12-3.71-2.41-4.51-2.44-1.91-.2-3.74 1.13-4.71 1.13-.98 0-2.49-1.11-4.09-1.08-2.1.03-4.04 1.23-5.12 3.1-2.19 3.8-.56 9.41 1.57 12.49 1.04 1.5 2.28 3.18 3.91 3.12 1.57-.06 2.17-.1 3.32-1 1.17.95 2.36.9 3.32 1.02 1.56-.03 2.77-1.54 3.84-3.02 1.18-1.7 1.67-3.36 1.71-3.44-.04-.02-3.87-1.48-3.9-5.19z" fill="white"/>
+        <path d="M14.67 4.25C15.5 3.24 16.06 1.84 15.9.41c-1.22.05-2.69.81-3.56 1.81-.78.89-1.47 2.33-1.28 3.7 1.35.1 2.74-.68 3.61-1.67z" fill="white"/>
+      </svg>`;
+
+      const googleSVG = `<svg class="badge-icon" width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0.4 0.6C0.15 0.86 0 1.27 0 1.8v20.4c0 .53.15.94.41 1.2l.06.06L11.54 12.3v-.27L0.46.54 0.4.6z" fill="#00D2FF"/>
+        <path d="M15.3 16.1l-3.76-3.8v-.27l3.77-3.8.08.05 4.46 2.53c1.27.72 1.27 1.9 0 2.63l-4.46 2.53-.09.13z" fill="#FFD700"/>
+        <path d="M15.38 16.08L11.54 12.17 0.4 23.4c.42.45 1.11.5 1.89.06l13.09-7.38z" fill="#FF3D00"/>
+        <path d="M15.38 8.25L2.3.87C1.5.42.82.48.4.93l11.14 11.24 3.84-3.92z" fill="#00E676"/>
+      </svg>`;
+
+      function buildBadge(platform) {
+        const a = document.createElement('a');
+        a.className = 'badge';
+        a.href = platform === 'ios' ? IOS_URL : ANDROID_URL;
+        a.setAttribute('aria-label', platform === 'ios' ? 'App Store' : 'Google Play');
+        const icon = platform === 'ios' ? appleSVG : googleSVG;
+        const l1 = platform === 'ios' ? 'Download on the' : 'Get it on';
+        const l2 = platform === 'ios' ? 'App Store' : 'Google Play';
+        a.innerHTML = `${icon}<div class="badge-text"><span class="badge-line1">${l1}</span><span class="badge-line2">${l2}</span></div>`;
+        return a;
+      }
+
+      // ── OS detection ────────────────────────────────────────────
+      function detectOS() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+        if (/android/i.test(ua)) return 'android';
+        // iPadOS 13+ reports as Mac, so also check for touch on a "Mac".
+        const iOSlike =
+          /iPad|iPhone|iPod/.test(ua) ||
+          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if (iOSlike) return 'ios';
+        return 'other';
+      }
+
+      const buttons = document.getElementById('buttons');
+      const redirecting = document.getElementById('redirecting');
+      const os = detectOS();
+
+      if (os === 'ios' || os === 'android') {
+        const url = os === 'ios' ? IOS_URL : ANDROID_URL;
+        redirecting.textContent = 'Taking you to the store…';
+        // Show the matching badge as a manual fallback in case the redirect is blocked.
+        buttons.appendChild(buildBadge(os));
+        window.location.replace(url);
+      } else {
+        // Desktop / unknown — let the visitor choose.
+        buttons.appendChild(buildBadge('ios'));
+        buttons.appendChild(buildBadge('android'));
+      }
+    </script>
+
+    <noscript>
+      <div style="margin-top: 16px">
+        <a href="https://apps.apple.com/app/reflect-it/id6767607183">Download on the App Store</a>
+        &nbsp;·&nbsp;
+        <a href="https://play.google.com/store/apps/details?id=com.reflect.prod">Get it on Google Play</a>
+      </div>
+    </noscript>
+  </body>
+</html>
