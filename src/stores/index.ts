@@ -10,6 +10,13 @@ type SessionStoreState = {
   clearAnonymous: () => void;
   pendingMerge: PendingMerge | null;
   setPendingMerge: (v: PendingMerge | null) => void;
+  // Set when an anonymous user taps a "Sign in for Pro" CTA. Carries that intent
+  // across the sign-in round trip so the paywall auto-presents once they land on
+  // the journal, instead of the Pro intent being silently dropped at sign-in.
+  // Intentionally NOT persisted: an app kill mid-flow should drop it rather than
+  // pop an unexpected paywall on some later, unrelated sign-in.
+  proIntent: boolean;
+  setProIntent: (v: boolean) => void;
   // The user id that owns the persisted offline outbox (pending creates/deletes/
   // bookmarks). Lets the outbox survive an involuntary sign-out (expired token)
   // and sync when the same user returns, while never leaking into a different
@@ -26,6 +33,8 @@ const useSessionStore = create<SessionStoreState>()(
       clearAnonymous: () => set({ isAnonymous: false }),
       pendingMerge: null,
       setPendingMerge: (v) => set({ pendingMerge: v }),
+      proIntent: false,
+      setProIntent: (v) => set({ proIntent: v }),
       outboxOwnerId: null,
       setOutboxOwnerId: (id) => set({ outboxOwnerId: id }),
     }),

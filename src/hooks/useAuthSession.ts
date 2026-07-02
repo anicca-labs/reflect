@@ -229,6 +229,9 @@ const useAuthSession = () => {
           clearAnonymous();
         }
         resetRevenueCatUser();
+        // Drop any unconsumed "sign in for Pro" intent — signing out (or choosing
+        // "decide later") means we no longer want to auto-present the paywall.
+        useSessionStore.getState().setProIntent(false);
         // The offline outbox (unsynced creates/deletes/bookmarks) is intentionally
         // PRESERVED across sign-out. An involuntary sign-out (an expired/revoked
         // refresh token) fires SIGNED_OUT too, and wiping here would silently

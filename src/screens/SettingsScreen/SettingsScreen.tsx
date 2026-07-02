@@ -106,7 +106,7 @@ const SettingsScreen = () => {
   ];
   const { alert } = useToast();
   const router = useRouter();
-  const { isAnonymous } = useSessionStore();
+  const { isAnonymous, setProIntent } = useSessionStore();
   const {
     enabled: reminderEnabled,
     hour: reminderHour,
@@ -463,7 +463,12 @@ const SettingsScreen = () => {
 
                 {!rcLoading && !isPro && isAnonymous ? (
                   <BaseTouchable
-                    onPress={() => router.push('/sign-in')}
+                    onPress={() => {
+                      // Remember the Pro intent so the paywall auto-presents once
+                      // they finish signing in and land on the journal.
+                      setProIntent(true);
+                      router.push('/sign-in');
+                    }}
                     bg="$accentBackground"
                     rounded="$4"
                     py="$3"
