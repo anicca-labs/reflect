@@ -134,7 +134,7 @@ const JournalScreen = () => {
   const hasAnimated = useRef(false);
   const router = useRouter();
 
-  const { isAnonymous } = useSessionStore();
+  const { isAnonymous, setProIntent, proIntent, pendingMerge } = useSessionStore();
   const {
     entries: localEntries,
     addEntry: addLocalEntry,
@@ -150,10 +150,47 @@ const JournalScreen = () => {
   const createMutation = useCreateJournalEntry();
   const deleteMutation = useDeleteJournalEntry();
   const toggleBookmarkMutation = useToggleBookmark();
-  const { isPro, presentPaywall } = useRevenueCat();
+  const { isPro, isLoading: rcLoading, presentPaywall } = useRevenueCat();
   const { t } = useLingui();
   const { alert } = useToast();
   const inputRef = useRef<ComponentRef<typeof TextArea>>(null);
+
+  // Auto-present the paywall for a user who tapped "Sign in for Pro" while
+  // anonymous. The intent survived the sign-in round trip; now that they've
+  // landed on the journal, honour it instead of dropping it silently.
+  //
+  // Gated so it never collides with the anonymous→account merge: an over-limit
+  // user gets the merge modal (whose "Keep everything ✦" IS the Pro path), and
+  // while reconciliation is still in flight the anonymous store is non-empty —
+  // both cases hold `localEntries.length > 0` / `pendingMerge`, so we wait. Once
+  // the store is empty and no merge is pending, the Pro intent stands alone.
+  useEffect(() => {
+    if (!proIntent || rcLoading || isPro || isAnonymous) return;
+    if (pendingMerge || localEntries.length > 0) return;
+
+    setProIntent(false); // one-shot: flip before the async so it can't re-fire
+    (async () => {
+      const purchased = await presentPaywall();
+      if (!purchased) return;
+      await refreshEntitlement();
+      alert({
+        title: t`Welcome to Pro ✦`,
+        message: t`Unlimited entries unlocked. Keep writing.`,
+        duration: PAYWALL_SUCCESS_ALERT_DURATION,
+      });
+    })();
+  }, [
+    proIntent,
+    rcLoading,
+    isPro,
+    isAnonymous,
+    pendingMerge,
+    localEntries.length,
+    setProIntent,
+    presentPaywall,
+    alert,
+    t,
+  ]);
 
   // Voice transcripts arrive without terminal punctuation, so close the
   // dictated draft with a period when it doesn't already end in punctuation.
@@ -318,7 +355,10 @@ const JournalScreen = () => {
 
     if (atLimit) {
       if (isAnonymous) {
-        // Anonymous user hit the limit — send them to sign up for Pro
+        // Anonymous user hit the limit — send them to sign up for Pro, and
+        // remember that intent so the paywall auto-presents once they land back
+        // on the journal signed in.
+        setProIntent(true);
         router.push('/sign-in');
         return;
       }
