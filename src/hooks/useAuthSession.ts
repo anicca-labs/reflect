@@ -64,12 +64,67 @@ const migrateEntriesToServer = async (entries: JournalEntry[], userId: string) =
   if (error) throw error;
 };
 
+// Coalesce overlapping runs (a cold-start INITIAL_SESSION and a SIGNED_IN could
+// otherwise both fire the decision and double-migrate the same local entries).
+let isReconcilingAnon = false;
+
+/**
+ * Reconcile anonymous (pre-sign-in) entries into the now-signed-in account.
+ * Auto-migrates when the combined count fits the free limit; otherwise raises
+ * the merge modal (via pendingMerge) so the user explicitly chooses what to keep.
+ *
+ * Runs on SIGNED_IN AND on cold-start INITIAL_SESSION. The second call site is
+ * what makes the modal "sticky": if the user closes the app while the modal is
+ * open (without choosing an option), their local entries are still in the
+ * persisted anonymous store — re-running here re-surfaces the modal on the next
+ * launch instead of silently defaulting to "keep account" and orphaning that
+ * writing. It's a no-op once the merge is resolved (the anonymous store is
+ * emptied) or the user returns to anonymous mode ("decide later").
+ */
+const reconcileAnonymousEntries = async (userId: string) => {
+  if (isReconcilingAnon) return;
+  const { pendingMerge, setPendingMerge } = useSessionStore.getState();
+  if (pendingMerge) return; // modal already up — don't stack a second decision
+  const { entries: localEntries } = useAnonymousJournalStore.getState();
+  if (localEntries.length === 0) return;
+
+  isReconcilingAnon = true;
+  try {
+    let serverCount: number;
+    try {
+      serverCount = await getServerEntryCount();
+    } catch {
+      // Offline / transient: we can't decide without the authoritative server
+      // count. Leave the local entries untouched and re-attempt on the next
+      // launch — nothing is migrated or discarded, so no writing is lost.
+      return;
+    }
+
+    const combined = localEntries.length + serverCount;
+    if (combined <= FREE_ENTRY_LIMIT) {
+      try {
+        await migrateEntriesToServer(localEntries, userId);
+        useAnonymousJournalStore.getState().clearEntries();
+        queryClient.invalidateQueries({ queryKey: ['journal-entries'] });
+      } catch {
+        // Migration failed (network). Fall back to the modal so the user can retry.
+        setPendingMerge({ localCount: localEntries.length, serverCount });
+      }
+    } else {
+      // Over the free limit — the user must explicitly choose what to keep.
+      setPendingMerge({ localCount: localEntries.length, serverCount });
+    }
+  } finally {
+    isReconcilingAnon = false;
+  }
+};
+
 const useAuthSession = () => {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const isRecoveryMode = useRef(false);
   const router = useRouter();
   const segments = useSegments();
-  const { isAnonymous, clearAnonymous, setPendingMerge } = useSessionStore();
+  const { isAnonymous, clearAnonymous } = useSessionStore();
 
   const handleAuthUrl = useCallback(
     async (url: string) => {
@@ -157,6 +212,12 @@ const useAuthSession = () => {
         // returning Pro user whose webhook was ever missed self-heals before the
         // limit trigger sees them. Skipped on TOKEN_REFRESHED to avoid hammering.
         if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') refreshEntitlement();
+        // Re-surface any unresolved anonymous→account merge on cold start. If the
+        // user closed the app while the merge modal was open (without choosing),
+        // their local entries are still queued in the anonymous store; re-running
+        // here re-prompts instead of silently keeping the account copy and
+        // orphaning that writing. (SIGNED_IN handles the interactive path below.)
+        if (event === 'INITIAL_SESSION') reconcileAnonymousEntries(uid);
       }
 
       if (event === 'SIGNED_OUT') {
@@ -203,28 +264,10 @@ const useAuthSession = () => {
         flushPendingDeletions();
         flushPendingBookmarks();
 
-        // Migrate any locally-saved anonymous entries
-        const { entries: localEntries } = useAnonymousJournalStore.getState();
+        // Leaving anonymous mode: reconcile any locally-saved entries into the
+        // account — auto-migrate under the free limit, else raise the merge modal.
         clearAnonymous();
-
-        if (localEntries.length > 0) {
-          const serverCount = await getServerEntryCount();
-          const combined = localEntries.length + serverCount;
-
-          if (combined <= FREE_ENTRY_LIMIT) {
-            try {
-              await migrateEntriesToServer(localEntries, userId);
-              useAnonymousJournalStore.getState().clearEntries();
-              queryClient.invalidateQueries({ queryKey: ['journal-entries'] });
-            } catch {
-              // Migration failed (network error). Fall back to merge modal so user can retry.
-              setPendingMerge({ localCount: localEntries.length, serverCount });
-            }
-          } else {
-            // Conflict: combined exceeds free limit — let user decide
-            setPendingMerge({ localCount: localEntries.length, serverCount });
-          }
-        }
+        await reconcileAnonymousEntries(userId);
       }
     });
 
@@ -234,7 +277,7 @@ const useAuthSession = () => {
       subscription.unsubscribe();
       linkingSub.remove();
     };
-  }, [handleAuthUrl, clearAnonymous, setPendingMerge, router]);
+  }, [handleAuthUrl, clearAnonymous, router]);
 
   useEffect(() => {
     if (session === undefined) return;
