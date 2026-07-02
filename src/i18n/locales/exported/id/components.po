@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/components/atoms/NetworkStatusBanner/index.tsx
+msgid "Back online"
+msgstr "Kembali online"
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
@@ -69,6 +73,10 @@ msgstr "Gabungkan semua"
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Merge all {combined} entries into your account."
 msgstr "Gabungkan semua {combined} entri ke akun Anda."
+
+#: src/components/atoms/NetworkStatusBanner/index.tsx
+msgid "No connection"
+msgstr "Tidak ada koneksi"
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"

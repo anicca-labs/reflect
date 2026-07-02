@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/components/atoms/NetworkStatusBanner/index.tsx
+msgid "Back online"
+msgstr "Conexão restabelecida"
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
@@ -69,6 +73,10 @@ msgstr "Mesclar tudo"
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Merge all {combined} entries into your account."
 msgstr "Mesclar todas as {combined} entradas na sua conta."
+
+#: src/components/atoms/NetworkStatusBanner/index.tsx
+msgid "No connection"
+msgstr "Sem conexão"
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"

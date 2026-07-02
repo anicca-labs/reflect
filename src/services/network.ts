@@ -22,4 +22,15 @@ const subscribeToOnline = (onOnline: () => void): (() => void) => {
   });
 };
 
-export { isOnline, subscribeToOnline };
+/**
+ * Subscribe to connectivity changes, receiving the current online state on every
+ * NetInfo event (unlike subscribeToOnline, which fires only on the offline→online
+ * edge). Does an initial fetch so the callback learns the current state promptly
+ * rather than waiting for the first change. Returns an unsubscribe fn.
+ */
+const subscribeToNetworkStatus = (onChange: (online: boolean) => void): (() => void) => {
+  NetInfo.fetch().then((state) => onChange(isStateOnline(state)));
+  return NetInfo.addEventListener((state) => onChange(isStateOnline(state)));
+};
+
+export { isOnline, subscribeToOnline, subscribeToNetworkStatus };

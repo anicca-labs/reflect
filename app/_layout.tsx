@@ -19,7 +19,7 @@ import {
   useMemoryNotification,
   useOfflineJournalSync,
 } from '@hooks';
-import { EnvBadge } from '@atoms';
+import { EnvBadge, NetworkStatusBanner } from '@atoms';
 import { AnonMergeModal } from '@molecules';
 import { useSessionStore } from '@/src/stores';
 import { subscribeToForegroundMessages } from '@firebase-messaging';
@@ -118,6 +118,7 @@ const RootLayout = () => {
                 {fontsLoaded ? <RootLayoutNav /> : null}
                 <StatusBar style="auto" />
               </KeyboardProvider>
+              <NetworkStatusBanner />
               <EnvBadge />
               {/* NOTE: SplashView style prop requires a plain object — no Tamagui equivalent */}
               <SplashView
