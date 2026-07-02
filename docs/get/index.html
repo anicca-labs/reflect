@@ -199,9 +199,13 @@
         buttons.appendChild(buildBadge(os));
         window.location.replace(url);
       } else {
-        // Desktop / unknown — let the visitor choose.
+        // Not iOS or Android (desktop, Mac, Windows, etc.) — send them to the
+        // full landing page instead of this bare redirect card.
+        redirecting.textContent = 'Redirecting…';
+        // Both badges stay as a manual fallback if the redirect is blocked.
         buttons.appendChild(buildBadge('ios'));
         buttons.appendChild(buildBadge('android'));
+        window.location.replace('/');
       }
     </script>
 
