@@ -59,7 +59,7 @@ type UserStoreState = {
 
 /**
  * Minimal user store that satisfies the `@stores` contract expected by
- * `@ksairi-org/react-native-auth-apple` and `@ksairi-org/react-native-auth-google`.
+ * `@anicca-labs/react-native-auth-apple` and `@anicca-labs/react-native-auth-google`.
  * The library persistence hooks call `setKeyValue` after a successful social
  * sign-in to cache display-name data.
  */

@@ -1,6 +1,6 @@
 import { BaseIcon } from '@atoms';
 import { LabelMd } from '@fonts';
-import { BaseTouchable } from '@ksairi-org/ui-touchables';
+import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { useLingui } from '@lingui/react/macro';
 import { useSwipeableStore } from '@/src/stores';
 import { createMaterialTopTabNavigator } from 'expo-router/js-top-tabs';

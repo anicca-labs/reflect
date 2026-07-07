@@ -1,6 +1,6 @@
 import { useState, useRef, useImperativeHandle, type ComponentRef, type Ref } from 'react';
 import { Input, XStack, useTheme, styled } from 'tamagui';
-import { BaseTouchable } from '@ksairi-org/ui-touchables';
+import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { Feather } from '@expo/vector-icons';
 
 const PasswordField = styled(Input, {

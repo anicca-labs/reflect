@@ -24,7 +24,7 @@ import { AnonMergeModal } from '@molecules';
 import { useSessionStore } from '@/src/stores';
 import { subscribeToForegroundMessages } from '@firebase-messaging';
 import { useEffect } from 'react';
-import { SplashView } from '@ksairi-org/react-native-splash-view';
+import { SplashView } from '@anicca-labs/react-native-splash-view';
 import { configureRevenueCat } from '@revenue-cat';
 import { initializeMeta } from '@meta';
 import splash from '../assets/animations/splash.riv';
