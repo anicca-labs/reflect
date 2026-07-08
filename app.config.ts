@@ -122,6 +122,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     'expo-secure-store',
+    [
+      'expo-local-authentication',
+      {
+        faceIDPermission: 'Reflect uses Face ID to unlock your private journal.',
+      },
+    ],
     'expo-updates',
     'expo-font',
     'expo-image',

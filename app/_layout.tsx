@@ -18,8 +18,9 @@ import {
   useToast,
   useMemoryNotification,
   useOfflineJournalSync,
+  useBiometricLock,
 } from '@hooks';
-import { EnvBadge, NetworkStatusBanner } from '@atoms';
+import { EnvBadge, NetworkStatusBanner, BiometricLockOverlay } from '@atoms';
 import { AnonMergeModal } from '@molecules';
 import { useSessionStore } from '@/src/stores';
 import { subscribeToForegroundMessages } from '@firebase-messaging';
@@ -97,6 +98,10 @@ const RootLayout = () => {
   const colorScheme = useColorScheme() ?? 'light';
   const isOSThemeDark = colorScheme === 'dark';
 
+  // Engages the biometric lock when the app backgrounds while signed in; the
+  // overlay below presents the unlock prompt on return to the foreground.
+  useBiometricLock();
+
   return (
     <PersistQueryClientProvider
       client={queryClient}
@@ -120,6 +125,7 @@ const RootLayout = () => {
               </KeyboardProvider>
               <NetworkStatusBanner />
               <EnvBadge />
+              <BiometricLockOverlay />
               {/* NOTE: SplashView style prop requires a plain object — no Tamagui equivalent */}
               <SplashView
                 source={splash}

@@ -17,6 +17,7 @@ msgstr ""
 msgid "Back online"
 msgstr "عاد الاتصال"
 
+#: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
@@ -66,6 +67,10 @@ msgstr "الاحتفاظ بالكل ✦"
 msgid "Keep local entries"
 msgstr "الاحتفاظ بالإدخالات المحلية"
 
+#: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
+msgid "Locked. Verify your identity to continue."
+msgstr "مُقفل. تحقّق من هويتك للمتابعة."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Merge all"
 msgstr "دمج الكل"
@@ -89,6 +94,14 @@ msgstr "لا يمكن التراجع عن هذا."
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Unlimited entries unlocked. Keep writing."
 msgstr "تم فتح إدخالات غير محدودة. استمر في الكتابة."
+
+#: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
+msgid "Unlock"
+msgstr "فتح القفل"
+
+#: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
+msgid "Unlock Reflect"
+msgstr "افتح قفل Reflect"
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Upgrade to Pro to merge all {combined} entries and write without limits."

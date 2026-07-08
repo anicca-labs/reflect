@@ -17,6 +17,7 @@ msgstr ""
 msgid "Back online"
 msgstr ""
 
+#: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
@@ -66,6 +67,10 @@ msgstr ""
 msgid "Keep local entries"
 msgstr ""
 
+#: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
+msgid "Locked. Verify your identity to continue."
+msgstr ""
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Merge all"
 msgstr ""
@@ -88,6 +93,14 @@ msgstr ""
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Unlimited entries unlocked. Keep writing."
+msgstr ""
+
+#: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
+msgid "Unlock"
+msgstr ""
+
+#: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
+msgid "Unlock Reflect"
 msgstr ""
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx

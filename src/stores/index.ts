@@ -76,6 +76,11 @@ type PreferencesStoreState = {
   setTimeFormat: (format: TimeFormat) => void;
   voiceLanguage: string | null;
   setVoiceLanguage: (lang: string | null) => void;
+  // Require biometric (Face ID / Touch ID / fingerprint) unlock when the app
+  // returns to the foreground while signed in. On by default; only takes effect
+  // when the device has enrolled biometrics.
+  biometricLockEnabled: boolean;
+  setBiometricLockEnabled: (enabled: boolean) => void;
 };
 
 type SwipeableStoreState = {
@@ -97,6 +102,8 @@ const usePreferencesStore = create<PreferencesStoreState>()(
       setTimeFormat: (format) => set({ timeFormat: format }),
       voiceLanguage: null,
       setVoiceLanguage: (lang) => set({ voiceLanguage: lang }),
+      biometricLockEnabled: true,
+      setBiometricLockEnabled: (enabled) => set({ biometricLockEnabled: enabled }),
     }),
     {
       name: 'reflect-preferences',
@@ -121,3 +128,4 @@ export { useAnonymousJournalStore } from './anonymousJournal';
 export { usePendingJournalStore } from './pendingJournal';
 export { usePendingDeletionsStore } from './pendingDeletions';
 export { usePendingBookmarksStore } from './pendingBookmarks';
+export { useAppLockStore } from './appLock';
