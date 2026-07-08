@@ -1,0 +1,40 @@
+diff --git a/ios/EXUpdates/AppLoader/FileDownloader.swift b/ios/EXUpdates/AppLoader/FileDownloader.swift
+index db7f92a4dc8ac34febf47ee1ab184e02aa641209..ddf2d939c74eb1ce95ba182a667d2bd7ec67d644 100644
+--- a/ios/EXUpdates/AppLoader/FileDownloader.swift
++++ b/ios/EXUpdates/AppLoader/FileDownloader.swift
+@@ -92,7 +92,7 @@ public final class FileDownloader {
+   ) {
+     self.init(
+       config: config,
+-      urlSessionConfiguration: URLSessionConfiguration.default,
++      urlSessionConfiguration: URLSessionConfiguration.ephemeral,
+       logger: logger,
+       updatesDirectory: updatesDirectory,
+       database: database
+@@ -281,6 +281,8 @@ public final class FileDownloader {
+       }
+ 
+       do {
++        let destDir = (destinationPath as NSString).deletingLastPathComponent
++        try FileManager.default.createDirectory(atPath: destDir, withIntermediateDirectories: true, attributes: nil)
+         try data.write(to: URL(fileURLWithPath: destinationPath), options: .atomic)
+         successBlock(data, response, hashBase64String)
+         return
+@@ -479,7 +481,7 @@ public final class FileDownloader {
+   func createManifestRequest(withURL url: URL, extraHeaders: [String: Any?]?) -> URLRequest {
+     var request = URLRequest(
+       url: url,
+-      cachePolicy: self.sessionConfiguration.requestCachePolicy,
++      cachePolicy: .reloadIgnoringLocalCacheData,
+       timeoutInterval: FileDownloader.DefaultTimeoutInterval
+     )
+     setManifestHTTPHeaderFields(request: &request, extraHeaders: extraHeaders)
+@@ -692,7 +694,7 @@ public final class FileDownloader {
+   func createGenericRequest(withURL url: URL, extraHeaders: [String: Any?]) -> URLRequest {
+     var request = URLRequest(
+       url: url,
+-      cachePolicy: self.sessionConfiguration.requestCachePolicy,
++      cachePolicy: .reloadIgnoringLocalCacheData,
+       timeoutInterval: FileDownloader.DefaultTimeoutInterval
+     )
+     setHTTPHeaderFields(request: &request, extraHeaders: extraHeaders)
