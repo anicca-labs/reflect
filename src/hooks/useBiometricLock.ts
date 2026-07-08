@@ -5,20 +5,25 @@ import { supabase } from '@/src/services/supabase';
 import { usePreferencesStore, useAppLockStore } from '@/src/stores';
 
 /**
- * Engages the biometric app-lock whenever the app leaves the foreground while a
- * real account session is active, biometric lock is enabled, and the device has
- * enrolled biometrics. `BiometricLockOverlay` presents the unlock prompt on the
- * way back to the foreground.
+ * Engages the biometric app-lock in two situations, for account sessions only:
  *
- * Locking on the way *out* (background / inactive) means the sensitive content is
- * already covered in the OS app-switcher snapshot before the OS captures it.
+ *  1. Cold start with an auto-restored session — the app was killed and reopened
+ *     while signed in (the session came back from the Keychain, the user did NOT
+ *     just type a password). Re-verifying here closes the force-quit bypass.
+ *  2. Return from background — the app left and re-entered the foreground.
  *
- * Anonymous (account-less) mode is never locked: there is no server-side data to
- * protect, and a user with no enrolled biometrics must not be stranded behind a
- * prompt they can't pass (they'd have no account to recover to anyway).
+ * Locking on the way *out* (background / inactive) also means the sensitive
+ * content is already covered in the OS app-switcher snapshot before it's captured.
+ *
+ * `BiometricLockOverlay` presents the actual Face ID / Touch ID / fingerprint
+ * prompt (with device-passcode fallback) whenever the lock is engaged and the app
+ * is in the foreground.
+ *
+ * NOT locked: a fresh interactive sign-in (`SIGNED_IN` — they just authenticated),
+ * anonymous (account-less) mode, or a device with no enrolled biometrics (which
+ * would otherwise strand the user behind a prompt they can't pass).
  */
 const useBiometricLock = () => {
-  const biometricLockEnabled = usePreferencesStore((s) => s.biometricLockEnabled);
   const setLocked = useAppLockStore((s) => s.setLocked);
 
   // Read via refs inside the AppState listener so it never needs re-subscribing
@@ -26,47 +31,64 @@ const useBiometricLock = () => {
   const hasSession = useRef(false);
   const capable = useRef(false);
 
-  // Track whether a real account session exists (anonymous mode has none).
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      hasSession.current = !!data.session?.user;
-    });
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      hasSession.current = !!session?.user;
-      // Signing out must clear any active lock so the sign-in screen is reachable.
-      if (!session?.user) setLocked(false);
-    });
-    return () => subscription.unsubscribe();
-  }, [setLocked]);
+    let mounted = true;
 
-  // Only lock when biometrics are actually enrolled — otherwise there'd be no way
-  // to unlock (device-passcode fallback still applies at prompt time).
-  useEffect(() => {
-    let active = true;
+    // Resolve device capability and the initial (auto-restored) session, then
+    // lock on cold start if we came back already signed in. Ordering matters:
+    // we must know `capable` before deciding to lock so we never lock a device
+    // that has no way to unlock.
     (async () => {
       const [hasHardware, enrolled] = await Promise.all([
         LocalAuthentication.hasHardwareAsync(),
         LocalAuthentication.isEnrolledAsync(),
       ]);
-      if (active) capable.current = hasHardware && enrolled;
+      if (!mounted) return;
+      capable.current = hasHardware && enrolled;
+
+      const { data } = await supabase.auth.getSession();
+      if (!mounted) return;
+      hasSession.current = !!data.session?.user;
+
+      if (
+        hasSession.current &&
+        capable.current &&
+        usePreferencesStore.getState().biometricLockEnabled
+      ) {
+        setLocked(true);
+      }
     })();
+
+    // Keep the session flag current for the AppState listener, and clear the lock
+    // on sign-out so the sign-in screen stays reachable. Interactive sign-in
+    // (`SIGNED_IN`) deliberately does NOT lock — the user just authenticated.
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      hasSession.current = !!session?.user;
+      if (!session?.user) setLocked(false);
+    });
+
     return () => {
-      active = false;
+      mounted = false;
+      subscription.unsubscribe();
     };
-  }, []);
+  }, [setLocked]);
 
   useEffect(() => {
     const onChange = (next: AppStateStatus) => {
       if (next !== 'background' && next !== 'inactive') return;
-      if (biometricLockEnabled && hasSession.current && capable.current) {
+      if (
+        usePreferencesStore.getState().biometricLockEnabled &&
+        hasSession.current &&
+        capable.current
+      ) {
         setLocked(true);
       }
     };
     const sub = AppState.addEventListener('change', onChange);
     return () => sub.remove();
-  }, [biometricLockEnabled, setLocked]);
+  }, [setLocked]);
 };
 
 export { useBiometricLock };
