@@ -24,6 +24,7 @@ const BiometricLockOverlay = () => {
   const { t } = useLingui();
   const isLocked = useAppLockStore((s) => s.isLocked);
   const setLocked = useAppLockStore((s) => s.setLocked);
+  const splashComplete = useAppLockStore((s) => s.splashComplete);
   const [authenticating, setAuthenticating] = useState(false);
   const inFlight = useRef(false);
   const autoPrompted = useRef(false);
@@ -54,19 +55,22 @@ const BiometricLockOverlay = () => {
 
     const tryAutoPrompt = () => {
       if (AppState.currentState !== 'active') return;
+      // Hold the cold-start prompt until the splash animation has finished so
+      // Face ID doesn't cut over the Rive splash. On resume this is already true.
+      if (!useAppLockStore.getState().splashComplete) return;
       if (autoPrompted.current || inFlight.current) return;
       autoPrompted.current = true;
       authenticate();
     };
 
-    // Prompt now if we're already foreground when the lock engages; otherwise
-    // wait for the return to `active`.
+    // Prompt now if we're already foreground and past the splash; otherwise wait
+    // for the return to `active` or for the splash to finish (splashComplete dep).
     tryAutoPrompt();
     const sub = AppState.addEventListener('change', (next: AppStateStatus) => {
       if (next === 'active') tryAutoPrompt();
     });
     return () => sub.remove();
-  }, [isLocked, authenticate]);
+  }, [isLocked, splashComplete, authenticate]);
 
   if (!isLocked) return null;
 

@@ -3,6 +3,12 @@ import { create } from 'zustand';
 type AppLockState = {
   isLocked: boolean;
   setLocked: (locked: boolean) => void;
+  // Flips true once the launch splash animation has finished. The overlay holds
+  // the cold-start biometric prompt until then, so Face ID doesn't interrupt the
+  // Rive splash. Starts false each runtime; irrelevant to background→foreground
+  // locks, which always happen long after the splash is gone.
+  splashComplete: boolean;
+  setSplashComplete: (done: boolean) => void;
 };
 
 /**
@@ -16,6 +22,8 @@ type AppLockState = {
 const useAppLockStore = create<AppLockState>((set) => ({
   isLocked: false,
   setLocked: (locked) => set({ isLocked: locked }),
+  splashComplete: false,
+  setSplashComplete: (done) => set({ splashComplete: done }),
 }));
 
 export { useAppLockStore };

@@ -22,7 +22,7 @@ import {
 } from '@hooks';
 import { EnvBadge, NetworkStatusBanner, BiometricLockOverlay } from '@atoms';
 import { AnonMergeModal } from '@molecules';
-import { useSessionStore } from '@/src/stores';
+import { useSessionStore, useAppLockStore } from '@/src/stores';
 import { subscribeToForegroundMessages } from '@firebase-messaging';
 import { useEffect } from 'react';
 import { SplashView } from '@anicca-labs/react-native-splash-view';
@@ -101,6 +101,17 @@ const RootLayout = () => {
   // Engages the biometric lock when the app backgrounds while signed in; the
   // overlay below presents the unlock prompt on return to the foreground.
   useBiometricLock();
+
+  // Let the launch splash animation play out before the cold-start biometric
+  // prompt fires (otherwise Face ID cuts over the Rive splash). Derived from the
+  // same fade constants passed to <SplashView> below, so it stays in sync.
+  useEffect(() => {
+    const timer = setTimeout(
+      () => useAppLockStore.getState().setSplashComplete(true),
+      SPLASH_FADE_DELAY_MS + SPLASH_FADE_DURATION_MS,
+    );
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <PersistQueryClientProvider
