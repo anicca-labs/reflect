@@ -10,7 +10,7 @@ const ANDROID_SPLASH_SIZE = 288;
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  owner: 'ksairi-org',
+  owner: 'anicca-labs',
   name: process.env.DISPLAY_NAME ?? 'reflect',
   slug: 'reflect',
   version: config.version,
