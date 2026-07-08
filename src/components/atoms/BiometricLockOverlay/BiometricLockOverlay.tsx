@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, type AppStateStatus, Modal } from 'react-native';
+import { AppState, type AppStateStatus } from 'react-native';
 import { YStack, Spinner } from 'tamagui';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
@@ -74,33 +74,48 @@ const BiometricLockOverlay = () => {
 
   if (!isLocked) return null;
 
+  // Absolute full-screen cover (NOT a Modal): a Modal renders above everything
+  // and would hide the splash + can block the Face ID presentation. zIndex 9999
+  // sits above the app content but below the splash (zIndex 10000), so the Rive
+  // splash plays on top and, once it fades out, reveals this cover underneath —
+  // then the prompt fires (gated on splashComplete).
   return (
-    <Modal visible animationType="fade" statusBarTranslucent>
-      <YStack flex={1} items="center" justify="center" bg="$background" gap="$3" px="$6">
-        <DisplayLg>Reflect</DisplayLg>
-        <BodySm color="$text-secondary" text="center">
-          <Trans>Locked. Verify your identity to continue.</Trans>
-        </BodySm>
-        <BaseTouchable
-          onPress={authenticate}
-          disabled={authenticating}
-          bg="$accentBackground"
-          rounded="$4"
-          py="$3"
-          px="$6"
-          items="center"
-          mt="$4"
-        >
-          {authenticating ? (
-            <Spinner color="$accentColor" />
-          ) : (
-            <LabelLg color="$accentColor">
-              <Trans>Unlock</Trans>
-            </LabelLg>
-          )}
-        </BaseTouchable>
-      </YStack>
-    </Modal>
+    <YStack
+      position="absolute"
+      top={0}
+      left={0}
+      right={0}
+      bottom={0}
+      zIndex={9999}
+      items="center"
+      justify="center"
+      bg="$background"
+      gap="$3"
+      px="$6"
+    >
+      <DisplayLg>Reflect</DisplayLg>
+      <BodySm color="$text-secondary" text="center">
+        <Trans>Locked. Verify your identity to continue.</Trans>
+      </BodySm>
+      <BaseTouchable
+        onPress={authenticate}
+        disabled={authenticating}
+        bg="$accentBackground"
+        rounded="$4"
+        py="$3"
+        px="$6"
+        items="center"
+        mt="$4"
+      >
+        {authenticating ? (
+          <Spinner color="$accentColor" />
+        ) : (
+          <LabelLg color="$accentColor">
+            <Trans>Unlock</Trans>
+          </LabelLg>
+        )}
+      </BaseTouchable>
+    </YStack>
   );
 };
 
