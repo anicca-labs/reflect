@@ -9,6 +9,11 @@ type AppLockState = {
   // locks, which always happen long after the splash is gone.
   splashComplete: boolean;
   setSplashComplete: (done: boolean) => void;
+  // True once the user dismisses/fails the OS biometric prompt without
+  // authenticating — reveals the manual "Unlock" retry UI. Reset each time the
+  // lock re-engages so a fresh cycle starts with just the OS prompt.
+  retryVisible: boolean;
+  setRetryVisible: (visible: boolean) => void;
 };
 
 /**
@@ -21,9 +26,14 @@ type AppLockState = {
  */
 const useAppLockStore = create<AppLockState>((set) => ({
   isLocked: false,
-  setLocked: (locked) => set({ isLocked: locked }),
+  // Re-engaging the lock resets the retry UI so each cycle starts with just the
+  // branded cover + OS prompt (not our Unlock screen).
+  setLocked: (locked) =>
+    set(locked ? { isLocked: true, retryVisible: false } : { isLocked: false }),
   splashComplete: false,
   setSplashComplete: (done) => set({ splashComplete: done }),
+  retryVisible: false,
+  setRetryVisible: (visible) => set({ retryVisible: visible }),
 }));
 
 export { useAppLockStore };

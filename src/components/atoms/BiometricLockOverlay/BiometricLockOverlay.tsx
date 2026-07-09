@@ -25,6 +25,11 @@ const BiometricLockOverlay = () => {
   const isLocked = useAppLockStore((s) => s.isLocked);
   const setLocked = useAppLockStore((s) => s.setLocked);
   const splashComplete = useAppLockStore((s) => s.splashComplete);
+  // Until the user dismisses/fails the OS prompt, only a minimal branded cover is
+  // shown behind it — no "Unlock" button. `retryVisible` lives in the store so it
+  // can be reset by `setLocked` on each fresh lock (avoids setState-in-effect).
+  const retryVisible = useAppLockStore((s) => s.retryVisible);
+  const setRetryVisible = useAppLockStore((s) => s.setRetryVisible);
   const [authenticating, setAuthenticating] = useState(false);
   const inFlight = useRef(false);
   const autoPrompted = useRef(false);
@@ -42,15 +47,18 @@ const BiometricLockOverlay = () => {
         disableDeviceFallback: false,
       });
       if (result.success) setLocked(false);
+      // Dismissed / failed without authenticating — surface the manual retry UI.
+      else setRetryVisible(true);
     } finally {
       setAuthenticating(false);
       inFlight.current = false;
     }
-  }, [t, setLocked]);
+  }, [t, setLocked, setRetryVisible]);
 
   useEffect(() => {
     if (!isLocked) return;
-    // Fresh lock engagement — allow exactly one auto-prompt for this cycle.
+    // Fresh lock engagement — allow exactly one auto-prompt for this cycle. The
+    // retry UI was already reset by `setLocked(true)` in the store.
     autoPrompted.current = false;
 
     const tryAutoPrompt = () => {
@@ -94,27 +102,33 @@ const BiometricLockOverlay = () => {
       px="$6"
     >
       <DisplayLg>Reflect</DisplayLg>
-      <BodySm color="$text-secondary" text="center">
-        <Trans>Locked. Verify your identity to continue.</Trans>
-      </BodySm>
-      <BaseTouchable
-        onPress={authenticate}
-        disabled={authenticating}
-        bg="$accentBackground"
-        rounded="$4"
-        py="$3"
-        px="$6"
-        items="center"
-        mt="$4"
-      >
-        {authenticating ? (
-          <Spinner color="$accentColor" />
-        ) : (
-          <LabelLg color="$accentColor">
-            <Trans>Unlock</Trans>
-          </LabelLg>
-        )}
-      </BaseTouchable>
+      {/* Branding-only while the OS prompt is up; the retry UI appears only after
+          the user dismisses/fails the system prompt without authenticating. */}
+      {retryVisible ? (
+        <>
+          <BodySm color="$text-secondary" text="center">
+            <Trans>Locked. Verify your identity to continue.</Trans>
+          </BodySm>
+          <BaseTouchable
+            onPress={authenticate}
+            disabled={authenticating}
+            bg="$accentBackground"
+            rounded="$4"
+            py="$3"
+            px="$6"
+            items="center"
+            mt="$4"
+          >
+            {authenticating ? (
+              <Spinner color="$accentColor" />
+            ) : (
+              <LabelLg color="$accentColor">
+                <Trans>Unlock</Trans>
+              </LabelLg>
+            )}
+          </BaseTouchable>
+        </>
+      ) : null}
     </YStack>
   );
 };
