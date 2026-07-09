@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Alert, Modal } from 'react-native';
 import { YStack, XStack, Spinner } from 'tamagui';
 import { DisplayLg, BodySm, LabelLg, LabelMd } from '@fonts';
-import { BaseTouchable } from '@ksairi-org/ui-touchables';
+import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/src/services/supabase';

@@ -3,7 +3,7 @@ import { BackHandler, Dimensions, Share, type View } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { ScrollView, YStack, XStack } from 'tamagui';
 import { BodySm, LabelMd, LabelSm } from '@fonts';
-import { BaseTouchable } from '@ksairi-org/ui-touchables';
+import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { BaseIcon } from '@atoms';
 import { sizes } from '@theme';
 import { format } from 'date-fns';

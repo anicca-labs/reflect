@@ -18,13 +18,14 @@ import {
   useToast,
   useMemoryNotification,
   useOfflineJournalSync,
+  useBiometricLock,
 } from '@hooks';
-import { EnvBadge, NetworkStatusBanner } from '@atoms';
+import { EnvBadge, NetworkStatusBanner, BiometricLockOverlay } from '@atoms';
 import { AnonMergeModal } from '@molecules';
-import { useSessionStore } from '@/src/stores';
+import { useSessionStore, useAppLockStore } from '@/src/stores';
 import { subscribeToForegroundMessages } from '@firebase-messaging';
 import { useEffect } from 'react';
-import { SplashView } from '@ksairi-org/react-native-splash-view';
+import { SplashView } from '@anicca-labs/react-native-splash-view';
 import { configureRevenueCat } from '@revenue-cat';
 import { initializeMeta } from '@meta';
 import splash from '../assets/animations/splash.riv';
@@ -39,6 +40,9 @@ const GestureRoot = styled(GestureHandlerRootView, { flex: 1 });
 const SPLASH_ANDROID_SIZE = 288; // matches imageWidth in app.config.ts — Android 12+ max before icon clips
 const SPLASH_FADE_DELAY_MS = 1500;
 const SPLASH_FADE_DURATION_MS = 500;
+// Extra beat after the splash fully clears before the cold-start biometric
+// prompt fires, so Face ID doesn't pop the instant the splash disappears.
+const BIOMETRIC_PROMPT_AFTER_SPLASH_MS = 700;
 
 const getSplashStyle = (isDark: boolean) => ({
   // Use the same hex values as SPLASH_BG_LIGHT/DARK in app.config.ts so
@@ -97,6 +101,21 @@ const RootLayout = () => {
   const colorScheme = useColorScheme() ?? 'light';
   const isOSThemeDark = colorScheme === 'dark';
 
+  // Engages the biometric lock when the app backgrounds while signed in; the
+  // overlay below presents the unlock prompt on return to the foreground.
+  useBiometricLock();
+
+  // Let the launch splash animation play out before the cold-start biometric
+  // prompt fires (otherwise Face ID cuts over the Rive splash). Derived from the
+  // same fade constants passed to <SplashView> below, so it stays in sync.
+  useEffect(() => {
+    const timer = setTimeout(
+      () => useAppLockStore.getState().setSplashComplete(true),
+      SPLASH_FADE_DELAY_MS + SPLASH_FADE_DURATION_MS + BIOMETRIC_PROMPT_AFTER_SPLASH_MS,
+    );
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <PersistQueryClientProvider
       client={queryClient}
@@ -120,6 +139,7 @@ const RootLayout = () => {
               </KeyboardProvider>
               <NetworkStatusBanner />
               <EnvBadge />
+              <BiometricLockOverlay />
               {/* NOTE: SplashView style prop requires a plain object — no Tamagui equivalent */}
               <SplashView
                 source={splash}

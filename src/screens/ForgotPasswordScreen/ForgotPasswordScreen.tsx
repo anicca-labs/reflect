@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { YStack, Input, Spinner, styled } from 'tamagui';
 import { DisplayLg, BodySm, LabelSm, LabelLg } from '@fonts';
-import { Containers, KeyboardScrollView } from '@ksairi-org/ui-containers';
+import { Containers, KeyboardScrollView } from '@anicca-labs/ui-containers';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { BaseTouchable } from '@ksairi-org/ui-touchables';
+import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { FormField } from '@atoms';
 import { supabase } from '@/src/services/supabase';
 import { useToast } from '@hooks';

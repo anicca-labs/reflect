@@ -109,7 +109,7 @@ jobs:
         run: yarn deploy-store-ios
         env:
           ENV: ${{ inputs.environment }}
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          DOPPLER_TOKEN: ${{ inputs.environment == 'prd' && secrets.DOPPLER_TOKEN_PROD || secrets.DOPPLER_TOKEN }}
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           # Both `eas build` and `eas submit` authenticate to Apple via the App
           # Store Connect API Key stored on EAS, selected non-interactively (see

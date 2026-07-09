@@ -17,6 +17,7 @@ msgstr ""
 msgid "Back online"
 msgstr "Conexión restablecida"
 
+#: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
@@ -66,6 +67,10 @@ msgstr "Conservar todo ✦"
 msgid "Keep local entries"
 msgstr "Conservar entradas locales"
 
+#: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
+msgid "Locked. Verify your identity to continue."
+msgstr "Bloqueado. Verifica tu identidad para continuar."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Merge all"
 msgstr "Fusionar todo"
@@ -89,6 +94,14 @@ msgstr "Esto no se puede deshacer."
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Unlimited entries unlocked. Keep writing."
 msgstr "Entradas ilimitadas desbloqueadas. Sigue escribiendo."
+
+#: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
+msgid "Unlock"
+msgstr "Desbloquear"
+
+#: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
+msgid "Unlock Reflect"
+msgstr "Desbloquear Reflect"
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Upgrade to Pro to merge all {combined} entries and write without limits."

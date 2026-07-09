@@ -10,7 +10,7 @@ import {
 import { Alert } from 'react-native';
 import { useLingui } from '@lingui/react/macro';
 import { YStack } from 'tamagui';
-import { BaseTouchable } from '@ksairi-org/ui-touchables';
+import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   useSharedValue,
