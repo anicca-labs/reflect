@@ -40,6 +40,9 @@ const GestureRoot = styled(GestureHandlerRootView, { flex: 1 });
 const SPLASH_ANDROID_SIZE = 288; // matches imageWidth in app.config.ts — Android 12+ max before icon clips
 const SPLASH_FADE_DELAY_MS = 1500;
 const SPLASH_FADE_DURATION_MS = 500;
+// Extra beat after the splash fully clears before the cold-start biometric
+// prompt fires, so Face ID doesn't pop the instant the splash disappears.
+const BIOMETRIC_PROMPT_AFTER_SPLASH_MS = 700;
 
 const getSplashStyle = (isDark: boolean) => ({
   // Use the same hex values as SPLASH_BG_LIGHT/DARK in app.config.ts so
@@ -108,7 +111,7 @@ const RootLayout = () => {
   useEffect(() => {
     const timer = setTimeout(
       () => useAppLockStore.getState().setSplashComplete(true),
-      SPLASH_FADE_DELAY_MS + SPLASH_FADE_DURATION_MS,
+      SPLASH_FADE_DELAY_MS + SPLASH_FADE_DURATION_MS + BIOMETRIC_PROMPT_AFTER_SPLASH_MS,
     );
     return () => clearTimeout(timer);
   }, []);
