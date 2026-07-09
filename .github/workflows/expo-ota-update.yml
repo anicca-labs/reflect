@@ -67,7 +67,7 @@ jobs:
       - name: Export JS bundle
         run: doppler run --project mobile --config ${{ steps.env.outputs.channel }} -- yarn expo export --platform ios --platform android --output-dir dist
         env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          DOPPLER_TOKEN: ${{ steps.env.outputs.channel == 'prd' && secrets.DOPPLER_TOKEN_PROD || secrets.DOPPLER_TOKEN }}
 
       - name: Push OTA update to Supabase
         # Doppler injects SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY. The script computes
@@ -78,4 +78,4 @@ jobs:
             bash -c "EXPO_UPDATE_CHANNEL=${{ steps.env.outputs.channel }} \
                      node scripts/push-ota-update.mjs"
         env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          DOPPLER_TOKEN: ${{ steps.env.outputs.channel == 'prd' && secrets.DOPPLER_TOKEN_PROD || secrets.DOPPLER_TOKEN }}
