@@ -60,6 +60,9 @@
     "functions:push-secrets:prd": "doppler run --project mobile --config prd -- bash scripts/push-function-secrets.sh orrcfftpaxlldolavipm",
     "push-ota": "doppler run --project mobile --config ${ENV:-stg} -- bash -c 'yarn expo export --platform ios --platform android --output-dir dist && EXPO_UPDATE_CHANNEL=${ENV:-stg} node scripts/push-ota-update.mjs'",
     "push-ota:prd": "ENV=prd yarn push-ota",
+    "version:next": "node scripts/next-version.mjs",
+    "version:auto": "node scripts/next-version.mjs --apply",
+    "version:bump": "node scripts/bump-version.mjs",
     "encrypt-entries": "doppler run --project mobile --config ${ENV:-stg} -- node scripts/encrypt-entries.mjs",
     "encrypt-entries:prd": "ENV=prd yarn encrypt-entries",
     "prepare": "husky"
