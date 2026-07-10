@@ -11,7 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { BlurTargetView } from 'expo-blur';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useRouter, useIsFocused } from 'expo-router';
 import { ScrollView, YStack, XStack, TextArea, Spinner, useTheme } from 'tamagui';
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -30,7 +30,6 @@ import {
   usePendingBookmarksStore,
   useComposeStore,
 } from '@/src/stores';
-import { useIsFocused } from '@react-navigation/native';
 import type { JournalEntry } from '@/src/types/journal';
 import { isOnline } from '@/src/services/network';
 import { refreshEntitlement } from '@/src/services/entitlements';
