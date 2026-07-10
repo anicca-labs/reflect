@@ -84,11 +84,13 @@ const scheduleDailyReminder = async (hour: number, minute: number): Promise<void
       title: 'Reflect',
       body: "Time to jot down today's thoughts.",
     },
+    // DAILY repeats every day at hour:minute and works on both iOS and Android.
+    // (CALENDAR is iOS-only — on Android it throws "Trigger of type: calendar is
+    // not supported".)
     trigger: {
-      type: ExpoNotifications.SchedulableTriggerInputTypes.CALENDAR,
+      type: ExpoNotifications.SchedulableTriggerInputTypes.DAILY,
       hour,
       minute,
-      repeats: true,
     },
   });
 
