@@ -71,18 +71,34 @@ const scheduleLocalNotification = async (title: string, body: string, delaySecon
   });
 };
 
+// Fixed identifier: scheduling with an existing identifier REPLACES it, so a
+// re-schedule (re-arm on load, time change, rapid toggles) can never create a
+// duplicate. REMINDER_NOTIF_ID_KEY is the retired random-id scheme, cleaned up below.
+const REMINDER_NOTIF_ID = 'daily-reminder';
 const REMINDER_NOTIF_ID_KEY = '@reflect/reminder_notif_id';
+const REMINDER_BODY = "Time to jot down today's thoughts.";
+
+// Cancel every reminder currently scheduled — the fixed-id one plus any orphans the
+// old random-id scheme could leave behind (a race or a mid-schedule throw once left
+// an untracked copy, which is why reminders fired twice). Memory notifications have
+// different bodies, so they are untouched.
+const clearScheduledReminders = async (): Promise<void> => {
+  const scheduled = await ExpoNotifications.getAllScheduledNotificationsAsync();
+  await Promise.all(
+    scheduled
+      .filter((n) => n.identifier === REMINDER_NOTIF_ID || n.content?.body === REMINDER_BODY)
+      .map((n) => ExpoNotifications.cancelScheduledNotificationAsync(n.identifier)),
+  );
+  await AsyncStorage.removeItem(REMINDER_NOTIF_ID_KEY);
+};
 
 const scheduleDailyReminder = async (hour: number, minute: number): Promise<void> => {
-  const existingId = await AsyncStorage.getItem(REMINDER_NOTIF_ID_KEY);
-  if (existingId) {
-    await ExpoNotifications.cancelScheduledNotificationAsync(existingId);
-  }
-
-  const id = await ExpoNotifications.scheduleNotificationAsync({
+  await clearScheduledReminders();
+  await ExpoNotifications.scheduleNotificationAsync({
+    identifier: REMINDER_NOTIF_ID,
     content: {
       title: 'Reflect',
-      body: "Time to jot down today's thoughts.",
+      body: REMINDER_BODY,
     },
     // DAILY repeats every day at hour:minute and works on both iOS and Android.
     // (CALENDAR is iOS-only — on Android it throws "Trigger of type: calendar is
@@ -93,16 +109,10 @@ const scheduleDailyReminder = async (hour: number, minute: number): Promise<void
       minute,
     },
   });
-
-  await AsyncStorage.setItem(REMINDER_NOTIF_ID_KEY, id);
 };
 
 const cancelDailyReminder = async (): Promise<void> => {
-  const id = await AsyncStorage.getItem(REMINDER_NOTIF_ID_KEY);
-  if (id) {
-    await ExpoNotifications.cancelScheduledNotificationAsync(id);
-    await AsyncStorage.removeItem(REMINDER_NOTIF_ID_KEY);
-  }
+  await clearScheduledReminders();
 };
 
 const MEMORY_NOTIF_IDS_KEY = '@reflect/memory_notif_ids';
