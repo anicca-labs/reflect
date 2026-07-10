@@ -778,6 +778,14 @@ const SettingsScreen = () => {
               <YStack height={TIME_PICKER_MAX_HEIGHT}>
                 <FlashList
                   data={REMINDER_SLOTS}
+                  // Open scrolled to the current selection (the Modal remounts this
+                  // list each time it's shown, so this re-applies on every open).
+                  initialScrollIndex={Math.max(
+                    0,
+                    REMINDER_SLOTS.findIndex(
+                      (s) => s.hour === reminderHour && s.minute === reminderMinute,
+                    ),
+                  )}
                   keyExtractor={(s) => `${s.hour}:${s.minute}`}
                   renderItem={({ item: s }) => (
                     <BaseTouchable
