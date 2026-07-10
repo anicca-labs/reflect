@@ -40,6 +40,10 @@ const REMINDER_HOURS = Array.from(
   { length: REMINDER_HOUR_COUNT },
   (_, i) => i + REMINDER_HOUR_START,
 );
+const REMINDER_MINUTES = [0, 15, 30, 45];
+const REMINDER_SLOTS = REMINDER_HOURS.flatMap((h) =>
+  REMINDER_MINUTES.map((m) => ({ hour: h, minute: m })),
+);
 const TIME_PICKER_ITEM_PY = 12;
 const TOGGLE_TRACK_WIDTH = 44;
 const TOGGLE_TRACK_HEIGHT = 26;
@@ -47,11 +51,12 @@ const TOGGLE_THUMB_SIZE = 20;
 const TIME_PICKER_MAX_HEIGHT = 300;
 const UPGRADE_BUTTON_HEIGHT = 40;
 
-const formatHour = (h: number, use24h: boolean): string => {
-  if (use24h) return `${String(h).padStart(2, '0')}:00`;
+const formatTime = (h: number, m: number, use24h: boolean): string => {
+  const mm = String(m).padStart(2, '0');
+  if (use24h) return `${String(h).padStart(2, '0')}:${mm}`;
   const period = h < 12 ? 'AM' : 'PM';
   const display = h === 0 ? 12 : h > 12 ? h - 12 : h;
-  return `${display}:00 ${period}`;
+  return `${display}:${mm} ${period}`;
 };
 
 const isSimulator = !Device.isDevice;
@@ -110,6 +115,7 @@ const SettingsScreen = () => {
   const {
     enabled: reminderEnabled,
     hour: reminderHour,
+    minute: reminderMinute,
     loading: reminderLoading,
     toggle: toggleReminder,
     disable: disableReminder,
@@ -567,7 +573,7 @@ const SettingsScreen = () => {
                         <Trans>Time</Trans>
                       </BodySm>
                       <LabelMd color="$accentBackground">
-                        {formatHour(reminderHour, timeFormat === '24h')}
+                        {formatTime(reminderHour, reminderMinute, timeFormat === '24h')}
                       </LabelMd>
                     </XStack>
                   </BaseTouchable>
@@ -771,19 +777,25 @@ const SettingsScreen = () => {
               </LabelMd>
               <YStack height={TIME_PICKER_MAX_HEIGHT}>
                 <FlashList
-                  data={REMINDER_HOURS}
-                  keyExtractor={(h) => String(h)}
-                  renderItem={({ item: h }) => (
+                  data={REMINDER_SLOTS}
+                  keyExtractor={(s) => `${s.hour}:${s.minute}`}
+                  renderItem={({ item: s }) => (
                     <BaseTouchable
                       onPress={() => {
-                        updateTime(h, 0);
+                        updateTime(s.hour, s.minute);
                         setShowTimePicker(false);
                       }}
                       py={TIME_PICKER_ITEM_PY}
                       px={sizes.sm}
                     >
-                      <LabelLg color={h === reminderHour ? '$accentBackground' : '$text-emphasis'}>
-                        {formatHour(h, timeFormat === '24h')}
+                      <LabelLg
+                        color={
+                          s.hour === reminderHour && s.minute === reminderMinute
+                            ? '$accentBackground'
+                            : '$text-emphasis'
+                        }
+                      >
+                        {formatTime(s.hour, s.minute, timeFormat === '24h')}
                       </LabelLg>
                     </BaseTouchable>
                   )}
