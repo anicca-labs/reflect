@@ -99,6 +99,9 @@ const scheduleDailyReminder = async (hour: number, minute: number): Promise<void
     content: {
       title: 'Reflect',
       body: REMINDER_BODY,
+      // Tapping the reminder routes straight to the journal composer (see
+      // useReminderNotification) so the user lands ready to write.
+      data: { type: 'daily-reminder' },
     },
     // DAILY repeats every day at hour:minute and works on both iOS and Android.
     // (CALENDAR is iOS-only — on Android it throws "Trigger of type: calendar is

@@ -1,5 +1,6 @@
 export * from './useAuthSession';
 export * from './useMemoryNotification';
+export * from './useReminderNotification';
 export * from './useCustomFonts';
 export {
   useJournalEntries,

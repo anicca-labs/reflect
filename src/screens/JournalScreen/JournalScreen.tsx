@@ -28,7 +28,9 @@ import {
   usePendingJournalStore,
   usePendingDeletionsStore,
   usePendingBookmarksStore,
+  useComposeStore,
 } from '@/src/stores';
+import { useIsFocused } from '@react-navigation/native';
 import type { JournalEntry } from '@/src/types/journal';
 import { isOnline } from '@/src/services/network';
 import { refreshEntitlement } from '@/src/services/entitlements';
@@ -309,6 +311,20 @@ const JournalScreen = () => {
       };
     }, [refetch, isAnonymous, stopListening]),
   );
+
+  // A tapped daily-reminder routes here and sets pendingCompose; focus the composer
+  // once the Journal is the active tab so the user lands ready to write. Clear the
+  // flag so it fires once; the short delay lets the tab transition settle before the
+  // keyboard opens.
+  const pendingCompose = useComposeStore((s) => s.pendingCompose);
+  const setPendingCompose = useComposeStore((s) => s.setPendingCompose);
+  const isScreenFocused = useIsFocused();
+  useEffect(() => {
+    if (!pendingCompose || !isScreenFocused) return;
+    setPendingCompose(false);
+    const timer = setTimeout(() => inputRef.current?.focus(), 350);
+    return () => clearTimeout(timer);
+  }, [pendingCompose, isScreenFocused, setPendingCompose]);
 
   const hasOpenCard = useSwipeableStore((s) => s.activeDragCount > 0);
   const dismissOpenCard = () => {
