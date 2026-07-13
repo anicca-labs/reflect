@@ -1,4 +1,4 @@
-import * as jose from 'jose';
+import * as jose from 'https://esm.sh/jose@5';
 
 function getCredentials(projectId: string): { clientEmail: string; privateKey: string } {
   const stgProjectId = Deno.env.get('FIREBASE_PROJECT_ID_STG');
