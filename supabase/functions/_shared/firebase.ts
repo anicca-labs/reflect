@@ -46,7 +46,17 @@ export async function sendFcmMessage(
   accessToken: string,
   notification: { title: string; body: string },
   data?: Record<string, string>,
+  options?: { collapseId?: string },
 ): Promise<{ ok: boolean; unregistered?: boolean; error?: string }> {
+  // A stable collapseId dedupes redundant deliveries of the *same* logical
+  // notification. FCM guarantees at-least-once delivery, so a device that was
+  // offline/in Doze can receive one copy while asleep and a second copy on
+  // reconnect. Without these fields Android renders each copy as its own tray
+  // entry; with them the OS keeps at most one.
+  //   - android.collapse_key: FCM drops older undelivered copies while offline.
+  //   - android.notification.tag: the OS replaces an already-shown notification.
+  //   - apns-collapse-id: the iOS equivalent of tag.
+  const collapseId = options?.collapseId;
   const res = await fetch(`https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`, {
     method: 'POST',
     headers: {
@@ -57,8 +67,18 @@ export async function sendFcmMessage(
       message: {
         token: fcmToken,
         notification,
-        android: { notification: { channel_id: 'default', sound: 'default' } },
-        apns: { payload: { aps: { sound: 'default' } } },
+        android: {
+          ...(collapseId ? { collapse_key: collapseId } : {}),
+          notification: {
+            channel_id: 'default',
+            sound: 'default',
+            ...(collapseId ? { tag: collapseId } : {}),
+          },
+        },
+        apns: {
+          ...(collapseId ? { headers: { 'apns-collapse-id': collapseId } } : {}),
+          payload: { aps: { sound: 'default' } },
+        },
         ...(data ? { data } : {}),
       },
     }),
