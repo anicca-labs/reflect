@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Device from 'expo-device';
 import * as ExpoNotifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import { i18n } from '@lingui/core';
 import type { JournalEntry } from '@/src/types/journal';
 
 if (Platform.OS === 'android') {
@@ -76,7 +77,20 @@ const scheduleLocalNotification = async (title: string, body: string, delaySecon
 // duplicate. REMINDER_NOTIF_ID_KEY is the retired random-id scheme, cleaned up below.
 const REMINDER_NOTIF_ID = 'daily-reminder';
 const REMINDER_NOTIF_ID_KEY = '@reflect/reminder_notif_id';
-const REMINDER_BODY = "Time to jot down today's thoughts.";
+
+// The reminder is a fixed string, so it's localized from a static map by the app's
+// active locale (English fallback) — no runtime translation. Keep in sync with the
+// same map in the send-reminders edge function (the server-push path for signed-in).
+const REMINDER_BODY_BY_LOCALE: Record<string, string> = {
+  en: "Time to jot down today's thoughts.",
+  es: 'Hora de anotar tus pensamientos de hoy.',
+  'pt-BR': 'Hora de anotar seus pensamentos de hoje.',
+  fr: 'C’est le moment de noter tes pensées du jour.',
+  id: 'Waktunya mencatat pikiranmu hari ini.',
+  ar: 'حان وقت تدوين أفكارك اليوم.',
+};
+const reminderBody = (): string =>
+  REMINDER_BODY_BY_LOCALE[i18n.locale] ?? REMINDER_BODY_BY_LOCALE.en;
 
 // Cancel every reminder currently scheduled — the fixed-id one plus any orphans the
 // old random-id scheme could leave behind (a race or a mid-schedule throw once left
@@ -86,7 +100,12 @@ const clearScheduledReminders = async (): Promise<void> => {
   const scheduled = await ExpoNotifications.getAllScheduledNotificationsAsync();
   await Promise.all(
     scheduled
-      .filter((n) => n.identifier === REMINDER_NOTIF_ID || n.content?.body === REMINDER_BODY)
+      .filter(
+        (n) =>
+          n.identifier === REMINDER_NOTIF_ID ||
+          (typeof n.content?.body === 'string' &&
+            Object.values(REMINDER_BODY_BY_LOCALE).includes(n.content.body)),
+      )
       .map((n) => ExpoNotifications.cancelScheduledNotificationAsync(n.identifier)),
   );
   await AsyncStorage.removeItem(REMINDER_NOTIF_ID_KEY);
@@ -98,7 +117,7 @@ const scheduleDailyReminder = async (hour: number, minute: number): Promise<void
     identifier: REMINDER_NOTIF_ID,
     content: {
       title: 'Reflect',
-      body: REMINDER_BODY,
+      body: reminderBody(),
       // Tapping the reminder routes straight to the journal composer (see
       // useReminderNotification) so the user lands ready to write.
       data: { type: 'daily-reminder' },

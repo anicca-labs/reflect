@@ -13,7 +13,12 @@ Deno.serve(async (req) => {
     return new Response('Method not allowed', { status: 405 });
   }
 
-  let body: { fcmToken?: unknown; firebaseProjectId?: unknown; reminderEnabled?: unknown };
+  let body: {
+    fcmToken?: unknown;
+    firebaseProjectId?: unknown;
+    reminderEnabled?: unknown;
+    locale?: unknown;
+  };
   try {
     body = await req.json();
   } catch {
@@ -48,6 +53,8 @@ Deno.serve(async (req) => {
   // is delivered locally; reminder_* stay null so the cron skips them). Only written
   // when provided, so an activity-only ping doesn't clobber a known state.
   if (typeof body.reminderEnabled === 'boolean') row.reminder_enabled = body.reminderEnabled;
+  // Device language (normalized app locale) so server push can be localized.
+  if (typeof body.locale === 'string') row.locale = body.locale;
 
   // On conflict the omitted columns (user_id, reminder_hour/minute) are left
   // untouched — so re-registering a token that already belongs to a signed-in user

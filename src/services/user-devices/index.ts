@@ -1,3 +1,4 @@
+import { i18n } from '@lingui/core';
 import { supabase } from '@/src/services/supabase';
 import { getFCMToken } from '@/src/services/firebase-messaging';
 
@@ -15,6 +16,7 @@ const upsertDeviceToken = async (userId: string): Promise<void> => {
       user_id: userId,
       fcm_token: fcmToken,
       firebase_project_id: FIREBASE_PROJECT_ID,
+      locale: i18n.locale,
       updated_at: now,
       last_active_at: now,
     },
@@ -48,6 +50,7 @@ const syncReminderToBackend = async (
       reminder_hour: enabled ? hour : null,
       reminder_minute: enabled ? minute : null,
       timezone: enabled ? timezone : null,
+      locale: i18n.locale,
       updated_at: now,
       last_active_at: now,
     },
@@ -68,6 +71,7 @@ const registerGuestDeviceToken = async (reminderEnabled?: boolean): Promise<void
     body: {
       fcmToken,
       firebaseProjectId: FIREBASE_PROJECT_ID,
+      locale: i18n.locale,
       ...(typeof reminderEnabled === 'boolean' ? { reminderEnabled } : {}),
     },
   });
