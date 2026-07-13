@@ -48,10 +48,19 @@ Deno.serve(async () => {
     const accessToken = await getFirebaseAccessToken(projectId);
     const results = await Promise.all(
       group.map((d) =>
-        sendFcmMessage(d.fcm_token, projectId, accessToken, {
-          title: 'Reflect',
-          body: "Time to jot down today's thoughts.",
-        }),
+        sendFcmMessage(
+          d.fcm_token,
+          projectId,
+          accessToken,
+          {
+            title: 'Reflect',
+            body: "Time to jot down today's thoughts.",
+          },
+          undefined,
+          // Collapse redundant deliveries so an at-least-once redelivery (e.g. a
+          // phone that was in Doze at reminder time) never stacks a second copy.
+          { collapseId: 'daily-reminder' },
+        ),
       ),
     );
     sent += results.filter((r) => r.ok).length;
