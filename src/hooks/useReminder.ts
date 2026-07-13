@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { syncReminderToBackend } from '@/src/services/user-devices';
+import { syncReminderToBackend, registerGuestDeviceToken } from '@/src/services/user-devices';
 import { scheduleDailyReminder, cancelDailyReminder } from '@/src/services/firebase-messaging';
 import { useSessionStore } from '@/src/stores';
 
@@ -44,10 +44,14 @@ const useReminder = () => {
   useEffect(() => {
     if (loading) return;
     if (isAnonymous) {
-      syncReminderToBackend(false, hour, minute);
+      // Guest: deliver locally, and record the on/off state server-side (reminder_*
+      // stay null so the cron skips them) for re-engagement targeting.
+      registerGuestDeviceToken(enabled);
       if (enabled) scheduleDailyReminder(hour, minute);
       else cancelDailyReminder();
     } else {
+      // Signed-in: server delivery via the cron; syncReminderToBackend also records
+      // reminder_enabled. No local schedule → no duplicate.
       cancelDailyReminder();
       syncReminderToBackend(enabled, hour, minute);
     }

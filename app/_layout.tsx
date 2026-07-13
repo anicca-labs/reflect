@@ -18,6 +18,7 @@ import {
   useToast,
   useMemoryNotification,
   useReminderNotification,
+  useActivityPing,
   useOfflineJournalSync,
   useBiometricLock,
 } from '@hooks';
@@ -60,6 +61,7 @@ const RootLayoutNav = () => {
   useAuthSession();
   useMemoryNotification();
   useReminderNotification();
+  useActivityPing();
   useOfflineJournalSync();
   const { notification } = useToast();
   const { pendingMerge, setPendingMerge } = useSessionStore();

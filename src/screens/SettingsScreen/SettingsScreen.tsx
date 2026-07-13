@@ -24,7 +24,7 @@ import {
   requestNotificationPermission,
   type NotificationPermissionStatus,
 } from '@firebase-messaging';
-import { upsertDeviceToken } from '@/src/services/user-devices';
+import { captureDeviceToken } from '@/src/services/user-devices';
 import {
   HEADING_LETTER_SPACING,
   LABEL_LETTER_SPACING,
@@ -170,10 +170,9 @@ const SettingsScreen = () => {
     const status = await getNotificationPermissionStatus();
     setNotifPermission(status);
     if (status === 'granted') {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) upsertDeviceToken(user.id);
+      // Signed-in or guest — captureDeviceToken picks the right path and records the
+      // token so we can reach them with push (reminder and/or re-engagement).
+      captureDeviceToken();
     } else {
       disableReminder();
     }
@@ -204,12 +203,7 @@ const SettingsScreen = () => {
     if (notifPermission === 'undetermined') {
       const granted = await requestNotificationPermission();
       setNotifPermission(granted ? 'granted' : 'denied');
-      if (granted) {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) upsertDeviceToken(user.id);
-      }
+      if (granted) captureDeviceToken();
       return;
     }
     openedSettings.current = true;
