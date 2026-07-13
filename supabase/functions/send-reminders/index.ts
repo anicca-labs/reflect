@@ -56,7 +56,9 @@ Deno.serve(async () => {
             title: 'Reflect',
             body: "Time to jot down today's thoughts.",
           },
-          undefined,
+          // Routes the tap to the journal composer (useReminderNotification). FCM
+          // data values must be strings.
+          { type: 'daily-reminder' },
           // Collapse redundant deliveries so an at-least-once redelivery (e.g. a
           // phone that was in Doze at reminder time) never stacks a second copy.
           { collapseId: 'daily-reminder' },
