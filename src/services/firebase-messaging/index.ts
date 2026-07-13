@@ -71,6 +71,38 @@ const scheduleLocalNotification = async (title: string, body: string, delaySecon
   });
 };
 
+const REMINDER_NOTIF_ID_KEY = '@reflect/reminder_notif_id';
+
+const scheduleDailyReminder = async (hour: number, minute: number): Promise<void> => {
+  const existingId = await AsyncStorage.getItem(REMINDER_NOTIF_ID_KEY);
+  if (existingId) {
+    await ExpoNotifications.cancelScheduledNotificationAsync(existingId);
+  }
+
+  const id = await ExpoNotifications.scheduleNotificationAsync({
+    content: {
+      title: 'Reflect',
+      body: "Time to jot down today's thoughts.",
+    },
+    trigger: {
+      type: ExpoNotifications.SchedulableTriggerInputTypes.CALENDAR,
+      hour,
+      minute,
+      repeats: true,
+    },
+  });
+
+  await AsyncStorage.setItem(REMINDER_NOTIF_ID_KEY, id);
+};
+
+const cancelDailyReminder = async (): Promise<void> => {
+  const id = await AsyncStorage.getItem(REMINDER_NOTIF_ID_KEY);
+  if (id) {
+    await ExpoNotifications.cancelScheduledNotificationAsync(id);
+    await AsyncStorage.removeItem(REMINDER_NOTIF_ID_KEY);
+  }
+};
+
 const MEMORY_NOTIF_IDS_KEY = '@reflect/memory_notif_ids';
 const MEMORY_NOTIF_LAST_SCHEDULED_KEY = '@reflect/memory_notif_last_scheduled';
 
@@ -161,5 +193,7 @@ export {
   getFCMToken,
   subscribeToForegroundMessages,
   scheduleLocalNotification,
+  scheduleDailyReminder,
+  cancelDailyReminder,
   scheduleMemoryNotifications,
 };
