@@ -591,13 +591,17 @@
         btn.disabled = true;
         const prev = btn.textContent;
         btn.textContent = '...';
+        let relabeled = false;
         try {
           const res = await post({ action: 'cron-set', enabled: next });
           if (!res.ok) {
             document.getElementById('cron-result').textContent = await res.text();
             return;
           }
+          // renderCron sets the button to the NEW opposite label ("Turn ON" after we
+          // just turned it off) — don't overwrite it in finally.
           renderCron(await res.json());
+          relabeled = true;
           document.getElementById('cron-result').textContent =
             'Updated — automated sends are now ' + (next ? 'ON' : 'OFF') + ' on ' + env + '.';
         } catch (err) {
@@ -605,7 +609,7 @@
             document.getElementById('cron-result').textContent = err.message;
         } finally {
           btn.disabled = false;
-          btn.textContent = prev;
+          if (!relabeled) btn.textContent = prev;
         }
       }
 
