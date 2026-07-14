@@ -87,6 +87,8 @@ type Body = {
   translate?: boolean;
   // send a pre-translated template instead of custom title/body (no Claude)
   template?: string;
+  // cron-set: turn the daily-reminder cron's automated sends on/off for this env
+  enabled?: boolean;
 };
 
 // Translate a short notification into a target locale via Claude (Haiku — cheap/fast).
@@ -156,6 +158,17 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     { db: { schema: 'api' } },
   );
+
+  // --- cron-status / cron-set: read or toggle the daily-reminder cron for THIS env ---
+  if (payload.action === 'cron-status' || payload.action === 'cron-set') {
+    const { data, error } =
+      payload.action === 'cron-set'
+        ? await supabase.rpc('reminder_cron_set', { p_enabled: !!payload.enabled })
+        : await supabase.rpc('reminder_cron_status');
+    if (error)
+      return Response.json({ error: error.message }, { status: 500, headers: CORS_HEADERS });
+    return Response.json(data, { headers: CORS_HEADERS });
+  }
 
   // --- list: every device with its owner email + engagement fields ---
   if (payload.action === 'list') {

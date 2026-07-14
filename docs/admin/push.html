@@ -276,6 +276,33 @@
         font-style: normal;
         color: #555;
       }
+      .cron-explain {
+        margin: 6px 0 12px;
+        font-size: 13px;
+        line-height: 1.55;
+        color: #444;
+      }
+      .cron-status {
+        font-size: 13px;
+        line-height: 1.7;
+        color: #333;
+        margin: 4px 0 12px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 12px;
+      }
+      .badge-on {
+        background: #e6f4ea;
+        color: #137333;
+      }
+      .badge-off {
+        background: #fce8e6;
+        color: #a50e0e;
+      }
     </style>
   </head>
   <body>
@@ -382,6 +409,37 @@
       </form>
       <div id="result"></div>
     </div>
+
+    <div class="card">
+      <h1 style="font-size: 18px">
+        Daily reminder cron <em class="muted" id="cron-env">&mdash; staging</em>
+      </h1>
+      <p class="cron-explain">
+        A scheduled job that runs <strong>every minute</strong> and delivers the
+        <strong>daily journal reminder</strong> to <strong>signed-in</strong> users at the time each
+        one picked, in their own timezone. (Guests receive their reminder locally on the device, so
+        they aren't sent from here.) It only pushes to a user at their chosen minute, so most runs
+        send nothing. When switched <strong>OFF</strong>, the job stays scheduled but makes no calls
+        at all &mdash; no notifications, no FCM usage. Staging is normally kept OFF; production
+        should be ON.
+      </p>
+      <div id="cron-status" class="cron-status">
+        <span class="muted">Enter the admin secret, then refresh to see the current state.</span>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="list-btn" id="cron-refresh" onclick="loadCronStatus()">
+          Refresh status
+        </button>
+        <button
+          type="button"
+          class="send-btn"
+          id="cron-toggle"
+          onclick="toggleCron()"
+          style="display: none"
+        ></button>
+      </div>
+      <div id="cron-result"></div>
+    </div>
     <script>
       const URLS = {
         stg: 'https://sznlkorcninofgezkwmy.supabase.co/functions/v1/admin-push',
@@ -389,6 +447,7 @@
       };
       let env = 'stg';
       let users = [];
+      let cronState = null;
 
       // English preview for the pre-translated templates in admin-push. Selecting one
       // sends { template } — the server picks each recipient's language (no Claude).
@@ -433,6 +492,14 @@
         const targetEl = document.getElementById('user_id');
         targetEl.value = '';
         targetEl.dataset.userId = '';
+        // Cron state is per-env — reset the panel so a stale status can't be acted on.
+        cronState = null;
+        document.getElementById('cron-env').textContent =
+          e === 'prd' ? '— production' : '— staging';
+        document.getElementById('cron-status').innerHTML =
+          '<span class="muted">Refresh to see the current state for this environment.</span>';
+        document.getElementById('cron-toggle').style.display = 'none';
+        document.getElementById('cron-result').textContent = '';
       }
 
       function requireSecret() {
@@ -471,6 +538,75 @@
           body: JSON.stringify(payload),
         });
         return res;
+      }
+
+      function renderCron(s) {
+        cronState = s;
+        const on = !!s.enabled;
+        const last = s.last_run ? new Date(s.last_run).toLocaleString() : '—';
+        document.getElementById('cron-status').innerHTML =
+          `Automated sends: <span class="badge ${on ? 'badge-on' : 'badge-off'}">${on ? 'ON' : 'OFF'}</span>` +
+          ` &nbsp;·&nbsp; job scheduled: ${s.scheduled ? 'yes' : 'no'}` +
+          `<br>Last run: ${last}${s.last_status ? ' (' + s.last_status + ')' : ''}`;
+        const toggle = document.getElementById('cron-toggle');
+        toggle.style.display = '';
+        toggle.textContent = on ? 'Turn OFF' : 'Turn ON';
+        toggle.className = on ? 'send-btn' : 'preview-btn';
+      }
+
+      async function loadCronStatus() {
+        const btn = document.getElementById('cron-refresh');
+        btn.disabled = true;
+        const prev = btn.textContent;
+        btn.textContent = '...';
+        document.getElementById('cron-result').textContent = '';
+        try {
+          const res = await post({ action: 'cron-status' });
+          if (!res.ok) {
+            document.getElementById('cron-status').innerHTML =
+              '<span class="muted">Status unavailable on this environment yet.</span>';
+            document.getElementById('cron-result').textContent = await res.text();
+            document.getElementById('cron-toggle').style.display = 'none';
+            return;
+          }
+          renderCron(await res.json());
+        } catch (err) {
+          if (err.message !== 'no-secret')
+            document.getElementById('cron-result').textContent = err.message;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = prev;
+        }
+      }
+
+      async function toggleCron() {
+        if (!cronState) return;
+        const next = !cronState.enabled;
+        if (
+          env === 'prd' &&
+          !confirm('Turn the PRODUCTION daily-reminder cron ' + (next ? 'ON' : 'OFF') + '?')
+        )
+          return;
+        const btn = document.getElementById('cron-toggle');
+        btn.disabled = true;
+        const prev = btn.textContent;
+        btn.textContent = '...';
+        try {
+          const res = await post({ action: 'cron-set', enabled: next });
+          if (!res.ok) {
+            document.getElementById('cron-result').textContent = await res.text();
+            return;
+          }
+          renderCron(await res.json());
+          document.getElementById('cron-result').textContent =
+            'Updated — automated sends are now ' + (next ? 'ON' : 'OFF') + ' on ' + env + '.';
+        } catch (err) {
+          if (err.message !== 'no-secret')
+            document.getElementById('cron-result').textContent = err.message;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = prev;
+        }
       }
 
       async function preview() {
