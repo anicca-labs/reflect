@@ -24,7 +24,10 @@ const useReminderNotification = () => {
   useEffect(() => {
     const routeToComposer = () => {
       setPendingCompose(true);
-      router.navigate('/(tabs)');
+      // '/' targets the Journal tab specifically (the (tabs) index). Navigating to the
+      // group '/(tabs)' lands on the group without switching the active MaterialTopTab
+      // when the app was backgrounded on another tab, so the tap didn't move you.
+      router.navigate('/');
     };
 
     // Local notifications (guests) via expo-notifications.
