@@ -78,6 +78,13 @@ const scheduleLocalNotification = async (title: string, body: string, delaySecon
 const REMINDER_NOTIF_ID = 'daily-reminder';
 const REMINDER_NOTIF_ID_KEY = '@reflect/reminder_notif_id';
 
+// Routing contract: notifications carrying `data.type === REMINDER_DATA_TYPE` open the
+// journal composer on tap (see useReminderNotification). Set by every "go write" push —
+// the local daily reminder below, the send-reminders cron, and admin re-engagement
+// pushes. The server (Deno edge functions) can't import this, so keep the string in
+// sync there.
+const REMINDER_DATA_TYPE = 'daily-reminder';
+
 // The reminder is a fixed string, so it's localized from a static map by the app's
 // active locale (English fallback) — no runtime translation. Keep in sync with the
 // same map in the send-reminders edge function (the server-push path for signed-in).
@@ -120,7 +127,7 @@ const scheduleDailyReminder = async (hour: number, minute: number): Promise<void
       body: reminderBody(),
       // Tapping the reminder routes straight to the journal composer (see
       // useReminderNotification) so the user lands ready to write.
-      data: { type: 'daily-reminder' },
+      data: { type: REMINDER_DATA_TYPE },
     },
     // DAILY repeats every day at hour:minute and works on both iOS and Android.
     // (CALENDAR is iOS-only — on Android it throws "Trigger of type: calendar is
@@ -222,6 +229,7 @@ const scheduleMemoryNotifications = (
 
 export type { NotificationPermissionStatus };
 export {
+  REMINDER_DATA_TYPE,
   getNotificationPermissionStatus,
   requestNotificationPermission,
   getFCMToken,

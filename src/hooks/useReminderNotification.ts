@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ExpoNotifications from 'expo-notifications';
 import {
@@ -8,15 +7,16 @@ import {
   getInitialNotification,
 } from '@react-native-firebase/messaging';
 import { getApp } from '@react-native-firebase/app';
+import { REMINDER_DATA_TYPE } from '@firebase-messaging';
 import { useComposeStore } from '@/src/stores';
 
 // Sends a tapped daily-reminder to the journal composer. Mirrors useMemoryNotification
-// (the proven notification→tab pattern in this app): STASH the tap in the handler, and
-// NAVIGATE from a separate effect. Navigating inline from the notification callback (as
-// the app resumes) is unreliable — the tab switch gets swallowed — which is why taps did
-// "nothing". Taps arrive on two channels: guests get a LOCAL notification
-// (expo-notifications' response listener), signed-in users get an FCM server push
-// (@react-native-firebase/messaging). Both carry data.type 'daily-reminder'.
+// (the proven notification→tab pattern in this app): STASH the tap in the handler, then
+// NAVIGATE from a separate effect — navigating inline from the notification callback as
+// the app resumes is unreliable (the tab switch gets swallowed). Taps arrive on two
+// channels: guests get a LOCAL notification (expo-notifications' response listener),
+// signed-in users get an FCM server push (@react-native-firebase/messaging). Both carry
+// data.type === REMINDER_DATA_TYPE.
 const useReminderNotification = () => {
   const router = useRouter();
   const pendingCompose = useComposeStore((s) => s.pendingCompose);
@@ -30,14 +30,9 @@ const useReminderNotification = () => {
     // Local notifications (guests) via expo-notifications.
     const handleExpoResponse = (response: ExpoNotifications.NotificationResponse | null) => {
       if (!response) return;
-      // DEBUG: shows the expo listener fired + the exact data payload on this device.
-      Alert.alert(
-        'reminder debug',
-        '1) expo tap · data=' + JSON.stringify(response.notification.request.content.data ?? null),
-      );
       const { identifier } = response.notification.request;
       if (handledIds.current.has(identifier)) return;
-      if (response.notification.request.content.data?.type === 'daily-reminder') {
+      if (response.notification.request.content.data?.type === REMINDER_DATA_TYPE) {
         handledIds.current.add(identifier);
         setPendingCompose(true);
       }
@@ -51,10 +46,7 @@ const useReminderNotification = () => {
     // FCM server pushes (signed-in) via react-native-firebase.
     const messaging = getMessaging(getApp());
     const handleFcm = (message: { data?: { [key: string]: string | object } } | null) => {
-      // DEBUG: shows an FCM tap arrived (signed-in path) + its data payload.
-      if (message)
-        Alert.alert('reminder debug', '1) fcm tap · data=' + JSON.stringify(message.data ?? null));
-      if (message?.data?.type === 'daily-reminder') setPendingCompose(true);
+      if (message?.data?.type === REMINDER_DATA_TYPE) setPendingCompose(true);
     };
     const fcmUnsub = onNotificationOpenedApp(messaging, handleFcm);
     getInitialNotification(messaging).then(handleFcm);
@@ -74,8 +66,6 @@ const useReminderNotification = () => {
   // never land. (Same constraint documented in useMemoryNotification.)
   useEffect(() => {
     if (!pendingCompose) return;
-    // DEBUG: shows pendingCompose propagated + we're about to navigate.
-    Alert.alert('reminder debug', '2) navigating to / (journal)');
     router.navigate('/');
   }, [pendingCompose, router]);
 };
