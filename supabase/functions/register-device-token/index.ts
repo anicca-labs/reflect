@@ -44,6 +44,15 @@ Deno.serve(async (req) => {
   const row: Record<string, unknown> = {
     fcm_token: fcmToken,
     firebase_project_id: firebaseProjectId,
+    // This is the guest-registration endpoint (only guests call it), so the device
+    // is — or has just become — a guest. Detach any prior user and clear the
+    // server-reminder fields: a guest's reminder is delivered locally, so the cron
+    // must skip them. This is what corrects a device that signed out and returned as
+    // a guest (its stale user_id + reminder would otherwise linger).
+    user_id: null,
+    reminder_hour: null,
+    reminder_minute: null,
+    timezone: null,
     updated_at: now,
     // The app is in the foreground whenever it calls this, so every call doubles as
     // an activity ping for re-engagement targeting.
