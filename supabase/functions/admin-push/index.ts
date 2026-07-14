@@ -68,7 +68,7 @@ async function translateNotification(
         {
           role: 'user',
           content:
-            `Translate this mobile app push notification into ${lang}. Keep it natural, warm, and concise (it's a short UI notification, not a document). Preserve meaning and tone. ` +
+            `Translate this mobile app push notification into ${lang}. Keep it natural, warm, and concise (it's a short UI notification, not a document). Preserve meaning and tone. Keep the app/brand name "Reflect" unchanged. ` +
             `Return ONLY minified JSON: {"title":"...","body":"..."} — no markdown, no commentary.\n\n` +
             `Title: ${title}\nBody: ${body}`,
         },
