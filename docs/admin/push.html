@@ -295,6 +295,8 @@
           <select id="template" onchange="applyTemplate()">
             <option value="">Custom message</option>
             <option value="daily_reminder">Daily reminder</option>
+            <option value="we_miss_you">We miss you (win-back)</option>
+            <option value="keep_streak">Keep your streak</option>
           </select>
         </label>
         <label>
@@ -392,6 +394,8 @@
       // sends { template } — the server picks each recipient's language (no Claude).
       const TEMPLATE_PREVIEW = {
         daily_reminder: { title: 'Reflect', body: "Time to jot down today's thoughts." },
+        we_miss_you: { title: 'Reflect', body: 'We miss you — your journal is waiting.' },
+        keep_streak: { title: 'Reflect', body: 'Keep your streak going — write today.' },
       };
       function applyTemplate() {
         const id = document.getElementById('template').value;

@@ -41,6 +41,28 @@ const TEMPLATES: Record<string, { label: string; byLocale: Record<string, Locali
       ar: { title: 'Reflect', body: 'حان وقت تدوين أفكارك اليوم.' },
     },
   },
+  we_miss_you: {
+    label: 'We miss you (win-back)',
+    byLocale: {
+      en: { title: 'Reflect', body: 'We miss you — your journal is waiting.' },
+      es: { title: 'Reflect', body: 'Te echamos de menos — tu diario te espera.' },
+      'pt-BR': { title: 'Reflect', body: 'Sentimos sua falta — seu diário está esperando.' },
+      fr: { title: 'Reflect', body: 'Tu nous manques — ton journal t’attend.' },
+      id: { title: 'Reflect', body: 'Kami merindukanmu — jurnalmu menunggu.' },
+      ar: { title: 'Reflect', body: 'اشتقنا إليك — مذكرتك بانتظارك.' },
+    },
+  },
+  keep_streak: {
+    label: 'Keep your streak',
+    byLocale: {
+      en: { title: 'Reflect', body: 'Keep your streak going — write today.' },
+      es: { title: 'Reflect', body: 'Mantén tu racha — escribe hoy.' },
+      'pt-BR': { title: 'Reflect', body: 'Mantenha sua sequência — escreva hoje.' },
+      fr: { title: 'Reflect', body: 'Garde ta série — écris aujourd’hui.' },
+      id: { title: 'Reflect', body: 'Jaga rentetanmu — menulislah hari ini.' },
+      ar: { title: 'Reflect', body: 'حافظ على تتابعك — اكتب اليوم.' },
+    },
+  },
 };
 
 type Device = {
