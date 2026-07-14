@@ -293,10 +293,16 @@ Deno.serve(async (req) => {
     const results = await Promise.allSettled(
       group.map((d) => {
         const c = contentFor(d.locale);
-        return sendFcmMessage(d.fcm_token, projectId, accessToken, {
-          title: c.title,
-          body: c.body,
-        });
+        return sendFcmMessage(
+          d.fcm_token,
+          projectId,
+          accessToken,
+          { title: c.title, body: c.body },
+          // Every admin push is a re-engagement nudge — tapping it should drop the
+          // user into the journal composer, same as the daily reminder. (data values
+          // must be strings.)
+          { type: 'daily-reminder' },
+        );
       }),
     );
     results.forEach((r, i) => {
