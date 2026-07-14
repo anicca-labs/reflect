@@ -8,8 +8,14 @@
 -- One-time per environment (run once, e.g. via the dashboard SQL editor — NOT committed):
 --   insert into private.cron_config(key, value) values
 --     ('edge_base_url', 'https://<project-ref>.supabase.co/functions/v1'),
---     ('cron_anon_key', '<that env''s anon/publishable key>')
+--     ('cron_anon_key', '<that env''s anon/publishable key>'),
+--     ('automated_sends_enabled', 'true')   -- set 'false' on staging to silence automated pushes
 --   on conflict (key) do update set value = excluded.value;
+--
+-- automated_sends_enabled gates whether the cron actually calls the function. It defaults
+-- to ON when the row is absent (so prod sends without extra setup); set it to 'false' on
+-- non-prod to keep the job scheduled + mirrored but stop it burning FCM sends / pinging
+-- test devices. Future automated push crons (winback, etc.) should check the same flag.
 
 create extension if not exists pg_cron;
 create extension if not exists pg_net;
@@ -38,6 +44,9 @@ select cron.schedule(
       'Authorization', 'Bearer ' || (select value from private.cron_config where key = 'cron_anon_key')
     ),
     body := '{}'::jsonb
-  );
+  )
+  -- Skip the call entirely when automated sends are disabled for this env (the target
+  -- expression isn't evaluated when the WHERE is false, so no HTTP request is made).
+  where coalesce((select value from private.cron_config where key = 'automated_sends_enabled'), 'true') = 'true';
   $cmd$
 );
