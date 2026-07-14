@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ExpoNotifications from 'expo-notifications';
 import {
@@ -29,6 +30,11 @@ const useReminderNotification = () => {
     // Local notifications (guests) via expo-notifications.
     const handleExpoResponse = (response: ExpoNotifications.NotificationResponse | null) => {
       if (!response) return;
+      // DEBUG: shows the expo listener fired + the exact data payload on this device.
+      Alert.alert(
+        'reminder debug',
+        '1) expo tap · data=' + JSON.stringify(response.notification.request.content.data ?? null),
+      );
       const { identifier } = response.notification.request;
       if (handledIds.current.has(identifier)) return;
       if (response.notification.request.content.data?.type === 'daily-reminder') {
@@ -45,6 +51,9 @@ const useReminderNotification = () => {
     // FCM server pushes (signed-in) via react-native-firebase.
     const messaging = getMessaging(getApp());
     const handleFcm = (message: { data?: { [key: string]: string | object } } | null) => {
+      // DEBUG: shows an FCM tap arrived (signed-in path) + its data payload.
+      if (message)
+        Alert.alert('reminder debug', '1) fcm tap · data=' + JSON.stringify(message.data ?? null));
       if (message?.data?.type === 'daily-reminder') setPendingCompose(true);
     };
     const fcmUnsub = onNotificationOpenedApp(messaging, handleFcm);
@@ -65,6 +74,8 @@ const useReminderNotification = () => {
   // never land. (Same constraint documented in useMemoryNotification.)
   useEffect(() => {
     if (!pendingCompose) return;
+    // DEBUG: shows pendingCompose propagated + we're about to navigate.
+    Alert.alert('reminder debug', '2) navigating to / (journal)');
     router.navigate('/');
   }, [pendingCompose, router]);
 };
