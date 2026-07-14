@@ -291,6 +291,13 @@
           <input type="password" id="secret" autocomplete="current-password" />
         </label>
         <label>
+          <span>Message template <em class="muted">(pre-translated &mdash; no Claude)</em></span>
+          <select id="template" onchange="applyTemplate()">
+            <option value="">Custom message</option>
+            <option value="daily_reminder">Daily reminder</option>
+          </select>
+        </label>
+        <label>
           <span>Title</span>
           <input type="text" id="title" value="Reflect" />
         </label>
@@ -380,6 +387,26 @@
       };
       let env = 'stg';
       let users = [];
+
+      // English preview for the pre-translated templates in admin-push. Selecting one
+      // sends { template } — the server picks each recipient's language (no Claude).
+      const TEMPLATE_PREVIEW = {
+        daily_reminder: { title: 'Reflect', body: "Time to jot down today's thoughts." },
+      };
+      function applyTemplate() {
+        const id = document.getElementById('template').value;
+        const titleEl = document.getElementById('title');
+        const bodyEl = document.getElementById('body');
+        const translateEl = document.getElementById('translate');
+        const isTemplate = id && TEMPLATE_PREVIEW[id];
+        if (isTemplate) {
+          titleEl.value = TEMPLATE_PREVIEW[id].title;
+          bodyEl.value = TEMPLATE_PREVIEW[id].body;
+          translateEl.checked = false;
+        }
+        titleEl.readOnly = bodyEl.readOnly = !!isTemplate;
+        translateEl.disabled = !!isTemplate;
+      }
 
       const secretEl = document.getElementById('secret');
       secretEl.value = localStorage.getItem('reflect_admin_secret') || '';
@@ -551,9 +578,11 @@
         ev.preventDefault();
         if (!requireSecret()) return;
 
+        const template = document.getElementById('template').value;
         const title = document.getElementById('title').value.trim();
         const body = document.getElementById('body').value.trim();
-        if (!title || !body) return showResult(false, 'Title and message are required.');
+        if (!template && (!title || !body))
+          return showResult(false, 'Title and message are required.');
 
         const translate = document.getElementById('translate').checked;
         const aud = audience();
@@ -574,9 +603,10 @@
 
         const btn = document.getElementById('send-btn');
         btn.disabled = true;
-        btn.textContent = translate ? 'Translating & sending...' : 'Sending...';
+        btn.textContent = !template && translate ? 'Translating & sending...' : 'Sending...';
         try {
-          const res = await post({ title, body, translate, ...aud });
+          const payload = template ? { template, ...aud } : { title, body, translate, ...aud };
+          const res = await post(payload);
           showResult(res.ok, await res.text());
         } catch (err) {
           if (err.message !== 'no-secret') showResult(false, err.message);

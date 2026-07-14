@@ -24,6 +24,25 @@ const LOCALE_NAME: Record<string, string> = {
   ar: 'Arabic',
 };
 
+// Pre-translated message templates the admin can pick (reuse existing translations —
+// no Claude call, consistent copy). Each recipient gets their locale's version
+// (English fallback). Keep the daily_reminder text in sync with the app
+// (src/services/firebase-messaging) and send-reminders.
+type Localized = { title: string; body: string };
+const TEMPLATES: Record<string, { label: string; byLocale: Record<string, Localized> }> = {
+  daily_reminder: {
+    label: 'Daily reminder',
+    byLocale: {
+      en: { title: 'Reflect', body: "Time to jot down today's thoughts." },
+      es: { title: 'Reflect', body: 'Hora de anotar tus pensamientos de hoy.' },
+      'pt-BR': { title: 'Reflect', body: 'Hora de anotar seus pensamentos de hoje.' },
+      fr: { title: 'Reflect', body: 'C’est le moment de noter tes pensées du jour.' },
+      id: { title: 'Reflect', body: 'Waktunya mencatat pikiranmu hari ini.' },
+      ar: { title: 'Reflect', body: 'حان وقت تدوين أفكارك اليوم.' },
+    },
+  },
+};
+
 type Device = {
   fcm_token: string;
   user_id: string | null;
@@ -43,6 +62,8 @@ type Body = {
   account?: 'all' | 'guest' | 'signed_in';
   // translate the message into each recipient's locale (once per locale) via Claude
   translate?: boolean;
+  // send a pre-translated template instead of custom title/body (no Claude)
+  template?: string;
 };
 
 // Translate a short notification into a target locale via Claude (Haiku — cheap/fast).
@@ -98,6 +119,15 @@ Deno.serve(async (req) => {
   }
 
   const payload = (await req.json()) as Body;
+
+  // --- templates: the pre-translated message templates (id + label + English preview) ---
+  if (payload.action === 'templates') {
+    return Response.json(
+      Object.entries(TEMPLATES).map(([id, t]) => ({ id, label: t.label, en: t.byLocale.en })),
+      { headers: CORS_HEADERS },
+    );
+  }
+
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
@@ -186,37 +216,48 @@ Deno.serve(async (req) => {
   }
 
   // --- send ---
-  const { title, body: msgBody, translate } = payload;
-  if (!title || !msgBody) {
+  const { title, body: msgBody, translate, template } = payload;
+
+  if (template && !TEMPLATES[template]) {
+    return new Response(`Unknown template: ${template}`, { status: 400, headers: CORS_HEADERS });
+  }
+  if (!template && (!title || !msgBody)) {
     return new Response('title and body are required', { status: 400, headers: CORS_HEADERS });
   }
   if (!devices.length) {
     return new Response('No matching devices found', { status: 200, headers: CORS_HEADERS });
   }
-  if (translate && !ANTHROPIC_API_KEY) {
+  if (translate && !template && !ANTHROPIC_API_KEY) {
     return new Response('Translation requested but ANTHROPIC_API_KEY is not configured', {
       status: 400,
       headers: CORS_HEADERS,
     });
   }
 
-  // Pre-translate once per distinct locale (source text assumed English → skip 'en'
-  // and unknown/unsupported locales, which get the original text).
-  const perLocale: Record<string, { title: string; body: string }> = {};
+  // Content per device:
+  //  • template            → its pre-translated per-locale copy (no Claude).
+  //  • custom + translate   → translate once per distinct locale via Claude.
+  //  • custom, no translate → the raw title/body for everyone.
+  const perLocale: Record<string, Localized> = {};
   const translateErrors: string[] = [];
-  if (translate) {
+  if (!template && translate) {
     const locales = [...new Set(devices.map((d) => d.locale).filter(Boolean) as string[])];
     for (const loc of locales) {
       if (loc === 'en' || !LOCALE_NAME[loc]) continue;
       try {
-        perLocale[loc] = await translateNotification(title, msgBody, loc);
+        perLocale[loc] = await translateNotification(title!, msgBody!, loc);
       } catch (e) {
         translateErrors.push(`${loc}: ${e instanceof Error ? e.message : String(e)}`);
       }
     }
   }
-  const contentFor = (locale: string | null) =>
-    (locale && perLocale[locale]) || { title, body: msgBody };
+  const contentFor = (locale: string | null): Localized => {
+    if (template) {
+      const t = TEMPLATES[template].byLocale;
+      return (locale && t[locale]) || t.en;
+    }
+    return (locale && perLocale[locale]) || { title: title!, body: msgBody! };
+  };
 
   // Group by Firebase project to mint one access token per project.
   const byProject = Map.groupBy(devices, (d) => d.firebase_project_id ?? 'reflect-8e62d');
@@ -254,9 +295,11 @@ Deno.serve(async (req) => {
 
   const sent = results.filter((r) => r.ok).length;
   const failed = results.filter((r) => !r.ok && !r.unregistered).length;
-  const translatedNote = translate
-    ? ` · translated: ${Object.keys(perLocale).join(', ') || 'none'}`
-    : '';
+  const translatedNote = template
+    ? ` · template: ${template}`
+    : translate
+      ? ` · translated: ${Object.keys(perLocale).join(', ') || 'none'}`
+      : '';
   const errNote = translateErrors.length ? `\ntranslate errors: ${translateErrors.join('; ')}` : '';
   return new Response(
     `Sent to ${sent}/${devices.length} device${devices.length !== 1 ? 's' : ''}` +
