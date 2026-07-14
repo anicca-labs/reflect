@@ -3,6 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { getFirebaseAccessToken, sendFcmMessage } from '../_shared/firebase.ts';
 
 const ADMIN_SECRET = Deno.env.get('ADMIN_PUSH_SECRET')!;
+const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -10,11 +11,83 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Supported locales → language name for the translation prompt. Anything else falls
+// back to the source (English) text.
+const LOCALE_NAME: Record<string, string> = {
+  en: 'English',
+  es: 'Spanish',
+  'pt-BR': 'Brazilian Portuguese',
+  fr: 'French',
+  id: 'Indonesian',
+  ar: 'Arabic',
+};
+
+type Device = {
+  fcm_token: string;
+  user_id: string | null;
+  firebase_project_id: string | null;
+  locale: string | null;
+};
+
+type Body = {
+  action?: string;
+  title?: string;
+  body?: string;
+  user_id?: string;
+  // audience filters (ignored when user_id is set)
+  locale?: string;
+  reminder_enabled?: boolean;
+  inactive_days?: number;
+  account?: 'all' | 'guest' | 'signed_in';
+  // translate the message into each recipient's locale (once per locale) via Claude
+  translate?: boolean;
+};
+
+// Translate a short notification into a target locale via Claude (Haiku — cheap/fast).
+// Called ONCE per distinct locale, never per device.
+async function translateNotification(
+  title: string,
+  body: string,
+  locale: string,
+): Promise<{ title: string; body: string }> {
+  if (!ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY is not configured');
+  const lang = LOCALE_NAME[locale] ?? locale;
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 500,
+      messages: [
+        {
+          role: 'user',
+          content:
+            `Translate this mobile app push notification into ${lang}. Keep it natural, warm, and concise (it's a short UI notification, not a document). Preserve meaning and tone. ` +
+            `Return ONLY minified JSON: {"title":"...","body":"..."} — no markdown, no commentary.\n\n` +
+            `Title: ${title}\nBody: ${body}`,
+        },
+      ],
+    }),
+  });
+  if (!res.ok) throw new Error(`Claude ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+  const text = String(data?.content?.[0]?.text ?? '').trim();
+  const jsonStart = text.indexOf('{');
+  const jsonEnd = text.lastIndexOf('}');
+  const parsed = JSON.parse(jsonStart >= 0 ? text.slice(jsonStart, jsonEnd + 1) : text);
+  return { title: parsed.title || title, body: parsed.body || body };
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
-
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 });
   }
@@ -24,24 +97,19 @@ Deno.serve(async (req) => {
     return new Response('Unauthorized', { status: 403, headers: CORS_HEADERS });
   }
 
-  const body = (await req.json()) as {
-    action?: string;
-    title?: string;
-    body?: string;
-    user_id?: string;
-  };
-
+  const payload = (await req.json()) as Body;
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     { db: { schema: 'api' } },
   );
 
-  if (body.action === 'list') {
+  // --- list: every device with its owner email + engagement fields ---
+  if (payload.action === 'list') {
     const { data: devices, error } = await supabase
       .from('device_tokens')
-      .select('user_id, fcm_token, updated_at')
-      .order('updated_at', { ascending: false });
+      .select('user_id, fcm_token, locale, reminder_enabled, last_active_at, updated_at')
+      .order('last_active_at', { ascending: false, nullsFirst: false });
 
     if (error) return new Response(error.message, { status: 500, headers: CORS_HEADERS });
     if (!devices?.length) return Response.json([], { headers: CORS_HEADERS });
@@ -49,63 +117,108 @@ Deno.serve(async (req) => {
     const {
       data: { users },
       error: authError,
-    } = await supabase.auth.admin.listUsers({
-      perPage: 1000,
-    });
+    } = await supabase.auth.admin.listUsers({ perPage: 1000 });
     if (authError) return new Response(authError.message, { status: 500, headers: CORS_HEADERS });
-
     const emailById = Object.fromEntries(users.map((u) => [u.id, u.email ?? u.id]));
 
     const result = devices.map((d) => ({
       user_id: d.user_id,
-      email: emailById[d.user_id] ?? d.user_id,
+      email: d.user_id ? (emailById[d.user_id] ?? d.user_id) : 'Guest',
       fcm_token: d.fcm_token,
+      locale: d.locale,
+      reminder_enabled: d.reminder_enabled,
+      last_active_at: d.last_active_at,
       updated_at: d.updated_at,
     }));
-
     return Response.json(result, { headers: CORS_HEADERS });
   }
 
-  const {
-    title,
-    body: msgBody,
-    user_id,
-  } = body as { title: string; body: string; user_id?: string };
+  // --- resolve the audience: a single explicit target, else the filters ---
+  let query = supabase
+    .from('device_tokens')
+    .select('fcm_token, user_id, firebase_project_id, locale');
 
-  if (!title || !msgBody) {
-    return new Response('title and body are required', { status: 400, headers: CORS_HEADERS });
-  }
-
-  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  let query = supabase.from('device_tokens').select('fcm_token, user_id, firebase_project_id');
-  if (user_id) {
-    if (user_id.includes('@')) {
+  if (payload.user_id) {
+    const target = payload.user_id;
+    if (target.includes('@')) {
       const {
         data: { users: authUsers },
         error: authError,
       } = await supabase.auth.admin.listUsers({ perPage: 1000 });
       if (authError) return new Response(authError.message, { status: 500, headers: CORS_HEADERS });
-      const match = authUsers.find((u) => u.email === user_id);
+      const match = authUsers.find((u) => u.email === target);
       if (!match)
-        return new Response(`No user found with email ${user_id}`, {
+        return new Response(`No user found with email ${target}`, {
           status: 404,
           headers: CORS_HEADERS,
         });
       query = query.eq('user_id', match.id);
-    } else if (UUID_RE.test(user_id)) {
-      query = query.eq('user_id', user_id);
+    } else if (UUID_RE.test(target)) {
+      query = query.eq('user_id', target);
     } else {
-      query = query.eq('fcm_token', user_id);
+      query = query.eq('fcm_token', target);
+    }
+  } else {
+    if (payload.locale) query = query.eq('locale', payload.locale);
+    if (typeof payload.reminder_enabled === 'boolean')
+      query = query.eq('reminder_enabled', payload.reminder_enabled);
+    if (payload.account === 'guest') query = query.is('user_id', null);
+    else if (payload.account === 'signed_in') query = query.not('user_id', 'is', null);
+    // "inactive for at least N days" → last opened before the cutoff (dormant win-back)
+    if (payload.inactive_days && payload.inactive_days > 0) {
+      const cutoff = new Date(Date.now() - payload.inactive_days * 86_400_000).toISOString();
+      query = query.lt('last_active_at', cutoff);
     }
   }
 
-  const { data: devices, error } = await query;
+  const { data: rawDevices, error } = await query;
   if (error) return new Response(error.message, { status: 500, headers: CORS_HEADERS });
-  if (!devices?.length) {
-    return new Response('No matching devices found', { status: 200, headers: CORS_HEADERS });
+  const devices = (rawDevices ?? []) as Device[];
+
+  // --- preview: how many match + breakdown by locale (no send) ---
+  if (payload.action === 'preview') {
+    const byLocale: Record<string, number> = {};
+    for (const d of devices) {
+      const key = d.locale ?? 'unknown';
+      byLocale[key] = (byLocale[key] ?? 0) + 1;
+    }
+    return Response.json({ total: devices.length, byLocale }, { headers: CORS_HEADERS });
   }
 
-  // Group by Firebase project to mint one access token per project
+  // --- send ---
+  const { title, body: msgBody, translate } = payload;
+  if (!title || !msgBody) {
+    return new Response('title and body are required', { status: 400, headers: CORS_HEADERS });
+  }
+  if (!devices.length) {
+    return new Response('No matching devices found', { status: 200, headers: CORS_HEADERS });
+  }
+  if (translate && !ANTHROPIC_API_KEY) {
+    return new Response('Translation requested but ANTHROPIC_API_KEY is not configured', {
+      status: 400,
+      headers: CORS_HEADERS,
+    });
+  }
+
+  // Pre-translate once per distinct locale (source text assumed English → skip 'en'
+  // and unknown/unsupported locales, which get the original text).
+  const perLocale: Record<string, { title: string; body: string }> = {};
+  const translateErrors: string[] = [];
+  if (translate) {
+    const locales = [...new Set(devices.map((d) => d.locale).filter(Boolean) as string[])];
+    for (const loc of locales) {
+      if (loc === 'en' || !LOCALE_NAME[loc]) continue;
+      try {
+        perLocale[loc] = await translateNotification(title, msgBody, loc);
+      } catch (e) {
+        translateErrors.push(`${loc}: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
+  }
+  const contentFor = (locale: string | null) =>
+    (locale && perLocale[locale]) || { title, body: msgBody };
+
+  // Group by Firebase project to mint one access token per project.
   const byProject = Map.groupBy(devices, (d) => d.firebase_project_id ?? 'reflect-8e62d');
   const allResults: {
     idx: number;
@@ -115,14 +228,17 @@ Deno.serve(async (req) => {
   for (const [projectId, group] of byProject) {
     const accessToken = await getFirebaseAccessToken(projectId);
     const results = await Promise.allSettled(
-      group.map((d) =>
-        sendFcmMessage(d.fcm_token, projectId, accessToken, { title, body: msgBody }),
-      ),
+      group.map((d) => {
+        const c = contentFor(d.locale);
+        return sendFcmMessage(d.fcm_token, projectId, accessToken, {
+          title: c.title,
+          body: c.body,
+        });
+      }),
     );
     results.forEach((r, i) => {
-      const idx = devices.indexOf(group[i]);
       allResults.push({
-        idx,
+        idx: devices.indexOf(group[i]),
         result: r.status === 'fulfilled' ? r.value : { ok: false, error: String(r.reason) },
       });
     });
@@ -137,15 +253,16 @@ Deno.serve(async (req) => {
   }
 
   const sent = results.filter((r) => r.ok).length;
-  const errors = results.flatMap((r, i) => {
-    if (!r.ok && !r.unregistered) return [`${devices[i].user_id}: ${r.error}`];
-    return [];
-  });
-
-  const message =
-    errors.length > 0
-      ? `Sent ${sent}/${devices.length} (${errors.length} failed)\n${errors.join('\n')}`
-      : `Sent to ${sent} device${sent !== 1 ? 's' : ''}`;
-
-  return new Response(message, { status: 200, headers: CORS_HEADERS });
+  const failed = results.filter((r) => !r.ok && !r.unregistered).length;
+  const translatedNote = translate
+    ? ` · translated: ${Object.keys(perLocale).join(', ') || 'none'}`
+    : '';
+  const errNote = translateErrors.length ? `\ntranslate errors: ${translateErrors.join('; ')}` : '';
+  return new Response(
+    `Sent to ${sent}/${devices.length} device${devices.length !== 1 ? 's' : ''}` +
+      (failed ? ` (${failed} failed)` : '') +
+      translatedNote +
+      errNote,
+    { status: 200, headers: CORS_HEADERS },
+  );
 });
