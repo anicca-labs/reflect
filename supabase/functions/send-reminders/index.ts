@@ -1,6 +1,7 @@
 // @openapi-internal — cron-triggered, not callable by the app client
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { getFirebaseAccessToken, sendFcmMessage } from '../_shared/firebase.ts';
+import { REMINDER_DATA_TYPE } from '../_shared/notifications.ts';
 
 // Fixed reminder string, localized by the device's saved locale (English fallback).
 // Keep in sync with REMINDER_BODY_BY_LOCALE in src/services/firebase-messaging (the
@@ -73,7 +74,7 @@ Deno.serve(async () => {
           },
           // Routes the tap to the journal composer (useReminderNotification). FCM
           // data values must be strings.
-          { type: 'daily-reminder' },
+          { type: REMINDER_DATA_TYPE },
           // Collapse redundant deliveries so an at-least-once redelivery (e.g. a
           // phone that was in Doze at reminder time) never stacks a second copy.
           { collapseId: 'daily-reminder' },

@@ -1,6 +1,7 @@
 // @openapi-internal — admin-only, not callable from app clients
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { getFirebaseAccessToken, sendFcmMessage } from '../_shared/firebase.ts';
+import { REMINDER_DATA_TYPE } from '../_shared/notifications.ts';
 
 const ADMIN_SECRET = Deno.env.get('ADMIN_PUSH_SECRET')!;
 const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
@@ -301,7 +302,7 @@ Deno.serve(async (req) => {
           // Every admin push is a re-engagement nudge — tapping it should drop the
           // user into the journal composer, same as the daily reminder. (data values
           // must be strings.)
-          { type: 'daily-reminder' },
+          { type: REMINDER_DATA_TYPE },
         );
       }),
     );
