@@ -11,12 +11,16 @@ const upsertDeviceToken = async (userId: string): Promise<void> => {
   if (!fcmToken) return;
 
   const now = new Date().toISOString();
+  // Stamp timezone on every sync (not just when a reminder is set) so re-engagement
+  // winbacks can be timed to the user's local evening for the whole base.
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   await supabase.from('device_tokens').upsert(
     {
       user_id: userId,
       fcm_token: fcmToken,
       firebase_project_id: FIREBASE_PROJECT_ID,
       locale: i18n.locale,
+      timezone,
       updated_at: now,
       last_active_at: now,
     },
@@ -49,7 +53,10 @@ const syncReminderToBackend = async (
       reminder_enabled: enabled,
       reminder_hour: enabled ? hour : null,
       reminder_minute: enabled ? minute : null,
-      timezone: enabled ? timezone : null,
+      // Keep timezone even when the reminder is off — the daily-reminder cron gates on
+      // reminder_hour (null when off) so it stays excluded, but re-engagement winbacks
+      // still need the tz to send at a sane local hour.
+      timezone,
       locale: i18n.locale,
       updated_at: now,
       last_active_at: now,
@@ -67,11 +74,13 @@ const registerGuestDeviceToken = async (reminderEnabled?: boolean): Promise<void
   const fcmToken = await getFCMToken();
   if (!fcmToken) return;
 
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   await supabase.functions.invoke('register-device-token', {
     body: {
       fcmToken,
       firebaseProjectId: FIREBASE_PROJECT_ID,
       locale: i18n.locale,
+      timezone,
       ...(typeof reminderEnabled === 'boolean' ? { reminderEnabled } : {}),
     },
   });

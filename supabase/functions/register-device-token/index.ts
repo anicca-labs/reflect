@@ -18,6 +18,7 @@ Deno.serve(async (req) => {
     firebaseProjectId?: unknown;
     reminderEnabled?: unknown;
     locale?: unknown;
+    timezone?: unknown;
   };
   try {
     body = await req.json();
@@ -52,7 +53,6 @@ Deno.serve(async (req) => {
     user_id: null,
     reminder_hour: null,
     reminder_minute: null,
-    timezone: null,
     updated_at: now,
     // The app is in the foreground whenever it calls this, so every call doubles as
     // an activity ping for re-engagement targeting.
@@ -64,6 +64,9 @@ Deno.serve(async (req) => {
   if (typeof body.reminderEnabled === 'boolean') row.reminder_enabled = body.reminderEnabled;
   // Device language (normalized app locale) so server push can be localized.
   if (typeof body.locale === 'string') row.locale = body.locale;
+  // Device timezone — kept for re-engagement winback timing. Safe for guests: the
+  // daily-reminder cron still skips them via the null reminder_hour above.
+  if (typeof body.timezone === 'string') row.timezone = body.timezone;
 
   // On conflict the omitted columns (user_id, reminder_hour/minute) are left
   // untouched — so re-registering a token that already belongs to a signed-in user
