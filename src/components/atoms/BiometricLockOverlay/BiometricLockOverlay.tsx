@@ -75,7 +75,16 @@ const BiometricLockOverlay = () => {
     // for the return to `active` or for the splash to finish (splashComplete dep).
     tryAutoPrompt();
     const sub = AppState.addEventListener('change', (next: AppStateStatus) => {
-      if (next === 'active') tryAutoPrompt();
+      if (next === 'background') {
+        // A *real* backgrounding — the user left the app. Re-arm the auto-prompt so it
+        // fires again on return, otherwise someone who backgrounds while the Face ID
+        // prompt is up comes back stranded behind the cover with no prompt. The
+        // biometric system UI only flips us to `inactive` (never `background`), so this
+        // never re-arms mid-prompt and can't loop.
+        autoPrompted.current = false;
+      } else if (next === 'active') {
+        tryAutoPrompt();
+      }
     });
     return () => sub.remove();
   }, [isLocked, splashComplete, authenticate]);
