@@ -1,6 +1,22 @@
 // @openapi-internal — cron-triggered, not callable by the app client
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { getFirebaseAccessToken, sendFcmMessage } from '../_shared/firebase.ts';
+import { REMINDER_DATA_TYPE } from '../_shared/notifications.ts';
+
+// Fixed reminder string, localized by the device's saved locale (English fallback).
+// Keep in sync with REMINDER_BODY_BY_LOCALE in src/services/firebase-messaging (the
+// local-notification path for guests).
+const REMINDER_TITLE = 'Reflect';
+const REMINDER_BODY_BY_LOCALE: Record<string, string> = {
+  en: "Time to jot down today's thoughts.",
+  es: 'Hora de anotar tus pensamientos de hoy.',
+  'pt-BR': 'Hora de anotar seus pensamientos de hoje.',
+  fr: 'C’est le moment de noter tes pensées du jour.',
+  id: 'Waktunya mencatat pikiranmu hari ini.',
+  ar: 'حان وقت تدوين أفكارك اليوم.',
+};
+const reminderBody = (locale: string | null): string =>
+  (locale ? REMINDER_BODY_BY_LOCALE[locale] : undefined) ?? REMINDER_BODY_BY_LOCALE.en;
 
 function matchesReminderTime(now: Date, timezone: string, hour: number, minute: number): boolean {
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -24,7 +40,7 @@ Deno.serve(async () => {
 
   const { data: devices, error } = await supabase
     .from('device_tokens')
-    .select('fcm_token, reminder_hour, reminder_minute, timezone, firebase_project_id')
+    .select('fcm_token, reminder_hour, reminder_minute, timezone, firebase_project_id, locale')
     .not('reminder_hour', 'is', null)
     .not('reminder_minute', 'is', null)
     .not('timezone', 'is', null);
@@ -53,10 +69,12 @@ Deno.serve(async () => {
           projectId,
           accessToken,
           {
-            title: 'Reflect',
-            body: "Time to jot down today's thoughts.",
+            title: REMINDER_TITLE,
+            body: reminderBody(d.locale),
           },
-          undefined,
+          // Routes the tap to the journal composer (useReminderNotification). FCM
+          // data values must be strings.
+          { type: REMINDER_DATA_TYPE },
           // Collapse redundant deliveries so an at-least-once redelivery (e.g. a
           // phone that was in Doze at reminder time) never stacks a second copy.
           { collapseId: 'daily-reminder' },

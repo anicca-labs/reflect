@@ -31,4 +31,4 @@ const setI18nLocale = (locale: string) => {
   i18n.loadAndActivate({ locale: validLocale, messages });
 };
 
-export { setI18nLocale };
+export { resolveLocale, setI18nLocale };

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { syncReminderToBackend } from '@/src/services/user-devices';
+import { syncReminderToBackend, registerGuestDeviceToken } from '@/src/services/user-devices';
+import { scheduleDailyReminder, cancelDailyReminder } from '@/src/services/firebase-messaging';
+import { useSessionStore } from '@/src/stores';
 
 const ENABLED_KEY = '@reflect/reminder_enabled';
 const HOUR_KEY = '@reflect/reminder_hour';
@@ -10,6 +12,7 @@ const DEFAULT_REMINDER_HOUR = 20;
 const DEFAULT_REMINDER_MINUTE = 0;
 
 const useReminder = () => {
+  const isAnonymous = useSessionStore((s) => s.isAnonymous);
   const [enabled, setEnabled] = useState(false);
   const [hour, setHour] = useState(DEFAULT_REMINDER_HOUR);
   const [minute, setMinute] = useState(DEFAULT_REMINDER_MINUTE);
@@ -30,13 +33,33 @@ const useReminder = () => {
     load();
   }, []);
 
-  // React Compiler memoizes this closure, so it stays stable across renders
-  // without manual refs/useCallback while always reading the latest state.
+  // Deliver the reminder by account type — never both, so it can't duplicate:
+  //  • Guests get an on-device schedule (works offline, no server needed), and their
+  //    server reminder is cleared so the send-reminders cron won't also push to them.
+  //  • Signed-in users get the server push (reliable even when Android OEMs kill local
+  //    alarms), so the local schedule is cancelled.
+  // This is also the single source of truth: it re-runs on any state/auth change, so
+  // toggling, time edits, and sign-in/sign-out transitions all self-heal (e.g. a
+  // signed-in user's stale local reminder is cancelled and moved to the server).
+  useEffect(() => {
+    if (loading) return;
+    if (isAnonymous) {
+      // Guest: deliver locally, and record the on/off state server-side (reminder_*
+      // stay null so the cron skips them) for re-engagement targeting.
+      registerGuestDeviceToken(enabled);
+      if (enabled) scheduleDailyReminder(hour, minute);
+      else cancelDailyReminder();
+    } else {
+      // Signed-in: server delivery via the cron; syncReminderToBackend also records
+      // reminder_enabled. No local schedule → no duplicate.
+      cancelDailyReminder();
+      syncReminderToBackend(enabled, hour, minute);
+    }
+  }, [loading, enabled, hour, minute, isAnonymous]);
+
   const disable = async () => {
-    if (!enabled) return;
     setEnabled(false);
     await AsyncStorage.setItem(ENABLED_KEY, 'false');
-    syncReminderToBackend(false, hour, minute);
   };
 
   const toggle = async (notifPermission: boolean) => {
@@ -44,7 +67,6 @@ const useReminder = () => {
     const next = !enabled;
     setEnabled(next);
     await AsyncStorage.setItem(ENABLED_KEY, String(next));
-    syncReminderToBackend(next, hour, minute);
   };
 
   const updateTime = async (newHour: number, newMinute: number) => {
@@ -54,9 +76,6 @@ const useReminder = () => {
       AsyncStorage.setItem(HOUR_KEY, String(newHour)),
       AsyncStorage.setItem(MINUTE_KEY, String(newMinute)),
     ]);
-    if (enabled) {
-      syncReminderToBackend(true, newHour, newMinute);
-    }
   };
 
   return { enabled, hour, minute, loading, toggle, disable, updateTime };

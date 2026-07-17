@@ -1,0 +1,58 @@
+name: Release version (conventional commits)
+
+# Computes the next marketing version from conventional-commit subjects since the
+# last release and (optionally) commits the bump back to stg with [skip ci].
+#
+# Runs on stg to respect the stg-first / no-squash flow: the bump then reaches main
+# via the normal stg->main merge — CI never commits to main. Version is decoupled
+# from the OTA fingerprint (fingerprint.config.js skips ExpoConfigVersions), so a
+# bump is cosmetic/store-facing and never strands an OTA.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Preview only — do not commit the bump'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: stg
+          fetch-depth: 0 # full history so we can scan commits since the last release
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '23'
+
+      - id: resolve
+        run: |
+          node scripts/next-version.mjs | tee /tmp/next-version.json
+          {
+            echo "next=$(node -e "console.log(require('/tmp/next-version.json').next)")"
+            echo "level=$(node -e "console.log(require('/tmp/next-version.json').level)")"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Summary
+        run: |
+          echo "### Version resolve" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat /tmp/next-version.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit bump
+        if: ${{ inputs.dry_run == false && steps.resolve.outputs.level != 'none' }}
+        run: |
+          node scripts/next-version.mjs --apply
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore(release): v${{ steps.resolve.outputs.next }} [skip ci]"
+          git tag "v${{ steps.resolve.outputs.next }}"
+          git push origin stg --follow-tags

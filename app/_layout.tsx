@@ -17,6 +17,8 @@ import {
   useCustomFonts,
   useToast,
   useMemoryNotification,
+  useReminderNotification,
+  useActivityPing,
   useOfflineJournalSync,
   useBiometricLock,
 } from '@hooks';
@@ -58,6 +60,8 @@ export const unstable_settings = {
 const RootLayoutNav = () => {
   useAuthSession();
   useMemoryNotification();
+  useReminderNotification();
+  useActivityPing();
   useOfflineJournalSync();
   const { notification } = useToast();
   const { pendingMerge, setPendingMerge } = useSessionStore();

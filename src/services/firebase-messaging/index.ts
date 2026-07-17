@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Device from 'expo-device';
 import * as ExpoNotifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import { i18n } from '@lingui/core';
 import type { JournalEntry } from '@/src/types/journal';
 
 if (Platform.OS === 'android') {
@@ -71,36 +72,76 @@ const scheduleLocalNotification = async (title: string, body: string, delaySecon
   });
 };
 
+// Fixed identifier: scheduling with an existing identifier REPLACES it, so a
+// re-schedule (re-arm on load, time change, rapid toggles) can never create a
+// duplicate. REMINDER_NOTIF_ID_KEY is the retired random-id scheme, cleaned up below.
+const REMINDER_NOTIF_ID = 'daily-reminder';
 const REMINDER_NOTIF_ID_KEY = '@reflect/reminder_notif_id';
 
-const scheduleDailyReminder = async (hour: number, minute: number): Promise<void> => {
-  const existingId = await AsyncStorage.getItem(REMINDER_NOTIF_ID_KEY);
-  if (existingId) {
-    await ExpoNotifications.cancelScheduledNotificationAsync(existingId);
-  }
+// Routing contract: notifications carrying `data.type === REMINDER_DATA_TYPE` open the
+// journal composer on tap (see useReminderNotification). Set by every "go write" push —
+// the local daily reminder below, the send-reminders cron, and admin re-engagement
+// pushes. The server (Deno edge functions) can't import this, so keep the string in
+// sync there.
+const REMINDER_DATA_TYPE = 'daily-reminder';
 
-  const id = await ExpoNotifications.scheduleNotificationAsync({
+// The reminder is a fixed string, so it's localized from a static map by the app's
+// active locale (English fallback) — no runtime translation. Keep in sync with the
+// same map in the send-reminders edge function (the server-push path for signed-in).
+const REMINDER_BODY_BY_LOCALE: Record<string, string> = {
+  en: "Time to jot down today's thoughts.",
+  es: 'Hora de anotar tus pensamientos de hoy.',
+  'pt-BR': 'Hora de anotar seus pensamentos de hoje.',
+  fr: 'C’est le moment de noter tes pensées du jour.',
+  id: 'Waktunya mencatat pikiranmu hari ini.',
+  ar: 'حان وقت تدوين أفكارك اليوم.',
+};
+const reminderBody = (): string =>
+  REMINDER_BODY_BY_LOCALE[i18n.locale] ?? REMINDER_BODY_BY_LOCALE.en;
+
+// Cancel every reminder currently scheduled — the fixed-id one plus any orphans the
+// old random-id scheme could leave behind (a race or a mid-schedule throw once left
+// an untracked copy, which is why reminders fired twice). Memory notifications have
+// different bodies, so they are untouched.
+const clearScheduledReminders = async (): Promise<void> => {
+  const scheduled = await ExpoNotifications.getAllScheduledNotificationsAsync();
+  await Promise.all(
+    scheduled
+      .filter(
+        (n) =>
+          n.identifier === REMINDER_NOTIF_ID ||
+          (typeof n.content?.body === 'string' &&
+            Object.values(REMINDER_BODY_BY_LOCALE).includes(n.content.body)),
+      )
+      .map((n) => ExpoNotifications.cancelScheduledNotificationAsync(n.identifier)),
+  );
+  await AsyncStorage.removeItem(REMINDER_NOTIF_ID_KEY);
+};
+
+const scheduleDailyReminder = async (hour: number, minute: number): Promise<void> => {
+  await clearScheduledReminders();
+  await ExpoNotifications.scheduleNotificationAsync({
+    identifier: REMINDER_NOTIF_ID,
     content: {
       title: 'Reflect',
-      body: "Time to jot down today's thoughts.",
+      body: reminderBody(),
+      // Tapping the reminder routes straight to the journal composer (see
+      // useReminderNotification) so the user lands ready to write.
+      data: { type: REMINDER_DATA_TYPE },
     },
+    // DAILY repeats every day at hour:minute and works on both iOS and Android.
+    // (CALENDAR is iOS-only — on Android it throws "Trigger of type: calendar is
+    // not supported".)
     trigger: {
-      type: ExpoNotifications.SchedulableTriggerInputTypes.CALENDAR,
+      type: ExpoNotifications.SchedulableTriggerInputTypes.DAILY,
       hour,
       minute,
-      repeats: true,
     },
   });
-
-  await AsyncStorage.setItem(REMINDER_NOTIF_ID_KEY, id);
 };
 
 const cancelDailyReminder = async (): Promise<void> => {
-  const id = await AsyncStorage.getItem(REMINDER_NOTIF_ID_KEY);
-  if (id) {
-    await ExpoNotifications.cancelScheduledNotificationAsync(id);
-    await AsyncStorage.removeItem(REMINDER_NOTIF_ID_KEY);
-  }
+  await clearScheduledReminders();
 };
 
 const MEMORY_NOTIF_IDS_KEY = '@reflect/memory_notif_ids';
@@ -188,6 +229,7 @@ const scheduleMemoryNotifications = (
 
 export type { NotificationPermissionStatus };
 export {
+  REMINDER_DATA_TYPE,
   getNotificationPermissionStatus,
   requestNotificationPermission,
   getFCMToken,

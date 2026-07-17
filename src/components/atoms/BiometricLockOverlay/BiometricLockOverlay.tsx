@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
-import { YStack, Spinner } from 'tamagui';
+import { YStack } from 'tamagui';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -16,20 +16,16 @@ import { useAppLockStore } from '@/src/stores';
  *
  * Auto-prompts once per lock engagement. The biometric system UI itself flips the
  * app to `inactive`/`active`, so re-prompting on every `active` transition would
- * loop; instead we prompt once when a lock is freshly engaged and let the user tap
- * "Unlock" to retry. A successful unlock clears the lock, so the next
- * background→foreground cycle re-engages and re-prompts naturally.
+ * loop; instead we prompt once when a lock is freshly engaged (re-armed on a real
+ * `background`) and always show an "Unlock" button while the OS prompt isn't up, so
+ * the user can retry manually and is never stranded. A successful unlock clears the
+ * lock, so the next background→foreground cycle re-engages and re-prompts naturally.
  */
 const BiometricLockOverlay = () => {
   const { t } = useLingui();
   const isLocked = useAppLockStore((s) => s.isLocked);
   const setLocked = useAppLockStore((s) => s.setLocked);
   const splashComplete = useAppLockStore((s) => s.splashComplete);
-  // Until the user dismisses/fails the OS prompt, only a minimal branded cover is
-  // shown behind it — no "Unlock" button. `retryVisible` lives in the store so it
-  // can be reset by `setLocked` on each fresh lock (avoids setState-in-effect).
-  const retryVisible = useAppLockStore((s) => s.retryVisible);
-  const setRetryVisible = useAppLockStore((s) => s.setRetryVisible);
   const [authenticating, setAuthenticating] = useState(false);
   const inFlight = useRef(false);
   const autoPrompted = useRef(false);
@@ -47,13 +43,13 @@ const BiometricLockOverlay = () => {
         disableDeviceFallback: false,
       });
       if (result.success) setLocked(false);
-      // Dismissed / failed without authenticating — surface the manual retry UI.
-      else setRetryVisible(true);
+      // Dismissed / failed: nothing to do — the "Unlock" button is shown whenever the
+      // OS prompt isn't up (see render), so the user always has a way to retry.
     } finally {
       setAuthenticating(false);
       inFlight.current = false;
     }
-  }, [t, setLocked, setRetryVisible]);
+  }, [t, setLocked]);
 
   useEffect(() => {
     if (!isLocked) return;
@@ -75,7 +71,16 @@ const BiometricLockOverlay = () => {
     // for the return to `active` or for the splash to finish (splashComplete dep).
     tryAutoPrompt();
     const sub = AppState.addEventListener('change', (next: AppStateStatus) => {
-      if (next === 'active') tryAutoPrompt();
+      if (next === 'background') {
+        // A *real* backgrounding — the user left the app. Re-arm the auto-prompt so it
+        // fires again on return, otherwise someone who backgrounds while the Face ID
+        // prompt is up comes back stranded behind the cover with no prompt. The
+        // biometric system UI only flips us to `inactive` (never `background`), so this
+        // never re-arms mid-prompt and can't loop.
+        autoPrompted.current = false;
+      } else if (next === 'active') {
+        tryAutoPrompt();
+      }
     });
     return () => sub.remove();
   }, [isLocked, splashComplete, authenticate]);
@@ -102,16 +107,18 @@ const BiometricLockOverlay = () => {
       px="$6"
     >
       <DisplayLg>Reflect</DisplayLg>
-      {/* Branding-only while the OS prompt is up; the retry UI appears only after
-          the user dismisses/fails the system prompt without authenticating. */}
-      {retryVisible ? (
+      {/* Show the manual unlock affordance whenever the OS prompt ISN'T up. While the
+          system Face ID / passcode sheet is presented (`authenticating`) we show only
+          the branded cover; the moment it's dismissed/fails, the button reappears — so
+          there is always a way to retry and the user can never get stranded behind a
+          button-less cover (e.g. after an app-switcher `inactive` blip). */}
+      {!authenticating ? (
         <>
           <BodySm color="$text-secondary" text="center">
             <Trans>Locked. Verify your identity to continue.</Trans>
           </BodySm>
           <BaseTouchable
             onPress={authenticate}
-            disabled={authenticating}
             bg="$accentBackground"
             rounded="$4"
             py="$3"
@@ -119,13 +126,9 @@ const BiometricLockOverlay = () => {
             items="center"
             mt="$4"
           >
-            {authenticating ? (
-              <Spinner color="$accentColor" />
-            ) : (
-              <LabelLg color="$accentColor">
-                <Trans>Unlock</Trans>
-              </LabelLg>
-            )}
+            <LabelLg color="$accentColor">
+              <Trans>Unlock</Trans>
+            </LabelLg>
           </BaseTouchable>
         </>
       ) : null}

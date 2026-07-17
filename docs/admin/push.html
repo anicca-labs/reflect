@@ -76,7 +76,8 @@
         letter-spacing: 0.05em;
       }
       input,
-      textarea {
+      textarea,
+      select {
         width: 100%;
         background: #111;
         border: 1px solid #2a2a2a;
@@ -89,26 +90,87 @@
         resize: vertical;
       }
       input:focus,
-      textarea:focus {
+      textarea:focus,
+      select:focus {
         border-color: #555;
       }
-      .send-btn {
-        width: 100%;
+      fieldset {
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        padding: 16px 16px 4px;
+        margin-bottom: 16px;
+      }
+      legend {
+        font-size: 11px;
+        color: #777;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 0 6px;
+      }
+      legend em {
+        text-transform: none;
+        font-style: normal;
+        color: #555;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 12px;
+      }
+      .check-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .check-row input {
+        width: auto;
+        margin-top: 2px;
+        accent-color: #7aa2ff;
+      }
+      .check-row .check-text {
+        font-size: 13px;
+        color: #ccc;
+        line-height: 1.4;
+      }
+      .check-row .check-text small {
+        display: block;
+        color: #666;
+        font-size: 11px;
+        margin-top: 2px;
+      }
+      .btn-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .send-btn,
+      .preview-btn {
         padding: 12px;
         border-radius: 8px;
-        background: #e8e8e8;
-        color: #000;
         border: none;
         font-size: 15px;
         font-weight: 600;
         cursor: pointer;
-        margin-top: 8px;
         transition: opacity 0.15s;
       }
-      .send-btn:hover {
+      .send-btn {
+        flex: 1;
+        background: #e8e8e8;
+        color: #000;
+      }
+      .preview-btn {
+        background: #222;
+        color: #ccc;
+        border: 1px solid #333;
+        flex-shrink: 0;
+      }
+      .send-btn:hover,
+      .preview-btn:hover {
         opacity: 0.85;
       }
-      .send-btn:disabled {
+      .send-btn:disabled,
+      .preview-btn:disabled {
         opacity: 0.4;
         cursor: not-allowed;
       }
@@ -118,6 +180,7 @@
         border-radius: 8px;
         font-size: 14px;
         display: none;
+        white-space: pre-wrap;
       }
       #result.success {
         background: #0d2a0d;
@@ -128,6 +191,11 @@
         background: #2a0d0d;
         border: 1px solid #4a1a1a;
         color: #f44336;
+      }
+      #result.info {
+        background: #0d1a2a;
+        border: 1px solid #1a2f4a;
+        color: #7aa2ff;
       }
       .user-id-row {
         display: flex;
@@ -195,13 +263,45 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        max-width: 140px;
+        max-width: 160px;
       }
       .user-table-empty {
         padding: 16px 12px;
         font-size: 13px;
         color: #555;
         text-align: center;
+      }
+      .muted {
+        text-transform: none;
+        font-style: normal;
+        color: #555;
+      }
+      .cron-explain {
+        margin: 6px 0 12px;
+        font-size: 13px;
+        line-height: 1.55;
+        color: #999;
+      }
+      .cron-status {
+        font-size: 13px;
+        line-height: 1.7;
+        color: #ccc;
+        margin: 4px 0 12px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 12px;
+      }
+      .badge-on {
+        background: #e6f4ea;
+        color: #137333;
+      }
+      .badge-off {
+        background: #fce8e6;
+        color: #a50e0e;
       }
     </style>
   </head>
@@ -218,20 +318,41 @@
           <input type="password" id="secret" autocomplete="current-password" />
         </label>
         <label>
+          <span>Message template <em class="muted">(pre-translated &mdash; no Claude)</em></span>
+          <select id="template" onchange="applyTemplate()">
+            <option value="">Custom message</option>
+            <option value="daily_reminder">Daily reminder</option>
+            <option value="we_miss_you">We miss you (win-back)</option>
+            <option value="keep_streak">Keep your streak</option>
+          </select>
+        </label>
+        <label>
           <span>Title</span>
           <input type="text" id="title" value="Reflect" />
         </label>
         <label>
-          <span>Message</span>
+          <span
+            >Message
+            <em class="muted">(write in English &mdash; translation is per-recipient)</em></span
+          >
           <textarea id="body" rows="3" placeholder="Type your notification message..."></textarea>
         </label>
+
+        <div class="check-row">
+          <input type="checkbox" id="translate" />
+          <label for="translate" style="margin: 0">
+            <span class="check-text"
+              >Translate per recipient language (Claude)
+              <small
+                >Translates your message once per language, sends each user their own. Users on an
+                unsupported/unknown language get the English text.</small
+              ></span
+            >
+          </label>
+        </div>
+
         <label>
-          <span
-            >Target
-            <em style="text-transform: none; font-style: normal; color: #555"
-              >(optional &mdash; leave blank to send to all)</em
-            ></span
-          >
+          <span>Target <em class="muted">(one user &mdash; overrides the filters below)</em></span>
           <div class="user-id-row">
             <input type="text" id="user_id" placeholder="Select from list or type an email" />
             <button type="button" class="list-btn" id="list-btn" onclick="loadUsers()">
@@ -240,9 +361,84 @@
           </div>
           <div class="user-table" id="user-table"></div>
         </label>
-        <button type="submit" class="send-btn" id="send-btn">Send Push</button>
+
+        <fieldset>
+          <legend>Audience filters <em>(used when no target)</em></legend>
+          <div class="grid2">
+            <label>
+              <span>Account</span>
+              <select id="account">
+                <option value="all">All</option>
+                <option value="signed_in">Signed-in</option>
+                <option value="guest">Guests</option>
+              </select>
+            </label>
+            <label>
+              <span>Language</span>
+              <select id="locale">
+                <option value="">Any</option>
+                <option value="en">English (en)</option>
+                <option value="es">Español (es)</option>
+                <option value="pt-BR">Português (pt-BR)</option>
+                <option value="fr">Français (fr)</option>
+                <option value="id">Indonesia (id)</option>
+                <option value="ar">العربية (ar)</option>
+              </select>
+            </label>
+            <label>
+              <span>Daily reminder</span>
+              <select id="reminder">
+                <option value="">Any</option>
+                <option value="false">Off &mdash; not already nudged</option>
+                <option value="true">On</option>
+              </select>
+            </label>
+            <label>
+              <span>Inactive &ge; (days)</span>
+              <input type="number" id="inactive_days" min="1" step="1" placeholder="e.g. 7" />
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="btn-row">
+          <button type="button" class="preview-btn" id="preview-btn" onclick="preview()">
+            Preview
+          </button>
+          <button type="submit" class="send-btn" id="send-btn">Send Push</button>
+        </div>
       </form>
       <div id="result"></div>
+    </div>
+
+    <div class="card">
+      <h1 style="font-size: 18px">
+        Daily reminder cron <em class="muted" id="cron-env">&mdash; staging</em>
+      </h1>
+      <p class="cron-explain">
+        A scheduled job that runs <strong>every minute</strong> and delivers the
+        <strong>daily journal reminder</strong> to <strong>signed-in</strong> users at the time each
+        one picked, in their own timezone. (Guests receive their reminder locally on the device, so
+        they aren't sent from here.) It only pushes to a user at their chosen minute, so most runs
+        send nothing. When switched <strong>OFF</strong>, the job stays scheduled but makes no calls
+        at all &mdash; no notifications, no FCM usage. Staging is normally kept OFF; production
+        should be ON.
+      </p>
+      <div id="cron-status" class="cron-status">
+        <span class="muted">Enter the admin secret, then refresh to see the current state.</span>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="list-btn" id="cron-refresh" onclick="loadCronStatus()">
+          Refresh status
+        </button>
+        <button
+          type="button"
+          class="send-btn"
+          id="cron-toggle"
+          onclick="toggleCron()"
+          style="display: none"
+        ></button>
+      </div>
+      <div id="cron-result"></div>
     </div>
     <script>
       const URLS = {
@@ -251,6 +447,29 @@
       };
       let env = 'stg';
       let users = [];
+      let cronState = null;
+
+      // English preview for the pre-translated templates in admin-push. Selecting one
+      // sends { template } — the server picks each recipient's language (no Claude).
+      const TEMPLATE_PREVIEW = {
+        daily_reminder: { title: 'Reflect', body: "Time to jot down today's thoughts." },
+        we_miss_you: { title: 'Reflect', body: 'We miss you — your journal is waiting.' },
+        keep_streak: { title: 'Reflect', body: 'Keep your streak going — write today.' },
+      };
+      function applyTemplate() {
+        const id = document.getElementById('template').value;
+        const titleEl = document.getElementById('title');
+        const bodyEl = document.getElementById('body');
+        const translateEl = document.getElementById('translate');
+        const isTemplate = id && TEMPLATE_PREVIEW[id];
+        if (isTemplate) {
+          titleEl.value = TEMPLATE_PREVIEW[id].title;
+          bodyEl.value = TEMPLATE_PREVIEW[id].body;
+          translateEl.checked = false;
+        }
+        titleEl.readOnly = bodyEl.readOnly = !!isTemplate;
+        translateEl.disabled = !!isTemplate;
+      }
 
       const secretEl = document.getElementById('secret');
       secretEl.value = localStorage.getItem('reflect_admin_secret') || '';
@@ -267,42 +486,173 @@
         document.getElementById('btn-prd').classList.remove('danger');
         if (e === 'prd') document.getElementById('btn-prd').classList.add('active', 'danger');
         if (e === 'stg') document.getElementById('btn-stg').classList.add('active');
-        // reset list when switching env
         users = [];
         document.getElementById('user-table').style.display = 'none';
         document.getElementById('list-btn').textContent = 'Load users';
         const targetEl = document.getElementById('user_id');
         targetEl.value = '';
         targetEl.dataset.userId = '';
+        // Cron state is per-env — reset the panel so a stale status can't be acted on.
+        cronState = null;
+        document.getElementById('cron-env').textContent =
+          e === 'prd' ? '— production' : '— staging';
+        document.getElementById('cron-status').innerHTML =
+          '<span class="muted">Refresh to see the current state for this environment.</span>';
+        document.getElementById('cron-toggle').style.display = 'none';
+        document.getElementById('cron-result').textContent = '';
       }
 
-      async function loadUsers() {
+      function requireSecret() {
         const secret = secretEl.value.trim();
         if (!secret) {
           showResult(false, 'Enter admin secret first.');
-          return;
+          return null;
         }
         localStorage.setItem('reflect_admin_secret', secret);
+        return secret;
+      }
 
+      // Collect the audience selector: a single target overrides the filters.
+      function audience() {
+        const targetEl = document.getElementById('user_id');
+        const user_id = targetEl.dataset.userId || targetEl.value.trim();
+        if (user_id) return { user_id };
+        const reminder = document.getElementById('reminder').value;
+        const days = parseInt(document.getElementById('inactive_days').value, 10);
+        const f = {};
+        const account = document.getElementById('account').value;
+        if (account !== 'all') f.account = account;
+        const locale = document.getElementById('locale').value;
+        if (locale) f.locale = locale;
+        if (reminder !== '') f.reminder_enabled = reminder === 'true';
+        if (Number.isFinite(days) && days > 0) f.inactive_days = days;
+        return f;
+      }
+
+      async function post(payload) {
+        const secret = requireSecret();
+        if (!secret) throw new Error('no-secret');
+        const res = await fetch(URLS[env], {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Admin-Secret': secret },
+          body: JSON.stringify(payload),
+        });
+        return res;
+      }
+
+      function renderCron(s) {
+        cronState = s;
+        const on = !!s.enabled;
+        const last = s.last_run ? new Date(s.last_run).toLocaleString() : '—';
+        document.getElementById('cron-status').innerHTML =
+          `Automated sends: <span class="badge ${on ? 'badge-on' : 'badge-off'}">${on ? 'ON' : 'OFF'}</span>` +
+          ` &nbsp;·&nbsp; job scheduled: ${s.scheduled ? 'yes' : 'no'}` +
+          `<br>Last run: ${last}${s.last_status ? ' (' + s.last_status + ')' : ''}`;
+        const toggle = document.getElementById('cron-toggle');
+        toggle.style.display = '';
+        toggle.textContent = on ? 'Turn OFF' : 'Turn ON';
+        toggle.className = on ? 'send-btn' : 'preview-btn';
+      }
+
+      async function loadCronStatus() {
+        const btn = document.getElementById('cron-refresh');
+        btn.disabled = true;
+        const prev = btn.textContent;
+        btn.textContent = '...';
+        document.getElementById('cron-result').textContent = '';
+        try {
+          const res = await post({ action: 'cron-status' });
+          if (!res.ok) {
+            document.getElementById('cron-status').innerHTML =
+              '<span class="muted">Status unavailable on this environment yet.</span>';
+            document.getElementById('cron-result').textContent = await res.text();
+            document.getElementById('cron-toggle').style.display = 'none';
+            return;
+          }
+          renderCron(await res.json());
+        } catch (err) {
+          if (err.message !== 'no-secret')
+            document.getElementById('cron-result').textContent = err.message;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = prev;
+        }
+      }
+
+      async function toggleCron() {
+        if (!cronState) return;
+        const next = !cronState.enabled;
+        if (
+          env === 'prd' &&
+          !confirm('Turn the PRODUCTION daily-reminder cron ' + (next ? 'ON' : 'OFF') + '?')
+        )
+          return;
+        const btn = document.getElementById('cron-toggle');
+        btn.disabled = true;
+        const prev = btn.textContent;
+        btn.textContent = '...';
+        let relabeled = false;
+        try {
+          const res = await post({ action: 'cron-set', enabled: next });
+          if (!res.ok) {
+            document.getElementById('cron-result').textContent = await res.text();
+            return;
+          }
+          // renderCron sets the button to the NEW opposite label ("Turn ON" after we
+          // just turned it off) — don't overwrite it in finally.
+          renderCron(await res.json());
+          relabeled = true;
+          document.getElementById('cron-result').textContent =
+            'Updated — automated sends are now ' + (next ? 'ON' : 'OFF') + ' on ' + env + '.';
+        } catch (err) {
+          if (err.message !== 'no-secret')
+            document.getElementById('cron-result').textContent = err.message;
+        } finally {
+          btn.disabled = false;
+          if (!relabeled) btn.textContent = prev;
+        }
+      }
+
+      async function preview() {
+        const btn = document.getElementById('preview-btn');
+        btn.disabled = true;
+        const prev = btn.textContent;
+        btn.textContent = '...';
+        try {
+          const res = await post({ action: 'preview', ...audience() });
+          if (!res.ok) return showResult(false, await res.text());
+          const { total, byLocale } = await res.json();
+          const parts = Object.entries(byLocale)
+            .sort((a, b) => b[1] - a[1])
+            .map(([l, n]) => `${l}: ${n}`)
+            .join(' · ');
+          showResult(
+            'info',
+            `${total} device${total !== 1 ? 's' : ''} match${total === 1 ? 'es' : ''}` +
+              (parts ? `\n${parts}` : ''),
+          );
+        } catch (err) {
+          if (err.message !== 'no-secret') showResult(false, err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = prev;
+        }
+      }
+
+      async function loadUsers() {
+        const secret = requireSecret();
+        if (!secret) return;
         const btn = document.getElementById('list-btn');
         btn.textContent = 'Loading...';
         btn.disabled = true;
-
         try {
-          const res = await fetch(URLS[env], {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Admin-Secret': secret },
-            body: JSON.stringify({ action: 'list' }),
-          });
-          if (!res.ok) {
-            showResult(false, await res.text());
-            return;
-          }
+          const res = await post({ action: 'list' });
+          if (!res.ok) return showResult(false, await res.text());
           users = await res.json();
           renderUsers();
           btn.textContent = 'Refresh';
         } catch (err) {
-          showResult(false, err.message);
+          if (err.message !== 'no-secret') showResult(false, err.message);
         } finally {
           btn.disabled = false;
         }
@@ -315,45 +665,50 @@
           table.style.display = 'block';
           return;
         }
-        const selected = document.getElementById('user_id').value.trim();
-        // Group by user_id
+        const targetVal = document.getElementById('user_id').value.trim();
+        // Group by user (guests collapse under a single "Guest" bucket keyed by token).
         const byUser = {};
         users.forEach((u) => {
-          if (!byUser[u.user_id])
-            byUser[u.user_id] = {
+          const key = u.user_id || 'guest:' + u.fcm_token;
+          if (!byUser[key])
+            byUser[key] = {
               email: u.email,
-              user_id: u.user_id,
+              user_id: u.user_id || '',
               count: 0,
-              updated_at: u.updated_at,
+              last: u.last_active_at || u.updated_at,
+              locale: u.locale || '?',
+              reminder: u.reminder_enabled,
             };
-          byUser[u.user_id].count++;
-          if (u.updated_at > byUser[u.user_id].updated_at)
-            byUser[u.user_id].updated_at = u.updated_at;
+          byUser[key].count++;
+          const ts = u.last_active_at || u.updated_at;
+          if (ts > byUser[key].last) byUser[key].last = ts;
         });
         table.innerHTML = Object.values(byUser)
-          .map(
-            (u) => `
-      <div class="user-row${u.user_id === selected || u.email === document.getElementById('user_id').value.trim() ? ' selected' : ''}" onclick="selectUser('${u.user_id}', '${u.email}')">
+          .map((u) => {
+            const sel = (u.user_id && u.user_id === targetVal) || u.email === targetVal;
+            const badge = `${u.locale}${u.reminder ? ' · 🔔' : ''}`;
+            return `
+      <div class="user-row${sel ? ' selected' : ''}" onclick="selectUser('${u.user_id}', '${u.email.replace(/'/g, "\\'")}')">
         <div>
           <div class="user-email">${u.email}</div>
-          <div class="user-token">${u.count} device${u.count !== 1 ? 's' : ''}</div>
+          <div class="user-token">${u.count} device${u.count !== 1 ? 's' : ''} · ${badge}</div>
         </div>
-        <div class="user-token" style="max-width:90px;text-align:right">${timeAgo(u.updated_at)}</div>
-      </div>
-    `,
-          )
+        <div class="user-token" style="max-width:90px;text-align:right">${timeAgo(u.last)}</div>
+      </div>`;
+          })
           .join('');
         table.style.display = 'block';
       }
 
       function selectUser(userId, email) {
         const el = document.getElementById('user_id');
-        el.value = email;
+        el.value = email === 'Guest' ? '' : email;
         el.dataset.userId = userId;
         renderUsers();
       }
 
       function timeAgo(iso) {
+        if (!iso) return '';
         const diff = Date.now() - new Date(iso).getTime();
         const m = Math.floor(diff / 60000);
         if (m < 1) return 'just now';
@@ -365,37 +720,40 @@
 
       document.getElementById('form').addEventListener('submit', async (ev) => {
         ev.preventDefault();
-        const secret = secretEl.value.trim();
-        if (!secret) {
-          showResult(false, 'Admin secret is required.');
-          return;
-        }
-        localStorage.setItem('reflect_admin_secret', secret);
+        if (!requireSecret()) return;
 
+        const template = document.getElementById('template').value;
         const title = document.getElementById('title').value.trim();
         const body = document.getElementById('body').value.trim();
-        if (!title || !body) {
-          showResult(false, 'Title and message are required.');
-          return;
-        }
+        if (!template && (!title || !body))
+          return showResult(false, 'Title and message are required.');
 
-        const targetEl = document.getElementById('user_id');
-        const user_id = targetEl.dataset.userId || targetEl.value.trim() || undefined;
+        const translate = document.getElementById('translate').checked;
+        const aud = audience();
+
+        // Guard: sending to a broad audience with no filters + no target.
+        if (
+          !aud.user_id &&
+          !aud.account &&
+          !aud.locale &&
+          aud.reminder_enabled === undefined &&
+          !aud.inactive_days
+        ) {
+          if (
+            !confirm('No target and no filters — this sends to EVERY registered device. Continue?')
+          )
+            return;
+        }
 
         const btn = document.getElementById('send-btn');
         btn.disabled = true;
-        btn.textContent = 'Sending...';
-
+        btn.textContent = !template && translate ? 'Translating & sending...' : 'Sending...';
         try {
-          const res = await fetch(URLS[env], {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Admin-Secret': secret },
-            body: JSON.stringify({ title, body, user_id }),
-          });
-          const text = await res.text();
-          showResult(res.ok, text);
+          const payload = template ? { template, ...aud } : { title, body, translate, ...aud };
+          const res = await post(payload);
+          showResult(res.ok, await res.text());
         } catch (err) {
-          showResult(false, err.message);
+          if (err.message !== 'no-secret') showResult(false, err.message);
         } finally {
           btn.disabled = false;
           btn.textContent = 'Send Push';
@@ -403,16 +761,16 @@
       });
 
       let successTimer = null;
-      function showResult(ok, msg) {
+      function showResult(kind, msg) {
         const el = document.getElementById('result');
-        el.textContent = (ok ? '✓ ' : '✗ ') + msg;
-        el.className = ok ? 'success' : 'error';
+        const ok = kind === true;
+        const cls = kind === 'info' ? 'info' : ok ? 'success' : 'error';
+        const icon = kind === 'info' ? 'ℹ ' : ok ? '✓ ' : '✗ ';
+        el.textContent = icon + msg;
+        el.className = cls;
         el.style.display = 'block';
         clearTimeout(successTimer);
-        if (ok)
-          successTimer = setTimeout(() => {
-            el.style.display = 'none';
-          }, 4000);
+        if (ok) successTimer = setTimeout(() => (el.style.display = 'none'), 5000);
       }
     </script>
   </body>

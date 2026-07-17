@@ -122,7 +122,26 @@ const usePeekStore = create<PeekStoreState>((set) => ({
   setPendingPeekEntryId: (id) => set({ pendingPeekEntryId: id }),
 }));
 
-export { useUserStore, useSwipeableStore, usePreferencesStore, useSessionStore, usePeekStore };
+// Set when a daily-reminder notification is tapped; the Journal screen consumes it
+// to focus the composer once it's the active tab, then clears it.
+type ComposeStoreState = {
+  pendingCompose: boolean;
+  setPendingCompose: (v: boolean) => void;
+};
+
+const useComposeStore = create<ComposeStoreState>((set) => ({
+  pendingCompose: false,
+  setPendingCompose: (v) => set({ pendingCompose: v }),
+}));
+
+export {
+  useUserStore,
+  useSwipeableStore,
+  usePreferencesStore,
+  useSessionStore,
+  usePeekStore,
+  useComposeStore,
+};
 export type { PendingMerge };
 export { useAnonymousJournalStore } from './anonymousJournal';
 export { usePendingJournalStore } from './pendingJournal';

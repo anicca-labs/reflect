@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '@/src/services/supabase';
 import { encryptContent } from '@/src/services/crypto';
 import { identifyRevenueCatUser, resetRevenueCatUser } from '@/src/services/revenue-cat';
-import { upsertDeviceToken } from '@/src/services/user-devices';
+import { upsertDeviceToken, registerGuestDeviceToken } from '@/src/services/user-devices';
 import {
   useSessionStore,
   useAnonymousJournalStore,
@@ -228,6 +228,11 @@ const useAuthSession = () => {
         } else {
           clearAnonymous();
         }
+        // Detach this device's push token from the signed-out user and clear its
+        // server reminder, so the row is correctly a guest token (not still owned by
+        // the user who left). Unconditional: the device is no longer that user, in
+        // every sign-out path. See register-device-token.
+        registerGuestDeviceToken();
         resetRevenueCatUser();
         // Drop any unconsumed "sign in for Pro" intent — signing out (or choosing
         // "decide later") means we no longer want to auto-present the paywall.

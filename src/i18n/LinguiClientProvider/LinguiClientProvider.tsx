@@ -1,9 +1,9 @@
 import { I18nProvider, type I18nProviderProps } from '@lingui/react';
 import { useEffect, useState } from 'react';
-import { NativeModules, Platform, Settings } from 'react-native';
+import { AppState, NativeModules, Platform, Settings } from 'react-native';
 import { i18n } from '@lingui/core';
 import { getLocales } from 'expo-localization';
-import { setI18nLocale } from '../utils';
+import { resolveLocale, setI18nLocale } from '../utils';
 
 type LinguiClientProviderProps = {
   children: I18nProviderProps['children'];
@@ -42,6 +42,20 @@ const LinguiClientProvider = ({ children }: LinguiClientProviderProps) => {
     setI18nLocale(detectLocale());
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsI18nReady(true);
+  }, []);
+
+  useEffect(() => {
+    // Android keeps the JS process alive in the background, so a system language
+    // change while backgrounded never re-runs mount detection — the UI would stay
+    // in the old language until a full restart. Re-detect on foreground and
+    // re-activate Lingui if the resolved locale changed. I18nProvider subscribes to
+    // the i18n instance, so loadAndActivate re-renders the tree without a restart.
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') return;
+      const next = resolveLocale(detectLocale());
+      if (next !== i18n.locale) setI18nLocale(next);
+    });
+    return () => subscription.remove();
   }, []);
 
   if (!isI18nReady) return null;
