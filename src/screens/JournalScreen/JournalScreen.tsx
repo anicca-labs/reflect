@@ -325,6 +325,19 @@ const JournalScreen = () => {
     return () => clearTimeout(timer);
   }, [pendingCompose, isScreenFocused, setPendingCompose]);
 
+  // First-run activation: drop a brand-new guest with an empty journal straight
+  // into a ready-to-type composer so writing entry #1 is zero-friction. Fires once
+  // per launch and only while the journal is still empty, so it never nags an
+  // established writer.
+  const didFirstRunFocus = useRef(false);
+  useEffect(() => {
+    if (didFirstRunFocus.current || !isScreenFocused) return;
+    if (!isAnonymous || entries.length > 0) return;
+    didFirstRunFocus.current = true;
+    const timer = setTimeout(() => inputRef.current?.focus(), 400);
+    return () => clearTimeout(timer);
+  }, [isScreenFocused, isAnonymous, entries.length]);
+
   const hasOpenCard = useSwipeableStore((s) => s.activeDragCount > 0);
   const dismissOpenCard = () => {
     if (hasOpenCard) setCloseKey((k) => k + 1);
