@@ -293,8 +293,22 @@ const useAuthSession = () => {
       segments[0] === 'sign-in' ||
       segments[0] === 'forgot-password' ||
       segments[0] === 'reset-password';
-    if (!session && !inAuth && !isAnonymous && !isRecoveryMode.current) router.replace('/sign-in');
-    else if (session && inAuth && !isRecoveryMode.current) router.replace('/(tabs)');
+    if (!session && !inAuth && !isAnonymous && !isRecoveryMode.current) {
+      // Guest-first activation: a user who has never authenticated on this device
+      // (no prior outbox owner) lands straight in the journal as a guest so they
+      // can write immediately — the account ask is deferred to the free-entry
+      // limit. Only a user who previously signed in (then signed out, or whose
+      // session expired) is sent to the sign-in screen. This inverts the old
+      // "sign-in wall on first launch," which stranded ~half of new users before
+      // they ever wrote a line; the guest journaling path already fully works.
+      if (useSessionStore.getState().outboxOwnerId === null) {
+        useSessionStore.getState().setAnonymous();
+      } else {
+        router.replace('/sign-in');
+      }
+    } else if (session && inAuth && !isRecoveryMode.current) {
+      router.replace('/(tabs)');
+    }
   }, [session, segments, router, isAnonymous]);
 
   return { session };
