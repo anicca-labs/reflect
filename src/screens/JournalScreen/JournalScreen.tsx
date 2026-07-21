@@ -161,6 +161,7 @@ const JournalScreen = () => {
   // never for someone who already has one set.
   const {
     visible: reminderPromptVisible,
+    suggested: suggestedReminderTime,
     maybePrompt: maybePromptReminder,
     dismiss: dismissReminderPrompt,
   } = useReminderPrompt();
@@ -664,7 +665,11 @@ const JournalScreen = () => {
                   : toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })
         }
       />
-      <ReminderPromptModal visible={reminderPromptVisible} onClose={dismissReminderPrompt} />
+      <ReminderPromptModal
+        visible={reminderPromptVisible}
+        suggested={suggestedReminderTime}
+        onClose={dismissReminderPrompt}
+      />
     </Containers.Screen>
   );
 };

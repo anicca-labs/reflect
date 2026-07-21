@@ -4,7 +4,7 @@ import { YStack, XStack, Spinner } from 'tamagui';
 import { DisplayLg, BodySm, LabelLg, LabelMd } from '@fonts';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useReminder, useToast } from '@hooks';
+import { useReminder, useToast, type SuggestedTime } from '@hooks';
 import {
   requestNotificationPermission,
   getNotificationPermissionStatus,
@@ -16,23 +16,31 @@ import { sizes } from '@theme';
 
 interface ReminderPromptModalProps {
   visible: boolean;
+  // Seeded from the moment they wrote; null when they've already chosen a time in
+  // Settings, which we never override.
+  suggested: SuggestedTime | null;
   onClose: () => void;
 }
 
 // Shown once, right after the user's first entry. useReminder handles delivery for both
 // account types (guests get an on-device schedule, signed-in users the server cron), so
 // enabling here is just `toggle` — no branching needed.
-const ReminderPromptModal = ({ visible, onClose }: ReminderPromptModalProps) => {
+const ReminderPromptModal = ({ visible, suggested, onClose }: ReminderPromptModalProps) => {
   const [loading, setLoading] = useState(false);
-  const { enabled, hour, minute, toggle } = useReminder();
+  const { enabled, hour, minute, toggle, updateTime } = useReminder();
   const { alert } = useToast();
   const { t } = useLingui();
   const timeFormat = usePreferencesStore((s) => s.timeFormat);
 
+  // Show what they'd actually get: the suggestion when they've never picked a time,
+  // otherwise the time already saved in Settings.
+  const shownHour = suggested?.hour ?? hour;
+  const shownMinute = suggested?.minute ?? minute;
+
   // Respect the user's 12h/24h preference, same as entry timestamps. The local Date
   // round-trips through ISO so formatEntryTime renders it back in local time.
   const timeLabel = formatEntryTime(
-    new Date(new Date().setHours(hour, minute, 0, 0)).toISOString(),
+    new Date(new Date().setHours(shownHour, shownMinute, 0, 0)).toISOString(),
     timeFormat === '24h',
   );
 
@@ -53,6 +61,9 @@ const ReminderPromptModal = ({ visible, onClose }: ReminderPromptModalProps) => 
         return;
       }
 
+      // Persist the suggested time before enabling, so the delivery effect schedules the
+      // time they were actually shown on the button.
+      if (suggested) await updateTime(suggested.hour, suggested.minute);
       // Guarded: toggle() flips, and we only surface this modal when reminders are off.
       if (!enabled) await toggle(true);
       alert({
