@@ -1,8 +1,17 @@
+import { AppState } from 'react-native';
 import { create } from 'zustand';
 
 type AppLockState = {
   isLocked: boolean;
   setLocked: (locked: boolean) => void;
+  // True while an in-app store sheet (RevenueCat paywall, StoreKit purchase /
+  // Apple ID auth) owns the screen. Those sheets push the app through
+  // inactive/background even though the user never left it, so the lock ignores
+  // AppState while this is set — otherwise dismissing the paywall drops the user
+  // straight into a Face ID prompt.
+  storeSheetOpen: boolean;
+  openStoreSheet: () => void;
+  closeStoreSheet: () => void;
   // Flips true once the launch splash animation has finished. The overlay holds
   // the cold-start biometric prompt until then, so Face ID doesn't interrupt the
   // Rive splash. Starts false each runtime; irrelevant to background→foreground
@@ -30,6 +39,23 @@ const useAppLockStore = create<AppLockState>((set) => ({
   // branded cover + OS prompt (not our Unlock screen).
   setLocked: (locked) =>
     set(locked ? { isLocked: true, retryVisible: false } : { isLocked: false }),
+  storeSheetOpen: false,
+  openStoreSheet: () => set({ storeSheetOpen: true }),
+  // Clear only once the app is actually back in the foreground: the paywall
+  // promise resolves while the sheet is still dismissing, and the trailing
+  // inactive→active transition would otherwise land with the flag already down
+  // and engage the lock anyway.
+  closeStoreSheet: () => {
+    if (AppState.currentState === 'active') {
+      set({ storeSheetOpen: false });
+      return;
+    }
+    const sub = AppState.addEventListener('change', (next) => {
+      if (next !== 'active') return;
+      sub.remove();
+      set({ storeSheetOpen: false });
+    });
+  },
   splashComplete: false,
   setSplashComplete: (done) => set({ splashComplete: done }),
   retryVisible: false,

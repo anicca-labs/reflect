@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Purchases, { type CustomerInfo } from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
-import { useSessionStore } from '@/src/stores';
+import { useAppLockStore, useSessionStore } from '@/src/stores';
 
 const PRO_ENTITLEMENT = 'pro';
 
@@ -30,16 +30,29 @@ const useRevenueCat = () => {
   // customerInfo). Treat anonymous as never-Pro so the UI/limit stay consistent.
   const isPro = !isAnonymous && customerInfo?.entitlements.active[PRO_ENTITLEMENT] !== undefined;
 
+  // The paywall and the StoreKit purchase sheet drive the app through
+  // inactive/background. Flagging the store sheet keeps the biometric app-lock
+  // from engaging on that churn — the user never actually left the app.
   const presentPaywall = async (): Promise<boolean> => {
-    const result = await RevenueCatUI.presentPaywallIfNeeded({
-      requiredEntitlementIdentifier: PRO_ENTITLEMENT,
-    });
-    return result === PAYWALL_RESULT.PURCHASED || result === PAYWALL_RESULT.RESTORED;
+    useAppLockStore.getState().openStoreSheet();
+    try {
+      const result = await RevenueCatUI.presentPaywallIfNeeded({
+        requiredEntitlementIdentifier: PRO_ENTITLEMENT,
+      });
+      return result === PAYWALL_RESULT.PURCHASED || result === PAYWALL_RESULT.RESTORED;
+    } finally {
+      useAppLockStore.getState().closeStoreSheet();
+    }
   };
 
   const restorePurchases = async () => {
-    const info = await Purchases.restorePurchases();
-    setCustomerInfo(info);
+    useAppLockStore.getState().openStoreSheet();
+    try {
+      const info = await Purchases.restorePurchases();
+      setCustomerInfo(info);
+    } finally {
+      useAppLockStore.getState().closeStoreSheet();
+    }
   };
 
   return { isPro, isLoading, customerInfo, presentPaywall, restorePurchases };
