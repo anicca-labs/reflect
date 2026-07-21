@@ -63,6 +63,10 @@ msgstr "Conservar entradas de la cuenta"
 msgid "Keep everything ✦"
 msgstr "Conservar todo ✦"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Keep it going"
+msgstr "Sigue así"
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep local entries"
 msgstr "Conservar entradas locales"
@@ -83,13 +87,37 @@ msgstr "Fusionar las {combined} entradas en tu cuenta."
 msgid "No connection"
 msgstr "Sin conexión"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Not now"
+msgstr "Ahora no"
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Notifications are off"
+msgstr "Las notificaciones están desactivadas"
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"
 msgstr "Una cosa más"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "One quiet reminder a day. Change the time or turn it off anytime."
+msgstr "Un recordatorio discreto al día. Cambia la hora o desactívalo cuando quieras."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Remind me at {timeLabel}"
+msgstr "Recordármelo a las {timeLabel}"
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Reminder set ✦"
+msgstr "Recordatorio activado ✦"
+
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
 msgstr "Esto no se puede deshacer."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Turn them on in Settings whenever you'd like a daily nudge."
+msgstr "Actívalas en Ajustes cuando quieras recibir un recordatorio diario."
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Unlimited entries unlocked. Keep writing."
@@ -107,6 +135,10 @@ msgstr "Desbloquear Reflect"
 msgid "Upgrade to Pro to merge all {combined} entries and write without limits."
 msgstr "Mejora a Pro para fusionar las {combined} entradas y escribir sin límites."
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "We'll nudge you at {timeLabel}. Change it anytime in Settings."
+msgstr "Te avisaremos a las {timeLabel}. Puedes cambiarlo cuando quieras en Ajustes."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Welcome to Pro ✦"
 msgstr "Bienvenido a Pro ✦"
@@ -115,6 +147,10 @@ msgstr "Bienvenido a Pro ✦"
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "You have {localCount} local {0} and {serverCount} in your account — {combined} total, {overBy} over the free limit of {FREE_ENTRY_LIMIT}."
 msgstr "Tienes {localCount} {0} locales y {serverCount} en tu cuenta — {combined} en total, {overBy} por encima del límite gratuito de {FREE_ENTRY_LIMIT}."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
+msgstr "Escribiste tu primera entrada. Un recordatorio diario suave hace mucho más probable que se convierta en un hábito."
 
 #. placeholder {0}: serverCount === 1 ? 'entry' : 'entries'
 #. placeholder {1}: localCount === 1 ? 'entry' : 'entries'

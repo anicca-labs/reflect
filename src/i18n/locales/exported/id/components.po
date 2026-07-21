@@ -63,6 +63,10 @@ msgstr "Pertahankan entri akun"
 msgid "Keep everything ✦"
 msgstr "Pertahankan semua ✦"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Keep it going"
+msgstr "Lanjutkan kebiasaan ini"
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep local entries"
 msgstr "Pertahankan entri lokal"
@@ -83,13 +87,37 @@ msgstr "Gabungkan semua {combined} entri ke akun Anda."
 msgid "No connection"
 msgstr "Tidak ada koneksi"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Not now"
+msgstr "Nanti saja"
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Notifications are off"
+msgstr "Notifikasi nonaktif"
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"
 msgstr "Satu hal lagi"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "One quiet reminder a day. Change the time or turn it off anytime."
+msgstr "Satu pengingat tenang setiap hari. Ubah waktunya atau matikan kapan saja."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Remind me at {timeLabel}"
+msgstr "Ingatkan saya pukul {timeLabel}"
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Reminder set ✦"
+msgstr "Pengingat aktif ✦"
+
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
 msgstr "Ini tidak dapat dibatalkan."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Turn them on in Settings whenever you'd like a daily nudge."
+msgstr "Aktifkan di Pengaturan kapan pun kamu ingin pengingat harian."
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Unlimited entries unlocked. Keep writing."
@@ -107,6 +135,10 @@ msgstr "Buka kunci Reflect"
 msgid "Upgrade to Pro to merge all {combined} entries and write without limits."
 msgstr "Upgrade ke Pro untuk menggabungkan semua {combined} entri dan menulis tanpa batas."
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "We'll nudge you at {timeLabel}. Change it anytime in Settings."
+msgstr "Kami akan mengingatkanmu pukul {timeLabel}. Ubah kapan saja di Pengaturan."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Welcome to Pro ✦"
 msgstr "Selamat datang di Pro ✦"
@@ -115,6 +147,10 @@ msgstr "Selamat datang di Pro ✦"
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "You have {localCount} local {0} and {serverCount} in your account — {combined} total, {overBy} over the free limit of {FREE_ENTRY_LIMIT}."
 msgstr "Anda memiliki {localCount} {0} lokal dan {serverCount} di akun — total {combined}, melebihi batas gratis {FREE_ENTRY_LIMIT} sebanyak {overBy}."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
+msgstr "Kamu baru menulis entri pertamamu. Pengingat harian yang lembut membuatnya jauh lebih mungkin menjadi kebiasaan."
 
 #. placeholder {0}: serverCount === 1 ? 'entry' : 'entries'
 #. placeholder {1}: localCount === 1 ? 'entry' : 'entries'

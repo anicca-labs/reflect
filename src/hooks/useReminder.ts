@@ -8,6 +8,10 @@ const ENABLED_KEY = '@reflect/reminder_enabled';
 const HOUR_KEY = '@reflect/reminder_hour';
 const MINUTE_KEY = '@reflect/reminder_minute';
 
+// Re-exported so useReminderPrompt can check "already has a reminder" without mounting
+// this hook (whose sync effect would fire a device-token write on every mount).
+const REMINDER_ENABLED_KEY = ENABLED_KEY;
+
 const DEFAULT_REMINDER_HOUR = 20;
 const DEFAULT_REMINDER_MINUTE = 0;
 
@@ -81,4 +85,4 @@ const useReminder = () => {
   return { enabled, hour, minute, loading, toggle, disable, updateTime };
 };
 
-export { DEFAULT_REMINDER_HOUR, DEFAULT_REMINDER_MINUTE, useReminder };
+export { DEFAULT_REMINDER_HOUR, DEFAULT_REMINDER_MINUTE, REMINDER_ENABLED_KEY, useReminder };

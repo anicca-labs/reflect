@@ -63,6 +63,10 @@ msgstr ""
 msgid "Keep everything ✦"
 msgstr ""
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Keep it going"
+msgstr ""
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep local entries"
 msgstr ""
@@ -83,12 +87,36 @@ msgstr ""
 msgid "No connection"
 msgstr ""
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Not now"
+msgstr ""
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Notifications are off"
+msgstr ""
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"
 msgstr ""
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "One quiet reminder a day. Change the time or turn it off anytime."
+msgstr ""
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Remind me at {timeLabel}"
+msgstr ""
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Reminder set ✦"
+msgstr ""
+
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
+msgstr ""
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Turn them on in Settings whenever you'd like a daily nudge."
 msgstr ""
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
@@ -107,6 +135,10 @@ msgstr ""
 msgid "Upgrade to Pro to merge all {combined} entries and write without limits."
 msgstr ""
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "We'll nudge you at {timeLabel}. Change it anytime in Settings."
+msgstr ""
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Welcome to Pro ✦"
 msgstr ""
@@ -114,6 +146,10 @@ msgstr ""
 #. placeholder {0}: localCount === 1 ? 'entry' : 'entries'
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "You have {localCount} local {0} and {serverCount} in your account — {combined} total, {overBy} over the free limit of {FREE_ENTRY_LIMIT}."
+msgstr ""
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
 msgstr ""
 
 #. placeholder {0}: serverCount === 1 ? 'entry' : 'entries'

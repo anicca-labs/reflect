@@ -11,6 +11,7 @@ export {
   useDeleteJournalEntry,
 } from './useJournalEntries';
 export * from './useReminder';
+export * from './useReminderPrompt';
 export * from './useRevenueCat';
 export * from './useStreak';
 export * from './useWritingPrompt';
