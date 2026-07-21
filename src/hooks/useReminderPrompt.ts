@@ -7,7 +7,17 @@ import {
   DEFAULT_REMINDER_MINUTE,
 } from './useReminder';
 
-const PROMPT_SEEN_KEY = '@reflect/reminder_prompt_seen';
+const LAST_ASKED_KEY = '@reflect/reminder_prompt_last_asked';
+const ASK_COUNT_KEY = '@reflect/reminder_prompt_count';
+// Superseded by the two keys above; still read once so installs from the first
+// release don't get re-asked immediately.
+const LEGACY_SEEN_KEY = '@reflect/reminder_prompt_seen';
+
+// Someone who declines after their first entry is a much better candidate a few days
+// later, once the habit is actually forming — so ask again rather than never.
+const REPROMPT_AFTER_DAYS = 4;
+// ...but stop eventually. Four asks (~day 0, 4, 8, 12) is a nudge; forever is nagging.
+const MAX_PROMPTS = 4;
 
 // Let the entry they just wrote land on screen before covering it with a modal.
 const PROMPT_DELAY_MS = 600;
@@ -17,6 +27,8 @@ const PROMPT_DELAY_MS = 600;
 const ROUND_TO_MINUTES = 30;
 const EARLIEST_SUGGESTED_HOUR = 7;
 const LATEST_SUGGESTED_HOUR = 22;
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 type SuggestedTime = { hour: number; minute: number };
 
@@ -38,16 +50,17 @@ const suggestReminderTime = (now: Date = new Date()): SuggestedTime => {
 };
 
 /**
- * Asks — once — whether the user wants a daily reminder, right after they save an
- * entry. That moment is deliberate: they just got value from the app, so it's the
- * earned point to ask, rather than interrupting a cold start.
+ * Offers a daily reminder after the user saves an entry — the earned moment, since they
+ * just got value from the app, rather than interrupting a cold start.
  *
- * Reminders are otherwise only reachable from Settings, which means effectively nobody
- * finds them (every prod device had reminders off), and the daily nudge is the main
- * lever for getting people back to write again.
+ * Reminders are otherwise only reachable from Settings, so effectively nobody finds them
+ * (every prod device had reminders off), and the daily nudge is the main lever for
+ * getting people back to write.
  *
- * `maybePrompt` self-gates on both "already asked" and "already has a reminder", so
- * call sites can fire it after every save without their own conditionals.
+ * Asked at most `MAX_PROMPTS` times, spaced `REPROMPT_AFTER_DAYS` apart, and only ever
+ * while the user has no reminder set — enabling one (here or in Settings) stops the
+ * asking permanently. `maybePrompt` owns all of that gating so call sites can fire it
+ * after every save with no conditionals.
  */
 const useReminderPrompt = () => {
   const [visible, setVisible] = useState(false);
@@ -64,12 +77,34 @@ const useReminderPrompt = () => {
   );
 
   const maybePrompt = useCallback(async () => {
-    const [seen, alreadyEnabled, storedHour] = await Promise.all([
-      AsyncStorage.getItem(PROMPT_SEEN_KEY),
+    const [alreadyEnabled, storedHour, lastAskedRaw, countRaw, legacySeen] = await Promise.all([
       AsyncStorage.getItem(REMINDER_ENABLED_KEY),
       AsyncStorage.getItem(REMINDER_HOUR_KEY),
+      AsyncStorage.getItem(LAST_ASKED_KEY),
+      AsyncStorage.getItem(ASK_COUNT_KEY),
+      AsyncStorage.getItem(LEGACY_SEEN_KEY),
     ]);
-    if (seen === 'true' || alreadyEnabled === 'true') return;
+
+    // They have a reminder — nothing left to ask for, ever.
+    if (alreadyEnabled === 'true') return;
+
+    let count = countRaw ? parseInt(countRaw, 10) : 0;
+    let lastAsked = lastAskedRaw ? Date.parse(lastAskedRaw) : null;
+
+    // Migrate installs that were asked under the old ask-once flag: treat it as one ask
+    // just now, so they wait out a full cooldown instead of being re-asked immediately.
+    if (!countRaw && legacySeen === 'true') {
+      count = 1;
+      lastAsked = Date.now();
+      await Promise.all([
+        AsyncStorage.setItem(ASK_COUNT_KEY, '1'),
+        AsyncStorage.setItem(LAST_ASKED_KEY, new Date(lastAsked).toISOString()),
+      ]);
+      return;
+    }
+
+    if (count >= MAX_PROMPTS) return;
+    if (lastAsked !== null && Date.now() - lastAsked < REPROMPT_AFTER_DAYS * DAY_MS) return;
 
     // Captured at the moment they wrote, not when the modal renders.
     setSuggested(storedHour ? null : suggestReminderTime());
@@ -78,11 +113,18 @@ const useReminderPrompt = () => {
     timer.current = setTimeout(() => setVisible(true), PROMPT_DELAY_MS);
   }, []);
 
-  // Persist on dismiss (either answer) so we only ever ask once.
+  // Record the ask on either answer. Enabling is separately caught by the
+  // `alreadyEnabled` gate above, so a "yes" never gets asked again regardless of count.
   const dismiss = useCallback(async () => {
     if (timer.current) clearTimeout(timer.current);
     setVisible(false);
-    await AsyncStorage.setItem(PROMPT_SEEN_KEY, 'true');
+
+    const countRaw = await AsyncStorage.getItem(ASK_COUNT_KEY);
+    const next = (countRaw ? parseInt(countRaw, 10) : 0) + 1;
+    await Promise.all([
+      AsyncStorage.setItem(ASK_COUNT_KEY, String(next)),
+      AsyncStorage.setItem(LAST_ASKED_KEY, new Date().toISOString()),
+    ]);
   }, []);
 
   return { visible, suggested, maybePrompt, dismiss };
