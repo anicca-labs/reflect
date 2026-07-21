@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { syncReminderToBackend, registerGuestDeviceToken } from '@/src/services/user-devices';
 import { scheduleDailyReminder, cancelDailyReminder } from '@/src/services/firebase-messaging';
@@ -15,26 +16,64 @@ const REMINDER_ENABLED_KEY = ENABLED_KEY;
 const DEFAULT_REMINDER_HOUR = 20;
 const DEFAULT_REMINDER_MINUTE = 0;
 
+type ReminderStoreState = {
+  enabled: boolean;
+  hour: number;
+  minute: number;
+  loading: boolean;
+  set: (patch: Partial<Omit<ReminderStoreState, 'set'>>) => void;
+};
+
+/**
+ * Shared across every consumer on purpose. Journal and Settings are sibling top-tabs, so
+ * both stay mounted at once — with per-hook `useState`, enabling a reminder from the
+ * journal's prompt left the already-mounted Settings toggle showing the stale old value
+ * (it only read AsyncStorage on mount). AsyncStorage stays the persistence layer; this
+ * store is the in-memory source of truth so all screens agree immediately.
+ */
+const useReminderStore = create<ReminderStoreState>((set) => ({
+  enabled: false,
+  hour: DEFAULT_REMINDER_HOUR,
+  minute: DEFAULT_REMINDER_MINUTE,
+  loading: true,
+  set: (patch) => set(patch),
+}));
+
+let hydrating: Promise<void> | null = null;
+
+// Read persisted values once per app run, no matter how many consumers mount.
+const hydrate = (): Promise<void> => {
+  if (hydrating) return hydrating;
+  hydrating = (async () => {
+    const [enabledVal, hourVal, minuteVal] = await Promise.all([
+      AsyncStorage.getItem(ENABLED_KEY),
+      AsyncStorage.getItem(HOUR_KEY),
+      AsyncStorage.getItem(MINUTE_KEY),
+    ]);
+    useReminderStore.getState().set({
+      enabled: enabledVal === 'true',
+      hour: hourVal ? parseInt(hourVal, 10) : DEFAULT_REMINDER_HOUR,
+      minute: minuteVal ? parseInt(minuteVal, 10) : DEFAULT_REMINDER_MINUTE,
+      loading: false,
+    });
+  })();
+  return hydrating;
+};
+
+// The delivery effect below now runs in every mounted consumer (state is shared), so
+// dedupe on the resolved state — otherwise two mounted screens would each fire the
+// device-token write for the same change.
+let lastDeliveryKey: string | null = null;
+
 const useReminder = () => {
   const isAnonymous = useSessionStore((s) => s.isAnonymous);
-  const [enabled, setEnabled] = useState(false);
-  const [hour, setHour] = useState(DEFAULT_REMINDER_HOUR);
-  const [minute, setMinute] = useState(DEFAULT_REMINDER_MINUTE);
-  const [loading, setLoading] = useState(true);
+  const enabled = useReminderStore((s) => s.enabled);
+  const hour = useReminderStore((s) => s.hour);
+  const minute = useReminderStore((s) => s.minute);
+  const loading = useReminderStore((s) => s.loading);
 
   useEffect(() => {
-    const load = async () => {
-      const [enabledVal, hourVal, minuteVal] = await Promise.all([
-        AsyncStorage.getItem(ENABLED_KEY),
-        AsyncStorage.getItem(HOUR_KEY),
-        AsyncStorage.getItem(MINUTE_KEY),
-      ]);
-      setEnabled(enabledVal === 'true');
-      setHour(hourVal ? parseInt(hourVal, 10) : DEFAULT_REMINDER_HOUR);
-      setMinute(minuteVal ? parseInt(minuteVal, 10) : DEFAULT_REMINDER_MINUTE);
-      setLoading(false);
-    };
-    load();
+    hydrate();
   }, []);
 
   // Deliver the reminder by account type — never both, so it can't duplicate:
@@ -47,6 +86,11 @@ const useReminder = () => {
   // signed-in user's stale local reminder is cancelled and moved to the server).
   useEffect(() => {
     if (loading) return;
+
+    const key = `${isAnonymous}|${enabled}|${hour}|${minute}`;
+    if (key === lastDeliveryKey) return;
+    lastDeliveryKey = key;
+
     if (isAnonymous) {
       // Guest: deliver locally, and record the on/off state server-side (reminder_*
       // stay null so the cron skips them) for re-engagement targeting.
@@ -62,20 +106,21 @@ const useReminder = () => {
   }, [loading, enabled, hour, minute, isAnonymous]);
 
   const disable = async () => {
-    setEnabled(false);
+    useReminderStore.getState().set({ enabled: false });
     await AsyncStorage.setItem(ENABLED_KEY, 'false');
   };
 
+  // Read through the store rather than the render-time snapshot so concurrent callers
+  // (e.g. the journal prompt while Settings is mounted) can't flip off a stale value.
   const toggle = async (notifPermission: boolean) => {
     if (!notifPermission) return;
-    const next = !enabled;
-    setEnabled(next);
+    const next = !useReminderStore.getState().enabled;
+    useReminderStore.getState().set({ enabled: next });
     await AsyncStorage.setItem(ENABLED_KEY, String(next));
   };
 
   const updateTime = async (newHour: number, newMinute: number) => {
-    setHour(newHour);
-    setMinute(newMinute);
+    useReminderStore.getState().set({ hour: newHour, minute: newMinute });
     await Promise.all([
       AsyncStorage.setItem(HOUR_KEY, String(newHour)),
       AsyncStorage.setItem(MINUTE_KEY, String(newMinute)),
