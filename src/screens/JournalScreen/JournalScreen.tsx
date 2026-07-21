@@ -45,6 +45,7 @@ import {
   useStreak,
   getDailyPromptIndex,
   useVoiceToText,
+  useReminderPrompt,
 } from '@hooks';
 import {
   HEADING_LETTER_SPACING,
@@ -56,6 +57,7 @@ import {
   AnimatedEntry,
   SwipeableDeleteWrapper,
   EntryPeekModal,
+  ReminderPromptModal,
   type SwipeableDeleteWrapperHandle,
 } from '@molecules';
 import { BaseIcon } from '@/src/components/atoms/icons';
@@ -155,6 +157,14 @@ const JournalScreen = () => {
   const { isPro, isLoading: rcLoading, presentPaywall } = useRevenueCat();
   const { t } = useLingui();
   const { alert } = useToast();
+  // Offers a daily reminder after an entry is saved — self-gates to fire only once, and
+  // never for someone who already has one set.
+  const {
+    visible: reminderPromptVisible,
+    suggested: suggestedReminderTime,
+    maybePrompt: maybePromptReminder,
+    dismiss: dismissReminderPrompt,
+  } = useReminderPrompt();
   const inputRef = useRef<ComponentRef<typeof TextArea>>(null);
 
   // Auto-present the paywall for a user who tapped "Sign in for Pro" while
@@ -423,6 +433,7 @@ const JournalScreen = () => {
       // Guest entries stay on-device, so this is the only server-side record that this
       // device activated. Fire-and-forget: it must never delay or fail the save.
       markFirstEntryWritten();
+      maybePromptReminder();
       return;
     }
 
@@ -430,6 +441,7 @@ const JournalScreen = () => {
       const { queued } = await createMutation.mutateAsync(trimmed);
       logJournalEntryCreated(trimmed.split(/\s+/).length);
       markFirstEntryWritten();
+      maybePromptReminder();
       if (queued) {
         alert({
           title: t`Saved offline`,
@@ -652,6 +664,11 @@ const JournalScreen = () => {
                   ? togglePendingBookmark(id)
                   : toggleBookmarkMutation.mutate({ id, is_bookmarked: !current })
         }
+      />
+      <ReminderPromptModal
+        visible={reminderPromptVisible}
+        suggested={suggestedReminderTime}
+        onClose={dismissReminderPrompt}
       />
     </Containers.Screen>
   );

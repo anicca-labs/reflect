@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "A gentle daily nudge makes it far more likely to become a habit."
+msgstr "تذكير يومي لطيف يجعل تحوّلها إلى عادة أكثر ترجيحًا بكثير."
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "Back online"
 msgstr "عاد الاتصال"
@@ -22,6 +26,10 @@ msgstr "عاد الاتصال"
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
 msgstr "إلغاء"
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Couldn't set the reminder"
+msgstr "تعذّر ضبط التذكير"
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Decide later — review local entries first"
@@ -63,6 +71,10 @@ msgstr "الاحتفاظ بإدخالات الحساب"
 msgid "Keep everything ✦"
 msgstr "الاحتفاظ بالكل ✦"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Keep it going"
+msgstr "واصل"
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep local entries"
 msgstr "الاحتفاظ بالإدخالات المحلية"
@@ -83,13 +95,41 @@ msgstr "دمج جميع {combined} إدخالاً في حسابك."
 msgid "No connection"
 msgstr "لا يوجد اتصال"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Not now"
+msgstr "ليس الآن"
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Notifications are off"
+msgstr "الإشعارات معطّلة"
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"
 msgstr "شيء واحد آخر"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "One quiet reminder a day. Change the time or turn it off anytime."
+msgstr "تذكير هادئ واحد يوميًا. غيّر الوقت أو أوقفه في أي وقت."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Please try again from Settings."
+msgstr "يرجى المحاولة مرة أخرى من الإعدادات."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Remind me at {timeLabel}"
+msgstr "ذكّرني في {timeLabel}"
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Reminder set ✦"
+msgstr "تم ضبط التذكير ✦"
+
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
 msgstr "لا يمكن التراجع عن هذا."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Turn them on in Settings whenever you'd like a daily nudge."
+msgstr "فعّلها من الإعدادات متى أردت تذكيرًا يوميًا."
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Unlimited entries unlocked. Keep writing."
@@ -107,6 +147,10 @@ msgstr "افتح قفل Reflect"
 msgid "Upgrade to Pro to merge all {combined} entries and write without limits."
 msgstr "قم بالترقية إلى Pro لدمج جميع {combined} إدخالاً والكتابة بلا حدود."
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "We'll nudge you at {timeLabel}. Change it anytime in Settings."
+msgstr "سنذكّرك في {timeLabel}. يمكنك تغيير ذلك في الإعدادات في أي وقت."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Welcome to Pro ✦"
 msgstr "مرحباً بك في Pro ✦"
@@ -115,6 +159,10 @@ msgstr "مرحباً بك في Pro ✦"
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "You have {localCount} local {0} and {serverCount} in your account — {combined} total, {overBy} over the free limit of {FREE_ENTRY_LIMIT}."
 msgstr "لديك {localCount} {0} محلية و{serverCount} في حسابك — {combined} إجمالاً، بزيادة {overBy} عن الحد المجاني البالغ {FREE_ENTRY_LIMIT}."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+#~ msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
+#~ msgstr "لقد كتبت أول تدوينة لك. تذكير يومي لطيف يجعل تحويلها إلى عادة أكثر ترجيحًا بكثير."
 
 #. placeholder {0}: serverCount === 1 ? 'entry' : 'entries'
 #. placeholder {1}: localCount === 1 ? 'entry' : 'entries'

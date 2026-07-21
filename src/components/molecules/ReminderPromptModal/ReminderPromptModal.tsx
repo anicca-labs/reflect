@@ -1,0 +1,144 @@
+import { useState } from 'react';
+import { Modal } from 'react-native';
+import { YStack, XStack, Spinner } from 'tamagui';
+import { DisplayLg, BodySm, LabelLg, LabelMd } from '@fonts';
+import { BaseTouchable } from '@anicca-labs/ui-touchables';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { useReminder, useToast, type SuggestedTime } from '@hooks';
+import {
+  requestNotificationPermission,
+  getNotificationPermissionStatus,
+} from '@/src/services/firebase-messaging';
+import { usePreferencesStore } from '@/src/stores';
+import { formatEntryTime } from '@/src/utils/date';
+import { HEADING_LETTER_SPACING, DISABLED_OPACITY } from '@constants';
+import { sizes } from '@theme';
+
+interface ReminderPromptModalProps {
+  visible: boolean;
+  // Seeded from the moment they wrote; null when they've already chosen a time in
+  // Settings, which we never override.
+  suggested: SuggestedTime | null;
+  onClose: () => void;
+}
+
+// Shown once, right after the user's first entry. useReminder handles delivery for both
+// account types (guests get an on-device schedule, signed-in users the server cron), so
+// enabling here is just `toggle` — no branching needed.
+const ReminderPromptModal = ({ visible, suggested, onClose }: ReminderPromptModalProps) => {
+  const [loading, setLoading] = useState(false);
+  const { enabled, hour, minute, toggle, updateTime } = useReminder();
+  const { alert } = useToast();
+  const { t } = useLingui();
+  const timeFormat = usePreferencesStore((s) => s.timeFormat);
+
+  // Show what they'd actually get: the suggestion when they've never picked a time,
+  // otherwise the time already saved in Settings.
+  const shownHour = suggested?.hour ?? hour;
+  const shownMinute = suggested?.minute ?? minute;
+
+  // Respect the user's 12h/24h preference, same as entry timestamps. The local Date
+  // round-trips through ISO so formatEntryTime renders it back in local time.
+  const timeLabel = formatEntryTime(
+    new Date(new Date().setHours(shownHour, shownMinute, 0, 0)).toISOString(),
+    timeFormat === '24h',
+  );
+
+  const handleEnable = async () => {
+    setLoading(true);
+    try {
+      const status = await getNotificationPermissionStatus();
+      const granted = status === 'granted' ? true : await requestNotificationPermission();
+
+      if (!granted) {
+        // Denied at the OS level — don't leave them thinking it's on. Settings has the
+        // full control (including the deep link) if they change their mind.
+        alert({
+          title: t`Notifications are off`,
+          message: t`Turn them on in Settings whenever you'd like a daily nudge.`,
+        });
+        onClose();
+        return;
+      }
+
+      // Persist the suggested time before enabling, so the delivery effect schedules the
+      // time they were actually shown on the button.
+      if (suggested) await updateTime(suggested.hour, suggested.minute);
+      // Guarded: toggle() flips, and we only surface this modal when reminders are off.
+      if (!enabled) await toggle(true);
+      alert({
+        title: t`Reminder set ✦`,
+        message: t`We'll nudge you at ${timeLabel}. Change it anytime in Settings.`,
+      });
+      onClose();
+    } catch {
+      // Never strand the user behind a modal that silently did nothing — close it and
+      // point at Settings, which is the full-featured path.
+      alert({
+        title: t`Couldn't set the reminder`,
+        message: t`Please try again from Settings.`,
+      });
+      onClose();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+      onRequestClose={onClose}
+    >
+      <YStack flex={1} bg="$background0" opacity={0.98} justify="center" px={sizes.xl}>
+        <YStack
+          bg="$surface-card"
+          rounded="$5"
+          p="$5"
+          borderWidth={1}
+          borderColor="$borderColor"
+          gap="$4"
+        >
+          <YStack gap="$2">
+            <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
+              <Trans>Keep it going</Trans>
+            </DisplayLg>
+            <BodySm color="$text-secondary">
+              <Trans>A gentle daily nudge makes it far more likely to become a habit.</Trans>
+            </BodySm>
+          </YStack>
+
+          <BaseTouchable
+            onPress={handleEnable}
+            disabled={loading}
+            opacity={loading ? DISABLED_OPACITY : 1}
+            bg="$accentBackground"
+            rounded="$4"
+            p="$4"
+            gap="$1"
+          >
+            <XStack justify="space-between" items="center">
+              <LabelLg color="$accentColor">
+                <Trans>Remind me at {timeLabel}</Trans>
+              </LabelLg>
+              {loading ? <Spinner size="small" color="$accentColor" /> : null}
+            </XStack>
+            <BodySm color="$accentColor" opacity={0.85}>
+              <Trans>One quiet reminder a day. Change the time or turn it off anytime.</Trans>
+            </BodySm>
+          </BaseTouchable>
+
+          <BaseTouchable onPress={onClose} disabled={loading} py="$3" items="center">
+            <LabelMd color="$text-secondary">
+              <Trans>Not now</Trans>
+            </LabelMd>
+          </BaseTouchable>
+        </YStack>
+      </YStack>
+    </Modal>
+  );
+};
+
+export { ReminderPromptModal };
