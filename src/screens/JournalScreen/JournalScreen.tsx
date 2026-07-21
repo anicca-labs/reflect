@@ -34,6 +34,7 @@ import type { JournalEntry } from '@/src/types/journal';
 import { isOnline } from '@/src/services/network';
 import { refreshEntitlement } from '@/src/services/entitlements';
 import { logJournalEntryCreated, logScreenView } from '@analytics';
+import { markFirstEntryWritten } from '@/src/services/user-devices';
 import {
   useJournalEntries,
   useCreateJournalEntry,
@@ -419,12 +420,16 @@ const JournalScreen = () => {
     if (isAnonymous) {
       addLocalEntry(trimmed);
       logJournalEntryCreated(trimmed.split(/\s+/).length);
+      // Guest entries stay on-device, so this is the only server-side record that this
+      // device activated. Fire-and-forget: it must never delay or fail the save.
+      markFirstEntryWritten();
       return;
     }
 
     try {
       const { queued } = await createMutation.mutateAsync(trimmed);
       logJournalEntryCreated(trimmed.split(/\s+/).length);
+      markFirstEntryWritten();
       if (queued) {
         alert({
           title: t`Saved offline`,
