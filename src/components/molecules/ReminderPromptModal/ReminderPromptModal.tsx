@@ -9,6 +9,8 @@ import {
   requestNotificationPermission,
   getNotificationPermissionStatus,
 } from '@/src/services/firebase-messaging';
+import { usePreferencesStore } from '@/src/stores';
+import { formatEntryTime } from '@/src/utils/date';
 import { HEADING_LETTER_SPACING, DISABLED_OPACITY } from '@constants';
 import { sizes } from '@theme';
 
@@ -25,11 +27,14 @@ const ReminderPromptModal = ({ visible, onClose }: ReminderPromptModalProps) => 
   const { enabled, hour, minute, toggle } = useReminder();
   const { alert } = useToast();
   const { t } = useLingui();
+  const timeFormat = usePreferencesStore((s) => s.timeFormat);
 
-  const timeLabel = new Date(2000, 0, 1, hour, minute).toLocaleTimeString([], {
-    hour: 'numeric',
-    minute: '2-digit',
-  });
+  // Respect the user's 12h/24h preference, same as entry timestamps. The local Date
+  // round-trips through ISO so formatEntryTime renders it back in local time.
+  const timeLabel = formatEntryTime(
+    new Date(new Date().setHours(hour, minute, 0, 0)).toISOString(),
+    timeFormat === '24h',
+  );
 
   const handleEnable = async () => {
     setLoading(true);
@@ -53,6 +58,14 @@ const ReminderPromptModal = ({ visible, onClose }: ReminderPromptModalProps) => 
       alert({
         title: t`Reminder set ✦`,
         message: t`We'll nudge you at ${timeLabel}. Change it anytime in Settings.`,
+      });
+      onClose();
+    } catch {
+      // Never strand the user behind a modal that silently did nothing — close it and
+      // point at Settings, which is the full-featured path.
+      alert({
+        title: t`Couldn't set the reminder`,
+        message: t`Please try again from Settings.`,
       });
       onClose();
     } finally {
@@ -82,10 +95,7 @@ const ReminderPromptModal = ({ visible, onClose }: ReminderPromptModalProps) => 
               <Trans>Keep it going</Trans>
             </DisplayLg>
             <BodySm color="$text-secondary">
-              <Trans>
-                You wrote your first entry. A gentle daily nudge makes it far more likely to become
-                a habit.
-              </Trans>
+              <Trans>A gentle daily nudge makes it far more likely to become a habit.</Trans>
             </BodySm>
           </YStack>
 

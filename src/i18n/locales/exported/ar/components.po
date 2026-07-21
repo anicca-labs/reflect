@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "A gentle daily nudge makes it far more likely to become a habit."
+msgstr "تذكير يومي لطيف يجعل تحوّلها إلى عادة أكثر ترجيحًا بكثير."
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "Back online"
 msgstr "عاد الاتصال"
@@ -22,6 +26,10 @@ msgstr "عاد الاتصال"
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
 msgstr "إلغاء"
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Couldn't set the reminder"
+msgstr "تعذّر ضبط التذكير"
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Decide later — review local entries first"
@@ -104,6 +112,10 @@ msgid "One quiet reminder a day. Change the time or turn it off anytime."
 msgstr "تذكير هادئ واحد يوميًا. غيّر الوقت أو أوقفه في أي وقت."
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Please try again from Settings."
+msgstr "يرجى المحاولة مرة أخرى من الإعدادات."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Remind me at {timeLabel}"
 msgstr "ذكّرني في {timeLabel}"
 
@@ -149,8 +161,8 @@ msgid "You have {localCount} local {0} and {serverCount} in your account — {co
 msgstr "لديك {localCount} {0} محلية و{serverCount} في حسابك — {combined} إجمالاً، بزيادة {overBy} عن الحد المجاني البالغ {FREE_ENTRY_LIMIT}."
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
-msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
-msgstr "لقد كتبت أول تدوينة لك. تذكير يومي لطيف يجعل تحويلها إلى عادة أكثر ترجيحًا بكثير."
+#~ msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
+#~ msgstr "لقد كتبت أول تدوينة لك. تذكير يومي لطيف يجعل تحويلها إلى عادة أكثر ترجيحًا بكثير."
 
 #. placeholder {0}: serverCount === 1 ? 'entry' : 'entries'
 #. placeholder {1}: localCount === 1 ? 'entry' : 'entries'

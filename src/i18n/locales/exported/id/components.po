@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "A gentle daily nudge makes it far more likely to become a habit."
+msgstr "Pengingat harian yang lembut membuatnya jauh lebih mungkin menjadi kebiasaan."
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "Back online"
 msgstr "Kembali online"
@@ -22,6 +26,10 @@ msgstr "Kembali online"
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
 msgstr "Batal"
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Couldn't set the reminder"
+msgstr "Gagal mengatur pengingat"
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Decide later — review local entries first"
@@ -104,6 +112,10 @@ msgid "One quiet reminder a day. Change the time or turn it off anytime."
 msgstr "Satu pengingat tenang setiap hari. Ubah waktunya atau matikan kapan saja."
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Please try again from Settings."
+msgstr "Silakan coba lagi dari Pengaturan."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Remind me at {timeLabel}"
 msgstr "Ingatkan saya pukul {timeLabel}"
 
@@ -149,8 +161,8 @@ msgid "You have {localCount} local {0} and {serverCount} in your account — {co
 msgstr "Anda memiliki {localCount} {0} lokal dan {serverCount} di akun — total {combined}, melebihi batas gratis {FREE_ENTRY_LIMIT} sebanyak {overBy}."
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
-msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
-msgstr "Kamu baru menulis entri pertamamu. Pengingat harian yang lembut membuatnya jauh lebih mungkin menjadi kebiasaan."
+#~ msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
+#~ msgstr "Kamu baru menulis entri pertamamu. Pengingat harian yang lembut membuatnya jauh lebih mungkin menjadi kebiasaan."
 
 #. placeholder {0}: serverCount === 1 ? 'entry' : 'entries'
 #. placeholder {1}: localCount === 1 ? 'entry' : 'entries'

@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "A gentle daily nudge makes it far more likely to become a habit."
+msgstr "Um lembrete diário suave torna muito mais provável que vire um hábito."
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "Back online"
 msgstr "Conexão restabelecida"
@@ -22,6 +26,10 @@ msgstr "Conexão restabelecida"
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
 msgstr "Cancelar"
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Couldn't set the reminder"
+msgstr "Não foi possível ativar o lembrete"
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Decide later — review local entries first"
@@ -104,6 +112,10 @@ msgid "One quiet reminder a day. Change the time or turn it off anytime."
 msgstr "Um lembrete discreto por dia. Mude o horário ou desative quando quiser."
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+msgid "Please try again from Settings."
+msgstr "Tente novamente em Configurações."
+
+#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Remind me at {timeLabel}"
 msgstr "Lembrar-me às {timeLabel}"
 
@@ -149,8 +161,8 @@ msgid "You have {localCount} local {0} and {serverCount} in your account — {co
 msgstr "Você tem {localCount} {0} locais e {serverCount} na sua conta — {combined} no total, {overBy} acima do limite gratuito de {FREE_ENTRY_LIMIT}."
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
-msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
-msgstr "Você escreveu sua primeira entrada. Um lembrete diário suave torna muito mais provável que vire um hábito."
+#~ msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
+#~ msgstr "Você escreveu sua primeira entrada. Um lembrete diário suave torna muito mais provável que vire um hábito."
 
 #. placeholder {0}: serverCount === 1 ? 'entry' : 'entries'
 #. placeholder {1}: localCount === 1 ? 'entry' : 'entries'
