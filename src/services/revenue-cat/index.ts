@@ -1,5 +1,6 @@
 import { Platform, Linking, LogBox } from 'react-native';
 import Purchases, { LOG_LEVEL } from 'react-native-purchases';
+import { useAppLockStore } from '@/src/stores';
 
 LogBox.ignoreLogs(['[RevenueCat]']);
 
@@ -48,11 +49,19 @@ const resetRevenueCatUser = async () => {
 };
 
 const manageSubscriptions = async () => {
+  // Android leaves for the Play Store — a genuine app exit, so the biometric
+  // lock should engage. iOS presents an in-app sheet, which only *looks* like
+  // backgrounding; flag it so returning doesn't demand Face ID.
   if (Platform.OS === 'android') {
     await Linking.openURL(ANDROID_SUBSCRIPTIONS_URL);
     return;
   }
-  await Purchases.showManageSubscriptions();
+  useAppLockStore.getState().openStoreSheet();
+  try {
+    await Purchases.showManageSubscriptions();
+  } finally {
+    useAppLockStore.getState().closeStoreSheet();
+  }
 };
 
 export { configureRevenueCat, identifyRevenueCatUser, resetRevenueCatUser, manageSubscriptions };

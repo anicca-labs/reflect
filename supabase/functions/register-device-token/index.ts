@@ -19,6 +19,7 @@ Deno.serve(async (req) => {
     reminderEnabled?: unknown;
     locale?: unknown;
     timezone?: unknown;
+    markFirstEntry?: unknown;
   };
   try {
     body = await req.json();
@@ -74,6 +75,20 @@ Deno.serve(async (req) => {
   const { error } = await supabase.from('device_tokens').upsert(row, { onConflict: 'fcm_token' });
 
   if (error) return new Response(error.message, { status: 500 });
+
+  // Activation stamp: record the FIRST entry this device ever wrote. Deliberately NOT
+  // part of the upsert above — a conditional update (only where first_entry_at is null)
+  // means re-registering can never move an existing value, so the activation moment
+  // stays the first one. Guests journal locally, so this is the only server-side signal
+  // that a guest actually started writing.
+  if (body.markFirstEntry === true) {
+    await supabase
+      .from('device_tokens')
+      .update({ first_entry_at: now })
+      .eq('fcm_token', fcmToken)
+      .is('first_entry_at', null);
+  }
+
   return new Response(JSON.stringify({ ok: true }), {
     headers: { 'Content-Type': 'application/json' },
   });

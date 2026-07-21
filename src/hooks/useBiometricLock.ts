@@ -20,8 +20,10 @@ import { usePreferencesStore, useAppLockStore } from '@/src/stores';
  * is in the foreground.
  *
  * NOT locked: a fresh interactive sign-in (`SIGNED_IN` — they just authenticated),
- * anonymous (account-less) mode, or a device with no enrolled biometrics (which
- * would otherwise strand the user behind a prompt they can't pass).
+ * anonymous (account-less) mode, a device with no enrolled biometrics (which
+ * would otherwise strand the user behind a prompt they can't pass), or the
+ * inactive/background churn caused by an in-app store sheet
+ * (`useAppLockStore().storeSheetOpen`).
  */
 const useBiometricLock = () => {
   const setLocked = useAppLockStore((s) => s.setLocked);
@@ -78,6 +80,10 @@ const useBiometricLock = () => {
   useEffect(() => {
     const onChange = (next: AppStateStatus) => {
       if (next !== 'background' && next !== 'inactive') return;
+      // A store sheet (paywall / StoreKit purchase) backgrounds the app without
+      // the user ever leaving it — locking there would greet them with Face ID
+      // on the way back to the journal.
+      if (useAppLockStore.getState().storeSheetOpen) return;
       if (
         usePreferencesStore.getState().biometricLockEnabled &&
         hasSession.current &&

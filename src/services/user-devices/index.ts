@@ -86,6 +86,39 @@ const registerGuestDeviceToken = async (reminderEnabled?: boolean): Promise<void
   });
 };
 
+// Activation signal: stamp the moment this device writes its FIRST entry. Guests
+// journal locally (their entries never reach journal_entries), so without this a guest
+// who activates is invisible server-side — and activation is the metric that matters.
+// Written once: both paths update only where first_entry_at is null, so later entries
+// never move it. Fire-and-forget — a failure here must never affect saving an entry.
+//
+// Uses getSession() (local, no network) rather than getUser(): getUser() round-trips
+// and can return null when offline, which would misroute a signed-in user down the
+// guest path and detach their token's user_id.
+const markFirstEntryWritten = async (): Promise<void> => {
+  const fcmToken = await getFCMToken();
+  if (!fcmToken) return;
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (session?.user) {
+    await supabase
+      .from('device_tokens')
+      .update({ first_entry_at: new Date().toISOString() })
+      .eq('fcm_token', fcmToken)
+      .is('first_entry_at', null);
+    return;
+  }
+
+  // Guests have no session, so RLS blocks the direct write — go through the
+  // service-role edge function, same as registerGuestDeviceToken.
+  await supabase.functions.invoke('register-device-token', {
+    body: { fcmToken, firebaseProjectId: FIREBASE_PROJECT_ID, markFirstEntry: true },
+  });
+};
+
 // Capture/refresh this device's push token for the current account type, stamping
 // last_active_at. Doubles as the activity ping — safe to call on notification-
 // permission grant and on app foreground.
@@ -97,4 +130,10 @@ const captureDeviceToken = async (): Promise<void> => {
   else await registerGuestDeviceToken();
 };
 
-export { upsertDeviceToken, syncReminderToBackend, registerGuestDeviceToken, captureDeviceToken };
+export {
+  upsertDeviceToken,
+  syncReminderToBackend,
+  registerGuestDeviceToken,
+  captureDeviceToken,
+  markFirstEntryWritten,
+};

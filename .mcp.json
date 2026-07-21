@@ -51,7 +51,22 @@
         "bash",
         "-c",
         "exec npx -y supergateway --streamableHttp https://mcp.revenuecat.ai/mcp --oauth2Bearer \"$RC_MCP_API_KEY\""
-      ]
+      ],
+      "env": {
+        "MCP_DOPPLER_CONFIG": "stg"
+      }
+    },
+    "revenuecat-prd": {
+      "type": "stdio",
+      "command": "${CLAUDE_PLUGIN_ROOT:-.}/bin/mcp-run.sh",
+      "args": [
+        "bash",
+        "-c",
+        "exec npx -y supergateway --streamableHttp https://mcp.revenuecat.ai/mcp --oauth2Bearer \"$RC_MCP_API_KEY\""
+      ],
+      "env": {
+        "MCP_DOPPLER_CONFIG": "prd"
+      }
     }
   }
 }
