@@ -5,20 +5,21 @@ import { HeadingLg, BodyLg, LabelMd, LabelLg } from '@fonts';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { Trans } from '@lingui/react/macro';
 import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING } from '@constants';
-import type { WeeklyReflection } from '@/src/data/mockWeeklyReflections';
+import { reflectionMeta, type Reflection } from '@hooks';
 
 interface ReflectionReadModalProps {
-  reflection: WeeklyReflection | null;
+  reflection: Reflection | null;
   onClose: () => void;
-  // Fired by the "Write what it stirs" CTA — in the real feature this drops the
-  // user into the composer. In the preview it just closes.
+  // The "Write what it stirs" CTA — in the real feature this drops into the
+  // composer; here it just closes.
   onWrite?: () => void;
 }
 
 // Full-screen, calm read of one weekly reflection. The reveal deserves space —
-// so it's its own surface, not a cramped list row.
+// its own surface, not a cramped list row.
 const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadModalProps) => {
   const insets = useSafeAreaInsets();
+  const meta = reflection ? reflectionMeta(reflection) : null;
   const paragraphs = reflection ? reflection.body.split('\n\n') : [];
 
   return (
@@ -41,7 +42,7 @@ const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadMod
         </XStack>
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 24 }}>
-          {reflection ? (
+          {reflection && meta ? (
             <YStack>
               <LabelMd
                 color="$accentBackground"
@@ -53,10 +54,16 @@ const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadMod
               </LabelMd>
 
               <HeadingLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
-                {reflection.relativeLabel}
+                {meta.relKey === 'this-week' ? (
+                  <Trans>This week</Trans>
+                ) : meta.relKey === 'last-week' ? (
+                  <Trans>Last week</Trans>
+                ) : (
+                  meta.dateLabel
+                )}
               </HeadingLg>
               <LabelMd color="$text-disabled" mt="$1" mb="$6">
-                {reflection.rangeLabel} · <Trans>{reflection.entryCount} entries</Trans>
+                {meta.rangeLabel} · <Trans>{reflection.entry_count} entries</Trans>
               </LabelMd>
 
               {paragraphs.map((p, i) => (

@@ -13,7 +13,7 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#. placeholder {0}: reflection.entryCount
+#. placeholder {0}: reflection.entry_count
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "{0} entries"
 msgstr ""
@@ -38,6 +38,10 @@ msgstr ""
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Couldn't generate"
 msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
@@ -81,6 +85,10 @@ msgid "Every Sunday, a look back at your week — in your own words."
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Generate this week’s reflection"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Go Pro ✦"
 msgstr ""
 
@@ -100,6 +108,11 @@ msgstr ""
 msgid "Keep local entries"
 msgstr ""
 
+#: src/components/molecules/WeeklyReflection/index.tsx
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Last week"
+msgstr ""
+
 #: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
 msgid "Locked. Verify your identity to continue."
 msgstr ""
@@ -114,6 +127,14 @@ msgstr ""
 
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "No connection"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "No reflections yet — they arrive every Sunday."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Not enough to reflect on yet"
 msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
@@ -138,8 +159,12 @@ msgid "Please try again from Settings."
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "Pro"
+msgid "Please try again."
 msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+#~ msgid "Pro"
+#~ msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Read →"
@@ -161,6 +186,11 @@ msgstr ""
 msgid "This cannot be undone."
 msgstr ""
 
+#: src/components/molecules/WeeklyReflection/index.tsx
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "This week"
+msgstr ""
+
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Turn them on in Settings whenever you'd like a daily nudge."
 msgstr ""
@@ -175,6 +205,10 @@ msgstr ""
 
 #: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
 msgid "Unlock Reflect"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Unlock with Pro ✦"
 msgstr ""
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
@@ -195,6 +229,10 @@ msgstr ""
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Welcome to Pro ✦"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Write a couple of entries first."
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx

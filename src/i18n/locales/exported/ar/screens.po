@@ -267,6 +267,10 @@ msgid "Korean"
 msgstr "الكورية"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Let AI write a weekly reflection from your entries"
+msgstr "دع الذكاء الاصطناعي يكتب تأملاً أسبوعياً من تدويناتك"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
 msgstr "إدارة الاشتراك"
 
@@ -542,6 +546,10 @@ msgstr "أرسلنا رابط تأكيد إلى {email}."
 msgid "We sent a password reset link to {email}."
 msgstr "أرسلنا رابط إعادة تعيين كلمة المرور إلى {email}."
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Weekly reflections"
+msgstr "تأملات أسبوعية"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Welcome back."
 msgstr "مرحباً بعودتك."
@@ -582,6 +590,10 @@ msgstr "ما الشيء الواحد الذي تريد أن تتذكره من ا
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's something small that brought you joy recently?"
 msgstr "ما الشيء الصغير الذي جلب لك البهجة مؤخراً؟"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "When this is on, your entries are sent securely to our AI (Anthropic’s Claude) to write your reflection. They’re never shown to another person, never used for ads, never sold, and never used to train AI. You can turn it off anytime."
+msgstr "عند تفعيل هذا، تُرسل تدويناتك بأمان إلى الذكاء الاصطناعي لدينا (Claude من Anthropic) لكتابة تأملك. لا تُعرض أبداً على شخص آخر، ولا تُستخدم للإعلانات، ولا تُباع، ولا تُستخدم لتدريب الذكاء الاصطناعي. يمكنك إيقافه متى شئت."
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
