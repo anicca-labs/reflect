@@ -2,3 +2,4 @@ export { AnimatedEntry, SwipeableDeleteWrapper, EntryPeekModal } from './Journal
 export type { SwipeableDeleteWrapperHandle } from './JournalEntry';
 export { AnonMergeModal } from './AnonMergeModal';
 export { ReminderPromptModal } from './ReminderPromptModal';
+export { WeeklyReflectionsSection, WeeklyReflectionBanner } from './WeeklyReflection';
