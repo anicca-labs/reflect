@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Modal } from 'react-native';
+import Animated, { FadeOutUp } from 'react-native-reanimated';
 import { YStack, XStack } from 'tamagui';
 import { HeadingMd, BodyMdBold, BodySm, LabelMd, LabelLg } from '@fonts';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
@@ -168,36 +169,39 @@ const WeeklyReflectionBanner = () => {
   const [reading, setReading] = useState(false);
   const latest = MOCK_WEEKLY_REFLECTIONS[0];
 
-  if (dismissed) return null;
-
   return (
     <>
-      <BaseTouchable
-        onPress={() => setReading(true)}
-        bg="$surface-card"
-        rounded="$4"
-        p="$4"
-        mb="$4"
-        borderWidth={1}
-        borderColor="$accentBackground"
-      >
-        <XStack justify="space-between" items="flex-start" gap="$3">
-          <YStack flex={1} gap="$1">
-            <BodyMdBold color="$text-emphasis">
-              🍂 <Trans>Your week is ready</Trans>
-            </BodyMdBold>
-            <BodySm color="$text-secondary">
-              <Trans>A look back at your last 7 days — tap to read.</Trans>
-            </BodySm>
-          </YStack>
+      {!dismissed ? (
+        // exiting animation plays when the ✕ flips `dismissed`, then the card unmounts.
+        <Animated.View exiting={FadeOutUp.duration(220)}>
           <BaseTouchable
-            onPress={() => setDismissed(true)}
-            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            onPress={() => setReading(true)}
+            bg="$surface-card"
+            rounded="$4"
+            p="$4"
+            mb="$4"
+            borderWidth={1}
+            borderColor="$accentBackground"
           >
-            <LabelLg color="$text-disabled">✕</LabelLg>
+            <XStack justify="space-between" items="flex-start" gap="$3">
+              <YStack flex={1} gap="$1">
+                <BodyMdBold color="$text-emphasis">
+                  🍂 <Trans>Your week is ready</Trans>
+                </BodyMdBold>
+                <BodySm color="$text-secondary">
+                  <Trans>A look back at your last 7 days — tap to read.</Trans>
+                </BodySm>
+              </YStack>
+              <BaseTouchable
+                onPress={() => setDismissed(true)}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              >
+                <LabelLg color="$text-disabled">✕</LabelLg>
+              </BaseTouchable>
+            </XStack>
           </BaseTouchable>
-        </XStack>
-      </BaseTouchable>
+        </Animated.View>
+      ) : null}
 
       <ReflectionReadModal reflection={reading ? latest : null} onClose={() => setReading(false)} />
     </>
