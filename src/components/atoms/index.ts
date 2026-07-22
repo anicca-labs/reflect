@@ -5,3 +5,4 @@ export * from './HapticTab';
 export * from './icons';
 export * from './PasswordInput/PasswordInput';
 export * from './BiometricLockOverlay/BiometricLockOverlay';
+export * from './Toggle/Toggle';

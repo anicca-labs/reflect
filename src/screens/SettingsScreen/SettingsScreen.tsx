@@ -39,6 +39,7 @@ import {
   SIMULATOR_TOAST_DURATION,
 } from '@constants';
 import { AnimatedEntry } from '@molecules';
+import { Toggle } from '@atoms';
 
 const REMINDER_HOUR_START = 6;
 const REMINDER_HOUR_COUNT = 18;
@@ -51,9 +52,6 @@ const REMINDER_SLOTS = REMINDER_HOURS.flatMap((h) =>
   REMINDER_MINUTES.map((m) => ({ hour: h, minute: m })),
 );
 const TIME_PICKER_ITEM_PY = 12;
-const TOGGLE_TRACK_WIDTH = 44;
-const TOGGLE_TRACK_HEIGHT = 26;
-const TOGGLE_THUMB_SIZE = 20;
 
 // AI Weekly Reflections backend lives on stg only for now.
 const isStg = process.env.EXPO_PUBLIC_ENV === 'stg';
@@ -541,7 +539,8 @@ const SettingsScreen = () => {
                   {reminderLoading ? (
                     <Spinner size="small" color="$text-disabled" />
                   ) : (
-                    <BaseTouchable
+                    <Toggle
+                      value={reminderEnabled}
                       onPress={() => {
                         if (isSimulator) {
                           showSimulatorToast();
@@ -553,24 +552,7 @@ const SettingsScreen = () => {
                       opacity={
                         isSimulator ? 1 : notifPermission === 'granted' ? 1 : DISABLED_OPACITY
                       }
-                    >
-                      <YStack
-                        bg={reminderEnabled ? '$accentBackground' : '$surface-subtle'}
-                        rounded="$10"
-                        width={TOGGLE_TRACK_WIDTH}
-                        height={TOGGLE_TRACK_HEIGHT}
-                        justify="center"
-                        px="$1"
-                      >
-                        <YStack
-                          bg="$white"
-                          rounded="$10"
-                          width={TOGGLE_THUMB_SIZE}
-                          height={TOGGLE_THUMB_SIZE}
-                          alignSelf={reminderEnabled ? 'flex-end' : 'flex-start'}
-                        />
-                      </YStack>
-                    </BaseTouchable>
+                    />
                   )}
                 </XStack>
 
@@ -641,24 +623,7 @@ const SettingsScreen = () => {
                     {aiLoading ? (
                       <Spinner size="small" color="$text-disabled" />
                     ) : (
-                      <BaseTouchable onPress={() => setAiEnabled(!aiEnabled)}>
-                        <YStack
-                          bg={aiEnabled ? '$accentBackground' : '$surface-subtle'}
-                          rounded="$10"
-                          width={TOGGLE_TRACK_WIDTH}
-                          height={TOGGLE_TRACK_HEIGHT}
-                          justify="center"
-                          px="$1"
-                        >
-                          <YStack
-                            bg="$white"
-                            rounded="$10"
-                            width={TOGGLE_THUMB_SIZE}
-                            height={TOGGLE_THUMB_SIZE}
-                            alignSelf={aiEnabled ? 'flex-end' : 'flex-start'}
-                          />
-                        </YStack>
-                      </BaseTouchable>
+                      <Toggle value={aiEnabled} onPress={() => setAiEnabled(!aiEnabled)} />
                     )}
                   </XStack>
 
