@@ -58,7 +58,6 @@ import {
   SwipeableDeleteWrapper,
   EntryPeekModal,
   ReminderPromptModal,
-  WeeklyReflectionBanner,
   type SwipeableDeleteWrapperHandle,
 } from '@molecules';
 import { BaseIcon } from '@/src/components/atoms/icons';
@@ -501,9 +500,6 @@ const JournalScreen = () => {
                 ) : null}
               </XStack>
             </YStack>
-
-            {/* stg-only hardcoded preview: the "your week is ready" nudge card */}
-            {process.env.EXPO_PUBLIC_ENV === 'stg' ? <WeeklyReflectionBanner /> : null}
 
             <YStack
               bg="$surface-card"

@@ -31,7 +31,6 @@ import {
   AnimatedEntry,
   SwipeableDeleteWrapper,
   EntryPeekModal,
-  WeeklyReflectionsSection,
   type SwipeableDeleteWrapperHandle,
 } from '@molecules';
 
@@ -279,9 +278,6 @@ const ReflectionsScreen = () => {
                 </SizingAnimatedButton>
               ) : null}
             </XStack>
-
-            {/* stg-only hardcoded preview of the AI Weekly Reflection feature */}
-            {process.env.EXPO_PUBLIC_ENV === 'stg' ? <WeeklyReflectionsSection /> : null}
 
             {entries.length > 0 ? (
               <YStack mb="$4" gap="$2">
