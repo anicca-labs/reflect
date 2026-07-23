@@ -52,9 +52,6 @@ const REMINDER_SLOTS = REMINDER_HOURS.flatMap((h) =>
   REMINDER_MINUTES.map((m) => ({ hour: h, minute: m })),
 );
 const TIME_PICKER_ITEM_PY = 12;
-
-// AI Weekly Reflections backend lives on stg only for now.
-const isStg = process.env.EXPO_PUBLIC_ENV === 'stg';
 const TIME_PICKER_MAX_HEIGHT = 300;
 const UPGRADE_BUTTON_HEIGHT = 40;
 
@@ -603,43 +600,41 @@ const SettingsScreen = () => {
               </SettingsCard>
             </AnimatedEntry>
 
-            {/* AI Weekly Reflections (stg only) */}
-            {isStg ? (
-              <AnimatedEntry index={5} animKey={animKey}>
-                <SettingsCard hasGlass={hasGlass}>
-                  <LabelMd
-                    color="$text-disabled"
-                    textTransform="uppercase"
-                    letterSpacing={LABEL_LETTER_SPACING}
-                    mb="$3"
-                  >
-                    <Trans>Weekly reflections</Trans>
-                  </LabelMd>
+            {/* AI Weekly Reflections */}
+            <AnimatedEntry index={5} animKey={animKey}>
+              <SettingsCard hasGlass={hasGlass}>
+                <LabelMd
+                  color="$text-disabled"
+                  textTransform="uppercase"
+                  letterSpacing={LABEL_LETTER_SPACING}
+                  mb="$3"
+                >
+                  <Trans>Weekly reflections</Trans>
+                </LabelMd>
 
-                  <XStack items="center" justify="space-between" gap="$4" mb="$3">
-                    <BodySm color="$text-secondary" flex={1}>
-                      <Trans>Let AI write a weekly reflection from your entries</Trans>
-                    </BodySm>
-                    {aiLoading ? (
-                      <Spinner size="small" color="$text-disabled" />
-                    ) : (
-                      <Toggle value={aiEnabled} onPress={() => setAiEnabled(!aiEnabled)} />
-                    )}
-                  </XStack>
-
-                  <BodySm color="$text-disabled" style={{ lineHeight: 18 }}>
-                    <Trans>
-                      When this is on, your entries are sent securely to our AI (Anthropic’s Claude)
-                      to write your reflection. They’re never shown to another person, never used
-                      for ads, never sold, and never used to train AI. You can turn it off anytime.
-                    </Trans>
+                <XStack items="center" justify="space-between" gap="$4" mb="$3">
+                  <BodySm color="$text-secondary" flex={1}>
+                    <Trans>Let AI write a weekly reflection from your entries</Trans>
                   </BodySm>
-                </SettingsCard>
-              </AnimatedEntry>
-            ) : null}
+                  {aiLoading ? (
+                    <Spinner size="small" color="$text-disabled" />
+                  ) : (
+                    <Toggle value={aiEnabled} onPress={() => setAiEnabled(!aiEnabled)} />
+                  )}
+                </XStack>
+
+                <BodySm color="$text-disabled" style={{ lineHeight: 18 }}>
+                  <Trans>
+                    When this is on, your entries are sent securely to our AI (Anthropic’s Claude)
+                    to write your reflection. They’re never shown to another person, never used for
+                    ads, never sold, and never used to train AI. You can turn it off anytime.
+                  </Trans>
+                </BodySm>
+              </SettingsCard>
+            </AnimatedEntry>
 
             {/* Preferences */}
-            <AnimatedEntry index={5} animKey={animKey}>
+            <AnimatedEntry index={6} animKey={animKey}>
               <SettingsCard hasGlass={hasGlass}>
                 <LabelMd
                   color="$text-disabled"
@@ -685,7 +680,7 @@ const SettingsScreen = () => {
             </AnimatedEntry>
 
             {/* Sign out / Sign in */}
-            <AnimatedEntry index={6} animKey={animKey}>
+            <AnimatedEntry index={7} animKey={animKey}>
               {isAnonymous ? (
                 <YStack />
               ) : (

@@ -41,8 +41,8 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "Couldn't generate"
-msgstr "No se pudo generar"
+#~ msgid "Couldn't generate"
+#~ msgstr "No se pudo generar"
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Couldn't set the reminder"
@@ -85,8 +85,8 @@ msgid "Every Sunday, a look back at your week — in your own words."
 msgstr "Cada domingo, un repaso de tu semana — en tus propias palabras."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "Generate this week’s reflection"
-msgstr "Generar la reflexión de esta semana"
+#~ msgid "Generate this week’s reflection"
+#~ msgstr "Generar la reflexión de esta semana"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Go Pro ✦"
@@ -134,8 +134,8 @@ msgid "No reflections yet — they arrive every Sunday."
 msgstr "Aún no hay reflexiones — llegan cada domingo."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "Not enough to reflect on yet"
-msgstr "Aún no hay suficiente para reflexionar"
+#~ msgid "Not enough to reflect on yet"
+#~ msgstr "Aún no hay suficiente para reflexionar"
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 #: src/components/molecules/WeeklyReflection/index.tsx
@@ -159,8 +159,8 @@ msgid "Please try again from Settings."
 msgstr "Inténtalo de nuevo desde Ajustes."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "Please try again."
-msgstr "Inténtalo de nuevo."
+#~ msgid "Please try again."
+#~ msgstr "Inténtalo de nuevo."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 #~ msgid "Pro"
@@ -232,8 +232,8 @@ msgid "Welcome to Pro ✦"
 msgstr "Bienvenido a Pro ✦"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "Write a couple of entries first."
-msgstr "Escribe un par de entradas primero."
+#~ msgid "Write a couple of entries first."
+#~ msgstr "Escribe un par de entradas primero."
 
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Write what it stirs →"

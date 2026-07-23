@@ -281,7 +281,7 @@ const ReflectionsScreen = () => {
             </XStack>
 
             {/* AI Weekly Reflections — stg-only until the backend is promoted to prod */}
-            {process.env.EXPO_PUBLIC_ENV === 'stg' ? <WeeklyReflectionsSection /> : null}
+            <WeeklyReflectionsSection />
 
             {entries.length > 0 ? (
               <YStack mb="$4" gap="$2">

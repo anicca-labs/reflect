@@ -503,7 +503,7 @@ const JournalScreen = () => {
             </YStack>
 
             {/* AI reflection "your week is ready" nudge — stg-only until prod backend */}
-            {process.env.EXPO_PUBLIC_ENV === 'stg' ? <WeeklyReflectionBanner /> : null}
+            <WeeklyReflectionBanner />
 
             <YStack
               bg="$surface-card"
