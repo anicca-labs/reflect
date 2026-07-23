@@ -267,6 +267,10 @@ msgid "Korean"
 msgstr "Korea"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Let AI write a weekly reflection from your entries"
+msgstr "Biarkan AI menulis refleksi mingguan dari entri kamu"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
 msgstr "Kelola langganan"
 
@@ -542,6 +546,10 @@ msgstr "Kami mengirim tautan konfirmasi ke {email}."
 msgid "We sent a password reset link to {email}."
 msgstr "Kami mengirim tautan reset kata sandi ke {email}."
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Weekly reflections"
+msgstr "Refleksi mingguan"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Welcome back."
 msgstr "Selamat datang kembali."
@@ -582,6 +590,10 @@ msgstr "Satu hal apa yang ingin kamu ingat dari hari ini?"
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's something small that brought you joy recently?"
 msgstr "Hal kecil apa yang baru-baru ini memberimu kebahagiaan?"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "When this is on, your entries are sent securely to our AI (Anthropic’s Claude) to write your reflection. They’re never shown to another person, never used for ads, never sold, and never used to train AI. You can turn it off anytime."
+msgstr "Saat ini aktif, entri kamu dikirim dengan aman ke AI kami (Claude dari Anthropic) untuk menulis refleksimu. Entri tidak pernah ditunjukkan ke orang lain, tidak pernah dipakai untuk iklan, tidak pernah dijual, dan tidak pernah dipakai untuk melatih AI. Kamu bisa menonaktifkannya kapan saja."
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx

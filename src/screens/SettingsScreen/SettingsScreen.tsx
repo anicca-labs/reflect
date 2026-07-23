@@ -17,7 +17,13 @@ import { deleteAccount } from '@/src/services/account';
 import { usePreferencesStore, useSessionStore } from '@/src/stores';
 import { manageSubscriptions } from '@/src/services/revenue-cat';
 import { refreshEntitlement } from '@/src/services/entitlements';
-import { useRevenueCat, useToast, useReminder, useOtaUpdate } from '@hooks';
+import {
+  useRevenueCat,
+  useToast,
+  useReminder,
+  useOtaUpdate,
+  useAiReflectionsSetting,
+} from '@hooks';
 import { sizes } from '@theme';
 import {
   getNotificationPermissionStatus,
@@ -33,6 +39,7 @@ import {
   SIMULATOR_TOAST_DURATION,
 } from '@constants';
 import { AnimatedEntry } from '@molecules';
+import { Toggle } from '@atoms';
 
 const REMINDER_HOUR_START = 6;
 const REMINDER_HOUR_COUNT = 18;
@@ -45,9 +52,9 @@ const REMINDER_SLOTS = REMINDER_HOURS.flatMap((h) =>
   REMINDER_MINUTES.map((m) => ({ hour: h, minute: m })),
 );
 const TIME_PICKER_ITEM_PY = 12;
-const TOGGLE_TRACK_WIDTH = 44;
-const TOGGLE_TRACK_HEIGHT = 26;
-const TOGGLE_THUMB_SIZE = 20;
+
+// AI Weekly Reflections backend lives on stg only for now.
+const isStg = process.env.EXPO_PUBLIC_ENV === 'stg';
 const TIME_PICKER_MAX_HEIGHT = 300;
 const UPGRADE_BUTTON_HEIGHT = 40;
 
@@ -121,6 +128,11 @@ const SettingsScreen = () => {
     disable: disableReminder,
     updateTime,
   } = useReminder();
+  const {
+    enabled: aiEnabled,
+    isLoading: aiLoading,
+    setEnabled: setAiEnabled,
+  } = useAiReflectionsSetting();
   const timeFormat = usePreferencesStore((s) => s.timeFormat);
   const setTimeFormat = usePreferencesStore((s) => s.setTimeFormat);
   const voiceLanguage = usePreferencesStore((s) => s.voiceLanguage);
@@ -527,7 +539,8 @@ const SettingsScreen = () => {
                   {reminderLoading ? (
                     <Spinner size="small" color="$text-disabled" />
                   ) : (
-                    <BaseTouchable
+                    <Toggle
+                      value={reminderEnabled}
                       onPress={() => {
                         if (isSimulator) {
                           showSimulatorToast();
@@ -539,24 +552,7 @@ const SettingsScreen = () => {
                       opacity={
                         isSimulator ? 1 : notifPermission === 'granted' ? 1 : DISABLED_OPACITY
                       }
-                    >
-                      <YStack
-                        bg={reminderEnabled ? '$accentBackground' : '$surface-subtle'}
-                        rounded="$10"
-                        width={TOGGLE_TRACK_WIDTH}
-                        height={TOGGLE_TRACK_HEIGHT}
-                        justify="center"
-                        px="$1"
-                      >
-                        <YStack
-                          bg="$white"
-                          rounded="$10"
-                          width={TOGGLE_THUMB_SIZE}
-                          height={TOGGLE_THUMB_SIZE}
-                          alignSelf={reminderEnabled ? 'flex-end' : 'flex-start'}
-                        />
-                      </YStack>
-                    </BaseTouchable>
+                    />
                   )}
                 </XStack>
 
@@ -606,6 +602,41 @@ const SettingsScreen = () => {
                 </BaseTouchable>
               </SettingsCard>
             </AnimatedEntry>
+
+            {/* AI Weekly Reflections (stg only) */}
+            {isStg ? (
+              <AnimatedEntry index={5} animKey={animKey}>
+                <SettingsCard hasGlass={hasGlass}>
+                  <LabelMd
+                    color="$text-disabled"
+                    textTransform="uppercase"
+                    letterSpacing={LABEL_LETTER_SPACING}
+                    mb="$3"
+                  >
+                    <Trans>Weekly reflections</Trans>
+                  </LabelMd>
+
+                  <XStack items="center" justify="space-between" gap="$4" mb="$3">
+                    <BodySm color="$text-secondary" flex={1}>
+                      <Trans>Let AI write a weekly reflection from your entries</Trans>
+                    </BodySm>
+                    {aiLoading ? (
+                      <Spinner size="small" color="$text-disabled" />
+                    ) : (
+                      <Toggle value={aiEnabled} onPress={() => setAiEnabled(!aiEnabled)} />
+                    )}
+                  </XStack>
+
+                  <BodySm color="$text-disabled" style={{ lineHeight: 18 }}>
+                    <Trans>
+                      When this is on, your entries are sent securely to our AI (Anthropic’s Claude)
+                      to write your reflection. They’re never shown to another person, never used
+                      for ads, never sold, and never used to train AI. You can turn it off anytime.
+                    </Trans>
+                  </BodySm>
+                </SettingsCard>
+              </AnimatedEntry>
+            ) : null}
 
             {/* Preferences */}
             <AnimatedEntry index={5} animKey={animKey}>

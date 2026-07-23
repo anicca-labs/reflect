@@ -13,8 +13,21 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#. placeholder {0}: reflection.entry_count
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "{0} entries"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "3 free · Pro unlocks the rest"
+msgstr ""
+
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "A gentle daily nudge makes it far more likely to become a habit."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "A look back at your last 7 days — tap to read."
 msgstr ""
 
 #: src/components/atoms/NetworkStatusBanner/index.tsx
@@ -25,6 +38,10 @@ msgstr ""
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Couldn't generate"
 msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
@@ -63,6 +80,18 @@ msgstr ""
 msgid "Discard your {localCount} local {0} and continue with your {serverCount} saved {1}."
 msgstr ""
 
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Every Sunday, a look back at your week — in your own words."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Generate this week’s reflection"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Go Pro ✦"
+msgstr ""
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep account entries"
 msgstr ""
@@ -77,6 +106,11 @@ msgstr ""
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep local entries"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Last week"
 msgstr ""
 
 #: src/components/atoms/BiometricLockOverlay/BiometricLockOverlay.tsx
@@ -95,7 +129,16 @@ msgstr ""
 msgid "No connection"
 msgstr ""
 
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "No reflections yet — they arrive every Sunday."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Not enough to reflect on yet"
+msgstr ""
+
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
+#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Not now"
 msgstr ""
 
@@ -115,6 +158,22 @@ msgstr ""
 msgid "Please try again from Settings."
 msgstr ""
 
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Please try again."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+#~ msgid "Pro"
+#~ msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Read →"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Reflect Pro gives you a new reflection every Sunday — plus your whole archive to look back on."
+msgstr ""
+
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Remind me at {timeLabel}"
 msgstr ""
@@ -125,6 +184,11 @@ msgstr ""
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "This week"
 msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
@@ -143,6 +207,10 @@ msgstr ""
 msgid "Unlock Reflect"
 msgstr ""
 
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Unlock with Pro ✦"
+msgstr ""
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Upgrade to Pro to merge all {combined} entries and write without limits."
 msgstr ""
@@ -151,8 +219,24 @@ msgstr ""
 msgid "We'll nudge you at {timeLabel}. Change it anytime in Settings."
 msgstr ""
 
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Weekly reflection"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Weekly Reflections"
+msgstr ""
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Welcome to Pro ✦"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Write a couple of entries first."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Write what it stirs →"
 msgstr ""
 
 #. placeholder {0}: localCount === 1 ? 'entry' : 'entries'
@@ -164,8 +248,20 @@ msgstr ""
 #~ msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
 #~ msgstr ""
 
+#: src/components/molecules/WeeklyReflection/index.tsx
+#~ msgid "You've read your 3 free reflections"
+#~ msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "You’ve read your 3 free reflections"
+msgstr ""
+
 #. placeholder {0}: serverCount === 1 ? 'entry' : 'entries'
 #. placeholder {1}: localCount === 1 ? 'entry' : 'entries'
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Your {serverCount} account {0} will be permanently deleted and replaced with your {localCount} local {1}."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your week is ready"
 msgstr ""

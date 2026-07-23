@@ -267,6 +267,10 @@ msgid "Korean"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Let AI write a weekly reflection from your entries"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
 msgstr ""
 
@@ -542,6 +546,10 @@ msgstr ""
 msgid "We sent a password reset link to {email}."
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Weekly reflections"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Welcome back."
 msgstr ""
@@ -581,6 +589,10 @@ msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's something small that brought you joy recently?"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "When this is on, your entries are sent securely to our AI (Anthropic’s Claude) to write your reflection. They’re never shown to another person, never used for ads, never sold, and never used to train AI. You can turn it off anytime."
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx

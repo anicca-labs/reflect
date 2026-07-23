@@ -267,6 +267,10 @@ msgid "Korean"
 msgstr "Coréen"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Let AI write a weekly reflection from your entries"
+msgstr "Laisse l'IA écrire une réflexion hebdomadaire à partir de tes entrées"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
 msgstr "Gérer l'abonnement"
 
@@ -542,6 +546,10 @@ msgstr "Nous avons envoyé un lien de confirmation à {email}."
 msgid "We sent a password reset link to {email}."
 msgstr "Nous avons envoyé un lien de réinitialisation à {email}."
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Weekly reflections"
+msgstr "Réflexions hebdomadaires"
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Welcome back."
 msgstr "Bon retour."
@@ -582,6 +590,10 @@ msgstr "Quelle est la chose que vous voulez retenir de cette journée ?"
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "What's something small that brought you joy recently?"
 msgstr "Quelle petite chose vous a apporté de la joie récemment ?"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "When this is on, your entries are sent securely to our AI (Anthropic’s Claude) to write your reflection. They’re never shown to another person, never used for ads, never sold, and never used to train AI. You can turn it off anytime."
+msgstr "Quand c'est activé, tes entrées sont envoyées en toute sécurité à notre IA (Claude, d'Anthropic) pour écrire ta réflexion. Elles ne sont jamais montrées à une autre personne, jamais utilisées pour la publicité, jamais vendues et jamais utilisées pour entraîner une IA. Tu peux le désactiver à tout moment."
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
