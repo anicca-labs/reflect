@@ -4,21 +4,18 @@ import Animated, { FadeOutUp } from 'react-native-reanimated';
 import { YStack, XStack, Spinner } from 'tamagui';
 import { HeadingMd, BodyMdBold, BodySm, LabelMd, LabelLg } from '@fonts';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
-import { Trans, useLingui } from '@lingui/react/macro';
+import { Trans } from '@lingui/react/macro';
 import {
   useRevenueCat,
-  useToast,
   useReflections,
-  useGenerateReflection,
   useMarkReflectionSeen,
   reflectionMeta,
   type Reflection,
 } from '@hooks';
-import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING, DISABLED_OPACITY } from '@constants';
+import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING } from '@constants';
 import { ReflectionReadModal } from './ReflectionReadModal';
 
 const FREE_LIMIT = 3;
-const isStg = process.env.EXPO_PUBLIC_ENV === 'stg';
 
 // ── Pro upsell (shown when generation hits the free limit) ───────────────────
 const ReflectionUpsellModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
@@ -122,10 +119,7 @@ const WeeklyReflectionCard = ({
 const WeeklyReflectionsSection = () => {
   const { data: reflections = [], isLoading } = useReflections();
   const { isPro } = useRevenueCat();
-  const generate = useGenerateReflection();
   const markSeen = useMarkReflectionSeen();
-  const { alert } = useToast();
-  const { t } = useLingui();
   const [reading, setReading] = useState<Reflection | null>(null);
   const [upsellOpen, setUpsellOpen] = useState(false);
 
@@ -134,25 +128,6 @@ const WeeklyReflectionsSection = () => {
   const openReflection = (r: Reflection) => {
     setReading(r);
     if (!r.seen_at) markSeen.mutate(r.id);
-  };
-
-  const handleGenerate = async () => {
-    if (atLimit) {
-      setUpsellOpen(true);
-      return;
-    }
-    const res = await generate.mutateAsync('recent').catch(() => null);
-    if (!res || res.status === 'error') {
-      alert({ title: t`Couldn't generate`, message: t`Please try again.`, preset: 'error' });
-    } else if (res.status === 'limit') {
-      setUpsellOpen(true);
-    } else if (res.status === 'not_enough') {
-      alert({
-        title: t`Not enough to reflect on yet`,
-        message: t`Write a couple of entries first.`,
-      });
-    }
-    // 'ok' → the query invalidates and the new reflection appears at the top.
   };
 
   return (
@@ -165,32 +140,6 @@ const WeeklyReflectionsSection = () => {
           <Trans>Every Sunday, a look back at your week — in your own words.</Trans>
         </BodySm>
       </YStack>
-
-      {/* stg-only test trigger — generate on demand instead of waiting for Sunday. */}
-      {isStg ? (
-        <BaseTouchable
-          onPress={handleGenerate}
-          disabled={generate.isPending}
-          opacity={generate.isPending ? DISABLED_OPACITY : 1}
-          bg="$accentBackground"
-          rounded="$4"
-          p="$4"
-          items="center"
-          mb="$4"
-        >
-          {generate.isPending ? (
-            <Spinner color="$accentColor" />
-          ) : (
-            <LabelLg color="$accentColor">
-              {atLimit ? (
-                <Trans>Unlock with Pro ✦</Trans>
-              ) : (
-                <Trans>Generate this week’s reflection</Trans>
-              )}
-            </LabelLg>
-          )}
-        </BaseTouchable>
-      ) : null}
 
       {isLoading && reflections.length === 0 ? (
         <YStack items="center" py="$4">
@@ -209,17 +158,30 @@ const WeeklyReflectionsSection = () => {
       ))}
 
       {atLimit ? (
-        <XStack items="center" gap="$2" mt="$3" px="$1">
-          <YStack flex={1} height={1} bg="$borderColor" />
-          <LabelMd
-            color="$text-disabled"
-            textTransform="uppercase"
-            letterSpacing={LABEL_LETTER_SPACING}
+        <YStack mt="$3" gap="$3">
+          <XStack items="center" gap="$2" px="$1">
+            <YStack flex={1} height={1} bg="$borderColor" />
+            <LabelMd
+              color="$text-disabled"
+              textTransform="uppercase"
+              letterSpacing={LABEL_LETTER_SPACING}
+            >
+              <Trans>3 free · Pro unlocks the rest</Trans>
+            </LabelMd>
+            <YStack flex={1} height={1} bg="$borderColor" />
+          </XStack>
+          <BaseTouchable
+            onPress={() => setUpsellOpen(true)}
+            bg="$accentBackground"
+            rounded="$4"
+            p="$4"
+            items="center"
           >
-            <Trans>3 free · Pro unlocks the rest</Trans>
-          </LabelMd>
-          <YStack flex={1} height={1} bg="$borderColor" />
-        </XStack>
+            <LabelLg color="$accentColor">
+              <Trans>Unlock with Pro ✦</Trans>
+            </LabelLg>
+          </BaseTouchable>
+        </YStack>
       ) : null}
 
       <ReflectionReadModal reflection={reading} onClose={() => setReading(null)} />
