@@ -27,8 +27,16 @@ msgid "A gentle daily nudge makes it far more likely to become a habit."
 msgstr "Un recordatorio diario suave hace mucho más probable que se convierta en un hábito."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
+msgid "A little more to reflect on"
+msgstr "Un poco más para reflexionar"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A look back at your last 7 days — tap to read."
 msgstr "Un repaso de tus últimos 7 días — toca para leer."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "AI reads your week and writes it back to you — in your own words. 3 free."
+msgstr "La IA lee tu semana y te la devuelve escrita — con tus propias palabras. 3 gratis."
 
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "Back online"
@@ -41,8 +49,8 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Couldn't generate"
-#~ msgstr "No se pudo generar"
+msgid "Couldn't generate"
+msgstr "No se pudo generar"
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Couldn't set the reminder"
@@ -89,6 +97,10 @@ msgstr "Cada domingo, un repaso de tu semana — en tus propias palabras."
 #~ msgstr "Generar la reflexión de esta semana"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Get your first reflection"
+msgstr "Recibe tu primera reflexión"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Go Pro ✦"
 msgstr "Hazte Pro ✦"
 
@@ -130,8 +142,8 @@ msgid "No connection"
 msgstr "Sin conexión"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "No reflections yet — they arrive every Sunday."
-msgstr "Aún no hay reflexiones — llegan cada domingo."
+#~ msgid "No reflections yet — they arrive every Sunday."
+#~ msgstr "Aún no hay reflexiones — llegan cada domingo."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 #~ msgid "Not enough to reflect on yet"
@@ -159,8 +171,8 @@ msgid "Please try again from Settings."
 msgstr "Inténtalo de nuevo desde Ajustes."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Please try again."
-#~ msgstr "Inténtalo de nuevo."
+msgid "Please try again."
+msgstr "Inténtalo de nuevo."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 #~ msgid "Pro"
@@ -232,8 +244,20 @@ msgid "Welcome to Pro ✦"
 msgstr "Bienvenido a Pro ✦"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Write a couple of entries and I'll reflect on your week."
+msgstr "Escribe un par de entradas y reflexionaré sobre tu semana."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Write a couple of entries first, then your first reflection unlocks. 🍂"
+msgstr "Escribe un par de entradas primero y se desbloquea tu primera reflexión. 🍂"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
 #~ msgid "Write a couple of entries first."
 #~ msgstr "Escribe un par de entradas primero."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Write my first reflection ✦"
+msgstr "Escribir mi primera reflexión ✦"
 
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Write what it stirs →"
@@ -261,6 +285,10 @@ msgstr "Ya leíste tus 3 reflexiones gratis"
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Your {serverCount} account {0} will be permanently deleted and replaced with your {localCount} local {1}."
 msgstr "Tus {serverCount} {0} de la cuenta se eliminarán permanentemente y serán reemplazadas por tus {localCount} {1} locales."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your entries are sent securely to our AI to write it — never shown to anyone, never sold, never used to train AI."
+msgstr "Tus entradas se envían de forma segura a nuestra IA para escribirla — nunca se muestran a nadie, nunca se venden, nunca se usan para entrenar IA."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your week is ready"

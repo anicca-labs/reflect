@@ -27,8 +27,16 @@ msgid "A gentle daily nudge makes it far more likely to become a habit."
 msgstr "Pengingat harian yang lembut membuatnya jauh lebih mungkin menjadi kebiasaan."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
+msgid "A little more to reflect on"
+msgstr "Sedikit lagi untuk direfleksikan"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A look back at your last 7 days — tap to read."
 msgstr "Melihat kembali 7 hari terakhirmu — ketuk untuk membaca."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "AI reads your week and writes it back to you — in your own words. 3 free."
+msgstr "AI membaca minggumu dan menuliskannya kembali — dengan kata-katamu sendiri. 3 gratis."
 
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "Back online"
@@ -41,8 +49,8 @@ msgid "Cancel"
 msgstr "Batal"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Couldn't generate"
-#~ msgstr "Tidak bisa membuat"
+msgid "Couldn't generate"
+msgstr "Tidak bisa membuat"
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Couldn't set the reminder"
@@ -89,6 +97,10 @@ msgstr "Setiap Minggu, melihat kembali pekanmu — dengan kata-katamu sendiri."
 #~ msgstr "Buat refleksi minggu ini"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Get your first reflection"
+msgstr "Dapatkan refleksi pertamamu"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Go Pro ✦"
 msgstr "Beralih ke Pro ✦"
 
@@ -130,8 +142,8 @@ msgid "No connection"
 msgstr "Tidak ada koneksi"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "No reflections yet — they arrive every Sunday."
-msgstr "Belum ada refleksi — muncul setiap Minggu."
+#~ msgid "No reflections yet — they arrive every Sunday."
+#~ msgstr "Belum ada refleksi — muncul setiap Minggu."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 #~ msgid "Not enough to reflect on yet"
@@ -159,8 +171,8 @@ msgid "Please try again from Settings."
 msgstr "Silakan coba lagi dari Pengaturan."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Please try again."
-#~ msgstr "Coba lagi."
+msgid "Please try again."
+msgstr "Coba lagi."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 #~ msgid "Pro"
@@ -232,8 +244,20 @@ msgid "Welcome to Pro ✦"
 msgstr "Selamat datang di Pro ✦"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Write a couple of entries and I'll reflect on your week."
+msgstr "Tulis beberapa entri dan aku akan merefleksikan minggumu."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Write a couple of entries first, then your first reflection unlocks. 🍂"
+msgstr "Tulis beberapa entri dulu, lalu refleksi pertamamu terbuka. 🍂"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
 #~ msgid "Write a couple of entries first."
 #~ msgstr "Tulis beberapa entri dulu."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Write my first reflection ✦"
+msgstr "Tulis refleksi pertamaku ✦"
 
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Write what it stirs →"
@@ -261,6 +285,10 @@ msgstr "Kamu sudah membaca 3 refleksi gratismu"
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Your {serverCount} account {0} will be permanently deleted and replaced with your {localCount} local {1}."
 msgstr "{serverCount} {0} akun Anda akan dihapus permanen dan digantikan oleh {localCount} {1} lokal."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your entries are sent securely to our AI to write it — never shown to anyone, never sold, never used to train AI."
+msgstr "Entrimu dikirim dengan aman ke AI kami untuk menulisnya — tidak pernah ditunjukkan ke siapa pun, tidak pernah dijual, tidak pernah dipakai untuk melatih AI."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your week is ready"

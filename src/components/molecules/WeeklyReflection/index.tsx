@@ -4,18 +4,22 @@ import Animated, { FadeOutUp } from 'react-native-reanimated';
 import { YStack, XStack, Spinner } from 'tamagui';
 import { HeadingMd, BodyMdBold, BodySm, LabelMd, LabelLg } from '@fonts';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
-import { Trans } from '@lingui/react/macro';
+import { Trans, useLingui } from '@lingui/react/macro';
 import {
   useRevenueCat,
+  useToast,
   useReflections,
+  useGenerateReflection,
   useMarkReflectionSeen,
   reflectionMeta,
   type Reflection,
 } from '@hooks';
-import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING } from '@constants';
+import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING, DISABLED_OPACITY } from '@constants';
 import { ReflectionReadModal } from './ReflectionReadModal';
 
 const FREE_LIMIT = 3;
+// The generate-reflection function needs at least this many entries to reflect on.
+const MIN_ENTRIES = 2;
 
 // ── Pro upsell (shown when generation hits the free limit) ───────────────────
 const ReflectionUpsellModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
@@ -116,18 +120,38 @@ const WeeklyReflectionCard = ({
 };
 
 // ── The section shown at the top of the Reflections tab ──────────────────────
-const WeeklyReflectionsSection = () => {
+const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) => {
   const { data: reflections = [], isLoading } = useReflections();
   const { isPro } = useRevenueCat();
   const markSeen = useMarkReflectionSeen();
+  const generate = useGenerateReflection();
+  const { alert } = useToast();
+  const { t } = useLingui();
   const [reading, setReading] = useState<Reflection | null>(null);
   const [upsellOpen, setUpsellOpen] = useState(false);
 
   const atLimit = !isPro && reflections.length >= FREE_LIMIT;
+  const isEmpty = !isLoading && reflections.length === 0;
+  const canGenerate = entryCount >= MIN_ENTRIES;
 
   const openReflection = (r: Reflection) => {
     setReading(r);
     if (!r.seen_at) markSeen.mutate(r.id);
+  };
+
+  // First reflection on demand — don't make a new user wait until Sunday. The
+  // self-generate path also records consent (opts them into the weekly cron).
+  const handleFirstReflection = async () => {
+    const res = await generate.mutateAsync('recent').catch(() => null);
+    if (!res || res.status === 'error') {
+      alert({ title: t`Couldn't generate`, message: t`Please try again.`, preset: 'error' });
+    } else if (res.status === 'not_enough') {
+      alert({
+        title: t`A little more to reflect on`,
+        message: t`Write a couple of entries and I'll reflect on your week.`,
+      });
+    }
+    // 'ok' → the query invalidates and the reflection appears above.
   };
 
   return (
@@ -147,10 +171,60 @@ const WeeklyReflectionsSection = () => {
         </YStack>
       ) : null}
 
-      {!isLoading && reflections.length === 0 ? (
-        <BodySm color="$text-disabled" text="center" py="$4">
-          <Trans>No reflections yet — they arrive every Sunday.</Trans>
-        </BodySm>
+      {/* First-run activation: explain the feature and let them get their first
+          reflection now (which opts them in), instead of waiting for Sunday. */}
+      {isEmpty ? (
+        <YStack
+          bg="$surface-card"
+          rounded="$4"
+          p="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+          gap="$3"
+        >
+          <YStack gap="$1">
+            <BodyMdBold color="$text-emphasis">
+              <Trans>Get your first reflection</Trans>
+            </BodyMdBold>
+            <BodySm color="$text-secondary">
+              <Trans>
+                AI reads your week and writes it back to you — in your own words. 3 free.
+              </Trans>
+            </BodySm>
+          </YStack>
+
+          {canGenerate ? (
+            <>
+              <BaseTouchable
+                onPress={handleFirstReflection}
+                disabled={generate.isPending}
+                opacity={generate.isPending ? DISABLED_OPACITY : 1}
+                bg="$accentBackground"
+                rounded="$4"
+                p="$4"
+                items="center"
+              >
+                {generate.isPending ? (
+                  <Spinner color="$accentColor" />
+                ) : (
+                  <LabelLg color="$accentColor">
+                    <Trans>Write my first reflection ✦</Trans>
+                  </LabelLg>
+                )}
+              </BaseTouchable>
+              <BodySm color="$text-disabled" style={{ lineHeight: 16 }}>
+                <Trans>
+                  Your entries are sent securely to our AI to write it — never shown to anyone,
+                  never sold, never used to train AI.
+                </Trans>
+              </BodySm>
+            </>
+          ) : (
+            <BodySm color="$text-disabled">
+              <Trans>Write a couple of entries first, then your first reflection unlocks. 🍂</Trans>
+            </BodySm>
+          )}
+        </YStack>
       ) : null}
 
       {reflections.map((r) => (
