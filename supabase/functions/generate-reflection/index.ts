@@ -10,12 +10,74 @@
 // re-encrypted in the same enc:v1: AES-256-CTR scheme as journal_entries — the DB
 // never holds plaintext.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { getFirebaseAccessToken, sendFcmMessage } from '../_shared/firebase.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 const ADMIN_SECRET = Deno.env.get('ADMIN_PUSH_SECRET');
 const FREE_REFLECTION_LIMIT = 3;
+
+// ── "Your week is ready" push (cron path only — self-generates happen in-app) ──
+// Localized by the device's saved locale, mirroring the send-reminders pattern.
+const REFLECTION_PUSH_TITLE = 'Reflect';
+const REFLECTION_PUSH_BODY_BY_LOCALE: Record<string, string> = {
+  en: '🍂 Your week is ready — a look back at your last 7 days.',
+  es: '🍂 Tu semana está lista — una mirada a tus últimos 7 días.',
+  'pt-BR': '🍂 Sua semana está pronta — um olhar sobre seus últimos 7 dias.',
+  fr: '🍂 Ta semaine est prête — un regard sur tes 7 derniers jours.',
+  id: '🍂 Minggumu sudah siap — kilas balik 7 hari terakhirmu.',
+  ar: '🍂 أسبوعك جاهز — نظرة على آخر 7 أيام.',
+};
+const reflectionPushBody = (locale: string | null): string =>
+  (locale ? REFLECTION_PUSH_BODY_BY_LOCALE[locale] : undefined) ??
+  REFLECTION_PUSH_BODY_BY_LOCALE.en;
+
+// Notify one user that their weekly reflection is ready. Access tokens are cached
+// per Firebase project across the whole cron run (tokenCache). Stale FCM tokens are
+// collected by the caller for a single batched delete. Never throws — a push
+// failure must not fail the generation that already succeeded.
+const notifyReflectionReady = async (
+  // deno-lint-ignore no-explicit-any
+  admin: any,
+  userId: string,
+  tokenCache: Map<string, string>,
+  staleTokens: string[],
+): Promise<void> => {
+  try {
+    const { data: devices } = await admin
+      .from('device_tokens')
+      .select('fcm_token, firebase_project_id, locale')
+      .eq('user_id', userId);
+    if (!devices?.length) return;
+    for (const d of devices as {
+      fcm_token: string;
+      firebase_project_id: string | null;
+      locale: string | null;
+    }[]) {
+      const projectId = d.firebase_project_id ?? 'reflect-8e62d';
+      let accessToken = tokenCache.get(projectId);
+      if (!accessToken) {
+        accessToken = await getFirebaseAccessToken(projectId);
+        tokenCache.set(projectId, accessToken);
+      }
+      const res = await sendFcmMessage(
+        d.fcm_token,
+        projectId,
+        accessToken,
+        { title: REFLECTION_PUSH_TITLE, body: reflectionPushBody(d.locale) },
+        // Tap opens the app; the Journal home shows the "Your week is ready"
+        // banner for the unseen reflection. Typed for future deep-link routing.
+        { type: 'weekly-reflection' },
+        // One logical notification per week — collapse at-least-once redeliveries.
+        { collapseId: 'weekly-reflection' },
+      );
+      if (res.unregistered) staleTokens.push(d.fcm_token);
+    }
+  } catch (e) {
+    console.error('reflection push failed for', userId, e);
+  }
+};
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -235,14 +297,28 @@ Deno.serve(async (req) => {
     let generated = 0;
     let skipped = 0;
     let failed = 0;
+    // Push bookkeeping shared across the loop: one Firebase access token per
+    // project, stale FCM tokens deleted in one batch at the end.
+    const tokenCache = new Map<string, string>();
+    const staleTokens: string[] = [];
     for (const row of (optedIn ?? []) as { user_id: string }[]) {
       try {
         const r = await generateForUser(admin, row.user_id, { mode: 'week', force: false });
-        r.status === 'ok' ? generated++ : skipped++;
+        if (r.status === 'ok') {
+          generated++;
+          // The retention loop: tell them their week is ready, or the reflection
+          // sits unread until they happen to open the app.
+          await notifyReflectionReady(admin, row.user_id, tokenCache, staleTokens);
+        } else {
+          skipped++;
+        }
       } catch (e) {
         failed++;
         console.error('reflection failed for', row.user_id, e);
       }
+    }
+    if (staleTokens.length > 0) {
+      await admin.from('device_tokens').delete().in('fcm_token', staleTokens);
     }
     return json({ generated, skipped, failed });
   }
