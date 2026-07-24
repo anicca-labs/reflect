@@ -280,9 +280,9 @@ const ReflectionsScreen = () => {
               ) : null}
             </XStack>
 
-            {/* AI Weekly Reflections — stg-only until the backend is promoted to prod */}
-            <WeeklyReflectionsSection />
-
+            {/* Search + bookmark filter sit directly under the header so the input
+                stays near the top — the keyboard never covers it, and matches render
+                right below it. */}
             {entries.length > 0 ? (
               <YStack mb="$4" gap="$2">
                 <Input
@@ -319,6 +319,10 @@ const ReflectionsScreen = () => {
                 </BaseTouchable>
               </YStack>
             ) : null}
+
+            {/* AI Weekly Reflections. Hidden while a search is active so results stay
+                tight against the search box; visible in the default browse state. */}
+            {!query ? <WeeklyReflectionsSection /> : null}
 
             {loading && !entries.length ? (
               <YStack items="center" mt="$10">
