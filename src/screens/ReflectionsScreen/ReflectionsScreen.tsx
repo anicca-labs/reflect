@@ -322,7 +322,7 @@ const ReflectionsScreen = () => {
 
             {/* AI Weekly Reflections. Hidden while a search is active so results stay
                 tight against the search box; visible in the default browse state. */}
-            {!query ? <WeeklyReflectionsSection /> : null}
+            {!query ? <WeeklyReflectionsSection entryCount={entries.length} /> : null}
 
             {loading && !entries.length ? (
               <YStack items="center" mt="$10">

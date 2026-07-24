@@ -27,7 +27,15 @@ msgid "A gentle daily nudge makes it far more likely to become a habit."
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
+msgid "A little more to reflect on"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A look back at your last 7 days — tap to read."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "AI reads your week and writes it back to you — in your own words. 3 free."
 msgstr ""
 
 #: src/components/atoms/NetworkStatusBanner/index.tsx
@@ -41,8 +49,8 @@ msgid "Cancel"
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Couldn't generate"
-#~ msgstr ""
+msgid "Couldn't generate"
+msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Couldn't set the reminder"
@@ -89,6 +97,10 @@ msgstr ""
 #~ msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Get your first reflection"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Go Pro ✦"
 msgstr ""
 
@@ -130,8 +142,8 @@ msgid "No connection"
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "No reflections yet — they arrive every Sunday."
-msgstr ""
+#~ msgid "No reflections yet — they arrive every Sunday."
+#~ msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 #~ msgid "Not enough to reflect on yet"
@@ -159,8 +171,8 @@ msgid "Please try again from Settings."
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Please try again."
-#~ msgstr ""
+msgid "Please try again."
+msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 #~ msgid "Pro"
@@ -232,8 +244,20 @@ msgid "Welcome to Pro ✦"
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Write a couple of entries and I'll reflect on your week."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Write a couple of entries first, then your first reflection unlocks. 🍂"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
 #~ msgid "Write a couple of entries first."
 #~ msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Write my first reflection ✦"
+msgstr ""
 
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Write what it stirs →"
@@ -260,6 +284,10 @@ msgstr ""
 #. placeholder {1}: localCount === 1 ? 'entry' : 'entries'
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Your {serverCount} account {0} will be permanently deleted and replaced with your {localCount} local {1}."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your entries are sent securely to our AI to write it — never shown to anyone, never sold, never used to train AI."
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
