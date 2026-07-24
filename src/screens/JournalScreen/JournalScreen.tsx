@@ -502,9 +502,6 @@ const JournalScreen = () => {
               </XStack>
             </YStack>
 
-            {/* AI reflection "your week is ready" nudge — stg-only until prod backend */}
-            <WeeklyReflectionBanner />
-
             <YStack
               bg="$surface-card"
               rounded="$4"
@@ -621,6 +618,11 @@ const JournalScreen = () => {
             keyboardShouldPersistTaps="handled"
             onTouchStart={dismissOutside}
           >
+            {/* AI reflection "your week is ready" nudge. Lives inside the scroll area
+                (not the fixed header block) so it scrolls with the entries and never
+                shrinks the list. Renders null when there's no unseen reflection. */}
+            <WeeklyReflectionBanner />
+
             {loading && !todayEntries.length ? (
               <YStack items="center" mt="$4">
                 <Spinner color="$accentBackground" />
