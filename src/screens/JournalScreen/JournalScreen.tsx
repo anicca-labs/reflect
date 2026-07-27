@@ -46,6 +46,7 @@ import {
   getDailyPromptIndex,
   useVoiceToText,
   useReminderPrompt,
+  useEntryEcho,
 } from '@hooks';
 import {
   HEADING_LETTER_SPACING,
@@ -59,6 +60,7 @@ import {
   EntryPeekModal,
   ReminderPromptModal,
   WeeklyReflectionBanner,
+  EntryEchoCards,
   type SwipeableDeleteWrapperHandle,
 } from '@molecules';
 import { BaseIcon } from '@/src/components/atoms/icons';
@@ -166,6 +168,7 @@ const JournalScreen = () => {
     maybePrompt: maybePromptReminder,
     dismiss: dismissReminderPrompt,
   } = useReminderPrompt();
+  const echo = useEntryEcho();
   const inputRef = useRef<ComponentRef<typeof TextArea>>(null);
 
   // Auto-present the paywall for a user who tapped "Sign in for Pro" while
@@ -439,10 +442,12 @@ const JournalScreen = () => {
     }
 
     try {
-      const { queued } = await createMutation.mutateAsync(trimmed);
+      const { queued, entry } = await createMutation.mutateAsync(trimmed);
       logJournalEntryCreated(trimmed.split(/\s+/).length);
       markFirstEntryWritten();
       maybePromptReminder();
+      // Echo needs the server row — queued (offline) saves have none yet.
+      if (!queued && entry?.id) echo.onSaved(entry.id);
       if (queued) {
         alert({
           title: t`Saved offline`,
@@ -621,6 +626,14 @@ const JournalScreen = () => {
             {/* AI reflection "your week is ready" nudge. Lives inside the scroll area
                 (not the fixed header block) so it scrolls with the entries and never
                 shrinks the list. Renders null when there's no unseen reflection. */}
+            <EntryEchoCards
+              line={echo.line}
+              loading={echo.loading}
+              consentVisible={echo.consentVisible}
+              onAccept={echo.acceptConsent}
+              onDecline={echo.declineConsent}
+              onDismissLine={echo.dismissLine}
+            />
             <WeeklyReflectionBanner />
 
             {loading && !todayEntries.length ? (

@@ -159,6 +159,39 @@ Never: give advice, diagnose, use therapy jargon ("holding space", "your journey
 
 Return only the reflection — no title, no preamble, no sign-off, no meta-commentary.`;
 
+// ── Entry echo: one warm line back after saving an entry ────────────────────
+// The first-session taste of the AI — instant, tiny, cheap (Haiku). Ephemeral:
+// returned to the client, never stored.
+const ECHO_SYSTEM = `You are the quiet voice inside someone's private journal. They just saved an entry. Write back exactly ONE short line (under 18 words) that gently mirrors what they wrote — ideally echoing one of their own words or phrases.
+
+Rules: reply in the SAME language as the entry. Warm, plain, unhurried. Never advice, never questions, never therapy jargon, never flattery, never emoji unless they used one. If the entry is heavy, don't add a silver lining — just show them they were heard. If it's tiny or mundane, honor it lightly.
+
+Return only the line — no quotes around it, no preamble.`;
+
+const callClaudeEcho = async (entryText: string): Promise<string> => {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': Deno.env.get('ANTHROPIC_API_KEY')!,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 100,
+      system: ECHO_SYSTEM,
+      messages: [{ role: 'user', content: entryText }],
+    }),
+  });
+  if (!res.ok) throw new Error(`Claude ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+  return (data?.content ?? [])
+    .filter((b: { type: string }) => b.type === 'text')
+    .map((b: { text: string }) => b.text)
+    .join('')
+    .trim();
+};
+
 const callClaude = async (userMessage: string): Promise<string> => {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -284,6 +317,7 @@ Deno.serve(async (req) => {
     userId?: string;
     mode?: string;
     force?: boolean;
+    entryId?: string;
   };
   const adminSecret = req.headers.get('X-Admin-Secret');
   const isAdmin = !!ADMIN_SECRET && adminSecret === ADMIN_SECRET;
@@ -350,6 +384,26 @@ Deno.serve(async (req) => {
     }
   }
   if (!userId) return new Response('Unauthorized', { status: 401, headers: CORS });
+
+  // Entry echo: one warm line back for a just-saved entry. Consent was recorded
+  // above (the client asks before the first call). Ephemeral — nothing stored.
+  if (body.action === 'echo' && body.entryId) {
+    try {
+      const { data: entry } = await admin
+        .from('journal_entries')
+        .select('content')
+        .eq('id', body.entryId)
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (!entry) return json({ status: 'error', message: 'entry not found' }, 404);
+      const text = await decryptContent((entry as { content: string }).content);
+      const line = await callClaudeEcho(text);
+      return json({ status: 'ok', line });
+    } catch (e) {
+      console.error('entry echo error', e);
+      return json({ status: 'error', message: e instanceof Error ? e.message : String(e) }, 500);
+    }
+  }
 
   const mode: Mode = body.mode === 'week' ? 'week' : 'recent';
   try {

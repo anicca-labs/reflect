@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Modal } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useSessionStore } from '@/src/stores';
 import Animated, { FadeOutUp } from 'react-native-reanimated';
 import { YStack, XStack, Spinner } from 'tamagui';
 import { HeadingMd, BodyMdBold, BodySm, LabelMd, LabelLg } from '@fonts';
@@ -123,6 +125,8 @@ const WeeklyReflectionCard = ({
 const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) => {
   const { data: reflections = [], isLoading } = useReflections();
   const { isPro } = useRevenueCat();
+  const isAnonymous = useSessionStore((s) => s.isAnonymous);
+  const router = useRouter();
   const markSeen = useMarkReflectionSeen();
   const generate = useGenerateReflection();
   const { alert } = useToast();
@@ -142,6 +146,13 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
   // First reflection on demand — don't make a new user wait until Sunday. The
   // self-generate path also records consent (opts them into the weekly cron).
   const handleFirstReflection = async () => {
+    // Guest entries live on-device only — the AI needs them server-side, so the
+    // path to a first reflection runs through creating an account (entries merge
+    // on sign-in). Without this, the call would just 401.
+    if (isAnonymous) {
+      router.push('/sign-in');
+      return;
+    }
     const res = await generate.mutateAsync('recent').catch(() => null);
     if (!res || res.status === 'error') {
       alert({ title: t`Couldn't generate`, message: t`Please try again.`, preset: 'error' });
@@ -213,10 +224,16 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
                 )}
               </BaseTouchable>
               <BodySm color="$text-disabled" style={{ lineHeight: 16 }}>
-                <Trans>
-                  Your entries are sent securely to our AI to write it — never shown to anyone,
-                  never sold, never used to train AI.
-                </Trans>
+                {isAnonymous ? (
+                  <Trans>
+                    Takes a minute — a free account brings your entries with you, private as always.
+                  </Trans>
+                ) : (
+                  <Trans>
+                    Your entries are sent securely to our AI to write it — never shown to anyone,
+                    never sold, never used to train AI.
+                  </Trans>
+                )}
               </BodySm>
             </>
           ) : (
