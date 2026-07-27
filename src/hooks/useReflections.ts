@@ -1,3 +1,5 @@
+import { useState, useRef, useCallback } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/src/services/supabase';
 import { decryptContent } from '@/src/services/crypto';
@@ -131,6 +133,67 @@ const useAiReflectionsSetting = () => {
   };
 };
 
+// ── Entry echo: one warm AI line back after saving an entry ─────────────────
+// The first-session taste of the AI. If the user has consented (ai setting on),
+// every online save gets an echo. If not, the first save shows a one-time consent
+// card; accepting turns the setting on (which also opts into Sunday reflections).
+const ECHO_ASKED_KEY = 'entry-echo:asked';
+
+const useEntryEcho = () => {
+  const { enabled, setEnabled } = useAiReflectionsSetting();
+  const [line, setLine] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [consentVisible, setConsentVisible] = useState(false);
+  const pendingEntryId = useRef<string | null>(null);
+
+  const fetchEcho = useCallback(async (entryId: string) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-reflection', {
+        body: { action: 'echo', entryId },
+      });
+      const res = data as { status?: string; line?: string } | null;
+      if (!error && res?.status === 'ok' && res.line) setLine(res.line);
+    } catch {
+      // Echo is a garnish — never surface an error for it.
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Call after a successful ONLINE save (queued/offline saves have no server row).
+  const onSaved = useCallback(
+    async (entryId: string) => {
+      setLine(null);
+      if (enabled) {
+        fetchEcho(entryId);
+        return;
+      }
+      const asked = await AsyncStorage.getItem(ECHO_ASKED_KEY);
+      if (asked) return;
+      pendingEntryId.current = entryId;
+      setConsentVisible(true);
+    },
+    [enabled, fetchEcho],
+  );
+
+  const acceptConsent = useCallback(() => {
+    setConsentVisible(false);
+    AsyncStorage.setItem(ECHO_ASKED_KEY, '1');
+    setEnabled(true);
+    if (pendingEntryId.current) fetchEcho(pendingEntryId.current);
+  }, [setEnabled, fetchEcho]);
+
+  const declineConsent = useCallback(() => {
+    setConsentVisible(false);
+    AsyncStorage.setItem(ECHO_ASKED_KEY, '1');
+  }, []);
+
+  const dismissLine = useCallback(() => setLine(null), []);
+
+  return { line, loading, consentVisible, onSaved, acceptConsent, declineConsent, dismissLine };
+};
+
 // Presentation metadata derived from a reflection's dates. relKey drives a
 // translated "This week / Last week" label; older ones fall back to the date.
 export type ReflectionMeta = {
@@ -163,5 +226,6 @@ export {
   useGenerateReflection,
   useMarkReflectionSeen,
   useAiReflectionsSetting,
+  useEntryEcho,
   reflectionMeta,
 };

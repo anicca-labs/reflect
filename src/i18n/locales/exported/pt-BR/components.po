@@ -149,6 +149,7 @@ msgstr "Sem conexão"
 #~ msgid "Not enough to reflect on yet"
 #~ msgstr "Ainda não há o suficiente para refletir"
 
+#: src/components/molecules/EntryEcho/index.tsx
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Not now"
@@ -157,6 +158,10 @@ msgstr "Agora não"
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Notifications are off"
 msgstr "As notificações estão desativadas"
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "One gentle line after you write — and your whole week, every Sunday. Never shown to anyone, never sold, never used to train AI."
+msgstr "Uma linha gentil depois que você escreve — e sua semana inteira, todo domingo. Nunca mostrada a ninguém, nunca vendida, nunca usada para treinar IA."
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"
@@ -182,6 +187,10 @@ msgstr "Tente novamente."
 msgid "Read →"
 msgstr "Ler →"
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Reading…"
+msgstr "Lendo…"
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Reflect Pro gives you a new reflection every Sunday — plus your whole archive to look back on."
 msgstr "O Reflect Pro te dá uma nova reflexão todo domingo — além de todo o seu arquivo para relembrar."
@@ -193,6 +202,10 @@ msgstr "Lembrar-me às {timeLabel}"
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Reminder set ✦"
 msgstr "Lembrete ativado ✦"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Takes a minute — a free account brings your entries with you, private as always."
+msgstr "Leva um minuto — uma conta grátis leva suas entradas com você, privadas como sempre."
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
@@ -226,6 +239,10 @@ msgstr "Desbloquear com Pro ✦"
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Upgrade to Pro to merge all {combined} entries and write without limits."
 msgstr "Faça upgrade para o Pro para mesclar todas as {combined} entradas e escrever sem limites."
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Want your journal to write back?"
+msgstr "Quer que seu diário responda?"
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "We'll nudge you at {timeLabel}. Change it anytime in Settings."
@@ -262,6 +279,10 @@ msgstr "Escrever minha primeira reflexão ✦"
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Write what it stirs →"
 msgstr "Escreva o que isso desperta →"
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Yes, write back ✦"
+msgstr "Sim, responda ✦"
 
 #. placeholder {0}: localCount === 1 ? 'entry' : 'entries'
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx

@@ -149,6 +149,7 @@ msgstr "Tidak ada koneksi"
 #~ msgid "Not enough to reflect on yet"
 #~ msgstr "Belum cukup untuk direfleksikan"
 
+#: src/components/molecules/EntryEcho/index.tsx
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Not now"
@@ -157,6 +158,10 @@ msgstr "Nanti saja"
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Notifications are off"
 msgstr "Notifikasi nonaktif"
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "One gentle line after you write — and your whole week, every Sunday. Never shown to anyone, never sold, never used to train AI."
+msgstr "Satu baris lembut setelah kamu menulis — dan seluruh minggumu, setiap Minggu. Tidak pernah ditunjukkan ke siapa pun, tidak pernah dijual, tidak pernah dipakai melatih AI."
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"
@@ -182,6 +187,10 @@ msgstr "Coba lagi."
 msgid "Read →"
 msgstr "Baca →"
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Reading…"
+msgstr "Membaca…"
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Reflect Pro gives you a new reflection every Sunday — plus your whole archive to look back on."
 msgstr "Reflect Pro memberimu refleksi baru setiap Minggu — plus seluruh arsipmu untuk dilihat kembali."
@@ -193,6 +202,10 @@ msgstr "Ingatkan saya pukul {timeLabel}"
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Reminder set ✦"
 msgstr "Pengingat aktif ✦"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Takes a minute — a free account brings your entries with you, private as always."
+msgstr "Hanya semenit — akun gratis membawa entrimu ikut serta, tetap privat seperti biasa."
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
@@ -226,6 +239,10 @@ msgstr "Buka dengan Pro ✦"
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Upgrade to Pro to merge all {combined} entries and write without limits."
 msgstr "Upgrade ke Pro untuk menggabungkan semua {combined} entri dan menulis tanpa batas."
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Want your journal to write back?"
+msgstr "Mau jurnalmu membalas tulisanmu?"
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "We'll nudge you at {timeLabel}. Change it anytime in Settings."
@@ -262,6 +279,10 @@ msgstr "Tulis refleksi pertamaku ✦"
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Write what it stirs →"
 msgstr "Tulis apa yang muncul →"
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Yes, write back ✦"
+msgstr "Ya, balas aku ✦"
 
 #. placeholder {0}: localCount === 1 ? 'entry' : 'entries'
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx

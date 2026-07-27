@@ -149,6 +149,7 @@ msgstr "لا يوجد اتصال"
 #~ msgid "Not enough to reflect on yet"
 #~ msgstr "لا يوجد ما يكفي للتأمل بعد"
 
+#: src/components/molecules/EntryEcho/index.tsx
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Not now"
@@ -157,6 +158,10 @@ msgstr "ليس الآن"
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Notifications are off"
 msgstr "الإشعارات معطّلة"
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "One gentle line after you write — and your whole week, every Sunday. Never shown to anyone, never sold, never used to train AI."
+msgstr "سطر لطيف بعد كل كتابة — وأسبوعك كاملاً كل يوم أحد. لا يُعرض على أحد أبداً، ولا يُباع، ولا يُستخدم لتدريب الذكاء الاصطناعي."
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"
@@ -182,6 +187,10 @@ msgstr "حاول مرّة أخرى."
 msgid "Read →"
 msgstr "اقرأ →"
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Reading…"
+msgstr "يقرأ…"
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Reflect Pro gives you a new reflection every Sunday — plus your whole archive to look back on."
 msgstr "يمنحك Reflect Pro تأملاً جديداً كل يوم أحد — بالإضافة إلى أرشيفك كاملاً لتعود إليه."
@@ -193,6 +202,10 @@ msgstr "ذكّرني في {timeLabel}"
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Reminder set ✦"
 msgstr "تم ضبط التذكير ✦"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Takes a minute — a free account brings your entries with you, private as always."
+msgstr "دقيقة واحدة تكفي — حساب مجاني ينقل تدويناتك معك، خاصة كما هي دائماً."
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
@@ -226,6 +239,10 @@ msgstr "افتح مع Pro ✦"
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Upgrade to Pro to merge all {combined} entries and write without limits."
 msgstr "قم بالترقية إلى Pro لدمج جميع {combined} إدخالاً والكتابة بلا حدود."
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Want your journal to write back?"
+msgstr "أتريد أن تردّ عليك مذكرتك؟"
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "We'll nudge you at {timeLabel}. Change it anytime in Settings."
@@ -262,6 +279,10 @@ msgstr "اكتب تأملي الأول ✦"
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Write what it stirs →"
 msgstr "اكتب ما يثيره فيك →"
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Yes, write back ✦"
+msgstr "نعم، رُدّ عليّ ✦"
 
 #. placeholder {0}: localCount === 1 ? 'entry' : 'entries'
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx

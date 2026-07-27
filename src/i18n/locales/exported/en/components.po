@@ -149,6 +149,7 @@ msgstr ""
 #~ msgid "Not enough to reflect on yet"
 #~ msgstr ""
 
+#: src/components/molecules/EntryEcho/index.tsx
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Not now"
@@ -156,6 +157,10 @@ msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Notifications are off"
+msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "One gentle line after you write — and your whole week, every Sunday. Never shown to anyone, never sold, never used to train AI."
 msgstr ""
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
@@ -182,6 +187,10 @@ msgstr ""
 msgid "Read →"
 msgstr ""
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Reading…"
+msgstr ""
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Reflect Pro gives you a new reflection every Sunday — plus your whole archive to look back on."
 msgstr ""
@@ -192,6 +201,10 @@ msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Reminder set ✦"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Takes a minute — a free account brings your entries with you, private as always."
 msgstr ""
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
@@ -225,6 +238,10 @@ msgstr ""
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Upgrade to Pro to merge all {combined} entries and write without limits."
+msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Want your journal to write back?"
 msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
@@ -261,6 +278,10 @@ msgstr ""
 
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Write what it stirs →"
+msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Yes, write back ✦"
 msgstr ""
 
 #. placeholder {0}: localCount === 1 ? 'entry' : 'entries'
