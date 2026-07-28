@@ -471,6 +471,7 @@ msgstr "Spanyol"
 msgid "Subscription"
 msgstr "Langganan"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Tap to restart and apply the latest update."
 msgstr "Ketuk untuk mulai ulang dan terapkan pembaruan terbaru."
@@ -522,6 +523,7 @@ msgstr "Turki"
 msgid "Unlimited entries unlocked. Keep writing."
 msgstr "Entri tak terbatas telah dibuka. Teruslah menulis."
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Update ready"
 msgstr "Pembaruan siap"
