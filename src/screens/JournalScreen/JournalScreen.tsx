@@ -13,7 +13,7 @@ import { useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { BlurTargetView } from 'expo-blur';
 import { useFocusEffect, useRouter, useIsFocused } from 'expo-router';
 import { ScrollView, YStack, XStack, TextArea, Spinner, useTheme } from 'tamagui';
-import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts';
+import { DisplayLg, BodySm, BodyMdBold, LabelMd, LabelLg } from '@fonts';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { Containers } from '@anicca-labs/ui-containers';
@@ -47,6 +47,7 @@ import {
   useVoiceToText,
   useReminderPrompt,
   useEntryEcho,
+  useOtaUpdate,
 } from '@hooks';
 import {
   HEADING_LETTER_SPACING,
@@ -379,6 +380,16 @@ const JournalScreen = () => {
   ];
   const prompt = prompts[getDailyPromptIndex(prompts.length)];
   const hasContent = draft.trim().length > 0;
+  // Keep long-lived sessions on the latest OTA: silently apply a downloaded
+  // update when the app returns from a real break — but never mid-write.
+  const hasContentRef = useRef(false);
+  useEffect(() => {
+    hasContentRef.current = hasContent || isListening;
+  }, [hasContent, isListening]);
+  const { isUpdateReady: otaReady, applyUpdate: applyOta } = useOtaUpdate({
+    autoApply: true,
+    canAutoApply: () => !hasContentRef.current,
+  });
   const remainingFree = Math.max(0, FREE_ENTRY_LIMIT - entries.length);
   const atLimit = !isPro && entries.length >= FREE_ENTRY_LIMIT;
   // Until the server list has loaded at least once (no cache yet, still
@@ -626,6 +637,20 @@ const JournalScreen = () => {
             {/* AI reflection "your week is ready" nudge. Lives inside the scroll area
                 (not the fixed header block) so it scrolls with the entries and never
                 shrinks the list. Renders null when there's no unseen reflection. */}
+            {/* Soft OTA nudge — same strings as the Settings banner, hidden while
+                writing. The silent auto-apply above catches most users; this is
+                the one-tap fallback for whoever it misses. */}
+            {otaReady && !hasContent ? (
+              <BaseTouchable onPress={applyOta} bg="$accentBackground" rounded="$4" p="$4" mb="$4">
+                <BodyMdBold color="$accentColor">
+                  <Trans>Update ready</Trans>
+                </BodyMdBold>
+                <BodySm color="$accentColor" opacity={0.85} mt="$1">
+                  <Trans>Tap to restart and apply the latest update.</Trans>
+                </BodySm>
+              </BaseTouchable>
+            ) : null}
+
             <EntryEchoCards
               line={echo.line}
               loading={echo.loading}

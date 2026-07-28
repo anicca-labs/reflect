@@ -471,6 +471,7 @@ msgstr "Espanhol"
 msgid "Subscription"
 msgstr "Assinatura"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Tap to restart and apply the latest update."
 msgstr "Toque para reiniciar e aplicar a atualização mais recente."
@@ -522,6 +523,7 @@ msgstr "Turco"
 msgid "Unlimited entries unlocked. Keep writing."
 msgstr "Entradas ilimitadas desbloqueadas. Continue escrevendo."
 
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Update ready"
 msgstr "Atualização pronta"
