@@ -37,6 +37,10 @@ msgstr "١٢ ساعة"
 msgid "24-hour"
 msgstr "٢٤ ساعة"
 
+#: src/hooks/useRatingsAsk.ts
+msgid "A quick rating helps other journalers find it. 🍂"
+msgstr "تقييم سريع يساعد الآخرين على اكتشافه. 🍂"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Account"
 msgstr "الحساب"
@@ -190,6 +194,10 @@ msgstr "فعّل الإشعارات في الإعدادات لاستخدام ا�
 msgid "English"
 msgstr "الإنجليزية"
 
+#: src/hooks/useRatingsAsk.ts
+msgid "Enjoying Reflect?"
+msgstr "هل يعجبك Reflect؟"
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 msgid "Enter your email to receive a reset link."
 msgstr "أدخل بريدك الإلكتروني لتلقي رابط إعادة التعيين."
@@ -302,6 +310,10 @@ msgstr "لا توجد تسجيلات تطابق بحثك."
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr "لا توجد تسجيلات بعد. ابدأ الكتابة في تبويب المذكرة."
 
+#: src/hooks/useRatingsAsk.ts
+msgid "Not now"
+msgstr "ليس الآن"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Open Settings"
 msgstr "فتح الإعدادات"
@@ -372,6 +384,10 @@ msgstr "Pro شهري"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Push notifications"
 msgstr "الإشعارات الفورية"
+
+#: src/hooks/useRatingsAsk.ts
+msgid "Rate Reflect ✦"
+msgstr "قيّم Reflect ✦"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Reconnect to delete your account."

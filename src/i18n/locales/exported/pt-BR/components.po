@@ -93,10 +93,6 @@ msgid "Every Sunday, a look back at your week — in your own words."
 msgstr "Todo domingo, uma retrospectiva da sua semana — nas suas próprias palavras."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Generate this week’s reflection"
-#~ msgstr "Gerar a reflexão desta semana"
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Get your first reflection"
 msgstr "Receba a sua primeira reflexão"
 
@@ -137,17 +133,13 @@ msgstr "Mesclar tudo"
 msgid "Merge all {combined} entries into your account."
 msgstr "Mesclar todas as {combined} entradas na sua conta."
 
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "my journal, via Reflect"
+msgstr "meu diário, via Reflect"
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "No connection"
 msgstr "Sem conexão"
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "No reflections yet — they arrive every Sunday."
-#~ msgstr "Ainda não há reflexões — elas chegam todo domingo."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Not enough to reflect on yet"
-#~ msgstr "Ainda não há o suficiente para refletir"
 
 #: src/components/molecules/EntryEcho/index.tsx
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
@@ -180,10 +172,6 @@ msgid "Please try again."
 msgstr "Tente novamente."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Pro"
-#~ msgstr "Pro"
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Read →"
 msgstr "Ler →"
 
@@ -202,6 +190,10 @@ msgstr "Lembrar-me às {timeLabel}"
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Reminder set ✦"
 msgstr "Lembrete ativado ✦"
+
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Share ↗"
+msgstr "Compartilhar ↗"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Takes a minute — a free account brings your entries with you, private as always."
@@ -269,10 +261,6 @@ msgid "Write a couple of entries first, then your first reflection unlocks. 🍂
 msgstr "Escreva algumas entradas primeiro e a sua primeira reflexão é liberada. 🍂"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Write a couple of entries first."
-#~ msgstr "Escreva algumas entradas primeiro."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Write my first reflection ✦"
 msgstr "Escrever minha primeira reflexão ✦"
 
@@ -289,14 +277,6 @@ msgstr "Sim, responda ✦"
 msgid "You have {localCount} local {0} and {serverCount} in your account — {combined} total, {overBy} over the free limit of {FREE_ENTRY_LIMIT}."
 msgstr "Você tem {localCount} {0} locais e {serverCount} na sua conta — {combined} no total, {overBy} acima do limite gratuito de {FREE_ENTRY_LIMIT}."
 
-#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
-#~ msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
-#~ msgstr "Você escreveu sua primeira entrada. Um lembrete diário suave torna muito mais provável que vire um hábito."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "You've read your 3 free reflections"
-#~ msgstr ""
-
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "You’ve read your 3 free reflections"
 msgstr "Você leu suas 3 reflexões grátis"
@@ -310,6 +290,18 @@ msgstr "Suas {serverCount} {0} da conta serão excluídas permanentemente e subs
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your entries are sent securely to our AI to write it — never shown to anyone, never sold, never used to train AI."
 msgstr "Suas entradas são enviadas com segurança para nossa IA para escrevê-la — nunca são mostradas a ninguém, nunca são vendidas, nunca são usadas para treinar IA."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives Sunday — in {daysToSunday} days 🍂"
+msgstr "Sua próxima reflexão chega no domingo — em {daysToSunday} dias 🍂"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives today 🍂"
+msgstr "Sua próxima reflexão chega hoje 🍂"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives tomorrow 🍂"
+msgstr "Sua próxima reflexão chega amanhã 🍂"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your week is ready"

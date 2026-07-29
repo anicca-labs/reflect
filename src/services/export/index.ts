@@ -2,6 +2,7 @@ import { Share } from 'react-native';
 import { format } from 'date-fns';
 import type { JournalEntry } from '@/src/types/journal';
 import { getDateLocale } from '@/src/utils/date';
+import { useAppLockStore } from '@/src/stores';
 
 const formatEntry = (entry: JournalEntry): string => {
   const date = new Date(entry.created_at);
@@ -21,7 +22,16 @@ const exportJournal = async (entries: JournalEntry[]): Promise<void> => {
   const text = sorted.map(formatEntry).join('\n\n---\n\n');
   const header = `Reflect Journal — ${sorted.length} ${sorted.length === 1 ? 'entry' : 'entries'}\nExported ${format(new Date(), 'MMMM d, yyyy', { locale: getDateLocale() })}\n\n${'='.repeat(40)}\n\n`;
 
-  await Share.share({ message: header + text, title: 'My Reflect Journal' });
+  // The share sheet pushes the app through inactive/background without the user
+  // leaving — suppress the biometric lock for the round trip (same pattern as
+  // the paywall sheet; closeStoreSheet defers until we're back in foreground).
+  const { openStoreSheet, closeStoreSheet } = useAppLockStore.getState();
+  openStoreSheet();
+  try {
+    await Share.share({ message: header + text, title: 'My Reflect Journal' });
+  } finally {
+    closeStoreSheet();
+  }
 };
 
 export { exportJournal };

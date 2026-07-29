@@ -37,6 +37,10 @@ msgstr ""
 msgid "24-hour"
 msgstr ""
 
+#: src/hooks/useRatingsAsk.ts
+msgid "A quick rating helps other journalers find it. 🍂"
+msgstr ""
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Account"
 msgstr ""
@@ -190,6 +194,10 @@ msgstr ""
 msgid "English"
 msgstr ""
 
+#: src/hooks/useRatingsAsk.ts
+msgid "Enjoying Reflect?"
+msgstr ""
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 msgid "Enter your email to receive a reset link."
 msgstr ""
@@ -302,6 +310,10 @@ msgstr ""
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr ""
 
+#: src/hooks/useRatingsAsk.ts
+msgid "Not now"
+msgstr ""
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Open Settings"
 msgstr ""
@@ -371,6 +383,10 @@ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Push notifications"
+msgstr ""
+
+#: src/hooks/useRatingsAsk.ts
+msgid "Rate Reflect ✦"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx

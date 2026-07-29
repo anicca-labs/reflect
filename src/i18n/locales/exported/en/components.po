@@ -93,10 +93,6 @@ msgid "Every Sunday, a look back at your week — in your own words."
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Generate this week’s reflection"
-#~ msgstr ""
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Get your first reflection"
 msgstr ""
 
@@ -137,17 +133,13 @@ msgstr ""
 msgid "Merge all {combined} entries into your account."
 msgstr ""
 
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "my journal, via Reflect"
+msgstr ""
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "No connection"
 msgstr ""
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "No reflections yet — they arrive every Sunday."
-#~ msgstr ""
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Not enough to reflect on yet"
-#~ msgstr ""
 
 #: src/components/molecules/EntryEcho/index.tsx
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
@@ -180,10 +172,6 @@ msgid "Please try again."
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Pro"
-#~ msgstr ""
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Read →"
 msgstr ""
 
@@ -201,6 +189,10 @@ msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Reminder set ✦"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Share ↗"
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
@@ -269,10 +261,6 @@ msgid "Write a couple of entries first, then your first reflection unlocks. 🍂
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Write a couple of entries first."
-#~ msgstr ""
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Write my first reflection ✦"
 msgstr ""
 
@@ -289,14 +277,6 @@ msgstr ""
 msgid "You have {localCount} local {0} and {serverCount} in your account — {combined} total, {overBy} over the free limit of {FREE_ENTRY_LIMIT}."
 msgstr ""
 
-#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
-#~ msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
-#~ msgstr ""
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "You've read your 3 free reflections"
-#~ msgstr ""
-
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "You’ve read your 3 free reflections"
 msgstr ""
@@ -309,6 +289,18 @@ msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your entries are sent securely to our AI to write it — never shown to anyone, never sold, never used to train AI."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives Sunday — in {daysToSunday} days 🍂"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives today 🍂"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives tomorrow 🍂"
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
