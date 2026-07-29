@@ -137,6 +137,10 @@ msgstr "Gabungkan semua"
 msgid "Merge all {combined} entries into your account."
 msgstr "Gabungkan semua {combined} entri ke akun Anda."
 
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "my journal, via Reflect"
+msgstr "jurnalku, via Reflect"
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "No connection"
 msgstr "Tidak ada koneksi"
@@ -202,6 +206,10 @@ msgstr "Ingatkan saya pukul {timeLabel}"
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Reminder set ✦"
 msgstr "Pengingat aktif ✦"
+
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Share ↗"
+msgstr "Bagikan ↗"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Takes a minute — a free account brings your entries with you, private as always."
@@ -310,6 +318,18 @@ msgstr "{serverCount} {0} akun Anda akan dihapus permanen dan digantikan oleh {l
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your entries are sent securely to our AI to write it — never shown to anyone, never sold, never used to train AI."
 msgstr "Entrimu dikirim dengan aman ke AI kami untuk menulisnya — tidak pernah ditunjukkan ke siapa pun, tidak pernah dijual, tidak pernah dipakai untuk melatih AI."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives Sunday — in {daysToSunday} days 🍂"
+msgstr "Refleksi berikutnya tiba hari Minggu — dalam {daysToSunday} hari 🍂"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives today 🍂"
+msgstr "Refleksi berikutnya tiba hari ini 🍂"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives tomorrow 🍂"
+msgstr "Refleksi berikutnya tiba besok 🍂"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your week is ready"

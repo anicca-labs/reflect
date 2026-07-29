@@ -13,6 +13,7 @@ import {
   useReflections,
   useGenerateReflection,
   useMarkReflectionSeen,
+  useRatingsAsk,
   reflectionMeta,
   type Reflection,
 } from '@hooks';
@@ -137,6 +138,9 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
   const atLimit = !isPro && reflections.length >= FREE_LIMIT;
   const isEmpty = !isLoading && reflections.length === 0;
   const canGenerate = entryCount >= MIN_ENTRIES;
+  const { maybeAsk: maybeAskRating } = useRatingsAsk();
+  // Days until the next Sunday delivery (0 = today is Sunday).
+  const daysToSunday = (7 - new Date().getDay()) % 7;
 
   const openReflection = (r: Reflection) => {
     setReading(r);
@@ -174,6 +178,18 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
         <BodySm color="$text-disabled">
           <Trans>Every Sunday, a look back at your week — in your own words.</Trans>
         </BodySm>
+        {/* The ritual made visible between Sundays — anticipation is the hook. */}
+        {reflections.length > 0 ? (
+          <BodySm color="$accentBackground" mt="$1">
+            {daysToSunday === 0 ? (
+              <Trans>Your next reflection arrives today 🍂</Trans>
+            ) : daysToSunday === 1 ? (
+              <Trans>Your next reflection arrives tomorrow 🍂</Trans>
+            ) : (
+              <Trans>Your next reflection arrives Sunday — in {daysToSunday} days 🍂</Trans>
+            )}
+          </BodySm>
+        ) : null}
       </YStack>
 
       {isLoading && reflections.length === 0 ? (
@@ -275,7 +291,15 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
         </YStack>
       ) : null}
 
-      <ReflectionReadModal reflection={reading} onClose={() => setReading(null)} />
+      <ReflectionReadModal
+        reflection={reading}
+        onClose={() => {
+          setReading(null);
+          // The moment right after reading a reflection is the app's warmest —
+          // the (once-ever) rating ask lands here.
+          maybeAskRating();
+        }}
+      />
       <ReflectionUpsellModal visible={upsellOpen} onClose={() => setUpsellOpen(false)} />
     </YStack>
   );
@@ -285,6 +309,7 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
 const WeeklyReflectionBanner = () => {
   const { data: reflections = [] } = useReflections();
   const markSeen = useMarkReflectionSeen();
+  const { maybeAsk: maybeAskRating } = useRatingsAsk();
   const [reading, setReading] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const latest = reflections[0];
@@ -334,7 +359,10 @@ const WeeklyReflectionBanner = () => {
 
       <ReflectionReadModal
         reflection={reading && latest ? latest : null}
-        onClose={() => setReading(false)}
+        onClose={() => {
+          setReading(false);
+          maybeAskRating();
+        }}
       />
     </>
   );

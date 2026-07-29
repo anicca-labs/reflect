@@ -21,3 +21,4 @@ export * from './useOtaUpdate';
 export * from './useOfflineJournalSync';
 export * from './useBiometricLock';
 export * from './useReflections';
+export * from './useRatingsAsk';

@@ -37,6 +37,10 @@ msgstr "12 horas"
 msgid "24-hour"
 msgstr "24 horas"
 
+#: src/hooks/useRatingsAsk.ts
+msgid "A quick rating helps other journalers find it. 🍂"
+msgstr "Uma avaliação rápida ajuda outras pessoas a encontrá-lo. 🍂"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Account"
 msgstr "Conta"
@@ -190,6 +194,10 @@ msgstr "Ative as notificações em Configurações para usar lembretes."
 msgid "English"
 msgstr "Inglês"
 
+#: src/hooks/useRatingsAsk.ts
+msgid "Enjoying Reflect?"
+msgstr "Curtindo o Reflect?"
+
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 msgid "Enter your email to receive a reset link."
 msgstr "Digite seu e-mail para receber um link de redefinição."
@@ -302,6 +310,10 @@ msgstr "Nenhuma entrada corresponde à sua busca."
 msgid "No entries yet. Start writing in the Journal tab."
 msgstr "Sem entradas ainda. Comece a escrever na aba Diário."
 
+#: src/hooks/useRatingsAsk.ts
+msgid "Not now"
+msgstr "Agora não"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Open Settings"
 msgstr "Abrir configurações"
@@ -372,6 +384,10 @@ msgstr "Pro Mensal"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Push notifications"
 msgstr "Notificações push"
+
+#: src/hooks/useRatingsAsk.ts
+msgid "Rate Reflect ✦"
+msgstr "Avaliar o Reflect ✦"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Reconnect to delete your account."

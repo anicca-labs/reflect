@@ -1,9 +1,9 @@
-import { Modal } from 'react-native';
+import { Modal, Share } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScrollView, YStack, XStack } from 'tamagui';
 import { HeadingLg, BodyLg, LabelMd, LabelLg } from '@fonts';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
-import { Trans } from '@lingui/react/macro';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING } from '@constants';
 import { reflectionMeta, type Reflection } from '@hooks';
 
@@ -19,8 +19,18 @@ interface ReflectionReadModalProps {
 // its own surface, not a cramped list row.
 const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadModalProps) => {
   const insets = useSafeAreaInsets();
+  const { t } = useLingui();
   const meta = reflection ? reflectionMeta(reflection) : null;
   const paragraphs = reflection ? reflection.body.split('\n\n') : [];
+
+  // Share one line, not the whole (intimate) reflection — quote-card psychology.
+  // Every share is an organic ad written by the product itself.
+  const handleShare = () => {
+    if (!meta) return;
+    Share.share({
+      message: `“${meta.preview}”\n\n— ${t`my journal, via Reflect`} 🍂\nhttps://reflects.sytes.net/get`,
+    }).catch(() => {});
+  };
 
   return (
     <Modal
@@ -30,7 +40,22 @@ const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadMod
       statusBarTranslucent
     >
       <YStack flex={1} bg="$background">
-        <XStack justify="flex-end" items="center" px="$4" style={{ paddingTop: insets.top + 8 }}>
+        <XStack
+          justify="space-between"
+          items="center"
+          px="$4"
+          style={{ paddingTop: insets.top + 8 }}
+        >
+          <BaseTouchable
+            onPress={handleShare}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            px="$2"
+            py="$1"
+          >
+            <LabelLg color="$accentBackground">
+              <Trans>Share ↗</Trans>
+            </LabelLg>
+          </BaseTouchable>
           <BaseTouchable
             onPress={onClose}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}

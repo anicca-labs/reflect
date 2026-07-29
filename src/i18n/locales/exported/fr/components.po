@@ -137,6 +137,10 @@ msgstr "Tout fusionner"
 msgid "Merge all {combined} entries into your account."
 msgstr "Fusionner les {combined} entrées dans votre compte."
 
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "my journal, via Reflect"
+msgstr "mon journal, via Reflect"
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "No connection"
 msgstr "Pas de connexion"
@@ -202,6 +206,10 @@ msgstr "Me le rappeler à {timeLabel}"
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Reminder set ✦"
 msgstr "Rappel activé ✦"
+
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Share ↗"
+msgstr "Partager ↗"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Takes a minute — a free account brings your entries with you, private as always."
@@ -310,6 +318,18 @@ msgstr "Vos {serverCount} {0} du compte seront définitivement supprimées et re
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your entries are sent securely to our AI to write it — never shown to anyone, never sold, never used to train AI."
 msgstr "Tes entrées sont envoyées en toute sécurité à notre IA pour l'écrire — jamais montrées à personne, jamais vendues, jamais utilisées pour entraîner une IA."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives Sunday — in {daysToSunday} days 🍂"
+msgstr "Ta prochaine réflexion arrive dimanche — dans {daysToSunday} jours 🍂"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives today 🍂"
+msgstr "Ta prochaine réflexion arrive aujourd’hui 🍂"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives tomorrow 🍂"
+msgstr "Ta prochaine réflexion arrive demain 🍂"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your week is ready"

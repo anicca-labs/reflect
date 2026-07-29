@@ -137,6 +137,10 @@ msgstr ""
 msgid "Merge all {combined} entries into your account."
 msgstr ""
 
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "my journal, via Reflect"
+msgstr ""
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "No connection"
 msgstr ""
@@ -201,6 +205,10 @@ msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Reminder set ✦"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Share ↗"
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
@@ -309,6 +317,18 @@ msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your entries are sent securely to our AI to write it — never shown to anyone, never sold, never used to train AI."
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives Sunday — in {daysToSunday} days 🍂"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives today 🍂"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your next reflection arrives tomorrow 🍂"
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
