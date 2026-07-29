@@ -41,15 +41,47 @@ const useAppLockStore = create<AppLockState>((set) => ({
     set(locked ? { isLocked: true, retryVisible: false } : { isLocked: false }),
   storeSheetOpen: false,
   openStoreSheet: () => set({ storeSheetOpen: true }),
-  // Clear only once the app is actually back in the foreground: the paywall
-  // promise resolves while the sheet is still dismissing, and the trailing
-  // inactive→active transition would otherwise land with the flag already down
-  // and engage the lock anyway.
+  // Clear only once the sheet's AppState round trip has actually finished.
+  //
+  // Two timing shapes reach this call:
+  //  - resolve while inactive/background (iOS paywall dismissing): clear on the
+  //    next return to `active`.
+  //  - resolve while still `active` (Android's Share.share resolves when the
+  //    sheet OPENS, before any backgrounding): give the imminent transition a
+  //    short grace window. If it arrives, keep suppressing through the cycle and
+  //    clear on return — unless the user genuinely left for a while (e.g. jumped
+  //    into the app they shared to), in which case re-engage the lock: the
+  //    nuisance we're removing is the quick sheet round trip, not real absence.
   closeStoreSheet: () => {
+    const SHEET_TRANSITION_GRACE_MS = 1500;
+    const REAL_DEPARTURE_MS = 30_000;
+
     if (AppState.currentState === 'active') {
-      set({ storeSheetOpen: false });
+      let backgroundedAt: number | null = null;
+      const timer = setTimeout(() => {
+        if (backgroundedAt === null) {
+          sub.remove();
+          set({ storeSheetOpen: false });
+        }
+      }, SHEET_TRANSITION_GRACE_MS);
+      const sub = AppState.addEventListener('change', (next) => {
+        if (next === 'background' || next === 'inactive') {
+          backgroundedAt = backgroundedAt ?? Date.now();
+          return;
+        }
+        if (next !== 'active') return;
+        sub.remove();
+        clearTimeout(timer);
+        const awayMs = backgroundedAt ? Date.now() - backgroundedAt : 0;
+        set(
+          awayMs > REAL_DEPARTURE_MS
+            ? { storeSheetOpen: false, isLocked: true, retryVisible: false }
+            : { storeSheetOpen: false },
+        );
+      });
       return;
     }
+
     const sub = AppState.addEventListener('change', (next) => {
       if (next !== 'active') return;
       sub.remove();
