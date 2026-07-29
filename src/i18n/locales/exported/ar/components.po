@@ -93,10 +93,6 @@ msgid "Every Sunday, a look back at your week — in your own words."
 msgstr "كل يوم أحد، نظرة على أسبوعك — بكلماتك أنت."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Generate this week’s reflection"
-#~ msgstr "أنشئ تأمّل هذا الأسبوع"
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Get your first reflection"
 msgstr "احصل على تأملك الأول"
 
@@ -145,14 +141,6 @@ msgstr "مذكرتي، عبر Reflect"
 msgid "No connection"
 msgstr "لا يوجد اتصال"
 
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "No reflections yet — they arrive every Sunday."
-#~ msgstr "لا توجد تأملات بعد — تصل كل يوم أحد."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Not enough to reflect on yet"
-#~ msgstr "لا يوجد ما يكفي للتأمل بعد"
-
 #: src/components/molecules/EntryEcho/index.tsx
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 #: src/components/molecules/WeeklyReflection/index.tsx
@@ -182,10 +170,6 @@ msgstr "يرجى المحاولة مرة أخرى من الإعدادات."
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Please try again."
 msgstr "حاول مرّة أخرى."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Pro"
-#~ msgstr "Pro"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Read →"
@@ -277,10 +261,6 @@ msgid "Write a couple of entries first, then your first reflection unlocks. 🍂
 msgstr "اكتب بضع تدوينات أولاً، ثم يُفتح تأملك الأول. 🍂"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Write a couple of entries first."
-#~ msgstr "اكتب بضع تدوينات أولاً."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Write my first reflection ✦"
 msgstr "اكتب تأملي الأول ✦"
 
@@ -296,14 +276,6 @@ msgstr "نعم، رُدّ عليّ ✦"
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "You have {localCount} local {0} and {serverCount} in your account — {combined} total, {overBy} over the free limit of {FREE_ENTRY_LIMIT}."
 msgstr "لديك {localCount} {0} محلية و{serverCount} في حسابك — {combined} إجمالاً، بزيادة {overBy} عن الحد المجاني البالغ {FREE_ENTRY_LIMIT}."
-
-#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
-#~ msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
-#~ msgstr "لقد كتبت أول تدوينة لك. تذكير يومي لطيف يجعل تحويلها إلى عادة أكثر ترجيحًا بكثير."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "You've read your 3 free reflections"
-#~ msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "You’ve read your 3 free reflections"

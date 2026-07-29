@@ -93,10 +93,6 @@ msgid "Every Sunday, a look back at your week — in your own words."
 msgstr "Cada domingo, un repaso de tu semana — en tus propias palabras."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Generate this week’s reflection"
-#~ msgstr "Generar la reflexión de esta semana"
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Get your first reflection"
 msgstr "Recibe tu primera reflexión"
 
@@ -145,14 +141,6 @@ msgstr "mi diario, vía Reflect"
 msgid "No connection"
 msgstr "Sin conexión"
 
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "No reflections yet — they arrive every Sunday."
-#~ msgstr "Aún no hay reflexiones — llegan cada domingo."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Not enough to reflect on yet"
-#~ msgstr "Aún no hay suficiente para reflexionar"
-
 #: src/components/molecules/EntryEcho/index.tsx
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 #: src/components/molecules/WeeklyReflection/index.tsx
@@ -182,10 +170,6 @@ msgstr "Inténtalo de nuevo desde Ajustes."
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Please try again."
 msgstr "Inténtalo de nuevo."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Pro"
-#~ msgstr "Pro"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Read →"
@@ -277,10 +261,6 @@ msgid "Write a couple of entries first, then your first reflection unlocks. 🍂
 msgstr "Escribe un par de entradas primero y se desbloquea tu primera reflexión. 🍂"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "Write a couple of entries first."
-#~ msgstr "Escribe un par de entradas primero."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Write my first reflection ✦"
 msgstr "Escribir mi primera reflexión ✦"
 
@@ -296,14 +276,6 @@ msgstr "Sí, respóndeme ✦"
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "You have {localCount} local {0} and {serverCount} in your account — {combined} total, {overBy} over the free limit of {FREE_ENTRY_LIMIT}."
 msgstr "Tienes {localCount} {0} locales y {serverCount} en tu cuenta — {combined} en total, {overBy} por encima del límite gratuito de {FREE_ENTRY_LIMIT}."
-
-#: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
-#~ msgid "You wrote your first entry. A gentle daily nudge makes it far more likely to become a habit."
-#~ msgstr "Escribiste tu primera entrada. Un recordatorio diario suave hace mucho más probable que se convierta en un hábito."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "You've read your 3 free reflections"
-#~ msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "You’ve read your 3 free reflections"
