@@ -33,6 +33,10 @@ type AppLockState = {
  * fingerprint (or device-passcode fallback) on return to the foreground.
  * Persisting it would risk stranding a user behind a prompt across launches.
  */
+// Monotonic id for sheet open/close cycles — lets a newer sheet invalidate the
+// pending cleanup of an older one (see openStoreSheet/closeStoreSheet).
+let sheetGeneration = 0;
+
 const useAppLockStore = create<AppLockState>((set) => ({
   isLocked: false,
   // Re-engaging the lock resets the retry UI so each cycle starts with just the
@@ -40,7 +44,12 @@ const useAppLockStore = create<AppLockState>((set) => ({
   setLocked: (locked) =>
     set(locked ? { isLocked: true, retryVisible: false } : { isLocked: false }),
   storeSheetOpen: false,
-  openStoreSheet: () => set({ storeSheetOpen: true }),
+  openStoreSheet: () => {
+    // New sheet cycle: invalidate any pending cleanup from a previous sheet so a
+    // stale finalize can't strip the fresh suppression (rapid share → share).
+    sheetGeneration++;
+    set({ storeSheetOpen: true });
+  },
   // Clear only once the sheet's AppState round trip has actually finished.
   //
   // Two timing shapes reach this call:
@@ -67,6 +76,10 @@ const useAppLockStore = create<AppLockState>((set) => ({
     const REAL_DEPARTURE_MS = 30_000;
     const ACTIVE_SETTLE_MS = 1_200;
 
+    // Cleanup from THIS call only applies while no newer sheet has opened.
+    const myGeneration = sheetGeneration;
+    const stale = () => sheetGeneration !== myGeneration;
+
     let backgroundedAt: number | null = null;
     let settleTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -75,13 +88,14 @@ const useAppLockStore = create<AppLockState>((set) => ({
     const graceTimer = setTimeout(() => {
       if (backgroundedAt === null) {
         sub.remove();
-        set({ storeSheetOpen: false });
+        if (!stale()) set({ storeSheetOpen: false });
       }
     }, SHEET_TRANSITION_GRACE_MS);
 
     const finalize = () => {
       sub.remove();
       clearTimeout(graceTimer);
+      if (stale()) return;
       const awayMs = backgroundedAt ? Date.now() - ACTIVE_SETTLE_MS - backgroundedAt : 0;
       set(
         awayMs > REAL_DEPARTURE_MS
