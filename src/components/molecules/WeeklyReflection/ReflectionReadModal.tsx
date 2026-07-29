@@ -6,6 +6,7 @@ import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING } from '@constants';
 import { reflectionMeta, type Reflection } from '@hooks';
+import { useAppLockStore } from '@/src/stores';
 
 interface ReflectionReadModalProps {
   reflection: Reflection | null;
@@ -25,11 +26,21 @@ const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadMod
 
   // Share one line, not the whole (intimate) reflection — quote-card psychology.
   // Every share is an organic ad written by the product itself.
-  const handleShare = () => {
+  const handleShare = async () => {
     if (!meta) return;
-    Share.share({
-      message: `“${meta.preview}”\n\n— ${t`my journal, via Reflect`} 🍂\nhttps://reflects.sytes.net/get`,
-    }).catch(() => {});
+    // The share sheet flips the app inactive/background without the user leaving
+    // — suppress the biometric lock for the round trip (paywall-sheet pattern).
+    const { openStoreSheet, closeStoreSheet } = useAppLockStore.getState();
+    openStoreSheet();
+    try {
+      await Share.share({
+        message: `“${meta.preview}”\n\n— ${t`my journal, via Reflect`} 🍂\nhttps://reflects.sytes.net/get`,
+      });
+    } catch {
+      // sharing is best-effort
+    } finally {
+      closeStoreSheet();
+    }
   };
 
   return (
