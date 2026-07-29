@@ -53,7 +53,12 @@ const useAppLockStore = create<AppLockState>((set) => ({
   //    into the app they shared to), in which case re-engage the lock: the
   //    nuisance we're removing is the quick sheet round trip, not real absence.
   closeStoreSheet: () => {
-    const SHEET_TRANSITION_GRACE_MS = 1500;
+    // Android resolves Share.share() when the sheet OPENS, and the user can sit
+    // in the sheet for as long as they like before the backgrounding happens —
+    // so the grace window must span the whole interaction, not a transition.
+    // Security holds regardless: any cycle away longer than REAL_DEPARTURE_MS
+    // re-engages the lock on return.
+    const SHEET_TRANSITION_GRACE_MS = 120_000;
     const REAL_DEPARTURE_MS = 30_000;
 
     if (AppState.currentState === 'active') {
