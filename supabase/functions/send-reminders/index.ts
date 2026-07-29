@@ -63,12 +63,22 @@ type PushDevice = {
   locale: string | null;
 };
 
-Deno.serve(async () => {
+Deno.serve(async (req) => {
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     { db: { schema: 'api' } },
   );
+
+  // Admin-only test hook: bypass the local-20:00 clock gate for the streak
+  // phase (data conditions still apply). Lets us verify the push end-to-end
+  // without waiting for a timezone to line up.
+  const adminSecret = Deno.env.get('ADMIN_PUSH_SECRET');
+  const body = (await req.json().catch(() => ({}))) as { test?: string };
+  const forceStreak =
+    !!adminSecret &&
+    req.headers.get('X-Admin-Secret') === adminSecret &&
+    body.test === 'streak-now';
 
   const now = new Date();
   const staleTokens: string[] = [];
@@ -127,7 +137,9 @@ Deno.serve(async () => {
     .not('timezone', 'is', null);
 
   const dueStreak = (streakDevices ?? []).filter(
-    (d) => d.reminder_enabled !== true && matchesReminderTime(now, d.timezone, STREAK_HOUR, 0),
+    (d) =>
+      d.reminder_enabled !== true &&
+      (forceStreak || matchesReminderTime(now, d.timezone, STREAK_HOUR, 0)),
   );
   if (dueStreak.length > 0) {
     const userIds = [...new Set(dueStreak.map((d) => d.user_id as string))];

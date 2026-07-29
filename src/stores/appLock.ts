@@ -53,45 +53,63 @@ const useAppLockStore = create<AppLockState>((set) => ({
   //    into the app they shared to), in which case re-engage the lock: the
   //    nuisance we're removing is the quick sheet round trip, not real absence.
   closeStoreSheet: () => {
-    // Android resolves Share.share() when the sheet OPENS, and the user can sit
-    // in the sheet for as long as they like before the backgrounding happens —
-    // so the grace window must span the whole interaction, not a transition.
-    // Security holds regardless: any cycle away longer than REAL_DEPARTURE_MS
-    // re-engages the lock on return.
+    // Timing realities this has to survive:
+    //  - Android resolves Share.share() when the sheet OPENS (long before any
+    //    backgrounding), and the user can dwell in the sheet indefinitely — so
+    //    the suppression must span the whole interaction, not a transition.
+    //  - The sheet can FLAP active↔background repeatedly while the user
+    //    interacts with it (expanding, previews, picking a target) — so the
+    //    first return to `active` must NOT finalize; only a settled foreground
+    //    does (ACTIVE_SETTLE_MS with no new backgrounding).
+    // Security holds regardless: a cycle away longer than REAL_DEPARTURE_MS
+    // re-engages the lock once the user is really back.
     const SHEET_TRANSITION_GRACE_MS = 120_000;
     const REAL_DEPARTURE_MS = 30_000;
+    const ACTIVE_SETTLE_MS = 1_200;
 
-    if (AppState.currentState === 'active') {
-      let backgroundedAt: number | null = null;
-      const timer = setTimeout(() => {
-        if (backgroundedAt === null) {
-          sub.remove();
-          set({ storeSheetOpen: false });
-        }
-      }, SHEET_TRANSITION_GRACE_MS);
-      const sub = AppState.addEventListener('change', (next) => {
-        if (next === 'background' || next === 'inactive') {
-          backgroundedAt = backgroundedAt ?? Date.now();
-          return;
-        }
-        if (next !== 'active') return;
+    let backgroundedAt: number | null = null;
+    let settleTimer: ReturnType<typeof setTimeout> | null = null;
+
+    // If nothing ever backgrounds us (sheet dismissed with no AppState churn),
+    // clear after the grace window — there was no cycle to ride out.
+    const graceTimer = setTimeout(() => {
+      if (backgroundedAt === null) {
         sub.remove();
-        clearTimeout(timer);
-        const awayMs = backgroundedAt ? Date.now() - backgroundedAt : 0;
-        set(
-          awayMs > REAL_DEPARTURE_MS
-            ? { storeSheetOpen: false, isLocked: true, retryVisible: false }
-            : { storeSheetOpen: false },
-        );
-      });
-      return;
-    }
+        set({ storeSheetOpen: false });
+      }
+    }, SHEET_TRANSITION_GRACE_MS);
+
+    const finalize = () => {
+      sub.remove();
+      clearTimeout(graceTimer);
+      const awayMs = backgroundedAt ? Date.now() - ACTIVE_SETTLE_MS - backgroundedAt : 0;
+      set(
+        awayMs > REAL_DEPARTURE_MS
+          ? { storeSheetOpen: false, isLocked: true, retryVisible: false }
+          : { storeSheetOpen: false },
+      );
+    };
 
     const sub = AppState.addEventListener('change', (next) => {
+      if (next === 'background' || next === 'inactive') {
+        backgroundedAt = backgroundedAt ?? Date.now();
+        // Mid-sheet flap — cancel any pending finalize and keep suppressing.
+        if (settleTimer) {
+          clearTimeout(settleTimer);
+          settleTimer = null;
+        }
+        return;
+      }
       if (next !== 'active') return;
-      sub.remove();
-      set({ storeSheetOpen: false });
+      if (settleTimer) clearTimeout(settleTimer);
+      settleTimer = setTimeout(finalize, ACTIVE_SETTLE_MS);
     });
+
+    // Called while already away (e.g. iOS paywall resolving mid-dismissal):
+    // treat the current absence as the cycle start.
+    if (AppState.currentState !== 'active') {
+      backgroundedAt = Date.now();
+    }
   },
   splashComplete: false,
   setSplashComplete: (done) => set({ splashComplete: done }),
