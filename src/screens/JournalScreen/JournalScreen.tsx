@@ -187,7 +187,7 @@ const JournalScreen = () => {
 
     setProIntent(false); // one-shot: flip before the async so it can't re-fire
     (async () => {
-      const purchased = await presentPaywall();
+      const purchased = await presentPaywall('pro-intent');
       if (!purchased) return;
       await refreshEntitlement();
       alert({
@@ -427,7 +427,7 @@ const JournalScreen = () => {
         });
         return;
       }
-      const purchased = await presentPaywall();
+      const purchased = await presentPaywall('entry-limit');
       if (!purchased) return;
       // Sync Pro to the server before saving this entry — the limit trigger reads
       // api.entitlements, and the webhook that writes it lands after this insert.

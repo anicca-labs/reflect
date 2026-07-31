@@ -28,7 +28,7 @@ const MIN_ENTRIES = 2;
 const ReflectionUpsellModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
   const { presentPaywall } = useRevenueCat();
   const handleGoPro = async () => {
-    await presentPaywall();
+    await presentPaywall('reflection-limit');
     onClose();
   };
   return (
