@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSessionStore } from '@/src/stores';
+import { useSessionStore, useReflectionOpenStore } from '@/src/stores';
 import Animated, { FadeOutUp } from 'react-native-reanimated';
 import { YStack, XStack, Spinner } from 'tamagui';
 import { HeadingMd, BodyMdBold, BodySm, LabelMd, LabelLg } from '@fonts';
@@ -314,6 +314,23 @@ const WeeklyReflectionBanner = () => {
   const [dismissed, setDismissed] = useState(false);
   const latest = reflections[0];
   const show = !!latest && !latest.seen_at && !dismissed;
+
+  // A tapped "your week is ready" push lands here: open the latest reflection
+  // full-screen as soon as the data is loaded, then clear the flag.
+  const pendingReflectionOpen = useReflectionOpenStore((s) => s.pendingReflectionOpen);
+  const setPendingReflectionOpen = useReflectionOpenStore((s) => s.setPendingReflectionOpen);
+  useEffect(() => {
+    if (!pendingReflectionOpen || !latest) return;
+    setPendingReflectionOpen(false);
+    // Consuming an external event flag (push tap) by opening UI is the intended
+    // effect here — same stash-then-consume pattern as pendingCompose.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setReading(true);
+    if (!latest.seen_at) markSeen.mutate(latest.id);
+    // markSeen is a stable mutation object from React Query; depending on it
+    // would re-run the effect every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingReflectionOpen, latest, setPendingReflectionOpen]);
 
   const open = () => {
     setReading(true);

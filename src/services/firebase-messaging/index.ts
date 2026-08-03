@@ -84,6 +84,9 @@ const REMINDER_NOTIF_ID_KEY = '@reflect/reminder_notif_id';
 // pushes. The server (Deno edge functions) can't import this, so keep the string in
 // sync there.
 const REMINDER_DATA_TYPE = 'daily-reminder';
+// Sunday "your week is ready" pushes (sent by the generate-reflection edge fn);
+// tapping one opens the latest reflection full-screen (useReflectionNotification).
+const WEEKLY_REFLECTION_DATA_TYPE = 'weekly-reflection';
 
 // The reminder is a fixed string, so it's localized from a static map by the app's
 // active locale (English fallback) — no runtime translation. Keep in sync with the
@@ -230,6 +233,7 @@ const scheduleMemoryNotifications = (
 export type { NotificationPermissionStatus };
 export {
   REMINDER_DATA_TYPE,
+  WEEKLY_REFLECTION_DATA_TYPE,
   getNotificationPermissionStatus,
   requestNotificationPermission,
   getFCMToken,

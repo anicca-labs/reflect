@@ -35,6 +35,48 @@ const STREAK_BODY_BY_LOCALE: Record<string, string> = {
 const streakBody = (locale: string | null): string =>
   (locale ? STREAK_BODY_BY_LOCALE[locale] : undefined) ?? STREAK_BODY_BY_LOCALE.en;
 
+// Wednesday anticipation nudge: at local Wed 18:00, remind users who are IN the
+// Sunday ritual (AI opted-in) and have written this week that their reflection
+// is taking shape. Builds the Mon→Sun cadence: every entry becomes an
+// investment in Sunday's payoff. Personal (their real count), never sent to
+// users with nothing written (no guilt-tripping).
+const TEASER_WEEKDAY = 'Wed';
+const TEASER_HOUR = 18;
+const TEASER_ONE_BY_LOCALE: Record<string, string> = {
+  en: '1 entry so far — your Sunday reflection is taking shape. 🍂',
+  es: '1 entrada por ahora — tu reflexión del domingo va tomando forma. 🍂',
+  'pt-BR': '1 entrada até agora — sua reflexão de domingo está tomando forma. 🍂',
+  fr: "1 entrée pour l'instant — ta réflexion du dimanche prend forme. 🍂",
+  id: '1 entri sejauh ini — refleksi Minggumu mulai terbentuk. 🍂',
+  ar: 'تدوينة واحدة حتى الآن — تأمل الأحد يتشكّل. 🍂',
+};
+const TEASER_MANY_BY_LOCALE: Record<string, string> = {
+  en: '{n} entries so far — your Sunday reflection is taking shape. 🍂',
+  es: '{n} entradas por ahora — tu reflexión del domingo va tomando forma. 🍂',
+  'pt-BR': '{n} entradas até agora — sua reflexão de domingo está tomando forma. 🍂',
+  fr: "{n} entrées pour l'instant — ta réflexion du dimanche prend forme. 🍂",
+  id: '{n} entri sejauh ini — refleksi Minggumu mulai terbentuk. 🍂',
+  ar: '{n} تدوينات حتى الآن — تأمل الأحد يتشكّل. 🍂',
+};
+const teaserBody = (locale: string | null, count: number): string => {
+  const table = count === 1 ? TEASER_ONE_BY_LOCALE : TEASER_MANY_BY_LOCALE;
+  const tmpl = (locale ? table[locale] : undefined) ?? table.en;
+  return tmpl.replace('{n}', String(count));
+};
+
+// Short local weekday name ('Mon'..'Sun') for an instant in a timezone.
+const localWeekdayInTz = (instant: Date, timezone: string): string =>
+  new Intl.DateTimeFormat('en-US', { timeZone: timezone, weekday: 'short' }).format(instant);
+
+// The local calendar date (YYYY-MM-DD) of this week's Monday in a timezone.
+const localMondayInTz = (now: Date, timezone: string): string => {
+  for (let d = 0; d < 7; d++) {
+    const candidate = new Date(now.getTime() - d * 86_400_000);
+    if (localWeekdayInTz(candidate, timezone) === 'Mon') return localDateInTz(candidate, timezone);
+  }
+  return localDateInTz(now, timezone); // unreachable
+};
+
 // The device's local calendar date (YYYY-MM-DD) for a given instant.
 const localDateInTz = (instant: Date, timezone: string): string =>
   new Intl.DateTimeFormat('en-CA', {
@@ -75,10 +117,9 @@ Deno.serve(async (req) => {
   // without waiting for a timezone to line up.
   const adminSecret = Deno.env.get('ADMIN_PUSH_SECRET');
   const body = (await req.json().catch(() => ({}))) as { test?: string };
-  const forceStreak =
-    !!adminSecret &&
-    req.headers.get('X-Admin-Secret') === adminSecret &&
-    body.test === 'streak-now';
+  const isAdminTest = !!adminSecret && req.headers.get('X-Admin-Secret') === adminSecret;
+  const forceStreak = isAdminTest && body.test === 'streak-now';
+  const forceTeaser = isAdminTest && body.test === 'wednesday-now';
 
   const now = new Date();
   const staleTokens: string[] = [];
@@ -166,9 +207,50 @@ Deno.serve(async (req) => {
     streaksSent = streakResults.filter(Boolean).length;
   }
 
+  // ── Phase 3: Wednesday anticipation teaser (local Wed 18:00) ───────────────
+  let teasersSent = 0;
+  const dueTeaser = (streakDevices ?? []).filter(
+    (d) =>
+      forceTeaser ||
+      (localWeekdayInTz(now, d.timezone) === TEASER_WEEKDAY &&
+        matchesReminderTime(now, d.timezone, TEASER_HOUR, 0)),
+  );
+  if (dueTeaser.length > 0) {
+    const teaserUserIds = [...new Set(dueTeaser.map((d) => d.user_id as string))];
+    // Only users in the Sunday ritual — the teaser promises a payoff that must exist.
+    const { data: optedRows } = await supabase
+      .from('user_settings')
+      .select('user_id')
+      .in('user_id', teaserUserIds)
+      .eq('ai_reflections_enabled', true);
+    const opted = new Set((optedRows ?? []).map((r) => r.user_id as string));
+    // Timestamps only — content stays encrypted and untouched.
+    const { data: weekEntries } = await supabase
+      .from('journal_entries')
+      .select('user_id, created_at')
+      .in('user_id', [...opted])
+      .gte('created_at', new Date(now.getTime() - 7 * 86_400_000).toISOString());
+
+    const teaserResults = await Promise.all(
+      dueTeaser.map((d) => {
+        if (!opted.has(d.user_id as string)) return Promise.resolve(false);
+        const monday = localMondayInTz(now, d.timezone);
+        const count = (weekEntries ?? []).filter(
+          (e) =>
+            e.user_id === d.user_id && localDateInTz(new Date(e.created_at), d.timezone) >= monday,
+        ).length;
+        if (count === 0) return Promise.resolve(false);
+        return push(d, teaserBody(d.locale, count), 'sunday-teaser');
+      }),
+    );
+    teasersSent = teaserResults.filter(Boolean).length;
+  }
+
   if (staleTokens.length > 0) {
     await supabase.from('device_tokens').delete().in('fcm_token', staleTokens);
   }
 
-  return new Response(`Sent ${remindersSent} reminder(s), ${streaksSent} streak nudge(s)`);
+  return new Response(
+    `Sent ${remindersSent} reminder(s), ${streaksSent} streak nudge(s), ${teasersSent} teaser(s)`,
+  );
 });

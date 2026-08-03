@@ -18,6 +18,7 @@ import {
   useToast,
   useMemoryNotification,
   useReminderNotification,
+  useReflectionNotification,
   useActivityPing,
   useOfflineJournalSync,
   useBiometricLock,
@@ -61,6 +62,7 @@ const RootLayoutNav = () => {
   useAuthSession();
   useMemoryNotification();
   useReminderNotification();
+  useReflectionNotification();
   useActivityPing();
   useOfflineJournalSync();
   const { notification } = useToast();
