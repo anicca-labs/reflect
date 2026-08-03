@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import { Modal, Share } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScrollView, YStack, XStack } from 'tamagui';
 import { HeadingLg, BodyLg, LabelMd, LabelLg } from '@fonts';
@@ -22,6 +24,18 @@ const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadMod
   const insets = useSafeAreaInsets();
   const { t } = useLingui();
   const { rating, rate } = useReflectionFeedback(reflection?.id ?? null);
+  // The "thanks" acknowledgement is a moment, not a fixture: shown ~3s right
+  // after tapping, then gone. Already-rated reflections show nothing on reopen.
+  const [justRated, setJustRated] = useState(false);
+  useEffect(() => {
+    if (!justRated) return;
+    const timer = setTimeout(() => setJustRated(false), 3000);
+    return () => clearTimeout(timer);
+  }, [justRated]);
+  const handleRate = (feltTrue: boolean) => {
+    rate(feltTrue);
+    setJustRated(true);
+  };
   const meta = reflection ? reflectionMeta(reflection) : null;
   const paragraphs = reflection ? reflection.body.split('\n\n') : [];
 
@@ -116,7 +130,7 @@ const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadMod
                     <Trans>Did this feel true to your week?</Trans>
                   </LabelMd>
                   <BaseTouchable
-                    onPress={() => rate(true)}
+                    onPress={() => handleRate(true)}
                     bg="$surface-card"
                     rounded="$4"
                     px="$3"
@@ -128,17 +142,19 @@ const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadMod
                       🍂 <Trans>Yes, deeply</Trans>
                     </LabelMd>
                   </BaseTouchable>
-                  <BaseTouchable onPress={() => rate(false)} px="$2" py="$2">
+                  <BaseTouchable onPress={() => handleRate(false)} px="$2" py="$2">
                     <LabelMd color="$text-disabled">
                       <Trans>Not quite</Trans>
                     </LabelMd>
                   </BaseTouchable>
                 </XStack>
-              ) : (
-                <LabelMd color="$text-disabled" mt="$2" mb="$2">
-                  <Trans>Thanks — this helps the next one. 🍂</Trans>
-                </LabelMd>
-              )}
+              ) : justRated ? (
+                <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(400)}>
+                  <LabelMd color="$text-disabled" mt="$2" mb="$2">
+                    <Trans>Thanks — this helps the next one. 🍂</Trans>
+                  </LabelMd>
+                </Animated.View>
+              ) : null}
             </YStack>
           ) : null}
         </ScrollView>
