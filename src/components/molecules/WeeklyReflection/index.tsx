@@ -315,22 +315,21 @@ const WeeklyReflectionBanner = () => {
   const latest = reflections[0];
   const show = !!latest && !latest.seen_at && !dismissed;
 
-  // A tapped "your week is ready" push lands here: open the latest reflection
-  // full-screen as soon as the data is loaded, then clear the flag.
+  // A tapped "your week is ready" push lands here. The modal's open-state is
+  // DERIVED from the store flag (not copied into local state) so it survives
+  // the cold-start churn behind the biometric lock — auth settling can remount
+  // this component, and a consumed-flag-plus-lost-local-state would leave the
+  // user on a bare Journal. The flag is only cleared when the reflection is
+  // explicitly closed.
   const pendingReflectionOpen = useReflectionOpenStore((s) => s.pendingReflectionOpen);
   const setPendingReflectionOpen = useReflectionOpenStore((s) => s.setPendingReflectionOpen);
+  const openedFromPush = pendingReflectionOpen && !!latest;
   useEffect(() => {
-    if (!pendingReflectionOpen || !latest) return;
-    setPendingReflectionOpen(false);
-    // Consuming an external event flag (push tap) by opening UI is the intended
-    // effect here — same stash-then-consume pattern as pendingCompose.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setReading(true);
-    if (!latest.seen_at) markSeen.mutate(latest.id);
+    if (openedFromPush && latest && !latest.seen_at) markSeen.mutate(latest.id);
     // markSeen is a stable mutation object from React Query; depending on it
     // would re-run the effect every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pendingReflectionOpen, latest, setPendingReflectionOpen]);
+  }, [openedFromPush, latest?.id]);
 
   const open = () => {
     setReading(true);
@@ -375,9 +374,10 @@ const WeeklyReflectionBanner = () => {
       ) : null}
 
       <ReflectionReadModal
-        reflection={reading && latest ? latest : null}
+        reflection={(reading || openedFromPush) && latest ? latest : null}
         onClose={() => {
           setReading(false);
+          setPendingReflectionOpen(false);
           maybeAskRating();
         }}
       />
