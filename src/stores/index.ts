@@ -134,6 +134,19 @@ const useComposeStore = create<ComposeStoreState>((set) => ({
   setPendingCompose: (v) => set({ pendingCompose: v }),
 }));
 
+// Set when a "your week is ready" push is tapped; the Journal home consumes it
+// to open the latest reflection full-screen (stash-then-navigate pattern, same
+// as pendingCompose above).
+type ReflectionOpenStoreState = {
+  pendingReflectionOpen: boolean;
+  setPendingReflectionOpen: (v: boolean) => void;
+};
+
+const useReflectionOpenStore = create<ReflectionOpenStoreState>((set) => ({
+  pendingReflectionOpen: false,
+  setPendingReflectionOpen: (v) => set({ pendingReflectionOpen: v }),
+}));
+
 export {
   useUserStore,
   useSwipeableStore,
@@ -141,6 +154,7 @@ export {
   useSessionStore,
   usePeekStore,
   useComposeStore,
+  useReflectionOpenStore,
 };
 export type { PendingMerge };
 export { useAnonymousJournalStore } from './anonymousJournal';
