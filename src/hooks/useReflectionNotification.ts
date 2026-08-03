@@ -1,12 +1,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
-import {
-  getMessaging,
-  onNotificationOpenedApp,
-  getInitialNotification,
-} from '@react-native-firebase/messaging';
+import { getMessaging, onNotificationOpenedApp } from '@react-native-firebase/messaging';
 import { getApp } from '@react-native-firebase/app';
-import { WEEKLY_REFLECTION_DATA_TYPE } from '@firebase-messaging';
+import { WEEKLY_REFLECTION_DATA_TYPE, getInitialFcmMessage } from '@firebase-messaging';
 import { useReflectionOpenStore } from '@/src/stores';
 
 // Sends a tapped "your week is ready" push straight into the latest reflection.
@@ -26,7 +22,9 @@ const useReflectionNotification = () => {
       if (message?.data?.type === WEEKLY_REFLECTION_DATA_TYPE) setPendingReflectionOpen(true);
     };
     const fcmUnsub = onNotificationOpenedApp(messaging, handleFcm);
-    getInitialNotification(messaging).then(handleFcm);
+    // Shared cold-start read — the native initial message is consumed on first
+    // access, so every routing hook must go through this memoized copy.
+    getInitialFcmMessage().then(handleFcm);
     return () => fcmUnsub();
   }, [setPendingReflectionOpen]);
 

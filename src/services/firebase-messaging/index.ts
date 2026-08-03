@@ -1,4 +1,10 @@
-import { getMessaging, getToken, onMessage } from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  getToken,
+  onMessage,
+  getInitialNotification,
+} from '@react-native-firebase/messaging';
+import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { getApp } from '@react-native-firebase/app';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Device from 'expo-device';
@@ -25,6 +31,18 @@ ExpoNotifications.setNotificationHandler({
 });
 
 const messaging = getMessaging(getApp());
+
+// The FCM message that launched the app from a killed state — read ONCE, shared
+// by every routing hook. The native module nulls the stored message after the
+// first getInitialNotification() call, so with multiple direct callers only the
+// first (in mount order) ever sees it — a reflection tap would be consumed and
+// discarded by the reminder hook. Memoizing the promise gives every consumer
+// the same message; each filters by data.type.
+let initialFcmMessage: Promise<FirebaseMessagingTypes.RemoteMessage | null> | null = null;
+const getInitialFcmMessage = (): Promise<FirebaseMessagingTypes.RemoteMessage | null> => {
+  initialFcmMessage ??= getInitialNotification(messaging);
+  return initialFcmMessage;
+};
 
 type NotificationPermissionStatus = 'undetermined' | 'granted' | 'denied';
 
@@ -234,6 +252,7 @@ export type { NotificationPermissionStatus };
 export {
   REMINDER_DATA_TYPE,
   WEEKLY_REFLECTION_DATA_TYPE,
+  getInitialFcmMessage,
   getNotificationPermissionStatus,
   requestNotificationPermission,
   getFCMToken,

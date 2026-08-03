@@ -1,13 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import * as ExpoNotifications from 'expo-notifications';
-import {
-  getMessaging,
-  onNotificationOpenedApp,
-  getInitialNotification,
-} from '@react-native-firebase/messaging';
+import { getMessaging, onNotificationOpenedApp } from '@react-native-firebase/messaging';
 import { getApp } from '@react-native-firebase/app';
-import { REMINDER_DATA_TYPE } from '@firebase-messaging';
+import { REMINDER_DATA_TYPE, getInitialFcmMessage } from '@firebase-messaging';
 import { useComposeStore } from '@/src/stores';
 
 // Sends a tapped daily-reminder to the journal composer. Mirrors useMemoryNotification
@@ -49,7 +45,9 @@ const useReminderNotification = () => {
       if (message?.data?.type === REMINDER_DATA_TYPE) setPendingCompose(true);
     };
     const fcmUnsub = onNotificationOpenedApp(messaging, handleFcm);
-    getInitialNotification(messaging).then(handleFcm);
+    // Shared cold-start read — see getInitialFcmMessage; a direct call here would
+    // consume the native message and blind the other routing hooks.
+    getInitialFcmMessage().then(handleFcm);
 
     return () => {
       expoSub.remove();
