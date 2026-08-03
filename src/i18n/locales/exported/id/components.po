@@ -82,6 +82,10 @@ msgstr "Hapus entri?"
 msgid "Delete your {serverCount} account {0} and keep your {localCount} local {1}."
 msgstr "Hapus {serverCount} {0} akun Anda dan simpan {localCount} {1} lokal."
 
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Did this feel true to your week?"
+msgstr "Apakah ini benar-benar menggambarkan minggumu?"
+
 #. placeholder {0}: localCount === 1 ? 'entry' : 'entries'
 #. placeholder {1}: serverCount === 1 ? 'one' : 'ones'
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
@@ -147,6 +151,10 @@ msgstr "Tidak ada koneksi"
 msgid "Not now"
 msgstr "Nanti saja"
 
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Not quite"
+msgstr "Kurang pas"
+
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Notifications are off"
 msgstr "Notifikasi nonaktif"
@@ -198,6 +206,10 @@ msgstr "Bagikan ↗"
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Takes a minute — a free account brings your entries with you, private as always."
 msgstr "Hanya semenit — akun gratis membawa entrimu ikut serta, tetap privat seperti biasa."
+
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Thanks — this helps the next one. 🍂"
+msgstr "Terima kasih — ini membantu yang berikutnya. 🍂"
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
@@ -267,6 +279,10 @@ msgstr "Tulis refleksi pertamaku ✦"
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Write what it stirs →"
 msgstr "Tulis apa yang muncul →"
+
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Yes, deeply"
+msgstr "Ya, sangat"
 
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "Yes, write back ✦"

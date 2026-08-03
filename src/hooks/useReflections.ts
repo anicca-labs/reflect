@@ -133,6 +133,45 @@ const useAiReflectionsSetting = () => {
   };
 };
 
+// ── Reflection feedback: one-tap "did this feel true?" ──────────────────────
+// Content-free quality metric (bare boolean, no text by design). One row per
+// reflection, upsert so a changed mind overwrites.
+const useReflectionFeedback = (reflectionId: string | null) => {
+  const qc = useQueryClient();
+  const key = ['reflection-feedback', reflectionId];
+  const query = useQuery({
+    queryKey: key,
+    enabled: !!reflectionId,
+    queryFn: async (): Promise<boolean | null> => {
+      const { data } = await supabase
+        .from('reflection_feedback')
+        .select('felt_true')
+        .eq('reflection_id', reflectionId!)
+        .maybeSingle();
+      return data ? (data.felt_true as boolean) : null;
+    },
+  });
+  const mutation = useMutation({
+    mutationFn: async (feltTrue: boolean) => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user || !reflectionId) return;
+      await supabase
+        .from('reflection_feedback')
+        .upsert(
+          { reflection_id: reflectionId, user_id: user.id, felt_true: feltTrue },
+          { onConflict: 'reflection_id' },
+        );
+    },
+    onMutate: async (feltTrue: boolean) => {
+      qc.setQueryData(key, feltTrue); // optimistic — instant "thanks"
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: key }),
+  });
+  return { rating: query.data ?? null, rate: mutation.mutate };
+};
+
 // ── Entry echo: one warm AI line back after saving an entry ─────────────────
 // The first-session taste of the AI. If the user has consented (ai setting on),
 // every online save gets an echo. If not, the first save shows a one-time consent
@@ -227,5 +266,6 @@ export {
   useMarkReflectionSeen,
   useAiReflectionsSetting,
   useEntryEcho,
+  useReflectionFeedback,
   reflectionMeta,
 };

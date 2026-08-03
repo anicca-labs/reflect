@@ -82,6 +82,10 @@ msgstr "حذف المدخلة؟"
 msgid "Delete your {serverCount} account {0} and keep your {localCount} local {1}."
 msgstr "احذف {serverCount} {0} من حسابك واحتفظ بـ{localCount} {1} المحلية."
 
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Did this feel true to your week?"
+msgstr "هل عبّر هذا حقاً عن أسبوعك؟"
+
 #. placeholder {0}: localCount === 1 ? 'entry' : 'entries'
 #. placeholder {1}: serverCount === 1 ? 'one' : 'ones'
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
@@ -147,6 +151,10 @@ msgstr "لا يوجد اتصال"
 msgid "Not now"
 msgstr "ليس الآن"
 
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Not quite"
+msgstr "ليس تماماً"
+
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Notifications are off"
 msgstr "الإشعارات معطّلة"
@@ -198,6 +206,10 @@ msgstr "مشاركة ↗"
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Takes a minute — a free account brings your entries with you, private as always."
 msgstr "دقيقة واحدة تكفي — حساب مجاني ينقل تدويناتك معك، خاصة كما هي دائماً."
+
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Thanks — this helps the next one. 🍂"
+msgstr "شكراً — هذا يساعد التأمل القادم. 🍂"
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
@@ -267,6 +279,10 @@ msgstr "اكتب تأملي الأول ✦"
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Write what it stirs →"
 msgstr "اكتب ما يثيره فيك →"
+
+#: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
+msgid "Yes, deeply"
+msgstr "نعم، بعمق"
 
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "Yes, write back ✦"
