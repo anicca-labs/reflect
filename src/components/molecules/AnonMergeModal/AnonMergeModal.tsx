@@ -46,7 +46,7 @@ const AnonMergeModal = ({ visible, localCount, serverCount, onClose }: AnonMerge
     setLoading('pro');
     try {
       if (!isPro) {
-        const purchased = await presentPaywall();
+        const purchased = await presentPaywall('merge');
         if (!purchased) {
           setLoading(null);
           return;

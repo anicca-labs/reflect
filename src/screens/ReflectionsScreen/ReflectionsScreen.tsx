@@ -220,7 +220,7 @@ const ReflectionsScreen = () => {
       return;
     }
     if (!isPro) {
-      await presentPaywall();
+      await presentPaywall('export');
       return;
     }
     setExporting(true);

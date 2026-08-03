@@ -398,6 +398,11 @@ Deno.serve(async (req) => {
       if (!entry) return json({ status: 'error', message: 'entry not found' }, 404);
       const text = await decryptContent((entry as { content: string }).content);
       const line = await callClaudeEcho(text);
+      // Metric only — the echo text itself is never stored. Fire-and-forget.
+      admin
+        .from('echo_log')
+        .insert({ user_id: userId })
+        .then(() => {});
       return json({ status: 'ok', line });
     } catch (e) {
       console.error('entry echo error', e);

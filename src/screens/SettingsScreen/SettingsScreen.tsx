@@ -494,7 +494,7 @@ const SettingsScreen = () => {
                     onPress={async () => {
                       if (!(await requireOnline(t`Reconnect to upgrade to Pro and keep writing.`)))
                         return;
-                      const purchased = await presentPaywall();
+                      const purchased = await presentPaywall('settings');
                       if (purchased) {
                         await refreshEntitlement();
                         alert({
