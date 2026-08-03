@@ -71,13 +71,26 @@ const useGenerateReflection = () => {
 };
 
 // Mark a reflection read (drives the "your week is ready" home banner).
+// Optimistic: the banner must vanish the instant the reflection opens — waiting
+// for the server round-trip leaves a stale "ready" banner behind the modal.
 const useMarkReflectionSeen = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
       await supabase.from('reflections').update({ seen_at: new Date().toISOString() }).eq('id', id);
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: REFLECTIONS_KEY }),
+    onMutate: async (id: string) => {
+      await qc.cancelQueries({ queryKey: REFLECTIONS_KEY });
+      const prev = qc.getQueryData<Reflection[]>(REFLECTIONS_KEY);
+      qc.setQueryData<Reflection[]>(REFLECTIONS_KEY, (old) =>
+        old?.map((r) => (r.id === id ? { ...r, seen_at: new Date().toISOString() } : r)),
+      );
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) qc.setQueryData(REFLECTIONS_KEY, ctx.prev);
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: REFLECTIONS_KEY }),
   });
 };
 
