@@ -9,6 +9,22 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING } from '@constants';
 import { reflectionMeta, useReflectionFeedback, type Reflection } from '@hooks';
 import { useAppLockStore } from '@/src/stores';
+import { supabase } from '@/src/services/supabase';
+
+// Metadata-only share signal: does anyone actually share? Answering that is what
+// justifies (or kills) the richer image quote-card, which costs a store release.
+// The shared preview is reflection content and is deliberately NOT recorded.
+const logShareTap = () => {
+  supabase.auth
+    .getSession()
+    .then(({ data: { session } }) => {
+      const userId = session?.user?.id;
+      if (!userId) return; // guests can't write (RLS) — same blind spot as paywall_views
+      return supabase.from('share_taps').insert({ user_id: userId, source: 'reflection' });
+    })
+    .then(() => {})
+    .catch(() => {});
+};
 
 interface ReflectionReadModalProps {
   reflection: Reflection | null;
@@ -43,6 +59,7 @@ const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadMod
   // Every share is an organic ad written by the product itself.
   const handleShare = async () => {
     if (!meta) return;
+    logShareTap();
     // The share sheet flips the app inactive/background without the user leaving
     // — suppress the biometric lock for the round trip (paywall-sheet pattern).
     const { openStoreSheet, closeStoreSheet } = useAppLockStore.getState();
