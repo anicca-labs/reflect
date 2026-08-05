@@ -30,6 +30,10 @@ msgstr "تذكير يومي لطيف يجعل تحوّلها إلى عادة أ�
 msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. 4 reflections free."
 msgstr "سطر لطيف بعد كل تدوينة — وكل أحد، يقرأ الذكاء الاصطناعي أسبوعك ويكتبه لك بكلماتك أنت. 4 تأملات مجانية."
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. A free account unlocks it, and brings your entries with you."
+msgstr "سطر لطيف بعد كل تدوينة — وكل أحد، يقرأ الذكاء الاصطناعي أسبوعك ويكتبه لك بكلماتك أنت. حساب مجاني يفتح ذلك ويأخذ تدويناتك معك."
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A little more to reflect on"
 msgstr "المزيد قليلاً للتأمل"
@@ -59,6 +63,10 @@ msgstr "تعذّر الإنشاء"
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Couldn't set the reminder"
 msgstr "تعذّر ضبط التذكير"
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Create free account ✦"
+msgstr "إنشاء حساب مجاني ✦"
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Decide later — review local entries first"

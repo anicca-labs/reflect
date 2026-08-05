@@ -17,6 +17,9 @@ type EntryEchoCardsProps = {
   // on it, since "you've written 5 entries" is a far stronger reason to say yes
   // than a cold pitch.
   entriesSoFar: number;
+  // Guests can't receive an echo (their entries never leave the device), so the card
+  // becomes a sign-up pitch instead of a consent one.
+  isGuest?: boolean;
   onAccept: () => void;
   onDecline: () => void;
   onDismissLine: () => void;
@@ -27,6 +30,7 @@ const EntryEchoCards = ({
   loading,
   consentVisible,
   entriesSoFar,
+  isGuest = false,
   onAccept,
   onDecline,
   onDismissLine,
@@ -55,10 +59,18 @@ const EntryEchoCards = ({
               )}
             </BodyMdBold>
             <BodySm color="$text-secondary">
-              <Trans>
-                A gentle line back after each entry — and every Sunday, AI reads your week and
-                writes it back to you in your own words. 4 reflections free.
-              </Trans>
+              {isGuest ? (
+                <Trans>
+                  A gentle line back after each entry — and every Sunday, AI reads your week and
+                  writes it back to you in your own words. A free account unlocks it, and brings
+                  your entries with you.
+                </Trans>
+              ) : (
+                <Trans>
+                  A gentle line back after each entry — and every Sunday, AI reads your week and
+                  writes it back to you in your own words. 4 reflections free.
+                </Trans>
+              )}
             </BodySm>
             <BodySm color="$text-disabled" style={{ lineHeight: 16 }}>
               <Trans>Never shown to another person, never sold, never used to train AI.</Trans>
@@ -75,7 +87,7 @@ const EntryEchoCards = ({
               flex={1}
             >
               <LabelLg color="$accentColor">
-                <Trans>Yes, write back ✦</Trans>
+                {isGuest ? <Trans>Create free account ✦</Trans> : <Trans>Yes, write back ✦</Trans>}
               </LabelLg>
             </BaseTouchable>
             <BaseTouchable onPress={onDecline} px="$3" py="$3">

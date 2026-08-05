@@ -6,9 +6,15 @@ import {
   DEFAULT_REMINDER_HOUR,
   DEFAULT_REMINDER_MINUTE,
 } from './useReminder';
+import { useSessionStore } from '@/src/stores';
 
-const LAST_ASKED_KEY = '@reflect/reminder_prompt_last_asked';
-const ASK_COUNT_KEY = '@reflect/reminder_prompt_count';
+// Namespaced per user. These were bare device-level keys, so one person's four
+// declines permanently silenced the ask for whoever signed in next on that device —
+// and reminders are the main mechanism for getting someone back to write. A guest
+// has no id, so they share the 'guest' bucket, which is correct: it's the same
+// person until they make an account.
+const lastAskedKey = (owner: string) => `@reflect/reminder_prompt_last_asked:${owner}`;
+const askCountKey = (owner: string) => `@reflect/reminder_prompt_count:${owner}`;
 // Superseded by the two keys above; still read once so installs from the first
 // release don't get re-asked immediately.
 const LEGACY_SEEN_KEY = '@reflect/reminder_prompt_seen';
@@ -68,6 +74,9 @@ const useReminderPrompt = () => {
   // they already made in Settings.
   const [suggested, setSuggested] = useState<SuggestedTime | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // outboxOwnerId is the store's view of who is signed in; guests fall back to a
+  // shared bucket. Keeps one account's declines from silencing the next user's ask.
+  const owner = useSessionStore((s) => s.outboxOwnerId) ?? 'guest';
 
   useEffect(
     () => () => {
@@ -80,8 +89,8 @@ const useReminderPrompt = () => {
     const [alreadyEnabled, storedHour, lastAskedRaw, countRaw, legacySeen] = await Promise.all([
       AsyncStorage.getItem(REMINDER_ENABLED_KEY),
       AsyncStorage.getItem(REMINDER_HOUR_KEY),
-      AsyncStorage.getItem(LAST_ASKED_KEY),
-      AsyncStorage.getItem(ASK_COUNT_KEY),
+      AsyncStorage.getItem(lastAskedKey(owner)),
+      AsyncStorage.getItem(askCountKey(owner)),
       AsyncStorage.getItem(LEGACY_SEEN_KEY),
     ]);
 
@@ -97,8 +106,8 @@ const useReminderPrompt = () => {
       count = 1;
       lastAsked = Date.now();
       await Promise.all([
-        AsyncStorage.setItem(ASK_COUNT_KEY, '1'),
-        AsyncStorage.setItem(LAST_ASKED_KEY, new Date(lastAsked).toISOString()),
+        AsyncStorage.setItem(askCountKey(owner), '1'),
+        AsyncStorage.setItem(lastAskedKey(owner), new Date(lastAsked).toISOString()),
       ]);
       return;
     }
@@ -111,7 +120,7 @@ const useReminderPrompt = () => {
 
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => setVisible(true), PROMPT_DELAY_MS);
-  }, []);
+  }, [owner]);
 
   // Record the ask on either answer. Enabling is separately caught by the
   // `alreadyEnabled` gate above, so a "yes" never gets asked again regardless of count.
@@ -119,13 +128,13 @@ const useReminderPrompt = () => {
     if (timer.current) clearTimeout(timer.current);
     setVisible(false);
 
-    const countRaw = await AsyncStorage.getItem(ASK_COUNT_KEY);
+    const countRaw = await AsyncStorage.getItem(askCountKey(owner));
     const next = (countRaw ? parseInt(countRaw, 10) : 0) + 1;
     await Promise.all([
-      AsyncStorage.setItem(ASK_COUNT_KEY, String(next)),
-      AsyncStorage.setItem(LAST_ASKED_KEY, new Date().toISOString()),
+      AsyncStorage.setItem(askCountKey(owner), String(next)),
+      AsyncStorage.setItem(lastAskedKey(owner), new Date().toISOString()),
     ]);
-  }, []);
+  }, [owner]);
 
   return { visible, suggested, maybePrompt, dismiss };
 };

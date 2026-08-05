@@ -451,6 +451,17 @@ const JournalScreen = () => {
     setDraft('');
     Keyboard.dismiss();
 
+    // Entries BEFORE this save. The reminder prompt is held back on someone's very
+    // first entry: both asks used to fire together there, and the reminder is a
+    // near-opaque full-screen modal while the echo consent is an inline card — so
+    // the modal covered it, and the weaker ask visually beat the one that predicts
+    // a second entry 91% vs 10%. Consent owns the first save; the reminder gets
+    // every save after it (and keeps its own re-ask schedule).
+    const priorEntryCount = isAnonymous ? localEntries.length : entries.length;
+    const askForReminder = () => {
+      if (priorEntryCount > 0) maybePromptReminder();
+    };
+
     if (isAnonymous) {
       addLocalEntry(trimmed);
       logJournalEntryCreated(trimmed.split(/\s+/).length);
@@ -461,7 +472,11 @@ const JournalScreen = () => {
       // they've written anything is the worst possible first impression. Only ever
       // prompts once per install.
       requestTrackingConsent();
-      maybePromptReminder();
+      askForReminder();
+      // Guests get no echo (their entries are device-local, so there's no server row
+      // to read) — but they can still be told the feature exists. Deliberately not on
+      // their first entry: guest-first exists so that one is unmolested.
+      echo.onGuestSaved(priorEntryCount + 1);
       return;
     }
 
@@ -470,7 +485,7 @@ const JournalScreen = () => {
       logJournalEntryCreated(trimmed.split(/\s+/).length);
       markFirstEntryWritten();
       requestTrackingConsent(); // see the guest branch above
-      maybePromptReminder();
+      askForReminder();
       // Echo needs the server row — queued (offline) saves have none yet.
       if (!queued && entry?.id) echo.onSaved(entry.id);
       if (queued) {
@@ -700,7 +715,19 @@ const JournalScreen = () => {
               loading={echo.loading}
               consentVisible={echo.consentVisible}
               entriesSoFar={echo.entriesSoFar}
-              onAccept={echo.acceptConsent}
+              isGuest={isAnonymous}
+              onAccept={
+                isAnonymous
+                  ? () => {
+                      // No consent to record for a guest — the AI needs a server row,
+                      // which only exists once they have an account. Entries merge on
+                      // sign-in, so nothing they've written is lost.
+                      echo.declineConsent();
+                      setProIntent(false);
+                      router.push('/sign-in');
+                    }
+                  : echo.acceptConsent
+              }
               onDecline={echo.declineConsent}
               onDismissLine={echo.dismissLine}
             />

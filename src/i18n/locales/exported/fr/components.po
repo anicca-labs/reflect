@@ -30,6 +30,10 @@ msgstr "Un rappel quotidien tout en douceur rend l'habitude bien plus probable."
 msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. 4 reflections free."
 msgstr "Une ligne douce en retour après chaque entrée — et chaque dimanche, l'IA lit ta semaine et te la réécrit avec tes propres mots. 4 réflexions gratuites."
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. A free account unlocks it, and brings your entries with you."
+msgstr "Une ligne douce en retour après chaque entrée — et chaque dimanche, l'IA lit ta semaine et te la réécrit avec tes propres mots. Un compte gratuit le débloque et emporte tes entrées avec toi."
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A little more to reflect on"
 msgstr "Encore un peu pour réfléchir"
@@ -59,6 +63,10 @@ msgstr "Échec de la génération"
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Couldn't set the reminder"
 msgstr "Impossible d'activer le rappel"
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Create free account ✦"
+msgstr "Créer un compte gratuit ✦"
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Decide later — review local entries first"
