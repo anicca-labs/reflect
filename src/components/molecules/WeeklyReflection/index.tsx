@@ -180,8 +180,10 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
         <BodySm color="$text-disabled">
           <Trans>Every Sunday, a look back at your week — in your own words.</Trans>
         </BodySm>
-        {/* The ritual made visible between Sundays — anticipation is the hook. */}
-        {reflections.length > 0 ? (
+        {/* The ritual made visible between Sundays — anticipation is the hook.
+            Hidden once they're at the free limit: the Sunday cron skips them, so
+            promising a delivery would be a lie told directly above the Pro CTA. */}
+        {reflections.length > 0 && !atLimit ? (
           <BodySm color="$accentBackground" mt="$1">
             {daysToSunday === 0 ? (
               <Trans>Your next reflection arrives today 🍂</Trans>

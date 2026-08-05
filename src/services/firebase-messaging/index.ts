@@ -171,6 +171,30 @@ const MEMORY_NOTIF_LAST_SCHEDULED_KEY = '@reflect/memory_notif_last_scheduled';
 const buildMemoryPreview = (content: string): string =>
   content.length > 100 ? content.slice(0, 100) + '…' : content;
 
+// Memory notifications carry a preview of the user's OWN entries in their body, and
+// up to 30 days of them sit scheduled on the device. They must be torn down the
+// moment this device stops being that user — otherwise the next account (or the same
+// person after deleting theirs) keeps getting the previous user's private writing on
+// the lock screen for a month. Called on every sign-out; safe to call when none exist.
+const cancelMemoryNotifications = async (): Promise<void> => {
+  try {
+    const existingJson = await AsyncStorage.getItem(MEMORY_NOTIF_IDS_KEY);
+    if (existingJson) {
+      const ids: string[] = JSON.parse(existingJson);
+      await Promise.all(
+        ids.map((id) => ExpoNotifications.cancelScheduledNotificationAsync(id).catch(() => {})),
+      );
+    }
+  } catch {
+    // Best-effort: fall through to clearing the keys either way.
+  }
+  // Clearing the day-guard too, so the next user schedules their own set today
+  // rather than being blocked by the previous user's "already scheduled" mark.
+  await AsyncStorage.multiRemove([MEMORY_NOTIF_IDS_KEY, MEMORY_NOTIF_LAST_SCHEDULED_KEY]).catch(
+    () => {},
+  );
+};
+
 // Guards against concurrent invocations within the same JS runtime. The daily
 // "already scheduled" check is a read-modify-write across many awaits, so without
 // this lock two effect runs (e.g. back-to-back React Query refetches that produce
@@ -261,4 +285,5 @@ export {
   scheduleDailyReminder,
   cancelDailyReminder,
   scheduleMemoryNotifications,
+  cancelMemoryNotifications,
 };

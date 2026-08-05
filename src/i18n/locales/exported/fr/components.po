@@ -19,10 +19,6 @@ msgid "{0} entries"
 msgstr "{0} entrées"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "3 free · Pro unlocks the rest"
-#~ msgstr "3 gratuites · Pro débloque le reste"
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "4 free · Pro unlocks the rest"
 msgstr "4 gratuites · Pro débloque le reste"
 
@@ -41,10 +37,6 @@ msgstr "Encore un peu pour réfléchir"
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A look back at your last 7 days — tap to read."
 msgstr "Un retour sur tes 7 derniers jours — appuie pour lire."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "AI reads your week and writes it back to you — in your own words. 3 free."
-#~ msgstr "L'IA lit ta semaine et te la réécrit — avec tes propres mots. 3 gratuites."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "AI reads your week and writes it back to you — in your own words. 4 free."
@@ -175,10 +167,6 @@ msgstr "Pas vraiment"
 msgid "Notifications are off"
 msgstr "Les notifications sont désactivées"
 
-#: src/components/molecules/EntryEcho/index.tsx
-#~ msgid "One gentle line after you write — and your whole week, every Sunday. Never shown to anyone, never sold, never used to train AI."
-#~ msgstr "Une ligne douce après chaque écriture — et ta semaine entière, chaque dimanche. Jamais montrée à personne, jamais vendue, jamais utilisée pour entraîner une IA."
-
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"
 msgstr "Encore une chose"
@@ -226,10 +214,6 @@ msgstr "Une minute suffit — un compte gratuit emporte tes entrées avec toi, p
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Thanks — this helps the next one. 🍂"
 msgstr "Merci — ça aide pour la prochaine. 🍂"
-
-#: src/components/molecules/EntryEcho/index.tsx
-#~ msgid "That's 2 entries — see what they add up to?"
-#~ msgstr "Ça fait 2 entrées — envie de voir ce qu'elles donnent ?"
 
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "That’s 2 entries — see what they add up to?"
@@ -318,16 +302,8 @@ msgid "You have {localCount} local {0} and {serverCount} in your account — {co
 msgstr "Vous avez {localCount} {0} locales et {serverCount} dans votre compte — {combined} au total, soit {overBy} au-dessus de la limite gratuite de {FREE_ENTRY_LIMIT}."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "You’ve read your 3 free reflections"
-#~ msgstr "Tu as lu tes 3 réflexions gratuites"
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "You’ve read your 4 free reflections"
 msgstr "Tu as lu tes 4 réflexions gratuites"
-
-#: src/components/molecules/EntryEcho/index.tsx
-#~ msgid "You've written {entriesSoFar} entries. Ready to see your week?"
-#~ msgstr "Tu as écrit {entriesSoFar} entrées. Prêt à voir ta semaine ?"
 
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "You’ve written {entriesSoFar} entries. Ready to see your week?"
