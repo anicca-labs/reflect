@@ -99,6 +99,36 @@ function matchesReminderTime(now: Date, timezone: string, hour: number, minute: 
   return localHour === hour && localMinute === minute;
 }
 
+// ── Timezone fallback ───────────────────────────────────────────────────────
+// Most device rows have NO timezone, and both time-based nudges used to skip them
+// outright. The client has written it correctly since 2026-07-14, but a fresh
+// install runs the STORE binary's embedded JS on its first session — which is when
+// signup writes the row — and the OTA only applies from the second launch. The
+// streak nudge targets people who wrote yesterday and haven't come back, i.e.
+// exactly the people who never relaunched and so never got the fix. A new store
+// build fixes it going forward; this makes the existing base reachable now.
+//
+// Rather than guess a region, derive the offset from the user's OWN writing times:
+// journaling is an evening habit, so the hour they most often write stands in for
+// their evening, and we nudge them at that hour. Worst case it lands a few hours
+// off inside their waking day, which beats never sending at all.
+const OFFSET_TO_ETC_ZONE = (offsetHours: number): string =>
+  // Etc/GMT has an inverted sign: Etc/GMT+3 is UTC-3.
+  offsetHours >= 0 ? `Etc/GMT-${offsetHours}` : `Etc/GMT+${-offsetHours}`;
+
+const deriveZoneFromWritingHours = (utcHours: number[]): string | null => {
+  if (utcHours.length === 0) return null;
+  const counts = new Array(24).fill(0);
+  for (const h of utcHours) counts[h]++;
+  let modal = 0;
+  for (let h = 1; h < 24; h++) if (counts[h] > counts[modal]) modal = h;
+  // Treat their most common writing hour as STREAK_HOUR in their local time.
+  let offset = STREAK_HOUR - modal;
+  if (offset > 12) offset -= 24;
+  if (offset < -11) offset += 24;
+  return OFFSET_TO_ETC_ZONE(offset);
+};
+
 type PushDevice = {
   fcm_token: string;
   firebase_project_id: string | null;
@@ -171,13 +201,41 @@ Deno.serve(async (req) => {
 
   // ── Phase 2: streak-at-risk (local 20:00) ───────────────────────────────────
   let streaksSent = 0;
-  const { data: streakDevices } = await supabase
+  const { data: rawStreakDevices } = await supabase
     .from('device_tokens')
     .select('fcm_token, user_id, timezone, firebase_project_id, locale, reminder_enabled')
-    .not('user_id', 'is', null)
-    .not('timezone', 'is', null);
+    .not('user_id', 'is', null);
 
-  const dueStreak = (streakDevices ?? []).filter(
+  // Fill in a derived zone for rows with no timezone (see the comment on
+  // deriveZoneFromWritingHours) so they stop being silently unreachable.
+  const needZone = (rawStreakDevices ?? []).filter((d) => !d.timezone);
+  const derivedZoneByUser = new Map<string, string>();
+  if (needZone.length > 0) {
+    // Timestamps only — entry content is never read.
+    const { data: history } = await supabase
+      .from('journal_entries')
+      .select('user_id, created_at')
+      .in('user_id', [...new Set(needZone.map((d) => d.user_id as string))])
+      .gte('created_at', new Date(now.getTime() - 30 * 86_400_000).toISOString());
+    const hoursByUser = new Map<string, number[]>();
+    for (const e of history ?? []) {
+      const list = hoursByUser.get(e.user_id) ?? [];
+      list.push(new Date(e.created_at).getUTCHours());
+      hoursByUser.set(e.user_id, list);
+    }
+    for (const [uid, hours] of hoursByUser) {
+      const zone = deriveZoneFromWritingHours(hours);
+      if (zone) derivedZoneByUser.set(uid, zone);
+    }
+  }
+
+  // A user with no timezone AND no derivable one (never wrote) is skipped — there's
+  // nothing to base a send time on, and the streak nudge requires entries anyway.
+  const streakDevices = (rawStreakDevices ?? [])
+    .map((d) => ({ ...d, timezone: d.timezone ?? derivedZoneByUser.get(d.user_id as string) }))
+    .filter((d): d is typeof d & { timezone: string } => !!d.timezone);
+
+  const dueStreak = streakDevices.filter(
     (d) =>
       d.reminder_enabled !== true &&
       (forceStreak || matchesReminderTime(now, d.timezone, STREAK_HOUR, 0)),
@@ -209,7 +267,9 @@ Deno.serve(async (req) => {
 
   // ── Phase 3: Wednesday anticipation teaser (local Wed 18:00) ───────────────
   let teasersSent = 0;
-  const dueTeaser = (streakDevices ?? []).filter(
+  // Shares the same effective-timezone list, so the teaser reaches derived-zone
+  // devices too rather than skipping everyone without a stored timezone.
+  const dueTeaser = streakDevices.filter(
     (d) =>
       forceTeaser ||
       (localWeekdayInTz(now, d.timezone) === TEASER_WEEKDAY &&
