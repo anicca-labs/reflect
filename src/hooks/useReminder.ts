@@ -69,6 +69,9 @@ let lastDeliveryKey: string | null = null;
 
 const useReminder = () => {
   const isAnonymous = useSessionStore((s) => s.isAnonymous);
+  // outboxOwnerId is set to the current user id on every auth event that carries a
+  // session, so it's the store's view of "who is signed in right now".
+  const userId = useSessionStore((s) => s.outboxOwnerId);
   const enabled = useReminderStore((s) => s.enabled);
   const hour = useReminderStore((s) => s.hour);
   const minute = useReminderStore((s) => s.minute);
@@ -89,7 +92,13 @@ const useReminder = () => {
   useEffect(() => {
     if (loading) return;
 
-    const key = `${isAnonymous}|${enabled}|${hour}|${minute}`;
+    // The user id MUST be part of the key. Reminder state lives in device-level
+    // storage, so after a user switch isAnonymous/enabled/hour/minute are all
+    // unchanged — the key matched, this effect early-returned, and the new user's
+    // reminder was never synced. Their Settings said "Remind me at 8:00 PM" while the
+    // server row had reminder_hour = null (cleared on the previous sign-out), so the
+    // cron skipped them forever with nothing indicating anything was wrong.
+    const key = `${userId ?? 'guest'}|${isAnonymous}|${enabled}|${hour}|${minute}`;
     if (key === lastDeliveryKey) return;
     lastDeliveryKey = key;
 
@@ -105,7 +114,7 @@ const useReminder = () => {
       cancelDailyReminder();
       syncReminderToBackend(enabled, hour, minute);
     }
-  }, [loading, enabled, hour, minute, isAnonymous]);
+  }, [loading, enabled, hour, minute, isAnonymous, userId]);
 
   const disable = async () => {
     useReminderStore.getState().set({ enabled: false });

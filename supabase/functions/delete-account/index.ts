@@ -29,17 +29,23 @@ Deno.serve(async (req) => {
     db: { schema: 'api' },
   });
 
-  const { error: entriesError } = await admin
-    .from('journal_entries')
-    .delete()
-    .eq('user_id', user.id);
-  if (entriesError) return new Response(entriesError.message, { status: 500 });
-
-  const { error: devicesError } = await admin.from('device_tokens').delete().eq('user_id', user.id);
-  if (devicesError) return new Response(devicesError.message, { status: 500 });
-
+  // Delete the AUTH USER FIRST. Every user-owned table (journal_entries, reflections,
+  // user_settings, entitlements, device_tokens, paywall_views, echo_log,
+  // reflection_feedback, share_taps) declares `references auth.users(id) on delete
+  // cascade`, so this single call removes everything atomically.
+  //
+  // The previous order deleted journal_entries, then device_tokens, then the user —
+  // three non-transactional steps. If the last one failed the client showed "Couldn't
+  // delete account. Please try again" and left the user signed in with every entry
+  // ALREADY PERMANENTLY GONE, and no way to tell them. Failing before the cascade
+  // leaves the account completely intact instead.
   const { error: deleteError } = await admin.auth.admin.deleteUser(user.id);
   if (deleteError) return new Response(deleteError.message, { status: 500 });
+
+  // Belt-and-braces: guest rows aren't owned by the user (user_id is null once the
+  // device signs out), so clear anything still pointing at them. A failure here is
+  // not worth failing the request — the account is already gone.
+  await admin.from('device_tokens').delete().eq('user_id', user.id);
 
   return new Response('ok');
 });

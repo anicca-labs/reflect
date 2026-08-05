@@ -36,6 +36,7 @@ import { refreshEntitlement } from '@/src/services/entitlements';
 import { logJournalEntryCreated, logScreenView } from '@analytics';
 import { markFirstEntryWritten } from '@/src/services/user-devices';
 import { isFreeLimitError } from '@/src/services/journalSync';
+import { requestTrackingConsent } from '@meta';
 import {
   useJournalEntries,
   useCreateJournalEntry,
@@ -456,6 +457,10 @@ const JournalScreen = () => {
       // Guest entries stay on-device, so this is the only server-side record that this
       // device activated. Fire-and-forget: it must never delay or fail the save.
       markFirstEntryWritten();
+      // iOS ATT, deferred to here from app start — asking to track someone before
+      // they've written anything is the worst possible first impression. Only ever
+      // prompts once per install.
+      requestTrackingConsent();
       maybePromptReminder();
       return;
     }
@@ -464,6 +469,7 @@ const JournalScreen = () => {
       const { queued, entry } = await createMutation.mutateAsync(trimmed);
       logJournalEntryCreated(trimmed.split(/\s+/).length);
       markFirstEntryWritten();
+      requestTrackingConsent(); // see the guest branch above
       maybePromptReminder();
       // Echo needs the server row — queued (offline) saves have none yet.
       if (!queued && entry?.id) echo.onSaved(entry.id);
