@@ -10,31 +10,49 @@ const FB_APP_ID = process.env.EXPO_PUBLIC_FB_APP_ID;
 let initialized = false;
 
 /**
- * Initialize the Meta SDK and resolve advertiser tracking via App Tracking
- * Transparency. MUST run after the app is active (call from a mount effect,
- * not module scope) so the iOS ATT system prompt can present.
- *
- * iOS 14.5+ requires ATT consent before any advertiser (IDFA) tracking. We
- * request consent first, then enable advertiser tracking only when granted —
- * Apple rejects builds that collect the IDFA without this gate.
+ * Initialize the Meta SDK. Safe to call at app start — it does NOT present the iOS
+ * ATT prompt (see requestTrackingConsent). Install/activate events still log via
+ * autoLogAppEventsEnabled, so install attribution and SKAdNetwork are unaffected;
+ * only IDFA-level matching waits for consent.
  */
 const initializeMeta = async () => {
   if (initialized || !FB_APP_ID) return;
 
   try {
-    if (Platform.OS === 'ios') {
-      const { status } = await requestTrackingPermissionsAsync();
-      Settings.initializeSDK();
-      if (status === 'granted') {
-        await Settings.setAdvertiserTrackingEnabled(true);
-      }
-    } else {
-      Settings.initializeSDK();
-    }
+    Settings.initializeSDK();
     initialized = true;
   } catch (error) {
     // Never block app start on the ads SDK.
     console.warn('[Meta] SDK init failed', error);
+  }
+};
+
+let trackingRequested = false;
+
+/**
+ * Ask for App Tracking Transparency, then enable advertiser tracking only if
+ * granted (iOS 14.5+ requires that gate; Apple rejects builds without it).
+ *
+ * Deliberately NOT called at app start. It used to run from the root mount effect,
+ * which made "Allow Reflect to track you across apps?" the literal first thing a new
+ * iPhone user saw — a hostile system dialog landing on the splash before they had
+ * written a word or seen what the app does. Now called after the first entry is
+ * saved, once the person has actually got something out of it.
+ *
+ * Idempotent and safe to call on every save: iOS only ever shows the dialog once
+ * per install, and the local guard avoids the repeat round-trip.
+ */
+const requestTrackingConsent = async () => {
+  if (trackingRequested || !FB_APP_ID || Platform.OS !== 'ios') return;
+  trackingRequested = true;
+
+  try {
+    const { status } = await requestTrackingPermissionsAsync();
+    if (status === 'granted') {
+      await Settings.setAdvertiserTrackingEnabled(true);
+    }
+  } catch (error) {
+    console.warn('[Meta] tracking consent failed', error);
   }
 };
 
@@ -52,4 +70,4 @@ const logMetaEvent = (name: string, params?: Record<string, string | number>) =>
   }
 };
 
-export { initializeMeta, logMetaEvent };
+export { initializeMeta, requestTrackingConsent, logMetaEvent };
