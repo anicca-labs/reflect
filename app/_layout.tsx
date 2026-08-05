@@ -26,7 +26,7 @@ import {
 import { EnvBadge, NetworkStatusBanner, BiometricLockOverlay } from '@atoms';
 import { AnonMergeModal } from '@molecules';
 import { useSessionStore, useAppLockStore } from '@/src/stores';
-import { subscribeToForegroundMessages } from '@firebase-messaging';
+import { subscribeToForegroundMessages, WEEKLY_REFLECTION_DATA_TYPE } from '@firebase-messaging';
 import { useEffect } from 'react';
 import { SplashView } from '@anicca-labs/react-native-splash-view';
 import { configureRevenueCat } from '@revenue-cat';
@@ -69,8 +69,15 @@ const RootLayoutNav = () => {
   const { pendingMerge, setPendingMerge } = useSessionStore();
 
   useEffect(() => {
-    const unsubscribe = subscribeToForegroundMessages((title, body) => {
+    const unsubscribe = subscribeToForegroundMessages((title, body, data) => {
       notification({ title, message: body });
+      // A reflection push that arrives while the app is open can't be tapped — the
+      // toast isn't actionable. Refresh the reflections so the "Your week is ready"
+      // banner appears on the Journal immediately, giving the announcement somewhere
+      // to lead. Deliberately not auto-opening the modal: the user is mid-task.
+      if (data?.type === WEEKLY_REFLECTION_DATA_TYPE) {
+        queryClient.invalidateQueries({ queryKey: ['reflections'] });
+      }
     });
     return unsubscribe;
   }, [notification]);

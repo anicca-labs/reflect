@@ -232,3 +232,4 @@ const flushPendingBookmarks = async (): Promise<void> => {
 };
 
 export { flushPendingJournalEntries, flushPendingDeletions, flushPendingBookmarks };
+export { isFreeLimitError };

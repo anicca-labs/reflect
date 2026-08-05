@@ -1,6 +1,7 @@
-import { QueryClient, onlineManager } from '@tanstack/react-query';
+import { QueryClient, onlineManager, focusManager } from '@tanstack/react-query';
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
 import NetInfo from '@react-native-community/netinfo';
+import { AppState } from 'react-native';
 import { createMMKV } from 'react-native-mmkv';
 
 // Teach React Query about real connectivity. Without this it assumes "online"
@@ -12,6 +13,17 @@ onlineManager.setEventListener((setOnline) =>
     setOnline(state.isConnected === true && state.isInternetReachable !== false);
   }),
 );
+
+// Teach React Query what "focused" means here. `refetchOnWindowFocus` defaults to
+// true, but React Native has no window-focus event, so without this the focus
+// manager never fires and returning to the app refetches NOTHING — every query
+// stays on whatever it last read until something explicitly invalidates it.
+// That's how a reflection generated while the app was backgrounded stayed
+// invisible on return: the server had it, the client never asked again.
+focusManager.setEventListener((setFocused) => {
+  const sub = AppState.addEventListener('change', (state) => setFocused(state === 'active'));
+  return () => sub.remove();
+});
 
 // Persisted entries are only restored while younger than gcTime, so the cache
 // must outlive a realistic offline gap. A week covers it.

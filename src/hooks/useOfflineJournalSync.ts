@@ -14,17 +14,28 @@ import {
  * returns to the foreground (the device may have reconnected while backgrounded,
  * which NetInfo won't always report). Mount once, high in the tree.
  */
-const flushAll = () => {
-  flushPendingJournalEntries();
-  flushPendingDeletions();
+// Deletions go FIRST and are awaited: they free up room under the free-entry limit.
+// Flushing concurrently let a queued create reach a server that still held the rows
+// the queued deletes were about to remove, so the limit trigger rejected it and the
+// create sat unsynced (silently) until the next foreground. Bookmarks are independent
+// of the limit, so they can run alongside.
+const flushAll = async () => {
   flushPendingBookmarks();
+  try {
+    await flushPendingDeletions();
+  } catch {
+    // Never block the creates on a failed delete flush — they retry next trigger.
+  }
+  await flushPendingJournalEntries();
 };
 
 const useOfflineJournalSync = () => {
   useEffect(() => {
     flushAll();
 
-    const unsubscribeOnline = subscribeToOnline(flushAll);
+    const unsubscribeOnline = subscribeToOnline(() => {
+      flushAll();
+    });
     const appStateSub = AppState.addEventListener('change', (state) => {
       if (state === 'active') flushAll();
     });

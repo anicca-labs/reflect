@@ -70,13 +70,17 @@ const getFCMToken = async (): Promise<string | null> => {
   }
 };
 
+// `data` is forwarded so the caller can act on the push type, not just show a toast —
+// a foreground "your week is ready" otherwise became a dead notice with no way to
+// reach the reflection it was announcing.
 const subscribeToForegroundMessages = (
-  onMessageCallback: (title: string, body: string) => void,
+  onMessageCallback: (title: string, body: string, data?: Record<string, unknown>) => void,
 ): (() => void) =>
   onMessage(messaging, async (remoteMessage) => {
     onMessageCallback(
       remoteMessage.notification?.title ?? 'Reflect',
       remoteMessage.notification?.body ?? '',
+      remoteMessage.data as Record<string, unknown> | undefined,
     );
   });
 
