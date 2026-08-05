@@ -16,7 +16,7 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 const ADMIN_SECRET = Deno.env.get('ADMIN_PUSH_SECRET');
-const FREE_REFLECTION_LIMIT = 3;
+const FREE_REFLECTION_LIMIT = 4;
 
 // ── "Your week is ready" push (cron path only — self-generates happen in-app) ──
 // Localized by the device's saved locale, mirroring the send-reminders pattern.

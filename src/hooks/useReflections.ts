@@ -187,15 +187,27 @@ const useReflectionFeedback = (reflectionId: string | null) => {
 
 // ── Entry echo: one warm AI line back after saving an entry ─────────────────
 // The first-session taste of the AI. If the user has consented (ai setting on),
-// every online save gets an echo. If not, the first save shows a one-time consent
-// card; accepting turns the setting on (which also opts into Sunday reflections).
-const ECHO_ASKED_KEY = 'entry-echo:asked';
+// every online save gets an echo. If not, the consent card is shown on the save
+// counts below; accepting turns the setting on (which also opts into Sunday
+// reflections).
+//
+// Consenting is the strongest predictor we have of a second entry ever being
+// written (91% of accepters reach 2+ entries vs 10% of non-accepters), so a
+// single "Not now" must not silence the ask forever — which is what the old
+// once-ever `entry-echo:asked` flag did. The counts are deliberately early:
+// users who never consent average ~1.1 entries, so an ask scheduled at the 7th
+// save would essentially never fire. Capped at three asks, so it stays a nudge
+// rather than a nag.
+const ECHO_SAVES_KEY = 'entry-echo:saves';
+const ASK_ON_SAVES = [1, 2, 5];
 
 const useEntryEcho = () => {
   const { enabled, setEnabled } = useAiReflectionsSetting();
   const [line, setLine] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [consentVisible, setConsentVisible] = useState(false);
+  // Drives the card's copy: the repeat ask leans on how much they've written.
+  const [entriesSoFar, setEntriesSoFar] = useState(0);
   const pendingEntryId = useRef<string | null>(null);
 
   const fetchEcho = useCallback(async (entryId: string) => {
@@ -221,9 +233,14 @@ const useEntryEcho = () => {
         fetchEcho(entryId);
         return;
       }
-      const asked = await AsyncStorage.getItem(ECHO_ASKED_KEY);
-      if (asked) return;
+      // Count only the saves made WITHOUT consent — accepting ends the count for
+      // good, since the branch above takes over from then on.
+      const stored = parseInt((await AsyncStorage.getItem(ECHO_SAVES_KEY)) ?? '0', 10);
+      const saves = (Number.isFinite(stored) ? stored : 0) + 1;
+      await AsyncStorage.setItem(ECHO_SAVES_KEY, String(saves));
+      if (!ASK_ON_SAVES.includes(saves)) return;
       pendingEntryId.current = entryId;
+      setEntriesSoFar(saves);
       setConsentVisible(true);
     },
     [enabled, fetchEcho],
@@ -231,19 +248,26 @@ const useEntryEcho = () => {
 
   const acceptConsent = useCallback(() => {
     setConsentVisible(false);
-    AsyncStorage.setItem(ECHO_ASKED_KEY, '1');
     setEnabled(true);
     if (pendingEntryId.current) fetchEcho(pendingEntryId.current);
   }, [setEnabled, fetchEcho]);
 
-  const declineConsent = useCallback(() => {
-    setConsentVisible(false);
-    AsyncStorage.setItem(ECHO_ASKED_KEY, '1');
-  }, []);
+  // No persisted flag: declining just closes the card, and the save-count
+  // schedule decides whether to ask again.
+  const declineConsent = useCallback(() => setConsentVisible(false), []);
 
   const dismissLine = useCallback(() => setLine(null), []);
 
-  return { line, loading, consentVisible, onSaved, acceptConsent, declineConsent, dismissLine };
+  return {
+    line,
+    loading,
+    consentVisible,
+    entriesSoFar,
+    onSaved,
+    acceptConsent,
+    declineConsent,
+    dismissLine,
+  };
 };
 
 // Presentation metadata derived from a reflection's dates. relKey drives a

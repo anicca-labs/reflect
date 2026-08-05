@@ -19,11 +19,19 @@ msgid "{0} entries"
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "3 free · Pro unlocks the rest"
+#~ msgid "3 free · Pro unlocks the rest"
+#~ msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "4 free · Pro unlocks the rest"
 msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "A gentle daily nudge makes it far more likely to become a habit."
+msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. 4 reflections free."
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
@@ -35,7 +43,11 @@ msgid "A look back at your last 7 days — tap to read."
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "AI reads your week and writes it back to you — in your own words. 3 free."
+#~ msgid "AI reads your week and writes it back to you — in your own words. 3 free."
+#~ msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "AI reads your week and writes it back to you — in your own words. 4 free."
 msgstr ""
 
 #: src/components/atoms/NetworkStatusBanner/index.tsx
@@ -141,6 +153,10 @@ msgstr ""
 msgid "my journal, via Reflect"
 msgstr ""
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Never shown to another person, never sold, never used to train AI."
+msgstr ""
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "No connection"
 msgstr ""
@@ -160,8 +176,8 @@ msgid "Notifications are off"
 msgstr ""
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "One gentle line after you write — and your whole week, every Sunday. Never shown to anyone, never sold, never used to train AI."
-msgstr ""
+#~ msgid "One gentle line after you write — and your whole week, every Sunday. Never shown to anyone, never sold, never used to train AI."
+#~ msgstr ""
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"
@@ -209,6 +225,14 @@ msgstr ""
 
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Thanks — this helps the next one. 🍂"
+msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "That's 2 entries — see what they add up to?"
+#~ msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "That’s 2 entries — see what they add up to?"
 msgstr ""
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
@@ -294,7 +318,19 @@ msgid "You have {localCount} local {0} and {serverCount} in your account — {co
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "You’ve read your 3 free reflections"
+#~ msgid "You’ve read your 3 free reflections"
+#~ msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "You’ve read your 4 free reflections"
+msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "You've written {entriesSoFar} entries. Ready to see your week?"
+#~ msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "You’ve written {entriesSoFar} entries. Ready to see your week?"
 msgstr ""
 
 #. placeholder {0}: serverCount === 1 ? 'entry' : 'entries'

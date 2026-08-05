@@ -655,6 +655,7 @@ const JournalScreen = () => {
               line={echo.line}
               loading={echo.loading}
               consentVisible={echo.consentVisible}
+              entriesSoFar={echo.entriesSoFar}
               onAccept={echo.acceptConsent}
               onDecline={echo.declineConsent}
               onDismissLine={echo.dismissLine}
