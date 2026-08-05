@@ -106,7 +106,13 @@ const useAppLockStore = create<AppLockState>((set) => ({
 
     const sub = AppState.addEventListener('change', (next) => {
       if (next === 'background' || next === 'inactive') {
-        backgroundedAt = backgroundedAt ?? Date.now();
+        // Reset per background, NOT `??` — that kept the very first flap's timestamp
+        // for the whole interaction, so anyone who spent longer than
+        // REAL_DEPARTURE_MS choosing a share target (picking a contact, typing a
+        // message) accumulated enough "away" time to be locked on return — the exact
+        // case the flap handling exists to prevent. What we actually want to detect
+        // is one continuous absence, so measure from the most recent departure.
+        backgroundedAt = Date.now();
         // Mid-sheet flap — cancel any pending finalize and keep suppressing.
         if (settleTimer) {
           clearTimeout(settleTimer);

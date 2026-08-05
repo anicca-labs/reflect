@@ -35,6 +35,7 @@ import { isOnline } from '@/src/services/network';
 import { refreshEntitlement } from '@/src/services/entitlements';
 import { logJournalEntryCreated, logScreenView } from '@analytics';
 import { markFirstEntryWritten } from '@/src/services/user-devices';
+import { isFreeLimitError } from '@/src/services/journalSync';
 import {
   useJournalEntries,
   useCreateJournalEntry,
@@ -465,10 +466,25 @@ const JournalScreen = () => {
           message: t`This entry will sync automatically when you're back online.`,
         });
       }
-    } catch {
-      // Unexpected (non-network) failure — restore the draft so the user's
-      // writing isn't lost, and let them retry.
+    } catch (err) {
+      // Always restore the draft first — the user's writing must never be lost.
       setDraft(trimmed);
+      // The server's free-entry-limit trigger. Reachable even when the UI says a
+      // slot is free: the client count excludes tombstoned rows whose deletion
+      // hasn't flushed yet, while the server counts what's actually there. Without
+      // this branch it fell into the generic error below — a dead end with no
+      // explanation and no upgrade path, where retrying always fails.
+      if (isFreeLimitError(err)) {
+        const purchased = await presentPaywall('entry-limit');
+        if (purchased) {
+          alert({
+            title: t`Welcome to Pro ✦`,
+            message: t`Unlimited entries unlocked. Keep writing.`,
+          });
+        }
+        return;
+      }
+      // Unexpected (non-network) failure — let them retry.
       alert({
         title: t`Couldn't save entry`,
         message: t`Something went wrong. Please try again.`,

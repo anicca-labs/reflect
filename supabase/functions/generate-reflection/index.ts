@@ -358,6 +358,9 @@ Deno.serve(async (req) => {
   }
 
   // Resolve the target user: admin passes userId; otherwise derive from the JWT.
+  // `selfServe` marks the JWT path — the user pressed the button themselves, which
+  // is what records AI consent (only once the request actually succeeds).
+  let selfServe = false;
   let userId: string | null = null;
   let force = false;
   if (isAdmin && body.userId) {
@@ -371,22 +374,13 @@ Deno.serve(async (req) => {
       data: { user },
     } = await userClient.auth.getUser();
     userId = user?.id ?? null;
-    // First self-generate is explicit consent — record it so the Sunday cron
-    // picks them up going forward (toggle-able off in Settings).
-    if (userId) {
-      const now = new Date().toISOString();
-      await admin
-        .from('user_settings')
-        .upsert(
-          { user_id: userId, ai_reflections_enabled: true, ai_consent_at: now, updated_at: now },
-          { onConflict: 'user_id' },
-        );
-    }
+    selfServe = true;
   }
   if (!userId) return new Response('Unauthorized', { status: 401, headers: CORS });
 
-  // Entry echo: one warm line back for a just-saved entry. Consent was recorded
-  // above (the client asks before the first call). Ephemeral — nothing stored.
+  // Entry echo: one warm line back for a just-saved entry. Consent is recorded by
+  // the client when the user accepts the echo card (it writes user_settings before
+  // ever calling here). Ephemeral — nothing stored.
   if (body.action === 'echo' && body.entryId) {
     try {
       const { data: entry } = await admin
@@ -413,6 +407,19 @@ Deno.serve(async (req) => {
   const mode: Mode = body.mode === 'week' ? 'week' : 'recent';
   try {
     const result = await generateForUser(admin, userId, { mode, force });
+    // Pressing "Write my first reflection" IS the consent — but only record it once
+    // the request actually produced one. Recording it up front (as this used to)
+    // opted users into the weekly cron off the back of a call they watched fail
+    // with "not enough to reflect on" or the free limit.
+    if (selfServe && result.status === 'ok') {
+      const now = new Date().toISOString();
+      await admin
+        .from('user_settings')
+        .upsert(
+          { user_id: userId, ai_reflections_enabled: true, ai_consent_at: now, updated_at: now },
+          { onConflict: 'user_id' },
+        );
+    }
     return json(result);
   } catch (e) {
     console.error('generate-reflection error', e);

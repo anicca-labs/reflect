@@ -7,7 +7,7 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/src/services/supabase';
 import { useRevenueCat, useToast } from '@hooks';
-import { useAnonymousJournalStore, useSessionStore } from '@/src/stores';
+import { useAnonymousJournalStore, useSessionStore, useAppLockStore } from '@/src/stores';
 import { migrateEntriesToServer, signOutToAnonymous } from '@/src/hooks/useAuthSession';
 import { refreshEntitlement } from '@/src/services/entitlements';
 import {
@@ -34,6 +34,7 @@ const AnonMergeModal = ({ visible, localCount, serverCount, onClose }: AnonMerge
   const queryClient = useQueryClient();
   const { entries: localEntries, clearEntries } = useAnonymousJournalStore();
   const { setPendingMerge } = useSessionStore();
+  const isLocked = useAppLockStore((s) => s.isLocked);
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['journal-entries'] });
 
@@ -148,7 +149,13 @@ const AnonMergeModal = ({ visible, localCount, serverCount, onClose }: AnonMerge
   const isLoading = loading !== null;
 
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
+    // A native Modal renders in its own window ABOVE the biometric lock overlay, which
+    // is a plain positioned view. On a cold start with an unresolved merge this modal
+    // and the lock engage at the same moment — leaving the DESTRUCTIVE "keep local"
+    // option (it deletes the account's entries) tappable without passing Face ID, and
+    // showing both entry counts over the lock. Hidden while locked; pendingMerge
+    // survives, so it returns intact on unlock.
+    <Modal visible={visible && !isLocked} transparent animationType="fade" statusBarTranslucent>
       <YStack flex={1} bg="$background0" opacity={0.98} justify="center" px={sizes.xl}>
         <YStack
           bg="$surface-card"

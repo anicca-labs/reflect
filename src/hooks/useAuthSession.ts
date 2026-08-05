@@ -3,6 +3,7 @@ import { useRouter, useSegments } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as Linking from 'expo-linking';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Crypto from 'expo-crypto';
 import { supabase } from '@/src/services/supabase';
 import { encryptContent } from '@/src/services/crypto';
 import { identifyRevenueCatUser, resetRevenueCatUser } from '@/src/services/revenue-cat';
@@ -52,16 +53,38 @@ const getServerEntryCount = async (): Promise<number> => {
   return count ?? 0;
 };
 
+// A stable server id derived from the guest entry's local id, so a retried
+// migration UPSERTS the same rows instead of inserting a second copy. Without
+// this, an insert that lands server-side but whose response is lost (ordinary
+// mobile flake) raises the merge modal, and the user's retry duplicates every
+// entry. Deterministic: same local id always yields the same uuid.
+const serverIdForLocalEntry = async (localId: string): Promise<string> => {
+  const hex = await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    `reflect:entry:${localId}`,
+  );
+  const h = hex.slice(0, 32);
+  // Stamp the version/variant nibbles so Postgres accepts it as a uuid.
+  const variant = ((parseInt(h[16], 16) & 0x3) | 0x8).toString(16);
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-${variant}${h.slice(17, 20)}-${h.slice(20, 32)}`;
+};
+
 const migrateEntriesToServer = async (entries: JournalEntry[], userId: string) => {
   if (!entries.length) return;
-  const rows = [...entries].reverse().map((e) => ({
-    user_id: userId,
-    content: encryptContent(e.content),
-    is_bookmarked: e.is_bookmarked,
-    created_at: e.created_at,
-    updated_at: e.updated_at,
-  }));
-  const { error } = await supabase.from('journal_entries').insert(rows);
+  const ordered = [...entries].reverse();
+  const rows = await Promise.all(
+    ordered.map(async (e) => ({
+      id: await serverIdForLocalEntry(e.id),
+      user_id: userId,
+      content: encryptContent(e.content),
+      is_bookmarked: e.is_bookmarked,
+      created_at: e.created_at,
+      updated_at: e.updated_at,
+    })),
+  );
+  // Upsert, not insert — see serverIdForLocalEntry. Matches journalSync's outbox,
+  // which upserts on id for exactly the same reason.
+  const { error } = await supabase.from('journal_entries').upsert(rows, { onConflict: 'id' });
   if (error) throw error;
 };
 
@@ -223,6 +246,12 @@ const useAuthSession = () => {
 
       if (event === 'SIGNED_OUT') {
         isRecoveryMode.current = false;
+        // Drop any unresolved merge decision. Its buttons all need a session, so an
+        // involuntary sign-out (expired refresh token) while the modal is up would
+        // strand it over the sign-in screen with every option a no-op. The local
+        // entries stay in the anonymous store, so the modal re-surfaces correctly
+        // on the next sign-in via reconcileAnonymousEntries.
+        useSessionStore.getState().setPendingMerge(null);
         if (_keepAnonymousOnSignOut) {
           _keepAnonymousOnSignOut = false;
           useSessionStore.getState().setAnonymous();
