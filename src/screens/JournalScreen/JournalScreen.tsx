@@ -484,6 +484,21 @@ const JournalScreen = () => {
       if (isFreeLimitError(err)) {
         const purchased = await presentPaywall('entry-limit');
         if (purchased) {
+          // Push Pro into api.entitlements BEFORE retrying — the limit trigger reads
+          // that table, and the RevenueCat webhook lands too late. Without it the
+          // retry hits the same trigger and re-presents the paywall to someone who
+          // just paid. Then actually save the entry they were writing: they came here
+          // from a failed save, so a purchase that leaves the draft unsaved and the
+          // paywall ready to reappear is the worst possible outcome.
+          await refreshEntitlement();
+          try {
+            await createMutation.mutateAsync(trimmed);
+            setDraft('');
+            logJournalEntryCreated(trimmed.split(/\s+/).length);
+          } catch {
+            // Leave the draft in place; the entitlement is live now, so a manual
+            // retry will succeed.
+          }
           alert({
             title: t`Welcome to Pro ✦`,
             message: t`Unlimited entries unlocked. Keep writing.`,

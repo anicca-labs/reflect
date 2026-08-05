@@ -195,13 +195,25 @@ const SettingsScreen = () => {
 
     const sub = AppState.addEventListener('change', (state) => {
       if (state !== 'active') return;
-      if (openedSettings.current) {
-        openedSettings.current = false;
-        refreshPermissionStatus();
-      }
+      openedSettings.current = false;
+      // Re-check on every foreground, not only after we sent them to OS settings —
+      // permission can be revoked from outside the app at any time.
+      refreshPermissionStatus();
     });
     return () => sub.remove();
   }, [refreshPermissionStatus]);
+
+  // Tabs render with lazy: false and never unmount, so the mount-time check above runs
+  // once at app launch and then never again. Permission is commonly granted AFTER that
+  // — by the post-save reminder prompt on the Journal — leaving this screen showing the
+  // launch-time value for the whole session: the reminder toggle rendered ON but
+  // disabled, so a user could not turn off the reminder they had just enabled, and the
+  // Permission row still invited them to "Enable". Re-read whenever the tab is focused.
+  useFocusEffect(
+    useCallback(() => {
+      refreshPermissionStatus();
+    }, [refreshPermissionStatus]),
+  );
 
   const handlePermissionPress = async () => {
     if (isSimulator) {

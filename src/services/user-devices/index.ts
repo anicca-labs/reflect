@@ -35,9 +35,13 @@ const syncReminderToBackend = async (
   hour: number,
   minute: number,
 ): Promise<void> => {
+  // Local session read, not getUser() — a transient network failure here used to make
+  // the whole write a silent no-op while Settings already showed the new time, so the
+  // server kept pushing at the old hour with nothing indicating anything was wrong.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user;
   if (!user) return;
 
   const fcmToken = await getFCMToken();
@@ -123,10 +127,17 @@ const markFirstEntryWritten = async (): Promise<void> => {
 // last_active_at. Doubles as the activity ping — safe to call on notification-
 // permission grant and on app foreground.
 const captureDeviceToken = async (): Promise<void> => {
+  // getSession() (local, no network) rather than getUser() (a round-trip that returns
+  // null on any transient failure). This runs on every foreground and at every app
+  // start from Settings, so with getUser() a single flaky request sent a signed-in
+  // user down the guest path — and that endpoint unconditionally nulls user_id and
+  // the server reminder fields, silently detaching their token and killing their
+  // daily reminder until the next ping (~20h) or a fresh sign-in repaired it.
+  // markFirstEntryWritten already avoids getUser() for exactly this reason.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (user) await upsertDeviceToken(user.id);
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (session?.user) await upsertDeviceToken(session.user.id);
   else await registerGuestDeviceToken();
 };
 

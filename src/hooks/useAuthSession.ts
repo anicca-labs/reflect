@@ -286,7 +286,13 @@ const useAuthSession = () => {
         // re-fires the tab-switch effect *after* the auth transition. Without it
         // `entries` never changes across login, the effect doesn't re-run, and
         // the user is left on the journal tab with the peek open out of view.
-        queryClient.removeQueries({ queryKey: ['journal-entries'] });
+        // Clear EVERY query, not just journal-entries. Reflections, user-settings and
+        // reflection-feedback were being left in memory with a 7-day gcTime, so signing
+        // in as a different account on the same device served the previous user's
+        // already-decrypted reflection bodies — visible in the Reflections tab and in
+        // the "your week is ready" banner, and openable — until each refetch resolved.
+        // Every query here is user-scoped, so none of it should survive a sign-out.
+        queryClient.clear();
         // Wipe the on-disk copy too. The persister writes on a throttle, so an
         // app kill right after sign-out could otherwise leave the previous
         // user's entries on disk to restore on next launch.
