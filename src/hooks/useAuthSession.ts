@@ -7,6 +7,7 @@ import { supabase } from '@/src/services/supabase';
 import { encryptContent } from '@/src/services/crypto';
 import { identifyRevenueCatUser, resetRevenueCatUser } from '@/src/services/revenue-cat';
 import { upsertDeviceToken, registerGuestDeviceToken } from '@/src/services/user-devices';
+import { cancelMemoryNotifications } from '@/src/services/firebase-messaging';
 import {
   useSessionStore,
   useAnonymousJournalStore,
@@ -233,6 +234,11 @@ const useAuthSession = () => {
         // the user who left). Unconditional: the device is no longer that user, in
         // every sign-out path. See register-device-token.
         registerGuestDeviceToken();
+        // Scheduled memory notifications embed a preview of the departing user's own
+        // entries and sit on the device for up to 30 days. Without this they keep
+        // firing that private writing to the lock screen long after sign-out — and to
+        // whoever signs in next on this device.
+        cancelMemoryNotifications();
         resetRevenueCatUser();
         // Drop any unconsumed "sign in for Pro" intent — signing out (or choosing
         // "decide later") means we no longer want to auto-present the paywall.

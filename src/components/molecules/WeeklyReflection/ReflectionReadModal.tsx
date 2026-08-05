@@ -39,6 +39,7 @@ interface ReflectionReadModalProps {
 const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadModalProps) => {
   const insets = useSafeAreaInsets();
   const { t } = useLingui();
+  const isLocked = useAppLockStore((s) => s.isLocked);
   const { rating, rate } = useReflectionFeedback(reflection?.id ?? null);
   // The "thanks" acknowledgement is a moment, not a fixture: shown ~3s right
   // after tapping, then gone. Already-rated reflections show nothing on reopen.
@@ -77,7 +78,13 @@ const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadMod
 
   return (
     <Modal
-      visible={!!reflection}
+      // A native Modal renders in its own window ABOVE the biometric lock overlay
+      // (which is a plain absolutely-positioned view, see BiometricLockOverlay), so
+      // leaving it visible while locked would show the reflection — written verbatim
+      // from the user's entries — to whoever picked up the phone, and put it in the
+      // app-switcher snapshot. Hide it while locked; the modal state itself survives,
+      // so it reopens on unlock.
+      visible={!!reflection && !isLocked}
       animationType="slide"
       onRequestClose={onClose}
       statusBarTranslucent

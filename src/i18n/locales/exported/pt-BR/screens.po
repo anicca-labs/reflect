@@ -15,7 +15,7 @@ msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "{remainingFree} free entries left — sign up to keep writing"
-msgstr "{remainingFree} entradas gratuitas restantes — cadastre-se para continuar escrevendo"
+msgstr "Restam {remainingFree} entradas gratuitas — cadastre-se para continuar escrevendo"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "{remainingFree} free entries left — upgrade to keep writing"
@@ -23,7 +23,7 @@ msgstr "Restam {remainingFree} entradas gratuitas — faça upgrade para continu
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "1 free entry left — sign up to keep writing"
-msgstr "1 entrada gratuita restante — cadastre-se para continuar escrevendo"
+msgstr "Resta 1 entrada gratuita — cadastre-se para continuar escrevendo"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "1 free entry left — upgrade to keep writing"

@@ -77,7 +77,14 @@ const useMarkReflectionSeen = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      await supabase.from('reflections').update({ seen_at: new Date().toISOString() }).eq('id', id);
+      // Must throw: swallowing the error would let the optimistic "seen" stick until
+      // the next refetch undid it, so the "your week is ready" banner reappears after
+      // the user has already read the reflection.
+      const { error } = await supabase
+        .from('reflections')
+        .update({ seen_at: new Date().toISOString() })
+        .eq('id', id);
+      if (error) throw error;
     },
     onMutate: async (id: string) => {
       await qc.cancelQueries({ queryKey: REFLECTIONS_KEY });
@@ -112,6 +119,11 @@ const useAiReflectionsSetting = () => {
       return data?.ai_reflections_enabled ?? false;
     },
   });
+  // This query is NOT persisted across launches (only journal-entries is), so on a
+  // cold start `enabled` reads false until the fetch lands — and stays false if it
+  // fails. Callers that act on "not consented" must wait for `settled`, or they'll
+  // treat an already-consented user as a fresh one.
+  const settled = isAnonymous || query.isSuccess;
   const mutation = useMutation({
     mutationFn: async (enabled: boolean) => {
       const {
@@ -141,6 +153,7 @@ const useAiReflectionsSetting = () => {
   });
   return {
     enabled: query.data ?? false,
+    settled,
     isLoading: query.isLoading,
     setEnabled: mutation.mutate,
   };
@@ -198,11 +211,13 @@ const useReflectionFeedback = (reflectionId: string | null) => {
 // users who never consent average ~1.1 entries, so an ask scheduled at the 7th
 // save would essentially never fire. Capped at three asks, so it stays a nudge
 // rather than a nag.
-const ECHO_SAVES_KEY = 'entry-echo:saves';
+// Namespaced per user: a bare key would let one account's declines silence the ask
+// for whoever signs in next on the same device (and vice versa).
+const echoSavesKey = (userId: string) => `entry-echo:saves:${userId}`;
 const ASK_ON_SAVES = [1, 2, 5];
 
 const useEntryEcho = () => {
-  const { enabled, setEnabled } = useAiReflectionsSetting();
+  const { enabled, settled, setEnabled } = useAiReflectionsSetting();
   const [line, setLine] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [consentVisible, setConsentVisible] = useState(false);
@@ -233,17 +248,26 @@ const useEntryEcho = () => {
         fetchEcho(entryId);
         return;
       }
+      // Consent state unknown (cold start, or the settings fetch failed) — do nothing
+      // rather than count this save. Counting here would eventually re-show the
+      // consent card to someone who already accepted.
+      if (!settled) return;
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
       // Count only the saves made WITHOUT consent — accepting ends the count for
       // good, since the branch above takes over from then on.
-      const stored = parseInt((await AsyncStorage.getItem(ECHO_SAVES_KEY)) ?? '0', 10);
+      const key = echoSavesKey(user.id);
+      const stored = parseInt((await AsyncStorage.getItem(key)) ?? '0', 10);
       const saves = (Number.isFinite(stored) ? stored : 0) + 1;
-      await AsyncStorage.setItem(ECHO_SAVES_KEY, String(saves));
+      await AsyncStorage.setItem(key, String(saves));
       if (!ASK_ON_SAVES.includes(saves)) return;
       pendingEntryId.current = entryId;
       setEntriesSoFar(saves);
       setConsentVisible(true);
     },
-    [enabled, fetchEcho],
+    [enabled, settled, fetchEcho],
   );
 
   const acceptConsent = useCallback(() => {

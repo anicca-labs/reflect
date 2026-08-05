@@ -93,8 +93,27 @@ const AnonMergeModal = ({ visible, localCount, serverCount, onClose }: AnonMerge
                 data: { user },
               } = await supabase.auth.getUser();
               if (!user) return;
+              // Sync Pro before touching anything — the free-entry-limit trigger reads
+              // api.entitlements, and without this a Pro user with a stale row can have
+              // the insert below rejected. (Same reason as the "keep everything" path.)
+              await refreshEntitlement();
+              // Capture what's on the server BEFORE destroying it, so a failure part-way
+              // through can't leave the account with neither copy.
+              const { data: previous } = await supabase
+                .from('journal_entries')
+                .select('*')
+                .eq('user_id', user.id);
               await supabase.from('journal_entries').delete().eq('user_id', user.id);
-              await migrateEntriesToServer(localEntries, user.id);
+              try {
+                await migrateEntriesToServer(localEntries, user.id);
+              } catch (e) {
+                // The delete succeeded but the replacement didn't — put the server rows
+                // back rather than leaving the user with an empty account.
+                if (previous?.length) {
+                  await supabase.from('journal_entries').insert(previous);
+                }
+                throw e;
+              }
               clearEntries();
               invalidate();
               close();

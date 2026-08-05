@@ -14,7 +14,7 @@ import Animated, {
   withSpring,
   runOnJS,
 } from 'react-native-reanimated';
-import { usePreferencesStore } from '@/src/stores';
+import { usePreferencesStore, useAppLockStore } from '@/src/stores';
 import { formatEntryTime, getDateLocale } from '@/src/utils/date';
 import type { JournalEntry } from '@/src/types/journal';
 
@@ -183,9 +183,20 @@ const EntryPeekModal = ({
     transform: [{ scale: scale.value }, { translateY: translateY.value }],
   }));
 
-  const handleShare = () => {
+  const handleShare = async () => {
     if (!displayEntry) return;
-    Share.share({ message: displayEntry.content });
+    // The share sheet backgrounds the app without the user actually leaving, which
+    // would otherwise trip the biometric lock and greet them with Face ID on return.
+    // Same suppression the reflection share and the export path already use.
+    const { openStoreSheet, closeStoreSheet } = useAppLockStore.getState();
+    openStoreSheet();
+    try {
+      await Share.share({ message: displayEntry.content });
+    } catch {
+      // sharing is best-effort
+    } finally {
+      closeStoreSheet();
+    }
   };
 
   return (

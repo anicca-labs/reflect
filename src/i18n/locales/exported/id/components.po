@@ -19,10 +19,6 @@ msgid "{0} entries"
 msgstr "{0} catatan"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "3 free · Pro unlocks the rest"
-#~ msgstr "3 gratis · Pro membuka sisanya"
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "4 free · Pro unlocks the rest"
 msgstr "4 gratis · Pro membuka sisanya"
 
@@ -41,10 +37,6 @@ msgstr "Sedikit lagi untuk direfleksikan"
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A look back at your last 7 days — tap to read."
 msgstr "Melihat kembali 7 hari terakhirmu — ketuk untuk membaca."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "AI reads your week and writes it back to you — in your own words. 3 free."
-#~ msgstr "AI membaca minggumu dan menuliskannya kembali — dengan kata-katamu sendiri. 3 gratis."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "AI reads your week and writes it back to you — in your own words. 4 free."
@@ -175,10 +167,6 @@ msgstr "Kurang pas"
 msgid "Notifications are off"
 msgstr "Notifikasi nonaktif"
 
-#: src/components/molecules/EntryEcho/index.tsx
-#~ msgid "One gentle line after you write — and your whole week, every Sunday. Never shown to anyone, never sold, never used to train AI."
-#~ msgstr "Satu baris lembut setelah kamu menulis — dan seluruh minggumu, setiap Minggu. Tidak pernah ditunjukkan ke siapa pun, tidak pernah dijual, tidak pernah dipakai melatih AI."
-
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"
 msgstr "Satu hal lagi"
@@ -226,10 +214,6 @@ msgstr "Hanya semenit — akun gratis membawa entrimu ikut serta, tetap privat s
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Thanks — this helps the next one. 🍂"
 msgstr "Terima kasih — ini membantu yang berikutnya. 🍂"
-
-#: src/components/molecules/EntryEcho/index.tsx
-#~ msgid "That's 2 entries — see what they add up to?"
-#~ msgstr "Sudah 2 entri — mau lihat jadinya seperti apa?"
 
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "That’s 2 entries — see what they add up to?"
@@ -318,16 +302,8 @@ msgid "You have {localCount} local {0} and {serverCount} in your account — {co
 msgstr "Anda memiliki {localCount} {0} lokal dan {serverCount} di akun — total {combined}, melebihi batas gratis {FREE_ENTRY_LIMIT} sebanyak {overBy}."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "You’ve read your 3 free reflections"
-#~ msgstr "Kamu sudah membaca 3 refleksi gratismu"
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "You’ve read your 4 free reflections"
 msgstr "Kamu sudah membaca 4 refleksi gratismu"
-
-#: src/components/molecules/EntryEcho/index.tsx
-#~ msgid "You've written {entriesSoFar} entries. Ready to see your week?"
-#~ msgstr "Kamu sudah menulis {entriesSoFar} entri. Siap melihat pekanmu?"
 
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "You’ve written {entriesSoFar} entries. Ready to see your week?"

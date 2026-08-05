@@ -19,10 +19,6 @@ msgid "{0} entries"
 msgstr "{0} تدوينات"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "3 free · Pro unlocks the rest"
-#~ msgstr "3 مجانية · Pro يفتح البقية"
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "4 free · Pro unlocks the rest"
 msgstr "4 مجانية · Pro يفتح الباقي"
 
@@ -41,10 +37,6 @@ msgstr "المزيد قليلاً للتأمل"
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A look back at your last 7 days — tap to read."
 msgstr "نظرة على آخر 7 أيام — اضغط للقراءة."
-
-#: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "AI reads your week and writes it back to you — in your own words. 3 free."
-#~ msgstr "يقرأ الذكاء الاصطناعي أسبوعك ويعيد كتابته لك — بكلماتك أنت. 3 مجانية."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "AI reads your week and writes it back to you — in your own words. 4 free."
@@ -175,10 +167,6 @@ msgstr "ليس تماماً"
 msgid "Notifications are off"
 msgstr "الإشعارات معطّلة"
 
-#: src/components/molecules/EntryEcho/index.tsx
-#~ msgid "One gentle line after you write — and your whole week, every Sunday. Never shown to anyone, never sold, never used to train AI."
-#~ msgstr "سطر لطيف بعد كل كتابة — وأسبوعك كاملاً كل يوم أحد. لا يُعرض على أحد أبداً، ولا يُباع، ولا يُستخدم لتدريب الذكاء الاصطناعي."
-
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"
 msgstr "شيء واحد آخر"
@@ -226,10 +214,6 @@ msgstr "دقيقة واحدة تكفي — حساب مجاني ينقل تدوي
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Thanks — this helps the next one. 🍂"
 msgstr "شكراً — هذا يساعد التأمل القادم. 🍂"
-
-#: src/components/molecules/EntryEcho/index.tsx
-#~ msgid "That's 2 entries — see what they add up to?"
-#~ msgstr "صارت تدوينتان — تريد أن ترى ما تؤول إليه؟"
 
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "That’s 2 entries — see what they add up to?"
@@ -318,16 +302,8 @@ msgid "You have {localCount} local {0} and {serverCount} in your account — {co
 msgstr "لديك {localCount} {0} محلية و{serverCount} في حسابك — {combined} إجمالاً، بزيادة {overBy} عن الحد المجاني البالغ {FREE_ENTRY_LIMIT}."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-#~ msgid "You’ve read your 3 free reflections"
-#~ msgstr "لقد قرأت تأملاتك الثلاثة المجانية"
-
-#: src/components/molecules/WeeklyReflection/index.tsx
 msgid "You’ve read your 4 free reflections"
 msgstr "قرأت تأملاتك المجانية الأربعة"
-
-#: src/components/molecules/EntryEcho/index.tsx
-#~ msgid "You've written {entriesSoFar} entries. Ready to see your week?"
-#~ msgstr "كتبت {entriesSoFar} تدوينات. مستعد لرؤية أسبوعك؟"
 
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "You’ve written {entriesSoFar} entries. Ready to see your week?"
