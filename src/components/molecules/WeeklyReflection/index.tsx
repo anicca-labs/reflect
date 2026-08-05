@@ -315,9 +315,13 @@ const WeeklyReflectionBanner = () => {
   const markSeen = useMarkReflectionSeen();
   const { maybeAsk: maybeAskRating } = useRatingsAsk();
   const [reading, setReading] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  // Keyed to the reflection, not a bare boolean: dismissing must hide THIS week's
+  // banner, not suppress every future one. As a boolean it silenced the banner for
+  // the rest of the session, so a reflection arriving later (Sunday's push, or one
+  // generated while the app is open) had nowhere to surface.
+  const [dismissedId, setDismissedId] = useState<string | null>(null);
   const latest = reflections[0];
-  const show = !!latest && !latest.seen_at && !dismissed;
+  const show = !!latest && !latest.seen_at && dismissedId !== latest.id;
 
   // A tapped "your week is ready" push lands here. The modal's open-state is
   // DERIVED from the store flag (not copied into local state) so it survives
@@ -340,8 +344,9 @@ const WeeklyReflectionBanner = () => {
     if (latest && !latest.seen_at) markSeen.mutate(latest.id);
   };
   const dismiss = () => {
-    setDismissed(true);
-    if (latest && !latest.seen_at) markSeen.mutate(latest.id);
+    if (!latest) return;
+    setDismissedId(latest.id);
+    if (!latest.seen_at) markSeen.mutate(latest.id);
   };
 
   return (
