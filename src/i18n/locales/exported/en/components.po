@@ -30,6 +30,10 @@ msgstr ""
 msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. 4 reflections free."
 msgstr ""
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. A free account unlocks it, and brings your entries with you."
+msgstr ""
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A little more to reflect on"
 msgstr ""
@@ -58,6 +62,10 @@ msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Couldn't set the reminder"
+msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Create free account ✦"
 msgstr ""
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx

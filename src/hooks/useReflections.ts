@@ -270,6 +270,24 @@ const useEntryEcho = () => {
     [enabled, settled, fetchEcho],
   );
 
+  // Guests can't be given an echo — their entries live only on the device, so there
+  // is no server row for the AI to read — but they were never even told the feature
+  // exists, because JournalScreen returns before onSaved for anonymous users. Since
+  // consenting is the strongest predictor of a second entry, the default new-user
+  // path was the one path with no exposure to it at all. This shows the same card
+  // with a sign-up call to action instead of a consent one.
+  //
+  // NOT on their first entry: guest-first exists so that one is never interrupted,
+  // and it bought ~20 points of activation. Asked on the 2nd and 5th instead.
+  const GUEST_ASK_ON_SAVES = [2, 5];
+  const onGuestSaved = useCallback((entryNumber: number) => {
+    setLine(null);
+    if (!GUEST_ASK_ON_SAVES.includes(entryNumber)) return;
+    setEntriesSoFar(entryNumber);
+    setConsentVisible(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const acceptConsent = useCallback(() => {
     setConsentVisible(false);
     setEnabled(true);
@@ -288,6 +306,7 @@ const useEntryEcho = () => {
     consentVisible,
     entriesSoFar,
     onSaved,
+    onGuestSaved,
     acceptConsent,
     declineConsent,
     dismissLine,

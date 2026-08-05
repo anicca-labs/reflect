@@ -30,6 +30,10 @@ msgstr "Pengingat harian yang lembut membuatnya jauh lebih mungkin menjadi kebia
 msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. 4 reflections free."
 msgstr "Satu kalimat lembut setelah setiap entri — dan setiap Minggu, AI membaca pekanmu dan menuliskannya kembali dengan kata-katamu sendiri. 4 refleksi gratis."
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. A free account unlocks it, and brings your entries with you."
+msgstr "Satu kalimat lembut setelah setiap entri — dan setiap Minggu, AI membaca pekanmu dan menuliskannya kembali dengan kata-katamu sendiri. Akun gratis membukanya dan membawa entrimu bersamamu."
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A little more to reflect on"
 msgstr "Sedikit lagi untuk direfleksikan"
@@ -59,6 +63,10 @@ msgstr "Tidak bisa membuat"
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Couldn't set the reminder"
 msgstr "Gagal mengatur pengingat"
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Create free account ✦"
+msgstr "Buat akun gratis ✦"
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Decide later — review local entries first"
