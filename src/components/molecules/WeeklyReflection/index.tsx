@@ -18,6 +18,7 @@ import {
   type Reflection,
 } from '@hooks';
 import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING, DISABLED_OPACITY } from '@constants';
+import { refreshEntitlement } from '@/src/services/entitlements';
 import { ReflectionReadModal } from './ReflectionReadModal';
 
 // Keep in sync with FREE_REFLECTION_LIMIT in the generate-reflection edge fn —
@@ -30,7 +31,11 @@ const MIN_ENTRIES = 2;
 const ReflectionUpsellModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
   const { presentPaywall } = useRevenueCat();
   const handleGoPro = async () => {
-    await presentPaywall('reflection-limit');
+    const purchased = await presentPaywall('reflection-limit');
+    // generate-reflection gates on api.entitlements, which the purchase hasn't
+    // written yet — without this, generating right after paying returns 'limit' and
+    // re-shows this very upsell to a paying user until the webhook lands.
+    if (purchased) await refreshEntitlement();
     onClose();
   };
   return (

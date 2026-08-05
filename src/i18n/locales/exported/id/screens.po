@@ -389,6 +389,10 @@ msgstr "Notifikasi push"
 msgid "Rate Reflect ✦"
 msgstr "Beri rating Reflect ✦"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Recently"
+msgstr "Baru-baru ini"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Reconnect to delete your account."
 msgstr "Sambungkan kembali untuk menghapus akun Anda."

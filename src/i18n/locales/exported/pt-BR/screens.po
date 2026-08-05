@@ -389,6 +389,10 @@ msgstr "Notificações push"
 msgid "Rate Reflect ✦"
 msgstr "Avaliar o Reflect ✦"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Recently"
+msgstr "Recentemente"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Reconnect to delete your account."
 msgstr "Reconecte-se para excluir sua conta."

@@ -27,6 +27,7 @@ import { logScreenView } from '@analytics';
 import { useJournalEntries, useToggleBookmark, useRevenueCat, useDeleteJournalEntry } from '@hooks';
 import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING } from '@constants';
 import { exportJournal } from '@export';
+import { refreshEntitlement } from '@/src/services/entitlements';
 import {
   AnimatedEntry,
   SwipeableDeleteWrapper,
@@ -220,12 +221,22 @@ const ReflectionsScreen = () => {
       return;
     }
     if (!isPro) {
-      await presentPaywall('export');
-      return;
+      const purchased = await presentPaywall('export');
+      // Buying on this sheet used to drop the user back on the list with nothing
+      // exported, having to find and tap Export again. Sync the entitlement (the
+      // server gates read it) and then do what they asked for.
+      if (!purchased) return;
+      await refreshEntitlement();
     }
     setExporting(true);
-    await exportJournal(entries);
-    setExporting(false);
+    try {
+      // try/finally: Share.share rejects on platform failures (no share targets, an
+      // Android activity error), and without this `exporting` stayed true — the button
+      // disabled and spinning forever, with the tab never unmounting to reset it.
+      await exportJournal(entries);
+    } finally {
+      setExporting(false);
+    }
   };
 
   const query = search.trim().toLowerCase();
