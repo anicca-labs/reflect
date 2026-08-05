@@ -19,12 +19,20 @@ msgid "{0} entries"
 msgstr "{0} entradas"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "3 free · Pro unlocks the rest"
-msgstr "3 gratis · Pro desbloquea el resto"
+#~ msgid "3 free · Pro unlocks the rest"
+#~ msgstr "3 gratis · Pro desbloquea el resto"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "4 free · Pro unlocks the rest"
+msgstr "4 gratis · Pro desbloquea el resto"
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "A gentle daily nudge makes it far more likely to become a habit."
 msgstr "Un recordatorio diario suave hace mucho más probable que se convierta en un hábito."
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. 4 reflections free."
+msgstr "Una línea suave de vuelta después de cada entrada — y cada domingo, la IA lee tu semana y te la escribe de vuelta en tus propias palabras. 4 reflexiones gratis."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A little more to reflect on"
@@ -35,8 +43,12 @@ msgid "A look back at your last 7 days — tap to read."
 msgstr "Un repaso de tus últimos 7 días — toca para leer."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "AI reads your week and writes it back to you — in your own words. 3 free."
-msgstr "La IA lee tu semana y te la devuelve escrita — con tus propias palabras. 3 gratis."
+#~ msgid "AI reads your week and writes it back to you — in your own words. 3 free."
+#~ msgstr "La IA lee tu semana y te la devuelve escrita — con tus propias palabras. 3 gratis."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "AI reads your week and writes it back to you — in your own words. 4 free."
+msgstr "La IA lee tu semana y te la escribe de vuelta — en tus propias palabras. 4 gratis."
 
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "Back online"
@@ -141,6 +153,10 @@ msgstr "Fusionar las {combined} entradas en tu cuenta."
 msgid "my journal, via Reflect"
 msgstr "mi diario, vía Reflect"
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Never shown to another person, never sold, never used to train AI."
+msgstr "Nunca se muestra a otra persona, nunca se vende, nunca se usa para entrenar IA."
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "No connection"
 msgstr "Sin conexión"
@@ -160,8 +176,8 @@ msgid "Notifications are off"
 msgstr "Las notificaciones están desactivadas"
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "One gentle line after you write — and your whole week, every Sunday. Never shown to anyone, never sold, never used to train AI."
-msgstr "Una línea suave después de escribir — y tu semana entera, cada domingo. Nunca se muestra a nadie, nunca se vende, nunca se usa para entrenar IA."
+#~ msgid "One gentle line after you write — and your whole week, every Sunday. Never shown to anyone, never sold, never used to train AI."
+#~ msgstr "Una línea suave después de escribir — y tu semana entera, cada domingo. Nunca se muestra a nadie, nunca se vende, nunca se usa para entrenar IA."
 
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "One more thing"
@@ -210,6 +226,14 @@ msgstr "Toma un minuto — una cuenta gratis lleva tus entradas contigo, privada
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Thanks — this helps the next one. 🍂"
 msgstr "Gracias — esto ayuda a la próxima. 🍂"
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "That's 2 entries — see what they add up to?"
+#~ msgstr "Van 2 entradas — ¿ves en qué se convierten?"
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "That’s 2 entries — see what they add up to?"
+msgstr "Van 2 entradas — ¿ves en qué se convierten?"
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
@@ -294,8 +318,20 @@ msgid "You have {localCount} local {0} and {serverCount} in your account — {co
 msgstr "Tienes {localCount} {0} locales y {serverCount} en tu cuenta — {combined} en total, {overBy} por encima del límite gratuito de {FREE_ENTRY_LIMIT}."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
-msgid "You’ve read your 3 free reflections"
-msgstr "Ya leíste tus 3 reflexiones gratis"
+#~ msgid "You’ve read your 3 free reflections"
+#~ msgstr "Ya leíste tus 3 reflexiones gratis"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "You’ve read your 4 free reflections"
+msgstr "Ya leíste tus 4 reflexiones gratis"
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "You've written {entriesSoFar} entries. Ready to see your week?"
+#~ msgstr "Escribiste {entriesSoFar} entradas. ¿Listo para ver tu semana?"
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "You’ve written {entriesSoFar} entries. Ready to see your week?"
+msgstr "Escribiste {entriesSoFar} entradas. ¿Listo para ver tu semana?"
 
 #. placeholder {0}: serverCount === 1 ? 'entry' : 'entries'
 #. placeholder {1}: localCount === 1 ? 'entry' : 'entries'

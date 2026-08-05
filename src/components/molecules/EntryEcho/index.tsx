@@ -13,6 +13,10 @@ type EntryEchoCardsProps = {
   line: string | null;
   loading: boolean;
   consentVisible: boolean;
+  // How many entries they've written without consenting — the repeat ask leans
+  // on it, since "you've written 5 entries" is a far stronger reason to say yes
+  // than a cold pitch.
+  entriesSoFar: number;
   onAccept: () => void;
   onDecline: () => void;
   onDismissLine: () => void;
@@ -22,6 +26,7 @@ const EntryEchoCards = ({
   line,
   loading,
   consentVisible,
+  entriesSoFar,
   onAccept,
   onDecline,
   onDismissLine,
@@ -40,13 +45,23 @@ const EntryEchoCards = ({
         >
           <YStack gap="$1">
             <BodyMdBold color="$text-emphasis">
-              🍂 <Trans>Want your journal to write back?</Trans>
+              🍂{' '}
+              {entriesSoFar <= 1 ? (
+                <Trans>Want your journal to write back?</Trans>
+              ) : entriesSoFar === 2 ? (
+                <Trans>That’s 2 entries — see what they add up to?</Trans>
+              ) : (
+                <Trans>You’ve written {entriesSoFar} entries. Ready to see your week?</Trans>
+              )}
             </BodyMdBold>
             <BodySm color="$text-secondary">
               <Trans>
-                One gentle line after you write — and your whole week, every Sunday. Never shown to
-                anyone, never sold, never used to train AI.
+                A gentle line back after each entry — and every Sunday, AI reads your week and
+                writes it back to you in your own words. 4 reflections free.
               </Trans>
+            </BodySm>
+            <BodySm color="$text-disabled" style={{ lineHeight: 16 }}>
+              <Trans>Never shown to another person, never sold, never used to train AI.</Trans>
             </BodySm>
           </YStack>
           <XStack gap="$3" items="center">

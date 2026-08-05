@@ -20,7 +20,9 @@ import {
 import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING, DISABLED_OPACITY } from '@constants';
 import { ReflectionReadModal } from './ReflectionReadModal';
 
-const FREE_LIMIT = 3;
+// Keep in sync with FREE_REFLECTION_LIMIT in the generate-reflection edge fn —
+// the server is the real gate, this only drives the UI.
+const FREE_LIMIT = 4;
 // The generate-reflection function needs at least this many entries to reflect on.
 const MIN_ENTRIES = 2;
 
@@ -50,7 +52,7 @@ const ReflectionUpsellModal = ({ visible, onClose }: { visible: boolean; onClose
         >
           <YStack gap="$2">
             <HeadingMd color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
-              <Trans>You’ve read your 3 free reflections</Trans>
+              <Trans>You’ve read your 4 free reflections</Trans>
             </HeadingMd>
             <BodySm color="$text-secondary">
               <Trans>
@@ -215,7 +217,7 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
             </BodyMdBold>
             <BodySm color="$text-secondary">
               <Trans>
-                AI reads your week and writes it back to you — in your own words. 3 free.
+                AI reads your week and writes it back to you — in your own words. 4 free.
               </Trans>
             </BodySm>
           </YStack>
@@ -273,7 +275,7 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
               textTransform="uppercase"
               letterSpacing={LABEL_LETTER_SPACING}
             >
-              <Trans>3 free · Pro unlocks the rest</Trans>
+              <Trans>4 free · Pro unlocks the rest</Trans>
             </LabelMd>
             <YStack flex={1} height={1} bg="$borderColor" />
           </XStack>
