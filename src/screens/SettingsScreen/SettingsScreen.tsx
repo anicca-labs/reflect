@@ -14,7 +14,7 @@ import * as Device from 'expo-device';
 import { supabase } from '@/src/services/supabase';
 import { isOnline } from '@/src/services/network';
 import { deleteAccount } from '@/src/services/account';
-import { usePreferencesStore, useSessionStore } from '@/src/stores';
+import { usePreferencesStore, useSessionStore, useComposeStore } from '@/src/stores';
 import { manageSubscriptions } from '@/src/services/revenue-cat';
 import { refreshEntitlement } from '@/src/services/entitlements';
 import {
@@ -95,6 +95,7 @@ const SettingsCard = ({ children, gap, hasGlass }: SettingsCardProps) => {
 
 const SettingsScreen = () => {
   const { isUpdateReady, applyUpdate } = useOtaUpdate();
+  const hasDraft = useComposeStore((s) => s.hasDraft);
   const { isPro, isLoading: rcLoading, customerInfo, presentPaywall } = useRevenueCat();
   const { t } = useLingui();
   const voiceLanguages: { code: string; label: string }[] = [
@@ -152,9 +153,21 @@ const SettingsScreen = () => {
     prevIsProRef.current = isPro;
   }, [isPro, router]);
 
+  // Re-read whenever the signed-in user changes. This ran once with [] deps and the
+  // screen never unmounts (tabs are lazy: false), so after signing out and back in as
+  // someone else the Account card kept showing the PREVIOUS person's name and email.
+  // Reading from the local session avoids the network round-trip that also left the
+  // card blank for the whole session if it failed once at launch.
+  const sessionUserId = useSessionStore((s) => s.outboxOwnerId);
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setCurrentUser(user));
-  }, []);
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!cancelled) setCurrentUser(session?.user ?? null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionUserId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -351,8 +364,13 @@ const SettingsScreen = () => {
               <Trans>Settings</Trans>
             </DisplayLg>
 
-            {/* OTA update banner */}
-            {isUpdateReady ? (
+            {/* OTA update banner. Hidden while the Journal composer holds unsaved
+                text: tapping it calls reloadAsync(), and the draft is plain component
+                state with no persistence, so it would be destroyed with no warning
+                and no way back. The Journal's own banner has always had this guard —
+                this one didn't, and tabs never unmount, so the draft survives the
+                swipe over here and was sitting there to be lost. */}
+            {isUpdateReady && !hasDraft ? (
               <AnimatedEntry index={0} animKey={animKey}>
                 <BaseTouchable onPress={applyUpdate}>
                   <YStack bg="$accentBackground" rounded="$4" p="$4" gap="$1">

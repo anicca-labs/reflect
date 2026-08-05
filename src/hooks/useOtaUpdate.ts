@@ -32,6 +32,12 @@ const useOtaUpdate = (options?: OtaUpdateOptions): OtaUpdateState => {
     if (__DEV__) return;
 
     const checkAndFetch = async () => {
+      // Already downloaded and waiting to be applied — stop here. checkForUpdateAsync
+      // compares against the RUNNING update, so a pending one keeps reporting as
+      // available and we re-downloaded the identical bundle on every single
+      // foreground: repeated hits on the self-hosted manifest function and the user's
+      // cellular data, for nothing, until they happened to reload.
+      if (readyRef.current) return;
       try {
         const result = await Updates.checkForUpdateAsync();
         if (!result.isAvailable) return;
@@ -73,7 +79,11 @@ const useOtaUpdate = (options?: OtaUpdateOptions): OtaUpdateState => {
     try {
       await Updates.reloadAsync();
     } catch {
-      // nothing to do if reload fails
+      // Clear the flag so the banner stops advertising an update it can't apply —
+      // it used to stay visible forever, doing nothing when tapped. The bundle is
+      // still downloaded, so the next launch picks it up regardless.
+      readyRef.current = false;
+      setIsUpdateReady(false);
     }
   };
 

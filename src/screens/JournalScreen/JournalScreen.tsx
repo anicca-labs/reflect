@@ -392,9 +392,14 @@ const JournalScreen = () => {
   // Keep long-lived sessions on the latest OTA: silently apply a downloaded
   // update when the app returns from a real break — but never mid-write.
   const hasContentRef = useRef(false);
+  const setHasDraft = useComposeStore((s) => s.setHasDraft);
   useEffect(() => {
     hasContentRef.current = hasContent || isListening;
-  }, [hasContent, isListening]);
+    // Publish it so other screens can refuse to reload the app mid-write — tabs
+    // never unmount, so an unsaved draft survives a tab switch and would otherwise
+    // be destroyed by Settings' update banner.
+    setHasDraft(hasContent || isListening);
+  }, [hasContent, isListening, setHasDraft]);
   const { isUpdateReady: otaReady, applyUpdate: applyOta } = useOtaUpdate({
     autoApply: true,
     canAutoApply: () => !hasContentRef.current,

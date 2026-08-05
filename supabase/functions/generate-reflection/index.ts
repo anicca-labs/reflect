@@ -229,10 +229,16 @@ const generateForUser = async (
   // Gating: free users get FREE_REFLECTION_LIMIT reflections, then Pro.
   const { data: ent } = await admin
     .from('entitlements')
-    .select('is_pro')
+    .select('is_pro, expires_at')
     .eq('user_id', userId)
     .maybeSingle();
-  const isPro = (ent as { is_pro?: boolean } | null)?.is_pro === true;
+  // expires_at must be honoured, matching the enforce_free_entry_limit trigger
+  // (`is_pro AND (expires_at IS NULL OR expires_at > now())`). Checking is_pro alone
+  // meant a lapsed subscriber whose row still said true was blocked at 7 entries but
+  // kept UNLIMITED weekly reflections — the expensive path — indefinitely.
+  const row = ent as { is_pro?: boolean; expires_at?: string | null } | null;
+  const notExpired = !row?.expires_at || new Date(row.expires_at) > new Date();
+  const isPro = row?.is_pro === true && notExpired;
   const { count: reflCount } = await admin
     .from('reflections')
     .select('*', { count: 'exact', head: true })

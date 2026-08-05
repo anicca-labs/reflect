@@ -286,6 +286,10 @@ msgstr "Gérer l'abonnement"
 msgid "Microphone access required"
 msgstr "Accès au microphone requis"
 
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "My Reflect Journal"
+msgstr "Mon journal Reflect"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Name"
 msgstr "Nom"
@@ -405,6 +409,15 @@ msgstr "Reconnectez-vous pour vous déconnecter."
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Reconnect to upgrade to Pro and keep writing."
 msgstr "Reconnectez-vous pour passer à Pro et continuer à écrire."
+
+#. placeholder {0}: filtered.length
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Reflect Journal — {0} entries"
+msgstr "Journal Reflect — {0} entrées"
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Reflect Journal — 1 entry"
+msgstr "Journal Reflect — 1 entrée"
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Reflections"

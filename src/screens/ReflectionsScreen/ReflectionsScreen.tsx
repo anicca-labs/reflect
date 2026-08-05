@@ -164,6 +164,7 @@ const ReflectionsScreen = () => {
   const toggleBookmarkMutation = useToggleBookmark();
   const deleteMutation = useDeleteJournalEntry();
   const { t } = useLingui();
+  const timeFormat = usePreferencesStore((s) => s.timeFormat);
   const router = useRouter();
   const [exporting, setExporting] = useState(false);
   const [search, setSearch] = useState('');
@@ -233,7 +234,18 @@ const ReflectionsScreen = () => {
       // try/finally: Share.share rejects on platform failures (no share targets, an
       // Android activity error), and without this `exporting` stayed true — the button
       // disabled and spinning forever, with the tab never unmounting to reset it.
-      await exportJournal(entries);
+      //
+      // `filtered`, not `entries`: it exported the ENTIRE journal even when a search
+      // or the ★ bookmark filter was active, with nothing saying the filter had been
+      // ignored. Labels are built here so they're actually translated.
+      await exportJournal(filtered, {
+        use24h: timeFormat === '24h',
+        title: t`My Reflect Journal`,
+        heading:
+          filtered.length === 1
+            ? t`Reflect Journal — 1 entry`
+            : t`Reflect Journal — ${filtered.length} entries`,
+      });
     } finally {
       setExporting(false);
     }
