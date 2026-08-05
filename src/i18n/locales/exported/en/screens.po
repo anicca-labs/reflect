@@ -389,6 +389,10 @@ msgstr ""
 msgid "Rate Reflect ✦"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Recently"
+msgstr ""
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Reconnect to delete your account."
 msgstr ""

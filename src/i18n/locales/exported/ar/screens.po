@@ -389,6 +389,10 @@ msgstr "الإشعارات الفورية"
 msgid "Rate Reflect ✦"
 msgstr "قيّم Reflect ✦"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Recently"
+msgstr "مؤخرًا"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Reconnect to delete your account."
 msgstr "أعد الاتصال لحذف حسابك."

@@ -367,6 +367,13 @@ const JournalScreen = () => {
   };
 
   const todayEntries = entries.filter((e) => isToday(e.created_at));
+  // Someone returning the day after writing used to find a completely empty Journal —
+  // their entry was still there, but only on the Reflections tab, which nothing on
+  // this screen points to. That blank screen lands exactly at the entry-1 → entry-2
+  // drop-off. When there's nothing today, show the last few so the writing they
+  // already did is visible and the streak chip has something to refer to.
+  const RECENT_FALLBACK_COUNT = 3;
+  const recentEntries = todayEntries.length === 0 ? entries.slice(0, RECENT_FALLBACK_COUNT) : [];
   const streak = useStreak(entries);
   const prompts = [
     t`What's on your mind?`,
@@ -698,6 +705,29 @@ const JournalScreen = () => {
                   )}
                 </LabelMd>
                 {todayEntries.map((entry, index) => (
+                  <AnimatedEntry key={entry.id} index={index} animKey={animKey}>
+                    <EntryCard
+                      entry={entry}
+                      index={index}
+                      onDelete={handleDelete}
+                      onPeek={handlePeek}
+                      closeKey={closeKey}
+                    />
+                  </AnimatedEntry>
+                ))}
+              </YStack>
+            ) : null}
+
+            {recentEntries.length > 0 ? (
+              <YStack gap="$3">
+                <LabelMd
+                  color="$text-disabled"
+                  textTransform="uppercase"
+                  letterSpacing={LABEL_LETTER_SPACING}
+                >
+                  <Trans>Recently</Trans>
+                </LabelMd>
+                {recentEntries.map((entry, index) => (
                   <AnimatedEntry key={entry.id} index={index} animKey={animKey}>
                     <EntryCard
                       entry={entry}
