@@ -95,7 +95,10 @@ const json = (obj: unknown, status = 200) =>
 const ENC_PREFIX = 'enc:v1:';
 const IV_BYTES = 16;
 
-const b64ToBytes = (b64: string): Uint8Array => {
+// Return type pinned to Uint8Array<ArrayBuffer>, not the default
+// Uint8Array<ArrayBufferLike>: WebCrypto's BufferSource excludes SharedArrayBuffer
+// backing, so the looser type doesn't satisfy importKey/encrypt/decrypt.
+const b64ToBytes = (b64: string): Uint8Array<ArrayBuffer> => {
   const bin = atob(b64);
   const out = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
@@ -203,6 +206,14 @@ Return only the line — no quotes around it, no preamble.`;
 // no advice, no concern, nothing that reads as a machine reacting to distress.
 const ECHO_FALLBACK = 'That’s here now, written down.';
 
+// Sonnet, not Haiku. The echo is the single strongest predictor we have of a second
+// entry ever being written (91% of accepters reach 2+ vs 10%), it fires on EVERY
+// save, and it's the only AI most users ever meet — plenty never reach a Sunday.
+// Haiku 4.5 costs ~$0.0005 a call and Sonnet ~$0.001: doubling five hundredths of a
+// cent on the output the whole retention story rests on. Revert here if the lines
+// don't measurably improve.
+const ECHO_MODEL = 'claude-sonnet-5';
+
 const callClaudeEcho = async (entryText: string): Promise<string> => {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -212,7 +223,7 @@ const callClaudeEcho = async (entryText: string): Promise<string> => {
       'content-type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
+      model: ECHO_MODEL,
       max_tokens: 100,
       system: ECHO_SYSTEM,
       messages: [{ role: 'user', content: entryText }],
@@ -267,7 +278,12 @@ const callClaude = async (userMessage: string): Promise<string> => {
 type Mode = 'week' | 'recent';
 
 const generateForUser = async (
-  admin: ReturnType<typeof createClient>,
+  // `ReturnType<typeof createClient>` describes the DEFAULT, schema-less client —
+  // its generics resolve to `never`, so every query built against the `api` schema
+  // was rejected at type level (the caller passes a client created with
+  // `db: { schema: 'api' }`). Same shape as notifyReflectionReady above.
+  // deno-lint-ignore no-explicit-any
+  admin: any,
   userId: string,
   opts: { mode: Mode; force: boolean },
 ): Promise<Record<string, unknown>> => {
