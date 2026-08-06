@@ -21,6 +21,18 @@ on:
           - all
           - ios
           - android
+      version:
+        description: 'Force marketing version X.Y.Z (leave empty to derive from conventional commits)'
+        required: false
+        type: string
+        default: ''
+      skip_version_bump:
+        description: 'Build package.json as-is — for re-running a version the stores never accepted'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
 
 jobs:
   detect-platform:
@@ -75,11 +87,108 @@ jobs:
             echo "platform=none" >> "$GITHUB_OUTPUT"
           fi
 
-  deploy:
+  # Apple rejects a submission whose CFBundleShortVersionString was already used, so
+  # a store release MUST carry a fresh marketing version. Bumping used to be a manual
+  # `Release version` dispatch that nothing prompted you to run — miss it and Android
+  # sails through (it gates on versionCode) while iOS rejects at submission, 40
+  # minutes of build later. Resolve it here instead, so the automatic path can't ship
+  # a stale version.
+  #
+  # The version is derived from main's commits (that's what's being built) but the
+  # bump COMMIT lands on stg, preserving the stg-first rule that CI never commits to
+  # main — it reaches main on the next normal merge. The build itself doesn't need
+  # that commit: `eas build --local` builds the working tree, which the deploy jobs
+  # stamp from this job's output.
+  resolve-version:
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.detect-platform.outputs.platform != 'none') }}
     needs: [detect-platform]
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # full history so the conventional-commit scan can see it
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '23'
+
+      - id: resolve
+        # Free-text dispatch inputs go through env, never interpolated into the shell
+        # source — `${{ }}` is textual substitution and would execute anything quoted
+        # into it.
+        env:
+          FORCED: ${{ inputs.version }}
+          SKIP: ${{ inputs.skip_version_bump }}
+        run: |
+          set -euo pipefail
+          if [[ "$SKIP" == "true" ]]; then
+            echo "skip_version_bump — building package.json as-is"
+            echo "version=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ -n "$FORCED" ]]; then
+            node scripts/next-version.mjs --set "$FORCED" | tee /tmp/version.json
+          else
+            node scripts/next-version.mjs | tee /tmp/version.json
+          fi
+          CURRENT=$(node -e 'console.log(require("/tmp/version.json").current)')
+          NEXT=$(node -e 'console.log(require("/tmp/version.json").next)')
+          # No releasable commits since the last version — nothing to bump. Build what
+          # main already has; the stores decide whether they'll take it.
+          if [[ "$NEXT" == "$CURRENT" ]]; then
+            echo "no bump warranted (still $CURRENT)"
+            echo "version=" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=$NEXT" >> "$GITHUB_OUTPUT"
+          fi
+          {
+            echo "### Version"
+            echo '```json'
+            cat /tmp/version.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Record the bump on stg so the next release computes from it. This runs BEFORE
+      # the build on purpose: a version we can't record is a version we'd compute
+      # again next time and resubmit — exactly the rejection this job exists to stop.
+      - name: Record bump on stg
+        if: ${{ steps.resolve.outputs.version != '' }}
+        env:
+          VERSION: ${{ steps.resolve.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin stg
+            git checkout -B stg origin/stg
+            CURRENT=$(node -e 'console.log(require("./package.json").version)')
+            if [[ "$CURRENT" == "$VERSION" ]]; then
+              echo "stg already at $VERSION — nothing to record"
+              exit 0
+            fi
+            node scripts/next-version.mjs --set "$VERSION" --apply
+            git commit -am "chore(release): v$VERSION [skip ci]"
+            # ANNOTATED — `push --follow-tags` ignores lightweight tags. -f so a retry
+            # after a rejected push can re-tag the rebuilt commit.
+            git tag -f -a "v$VERSION" -m "v$VERSION"
+            if git push origin stg --follow-tags; then
+              echo "recorded v$VERSION on stg"
+              exit 0
+            fi
+            echo "push rejected (attempt $attempt) — stg moved, retrying"
+            git reset --hard "origin/stg"
+          done
+          echo "::error::could not record v$VERSION on stg after 3 attempts — not building a version we can't track"
+          exit 1
+
+  deploy:
+    needs: [detect-platform, resolve-version]
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.detect-platform.outputs.platform != 'none') }}
     uses: ./.github/workflows/expo-store-deploy.yml
     secrets: inherit
     with:
       environment: prd
       platform: ${{ github.event_name == 'push' && needs.detect-platform.outputs.platform || inputs.platform }}
+      version: ${{ needs.resolve-version.outputs.version }}

@@ -8,8 +8,9 @@
 //   anything else (chore/docs/ci/build/...) -> no bump
 //
 // Usage:
-//   node scripts/next-version.mjs           # dry-run: prints JSON {current,next,level}
-//   node scripts/next-version.mjs --apply    # writes package.json IF a bump is warranted
+//   node scripts/next-version.mjs             # dry-run: prints JSON {current,next,level}
+//   node scripts/next-version.mjs --apply     # writes package.json IF a bump is warranted
+//   node scripts/next-version.mjs --set 2.0.0 # force an exact version, skipping the scan
 //
 // Version is decoupled from the OTA fingerprint (fingerprint.config.js skips
 // ExpoConfigVersions), so bumping is cosmetic / store-facing and OTA-safe.
@@ -72,14 +73,33 @@ function resolveLevel(base) {
   return { level, considered };
 }
 
+// An explicit `--set X.Y.Z` overrides the commit scan entirely — the escape hatch
+// for releases the conventional-commit history can't express (a deliberate 2.0.0,
+// or re-cutting a version the store rejected).
+function explicitVersion() {
+  const i = process.argv.indexOf('--set');
+  if (i === -1) return null;
+  const value = (process.argv[i + 1] ?? '').trim();
+  if (!/^\d+\.\d+\.\d+$/.test(value)) {
+    console.error(`--set expects a bare X.Y.Z version, got: ${JSON.stringify(value)}`);
+    process.exit(1);
+  }
+  return value;
+}
+
 const url = new URL('../package.json', import.meta.url);
 const pkg = JSON.parse(readFileSync(url, 'utf8'));
 const current = pkg.version;
+const forced = explicitVersion();
 const base = baseRef(current);
+// Scanning is pure and its output is informative even when forcing, so it still
+// runs — the summary shows what the commits WOULD have produced.
 const { level, considered } = resolveLevel(base);
 
 let next = current;
-if (level) {
+if (forced) {
+  next = forced;
+} else if (level) {
   const [maj, min, pat] = current.split('.').map(Number);
   next = {
     major: [maj + 1, 0, 0],
@@ -88,15 +108,25 @@ if (level) {
   }[level].join('.');
 }
 
+// A forced version that already matches package.json is a no-op, not a bump —
+// callers key off `bumped` to decide whether there's anything to commit.
+const changes = next !== current;
 const apply = process.argv.includes('--apply');
-if (apply && level) {
+if (apply && changes) {
   pkg.version = next;
   writeFileSync(url, JSON.stringify(pkg, null, 2) + '\n');
 }
 
 console.log(
   JSON.stringify(
-    { current, next, level: level ?? 'none', bumped: apply && !!level, base, considered },
+    {
+      current,
+      next,
+      level: forced ? 'explicit' : (level ?? 'none'),
+      bumped: apply && changes,
+      base,
+      considered,
+    },
     null,
     2,
   ),
