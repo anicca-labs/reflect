@@ -185,7 +185,14 @@ jobs:
 
   deploy:
     needs: [detect-platform, resolve-version]
-    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.detect-platform.outputs.platform != 'none') }}
+    # `always()` is here only to tolerate detect-platform being SKIPPED on dispatch —
+    # it must not extend to resolve-version. A cancelled resolver (runner starvation
+    # cancels jobs before they record a step) leaves `outputs.version` empty, which
+    # the deploy jobs read as "build package.json as-is" — silently shipping the stale
+    # version this whole job exists to prevent. `failure()`/`cancelled()` don't catch
+    # it: a cancelled NEED is neither a workflow failure nor a workflow cancellation.
+    # Require success explicitly.
+    if: ${{ always() && !failure() && !cancelled() && needs.resolve-version.result == 'success' && (github.event_name == 'workflow_dispatch' || needs.detect-platform.outputs.platform != 'none') }}
     uses: ./.github/workflows/expo-store-deploy.yml
     secrets: inherit
     with:
