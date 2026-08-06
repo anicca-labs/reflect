@@ -14,7 +14,12 @@ import * as Device from 'expo-device';
 import { supabase } from '@/src/services/supabase';
 import { isOnline } from '@/src/services/network';
 import { deleteAccount } from '@/src/services/account';
-import { usePreferencesStore, useSessionStore, useComposeStore } from '@/src/stores';
+import {
+  usePreferencesStore,
+  useSessionStore,
+  useComposeStore,
+  useAppLockStore,
+} from '@/src/stores';
 import { manageSubscriptions } from '@/src/services/revenue-cat';
 import { refreshEntitlement } from '@/src/services/entitlements';
 import {
@@ -96,6 +101,7 @@ const SettingsCard = ({ children, gap, hasGlass }: SettingsCardProps) => {
 const SettingsScreen = () => {
   const { isUpdateReady, applyUpdate } = useOtaUpdate();
   const hasDraft = useComposeStore((s) => s.hasDraft);
+  const isLocked = useAppLockStore((s) => s.isLocked);
   const { isPro, isLoading: rcLoading, customerInfo, presentPaywall } = useRevenueCat();
   const { t } = useLingui();
   const voiceLanguages: { code: string; label: string }[] = [
@@ -440,7 +446,10 @@ const SettingsScreen = () => {
                         numberOfLines={1}
                         ellipsizeMode="tail"
                       >
-                        {currentUser.user_metadata.full_name ?? currentUser.user_metadata.name}
+                        {/* || to match the render condition above — full_name can be
+                            an empty string (some social-auth metadata), and `?? `
+                            rendered that blank next to the "Name" label. */}
+                        {currentUser.user_metadata.full_name || currentUser.user_metadata.name}
                       </LabelMd>
                     </XStack>
                   ) : null}
@@ -599,9 +608,18 @@ const SettingsScreen = () => {
                   </BaseTouchable>
                 ) : null}
 
+                {/* The toggle is disabled for BOTH 'denied' and 'undetermined', so
+                    both need a hint — a never-asked user otherwise finds a dimmed
+                    toggle that does nothing, with no text saying why, and the
+                    actual path (the Permission row below) visually unrelated. */}
                 {!isSimulator && notifPermission === 'denied' ? (
                   <BodySm color="$text-disabled" mt="$2">
                     <Trans>Enable notifications in Settings to use reminders.</Trans>
+                  </BodySm>
+                ) : null}
+                {!isSimulator && notifPermission === 'undetermined' ? (
+                  <BodySm color="$text-disabled" mt="$2">
+                    <Trans>Allow notifications below to use reminders.</Trans>
                   </BodySm>
                 ) : null}
               </SettingsCard>
@@ -754,11 +772,14 @@ const SettingsScreen = () => {
         </ScrollView>
       </YStack>
 
-      {/* Language picker modal */}
+      {/* Language picker modal. Gated on !isLocked like every native Modal in the
+          app — they render above the biometric lock overlay, so an open picker
+          would float over the lock with its options tappable without Face ID. */}
       <Modal
-        visible={showLanguagePicker}
+        visible={showLanguagePicker && !isLocked}
         transparent
         animationType="slide"
+        statusBarTranslucent
         onRequestClose={() => setShowLanguagePicker(false)}
       >
         <BaseTouchable
@@ -805,11 +826,12 @@ const SettingsScreen = () => {
         </BaseTouchable>
       </Modal>
 
-      {/* Time picker modal */}
+      {/* Time picker modal — same !isLocked gate as the language picker above. */}
       <Modal
-        visible={showTimePicker}
+        visible={showTimePicker && !isLocked}
         transparent
         animationType="slide"
+        statusBarTranslucent
         onRequestClose={() => setShowTimePicker(false)}
       >
         <BaseTouchable

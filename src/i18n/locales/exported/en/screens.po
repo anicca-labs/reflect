@@ -45,6 +45,10 @@ msgstr ""
 msgid "Account"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Allow notifications below to use reminders."
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Already have an account? Sign in"
 msgstr ""
@@ -122,6 +126,10 @@ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't delete account"
+msgstr ""
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Couldn’t load your entries."
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
@@ -549,6 +557,10 @@ msgstr ""
 #: src/screens/ForgotPasswordScreen/ForgotPasswordScreen.tsx
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Too many attempts. Please try again later"
+msgstr ""
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Try again"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx

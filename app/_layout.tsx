@@ -95,7 +95,6 @@ const RootLayoutNav = () => {
         <Stack.Screen name="sign-in" options={{ headerShown: false }} />
         <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
         <Stack.Screen name="reset-password" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       {pendingMerge ? (
         <AnonMergeModal

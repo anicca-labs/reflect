@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Modal } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSessionStore, useReflectionOpenStore } from '@/src/stores';
+import { useSessionStore, useReflectionOpenStore, useAppLockStore } from '@/src/stores';
 import Animated, { FadeOutUp } from 'react-native-reanimated';
 import { YStack, XStack, Spinner } from 'tamagui';
 import { HeadingMd, BodyMdBold, BodySm, LabelMd, LabelLg } from '@fonts';
@@ -30,6 +30,11 @@ const MIN_ENTRIES = 2;
 // ── Pro upsell (shown when generation hits the free limit) ───────────────────
 const ReflectionUpsellModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
   const { presentPaywall } = useRevenueCat();
+  // Native Modals render in their own window ABOVE the biometric lock overlay (a
+  // plain positioned view). No journal content here, but its buttons would be
+  // tappable without Face ID and it reads as broken floating over the lock. Same
+  // gate as ReflectionReadModal/AnonMergeModal; state survives, reopens on unlock.
+  const isLocked = useAppLockStore((s) => s.isLocked);
   const handleGoPro = async () => {
     const purchased = await presentPaywall('reflection-limit');
     // generate-reflection gates on api.entitlements, which the purchase hasn't
@@ -40,7 +45,7 @@ const ReflectionUpsellModal = ({ visible, onClose }: { visible: boolean; onClose
   };
   return (
     <Modal
-      visible={visible}
+      visible={visible && !isLocked}
       transparent
       animationType="fade"
       statusBarTranslucent
@@ -131,7 +136,7 @@ const WeeklyReflectionCard = ({
 
 // ── The section shown at the top of the Reflections tab ──────────────────────
 const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) => {
-  const { data: reflections = [], isLoading } = useReflections();
+  const { data: reflections = [], isLoading, isSuccess } = useReflections();
   const { isPro } = useRevenueCat();
   const isAnonymous = useSessionStore((s) => s.isAnonymous);
   const router = useRouter();
@@ -143,7 +148,12 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
   const [upsellOpen, setUpsellOpen] = useState(false);
 
   const atLimit = !isPro && reflections.length >= FREE_LIMIT;
-  const isEmpty = !isLoading && reflections.length === 0;
+  // isSuccess, not !isLoading: this query is NOT persisted across launches, so on an
+  // offline cold start it errors with no data — and "no data" was indistinguishable
+  // from "never generated one", showing a Pro user with a whole archive the
+  // first-run "Get your first reflection ✦" pitch. Guests keep the pitch (their
+  // query is disabled, so isSuccess never fires, and the card is their signup path).
+  const isEmpty = isAnonymous ? true : isSuccess && reflections.length === 0;
   const canGenerate = entryCount >= MIN_ENTRIES;
   const { maybeAsk: maybeAskRating } = useRatingsAsk();
   // Days until the next Sunday delivery (0 = today is Sunday).

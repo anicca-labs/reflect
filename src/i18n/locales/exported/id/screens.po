@@ -45,6 +45,10 @@ msgstr "Rating singkat membantu orang lain menemukannya. 🍂"
 msgid "Account"
 msgstr "Akun"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Allow notifications below to use reminders."
+msgstr "Izinkan notifikasi di bawah untuk memakai pengingat."
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Already have an account? Sign in"
 msgstr "Sudah punya akun? Masuk"
@@ -123,6 +127,10 @@ msgstr "Lanjutkan tanpa akun"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't delete account"
 msgstr "Tidak dapat menghapus akun"
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Couldn’t load your entries."
+msgstr "Tidak bisa memuat entrimu."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't open Settings"
@@ -550,6 +558,10 @@ msgstr "Hari ini · 1 catatan"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Too many attempts. Please try again later"
 msgstr "Terlalu banyak percobaan. Silakan coba lagi nanti"
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Try again"
+msgstr "Coba lagi"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Turkish"

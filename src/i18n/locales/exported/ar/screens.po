@@ -45,6 +45,10 @@ msgstr "تقييم سريع يساعد الآخرين على اكتشافه. �
 msgid "Account"
 msgstr "الحساب"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Allow notifications below to use reminders."
+msgstr "اسمح بالإشعارات أدناه لاستخدام التذكيرات."
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Already have an account? Sign in"
 msgstr "لديك حساب بالفعل؟ سجّل الدخول"
@@ -123,6 +127,10 @@ msgstr "المتابعة بدون حساب"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't delete account"
 msgstr "تعذّر حذف الحساب"
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Couldn’t load your entries."
+msgstr "تعذّر تحميل تدويناتك."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't open Settings"
@@ -550,6 +558,10 @@ msgstr "اليوم · تدوينة واحدة"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Too many attempts. Please try again later"
 msgstr "محاولات كثيرة جداً. يرجى المحاولة مرة أخرى لاحقاً"
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Try again"
+msgstr "حاول مرة أخرى"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Turkish"
