@@ -10,8 +10,13 @@
       "description": "Expo SDK — update all expo packages atomically so expo doctor never sees a mismatch",
       "groupName": "Expo SDK",
       "matchPackageNames": ["expo", "expo-*", "@expo/*", "jest-expo"],
-      "stabilityDays": 3,
+      "minimumReleaseAge": "3 days",
       "automerge": false
+    },
+    {
+      "description": "expo-sharing: the version expo-doctor expects (~57.0.10) is not published — npm tops out at 57.0.9. Pinned via expo.install.exclude in package.json; ignore here so Renovate doesn't keep proposing an unresolvable bump.",
+      "matchPackageNames": ["expo-sharing"],
+      "enabled": false
     },
     {
       "description": "React Native Firebase — keep all Firebase packages on the same major",
