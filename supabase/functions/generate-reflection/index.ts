@@ -95,7 +95,10 @@ const json = (obj: unknown, status = 200) =>
 const ENC_PREFIX = 'enc:v1:';
 const IV_BYTES = 16;
 
-const b64ToBytes = (b64: string): Uint8Array => {
+// Return type pinned to Uint8Array<ArrayBuffer>, not the default
+// Uint8Array<ArrayBufferLike>: WebCrypto's BufferSource excludes SharedArrayBuffer
+// backing, so the looser type doesn't satisfy importKey/encrypt/decrypt.
+const b64ToBytes = (b64: string): Uint8Array<ArrayBuffer> => {
   const bin = atob(b64);
   const out = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
@@ -275,7 +278,12 @@ const callClaude = async (userMessage: string): Promise<string> => {
 type Mode = 'week' | 'recent';
 
 const generateForUser = async (
-  admin: ReturnType<typeof createClient>,
+  // `ReturnType<typeof createClient>` describes the DEFAULT, schema-less client —
+  // its generics resolve to `never`, so every query built against the `api` schema
+  // was rejected at type level (the caller passes a client created with
+  // `db: { schema: 'api' }`). Same shape as notifyReflectionReady above.
+  // deno-lint-ignore no-explicit-any
+  admin: any,
   userId: string,
   opts: { mode: Mode; force: boolean },
 ): Promise<Record<string, unknown>> => {
