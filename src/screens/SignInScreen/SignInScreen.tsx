@@ -110,6 +110,7 @@ const SignInScreen = () => {
   );
   const isDark = useColorScheme() === 'dark';
   const hasInitializedAppleSignIn = useRef(false);
+  const socialLoadingRef = useRef(false);
   const prevAppState = useRef<string>('active');
   const passwordRef = useRef<PasswordInputHandle>(null);
   const confirmPasswordRef = useRef<PasswordInputHandle>(null);
@@ -186,7 +187,16 @@ const SignInScreen = () => {
   };
 
   const handleAppleSignIn = useCallback(async () => {
-    hasInitializedAppleSignIn.current = true;
+    // Disarmed at the start of every attempt and re-armed ONLY in the one failure
+    // case that warrants an auto-retry (left the app to sign into iCloud, below).
+    // It used to be set here and never cleared, so after a single cancelled attempt
+    // EVERY background→return on this screen re-presented the Apple sheet,
+    // indefinitely.
+    // Re-entrancy guard — the social buttons dim while loading but stay pressable,
+    // so a double-tap fired two native sign-in flows on top of each other.
+    if (socialLoadingRef.current) return;
+    socialLoadingRef.current = true;
+    hasInitializedAppleSignIn.current = false;
     clearErrors();
     setSocialLoading(true);
 
@@ -241,8 +251,18 @@ const SignInScreen = () => {
           errCode === appleAuth.Error.UNKNOWN ||
           message.includes('com.apple.AuthenticationServices.AuthorizationError error 1001'));
       const isCancelledAndroid = message.includes('E_SIGNIN_CANCELLED_ERROR');
+      // Error 1000: the device isn't signed into iCloud — iOS offers to open
+      // Settings and the user leaves the app mid-flow. That's the ONLY case where
+      // re-presenting on return is what they want; arm the one-shot retry for it.
+      if (
+        Platform.OS === 'ios' &&
+        message.includes('com.apple.AuthenticationServices.AuthorizationError error 1000')
+      ) {
+        hasInitializedAppleSignIn.current = true;
+      }
       if (!isCancelledIOS && !isCancelledAndroid) setAuthError(message);
     } finally {
+      socialLoadingRef.current = false;
       setSocialLoading(false);
     }
   }, [t]);
@@ -255,6 +275,9 @@ const SignInScreen = () => {
         nextState === 'active' &&
         hasInitializedAppleSignIn.current
       ) {
+        // One-shot: handleAppleSignIn re-arms only on the iCloud-settings error, so
+        // a cancel of this retry can't loop the sheet forever.
+        hasInitializedAppleSignIn.current = false;
         handleAppleSignIn();
       }
       prevAppState.current = nextState;
@@ -263,6 +286,8 @@ const SignInScreen = () => {
   }, [handleAppleSignIn]);
 
   const handleGoogleSignIn = useCallback(async () => {
+    if (socialLoadingRef.current) return; // see handleAppleSignIn
+    socialLoadingRef.current = true;
     clearErrors();
     setSocialLoading(true);
 
@@ -300,6 +325,7 @@ const SignInScreen = () => {
         setAuthError(translateAuthError(err.message));
       }
     } finally {
+      socialLoadingRef.current = false;
       setSocialLoading(false);
     }
   }, [t, translateAuthError]);

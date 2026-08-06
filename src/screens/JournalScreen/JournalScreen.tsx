@@ -29,6 +29,7 @@ import {
   usePendingDeletionsStore,
   usePendingBookmarksStore,
   useComposeStore,
+  useAppLockStore,
 } from '@/src/stores';
 import type { JournalEntry } from '@/src/types/journal';
 import { isOnline } from '@/src/services/network';
@@ -348,13 +349,18 @@ const JournalScreen = () => {
   // per launch and only while the journal is still empty, so it never nags an
   // established writer.
   const didFirstRunFocus = useRef(false);
+  // Wait for the splash to fully fade before focusing. The keyboard renders in its
+  // own native window ABOVE the splash overlay, so focusing at +400ms had it visibly
+  // sliding up over the Rive animation mid-fade on every fresh install — the app's
+  // literal first frame looked broken.
+  const splashComplete = useAppLockStore((s) => s.splashComplete);
   useEffect(() => {
-    if (didFirstRunFocus.current || !isScreenFocused) return;
+    if (didFirstRunFocus.current || !isScreenFocused || !splashComplete) return;
     if (!isAnonymous || entries.length > 0) return;
     didFirstRunFocus.current = true;
     const timer = setTimeout(() => inputRef.current?.focus(), 400);
     return () => clearTimeout(timer);
-  }, [isScreenFocused, isAnonymous, entries.length]);
+  }, [isScreenFocused, isAnonymous, entries.length, splashComplete]);
 
   const hasOpenCard = useSwipeableStore((s) => s.activeDragCount > 0);
   const dismissOpenCard = () => {
@@ -661,14 +667,18 @@ const JournalScreen = () => {
                 onPress={handleSave}
                 disabled={!hasContent || createMutation.isPending || countPending}
                 bg="$accentBackground"
-                opacity={hasContent ? 1 : DISABLED_OPACITY}
+                // countPending must LOOK disabled too — it blocks taps (the free-limit
+                // gate needs the server count before allowing a save), and rendering
+                // the button full-colour while silently ignoring presses read as the
+                // app being broken for the first seconds of every fresh-cache launch.
+                opacity={hasContent && !countPending ? 1 : DISABLED_OPACITY}
                 rounded="$4"
                 py="$3"
                 items="center"
                 alignSelf="stretch"
                 mb={showHint || atLimit ? '$2' : '$0'}
               >
-                {createMutation.isPending ? (
+                {createMutation.isPending || (countPending && hasContent) ? (
                   <Spinner color="$accentColor" />
                 ) : (
                   <LabelLg color="$accentColor">

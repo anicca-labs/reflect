@@ -136,7 +136,7 @@ const WeeklyReflectionCard = ({
 
 // ── The section shown at the top of the Reflections tab ──────────────────────
 const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) => {
-  const { data: reflections = [], isLoading } = useReflections();
+  const { data: reflections = [], isLoading, isSuccess } = useReflections();
   const { isPro } = useRevenueCat();
   const isAnonymous = useSessionStore((s) => s.isAnonymous);
   const router = useRouter();
@@ -148,7 +148,12 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
   const [upsellOpen, setUpsellOpen] = useState(false);
 
   const atLimit = !isPro && reflections.length >= FREE_LIMIT;
-  const isEmpty = !isLoading && reflections.length === 0;
+  // isSuccess, not !isLoading: this query is NOT persisted across launches, so on an
+  // offline cold start it errors with no data — and "no data" was indistinguishable
+  // from "never generated one", showing a Pro user with a whole archive the
+  // first-run "Get your first reflection ✦" pitch. Guests keep the pitch (their
+  // query is disabled, so isSuccess never fires, and the card is their signup path).
+  const isEmpty = isAnonymous ? true : isSuccess && reflections.length === 0;
   const canGenerate = entryCount >= MIN_ENTRIES;
   const { maybeAsk: maybeAskRating } = useRatingsAsk();
   // Days until the next Sunday delivery (0 = today is Sunday).

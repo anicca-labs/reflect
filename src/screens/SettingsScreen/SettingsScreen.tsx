@@ -446,7 +446,10 @@ const SettingsScreen = () => {
                         numberOfLines={1}
                         ellipsizeMode="tail"
                       >
-                        {currentUser.user_metadata.full_name ?? currentUser.user_metadata.name}
+                        {/* || to match the render condition above — full_name can be
+                            an empty string (some social-auth metadata), and `?? `
+                            rendered that blank next to the "Name" label. */}
+                        {currentUser.user_metadata.full_name || currentUser.user_metadata.name}
                       </LabelMd>
                     </XStack>
                   ) : null}
@@ -605,9 +608,18 @@ const SettingsScreen = () => {
                   </BaseTouchable>
                 ) : null}
 
+                {/* The toggle is disabled for BOTH 'denied' and 'undetermined', so
+                    both need a hint — a never-asked user otherwise finds a dimmed
+                    toggle that does nothing, with no text saying why, and the
+                    actual path (the Permission row below) visually unrelated. */}
                 {!isSimulator && notifPermission === 'denied' ? (
                   <BodySm color="$text-disabled" mt="$2">
                     <Trans>Enable notifications in Settings to use reminders.</Trans>
+                  </BodySm>
+                ) : null}
+                {!isSimulator && notifPermission === 'undetermined' ? (
+                  <BodySm color="$text-disabled" mt="$2">
+                    <Trans>Allow notifications below to use reminders.</Trans>
                   </BodySm>
                 ) : null}
               </SettingsCard>
@@ -767,6 +779,7 @@ const SettingsScreen = () => {
         visible={showLanguagePicker && !isLocked}
         transparent
         animationType="slide"
+        statusBarTranslucent
         onRequestClose={() => setShowLanguagePicker(false)}
       >
         <BaseTouchable
@@ -818,6 +831,7 @@ const SettingsScreen = () => {
         visible={showTimePicker && !isLocked}
         transparent
         animationType="slide"
+        statusBarTranslucent
         onRequestClose={() => setShowTimePicker(false)}
       >
         <BaseTouchable

@@ -45,6 +45,10 @@ msgstr "Una valoración rápida ayuda a que otros la encuentren. 🍂"
 msgid "Account"
 msgstr "Cuenta"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Allow notifications below to use reminders."
+msgstr "Permite las notificaciones más abajo para usar recordatorios."
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Already have an account? Sign in"
 msgstr "¿Ya tienes cuenta? Inicia sesión"
@@ -123,6 +127,10 @@ msgstr "Continuar sin cuenta"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't delete account"
 msgstr "No se pudo eliminar la cuenta"
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Couldn’t load your entries."
+msgstr "No se pudieron cargar tus entradas."
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Couldn't open Settings"
@@ -550,6 +558,10 @@ msgstr "Hoy · 1 entrada"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Too many attempts. Please try again later"
 msgstr "Demasiados intentos. Por favor inténtalo más tarde"
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Try again"
+msgstr "Reintentar"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Turkish"

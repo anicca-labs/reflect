@@ -132,7 +132,12 @@ const ReflectionsScreen = () => {
     deleteEntry: deleteLocalEntry,
     toggleBookmark: toggleLocalBookmark,
   } = useAnonymousJournalStore();
-  const { data: serverEntries = [], isLoading: serverLoading, refetch } = useJournalEntries();
+  const {
+    data: serverEntries = [],
+    isLoading: serverLoading,
+    isError: serverError,
+    refetch,
+  } = useJournalEntries();
   // Include entries saved offline (awaiting sync), de-duped against synced
   // server rows by id so a just-synced entry keeps a single, stable-keyed
   // element and doesn't flicker.
@@ -364,7 +369,30 @@ const ReflectionsScreen = () => {
               </YStack>
             ) : null}
 
-            {!loading && !entries.length ? (
+            {/* A failed fetch must NOT show the first-run empty state: telling a user
+                with months of entries "No entries yet" reads as data loss. */}
+            {!loading && !entries.length && serverError && !isAnonymous ? (
+              <YStack items="center" mt="$14" gap="$3">
+                <BodySm color="$text-disabled" text="center">
+                  <Trans>Couldn’t load your entries.</Trans>
+                </BodySm>
+                <BaseTouchable
+                  onPress={() => refetch()}
+                  bg="$surface-card"
+                  rounded="$4"
+                  px="$4"
+                  py="$2"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                >
+                  <LabelMd color="$accentBackground">
+                    <Trans>Try again</Trans>
+                  </LabelMd>
+                </BaseTouchable>
+              </YStack>
+            ) : null}
+
+            {!loading && !entries.length && !(serverError && !isAnonymous) ? (
               <BodySm color="$text-disabled" text="center" mt="$14">
                 <Trans>No entries yet. Start writing in the Journal tab.</Trans>
               </BodySm>

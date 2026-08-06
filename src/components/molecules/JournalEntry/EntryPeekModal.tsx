@@ -155,14 +155,21 @@ const EntryPeekModal = ({
   const handleClose = useCallback(() => {
     if (isClosing.current) return;
     isClosing.current = true;
+    // Tell the parent NOW, not after the exit animation. Deferring onClose kept the
+    // parent's selection set through the 160ms exit, so tapping the same entry again
+    // during it was a state no-op — the modal never reopened and the tap was
+    // swallowed. The parent clears its id immediately; a re-tap is then a real
+    // null→entry change, the enter effect re-runs, and it cancels this exit.
+    onClose();
     // Reanimated shared values are stable refs mutated outside React's data flow.
     /* eslint-disable react-hooks/immutability */
     scale.value = withTiming(CARD_SCALE_FROM, { duration: EXIT_DURATION_MS });
     translateY.value = withTiming(40, { duration: EXIT_DURATION_MS });
     opacity.value = withTiming(0, { duration: EXIT_DURATION_MS }, (finished) => {
+      // finished=false means the enter effect replaced this animation (re-open
+      // mid-exit) — keep the card in that case.
       if (finished) {
         runOnJS(setDisplayEntry)(null);
-        runOnJS(onClose)();
       }
     });
     /* eslint-enable react-hooks/immutability */
@@ -206,7 +213,11 @@ const EntryPeekModal = ({
       Opacity controls visibility; pointerEvents controls touch interception.
     */
     <Animated.View
-      pointerEvents={displayEntry ? 'box-none' : 'none'}
+      // Keyed on `entry` (the parent's live selection), not displayEntry (which
+      // lingers for the exit animation): once closing starts the overlay must stop
+      // intercepting touches, or a quick re-tap on an entry lands on the fading
+      // backdrop instead of the list and gets swallowed.
+      pointerEvents={entry ? 'box-none' : 'none'}
       style={[{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }, backdropStyle]}
     >
       <BlurView
