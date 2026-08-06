@@ -463,8 +463,11 @@ const JournalScreen = () => {
     // a second entry 91% vs 10%. Consent owns the first save; the reminder gets
     // every save after it (and keeps its own re-ask schedule).
     const priorEntryCount = isAnonymous ? localEntries.length : entries.length;
-    const askForReminder = () => {
-      if (priorEntryCount > 0) maybePromptReminder();
+    // Gating the reminder on "not the first entry" wasn't enough: BOTH schedules
+    // include save 2, so the collision simply moved there. The echo hooks now report
+    // whether they put the card up, and the reminder only asks when they didn't.
+    const askForReminderUnless = (consentShown: boolean) => {
+      if (!consentShown && priorEntryCount > 0) maybePromptReminder();
     };
 
     if (isAnonymous) {
@@ -477,11 +480,10 @@ const JournalScreen = () => {
       // they've written anything is the worst possible first impression. Only ever
       // prompts once per install.
       requestTrackingConsent();
-      askForReminder();
       // Guests get no echo (their entries are device-local, so there's no server row
       // to read) — but they can still be told the feature exists. Deliberately not on
       // their first entry: guest-first exists so that one is unmolested.
-      echo.onGuestSaved(priorEntryCount + 1);
+      askForReminderUnless(echo.onGuestSaved(priorEntryCount + 1));
       return;
     }
 
@@ -490,9 +492,9 @@ const JournalScreen = () => {
       logJournalEntryCreated(trimmed.split(/\s+/).length);
       markFirstEntryWritten();
       requestTrackingConsent(); // see the guest branch above
-      askForReminder();
       // Echo needs the server row — queued (offline) saves have none yet.
-      if (!queued && entry?.id) echo.onSaved(entry.id);
+      const consentShown = !queued && entry?.id ? await echo.onSaved(entry.id) : false;
+      askForReminderUnless(consentShown);
       if (queued) {
         alert({
           title: t`Saved offline`,
@@ -518,17 +520,29 @@ const JournalScreen = () => {
           // paywall ready to reappear is the worst possible outcome.
           await refreshEntitlement();
           try {
-            await createMutation.mutateAsync(trimmed);
+            const { queued, entry } = await createMutation.mutateAsync(trimmed);
             setDraft('');
             logJournalEntryCreated(trimmed.split(/\s+/).length);
+            // The retried entry is a real entry: it must get the same treatment as
+            // one saved normally, or the person who just paid is the only user who
+            // never gets an echo for what they wrote.
+            markFirstEntryWritten();
+            if (!queued && entry?.id) await echo.onSaved(entry.id);
+            alert({
+              title: t`Welcome to Pro ✦`,
+              message: t`Unlimited entries unlocked. Keep writing.`,
+              duration: PAYWALL_SUCCESS_ALERT_DURATION,
+            });
           } catch {
-            // Leave the draft in place; the entitlement is live now, so a manual
-            // retry will succeed.
+            // Congratulating someone whose entry is still sitting unsaved reads as
+            // the app losing their writing. Say what actually happened instead —
+            // Pro IS active, so their retry will go through.
+            alert({
+              title: t`Welcome to Pro ✦`,
+              message: t`Tap save again to keep this entry.`,
+              duration: PAYWALL_SUCCESS_ALERT_DURATION,
+            });
           }
-          alert({
-            title: t`Welcome to Pro ✦`,
-            message: t`Unlimited entries unlocked. Keep writing.`,
-          });
         }
         return;
       }

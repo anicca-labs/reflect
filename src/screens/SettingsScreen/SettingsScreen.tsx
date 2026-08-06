@@ -190,14 +190,17 @@ const SettingsScreen = () => {
   const refreshPermissionStatus = useCallback(async () => {
     if (isSimulator) return;
     const status = await getNotificationPermissionStatus();
-    setNotifPermission(status);
-    if (status === 'granted') {
-      // Signed-in or guest — captureDeviceToken picks the right path and records the
-      // token so we can reach them with push (reminder and/or re-engagement).
-      captureDeviceToken();
-    } else {
-      disableReminder();
-    }
+    setNotifPermission((prev) => {
+      // Act only on an actual CHANGE. This now runs on every foreground and every tab
+      // focus, and captureDeviceToken writes to device_tokens — firing it each time
+      // bypassed useActivityPing's ~20h debounce, which exists precisely to stop that.
+      // disableReminder() likewise shouldn't re-run on every focus, and must not fire
+      // for 'undetermined' (nothing has been refused yet).
+      if (prev === status) return prev;
+      if (status === 'granted') captureDeviceToken();
+      else if (status === 'denied') disableReminder();
+      return status;
+    });
   }, [disableReminder]);
 
   useEffect(() => {

@@ -232,7 +232,14 @@ Deno.serve(async (req) => {
   // A user with no timezone AND no derivable one (never wrote) is skipped — there's
   // nothing to base a send time on, and the streak nudge requires entries anyway.
   const streakDevices = (rawStreakDevices ?? [])
-    .map((d) => ({ ...d, timezone: d.timezone ?? derivedZoneByUser.get(d.user_id as string) }))
+    .map((d) => ({
+      ...d,
+      // derivedZone marks a zone we inferred rather than one the device reported —
+      // it's calibrated so STREAK_HOUR is their usual writing time, so no other hour
+      // in it means anything (see Phase 3).
+      derivedZone: !d.timezone,
+      timezone: d.timezone ?? derivedZoneByUser.get(d.user_id as string),
+    }))
     .filter((d): d is typeof d & { timezone: string } => !!d.timezone);
 
   const dueStreak = streakDevices.filter(
@@ -269,12 +276,19 @@ Deno.serve(async (req) => {
   let teasersSent = 0;
   // Shares the same effective-timezone list, so the teaser reaches derived-zone
   // devices too rather than skipping everyone without a stored timezone.
-  const dueTeaser = streakDevices.filter(
-    (d) =>
-      forceTeaser ||
-      (localWeekdayInTz(now, d.timezone) === TEASER_WEEKDAY &&
-        matchesReminderTime(now, d.timezone, TEASER_HOUR, 0)),
-  );
+  //
+  // Derived zones use STREAK_HOUR, not TEASER_HOUR. A derived zone is calibrated by
+  // declaring the user's usual writing hour to BE STREAK_HOUR local — it is not a
+  // real geographic offset, so any OTHER hour in it is meaningless. Firing at
+  // TEASER_HOUR would land two hours before their actual writing time, which for a
+  // morning writer is the small hours. At STREAK_HOUR it lands when we know they're
+  // awake and journalling.
+  const dueTeaser = streakDevices.filter((d) => {
+    if (forceTeaser) return true;
+    if (localWeekdayInTz(now, d.timezone) !== TEASER_WEEKDAY) return false;
+    const hour = d.derivedZone ? STREAK_HOUR : TEASER_HOUR;
+    return matchesReminderTime(now, d.timezone, hour, 0);
+  });
   if (dueTeaser.length > 0) {
     const teaserUserIds = [...new Set(dueTeaser.map((d) => d.user_id as string))];
     // Only users in the Sunday ritual — the teaser promises a payoff that must exist.

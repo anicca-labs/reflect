@@ -505,6 +505,10 @@ msgid "Subscription"
 msgstr "Langganan"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Tap save again to keep this entry."
+msgstr "Ketuk simpan lagi untuk menyimpan entri ini."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Tap to restart and apply the latest update."
 msgstr "Ketuk untuk mulai ulang dan terapkan pembaruan terbaru."

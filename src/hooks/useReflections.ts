@@ -241,31 +241,38 @@ const useEntryEcho = () => {
   }, []);
 
   // Call after a successful ONLINE save (queued/offline saves have no server row).
+  // Returns true if it put the consent card on screen, so the caller can hold back
+  // the reminder modal — otherwise the modal covers the card, which is the whole
+  // problem this scheduling exists to avoid.
   const onSaved = useCallback(
-    async (entryId: string) => {
+    async (entryId: string): Promise<boolean> => {
       setLine(null);
       if (enabled) {
         fetchEcho(entryId);
-        return;
+        return false;
       }
       // Consent state unknown (cold start, or the settings fetch failed) — do nothing
       // rather than count this save. Counting here would eventually re-show the
       // consent card to someone who already accepted.
-      if (!settled) return;
+      if (!settled) return false;
+      // getSession (local) not getUser (network) — a transient failure would skip
+      // the count and the card would never show. Same reason the device-token and
+      // reminder writes moved off getUser.
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session?.user) return false;
       // Count only the saves made WITHOUT consent — accepting ends the count for
       // good, since the branch above takes over from then on.
-      const key = echoSavesKey(user.id);
+      const key = echoSavesKey(session.user.id);
       const stored = parseInt((await AsyncStorage.getItem(key)) ?? '0', 10);
       const saves = (Number.isFinite(stored) ? stored : 0) + 1;
       await AsyncStorage.setItem(key, String(saves));
-      if (!ASK_ON_SAVES.includes(saves)) return;
+      if (!ASK_ON_SAVES.includes(saves)) return false;
       pendingEntryId.current = entryId;
       setEntriesSoFar(saves);
       setConsentVisible(true);
+      return true;
     },
     [enabled, settled, fetchEcho],
   );
@@ -280,11 +287,13 @@ const useEntryEcho = () => {
   // NOT on their first entry: guest-first exists so that one is never interrupted,
   // and it bought ~20 points of activation. Asked on the 2nd and 5th instead.
   const GUEST_ASK_ON_SAVES = [2, 5];
-  const onGuestSaved = useCallback((entryNumber: number) => {
+  // Returns true when it shows the card, so the caller holds back the reminder modal.
+  const onGuestSaved = useCallback((entryNumber: number): boolean => {
     setLine(null);
-    if (!GUEST_ASK_ON_SAVES.includes(entryNumber)) return;
+    if (!GUEST_ASK_ON_SAVES.includes(entryNumber)) return false;
     setEntriesSoFar(entryNumber);
     setConsentVisible(true);
+    return true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
