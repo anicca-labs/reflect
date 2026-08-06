@@ -14,7 +14,12 @@ import * as Device from 'expo-device';
 import { supabase } from '@/src/services/supabase';
 import { isOnline } from '@/src/services/network';
 import { deleteAccount } from '@/src/services/account';
-import { usePreferencesStore, useSessionStore, useComposeStore } from '@/src/stores';
+import {
+  usePreferencesStore,
+  useSessionStore,
+  useComposeStore,
+  useAppLockStore,
+} from '@/src/stores';
 import { manageSubscriptions } from '@/src/services/revenue-cat';
 import { refreshEntitlement } from '@/src/services/entitlements';
 import {
@@ -96,6 +101,7 @@ const SettingsCard = ({ children, gap, hasGlass }: SettingsCardProps) => {
 const SettingsScreen = () => {
   const { isUpdateReady, applyUpdate } = useOtaUpdate();
   const hasDraft = useComposeStore((s) => s.hasDraft);
+  const isLocked = useAppLockStore((s) => s.isLocked);
   const { isPro, isLoading: rcLoading, customerInfo, presentPaywall } = useRevenueCat();
   const { t } = useLingui();
   const voiceLanguages: { code: string; label: string }[] = [
@@ -754,9 +760,11 @@ const SettingsScreen = () => {
         </ScrollView>
       </YStack>
 
-      {/* Language picker modal */}
+      {/* Language picker modal. Gated on !isLocked like every native Modal in the
+          app — they render above the biometric lock overlay, so an open picker
+          would float over the lock with its options tappable without Face ID. */}
       <Modal
-        visible={showLanguagePicker}
+        visible={showLanguagePicker && !isLocked}
         transparent
         animationType="slide"
         onRequestClose={() => setShowLanguagePicker(false)}
@@ -805,9 +813,9 @@ const SettingsScreen = () => {
         </BaseTouchable>
       </Modal>
 
-      {/* Time picker modal */}
+      {/* Time picker modal — same !isLocked gate as the language picker above. */}
       <Modal
-        visible={showTimePicker}
+        visible={showTimePicker && !isLocked}
         transparent
         animationType="slide"
         onRequestClose={() => setShowTimePicker(false)}

@@ -9,7 +9,7 @@ import {
   requestNotificationPermission,
   getNotificationPermissionStatus,
 } from '@/src/services/firebase-messaging';
-import { usePreferencesStore } from '@/src/stores';
+import { usePreferencesStore, useAppLockStore } from '@/src/stores';
 import { formatEntryTime } from '@/src/utils/date';
 import { HEADING_LETTER_SPACING, DISABLED_OPACITY } from '@constants';
 import { sizes } from '@theme';
@@ -84,9 +84,15 @@ const ReminderPromptModal = ({ visible, suggested, onClose }: ReminderPromptModa
     }
   };
 
+  // Native Modals render above the biometric lock overlay (a plain positioned
+  // view) — no private content here, but its buttons would be tappable without
+  // Face ID and it reads as broken floating over the lock. State survives; it
+  // reopens on unlock. Same gate as the other modals.
+  const isLocked = useAppLockStore((s) => s.isLocked);
+
   return (
     <Modal
-      visible={visible}
+      visible={visible && !isLocked}
       transparent
       animationType="fade"
       statusBarTranslucent
