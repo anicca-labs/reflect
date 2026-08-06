@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import { Alert, Linking, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as StoreReview from 'expo-store-review';
 import { useLingui } from '@lingui/react/macro';
 
-// Store review deep links. iOS opens the write-review sheet directly; Android
-// opens the Play listing. (The native in-app rating sheet needs expo-store-review,
-// a native module — swap to it with the next binary; this version is OTA-safe.)
+// Fallback store review deep links, for devices where the native in-app rating
+// sheet (SKStoreReviewController / Play In-App Review) is unavailable.
 const IOS_REVIEW_URL = 'https://apps.apple.com/app/id6767607183?action=write-review';
 const ANDROID_REVIEW_URL = `market://details?id=${process.env.APP_IDENTIFIER ?? 'com.reflect.prod'}`;
 
@@ -43,8 +43,18 @@ const useRatingsAsk = () => {
         },
         {
           text: t`Rate Reflect ✦`,
-          onPress: () => {
+          onPress: async () => {
             AsyncStorage.setItem(ASKED_KEY, '1');
+            // Native in-app sheet (2 taps, no app switch) when available; store
+            // deep link otherwise.
+            try {
+              if (await StoreReview.isAvailableAsync()) {
+                await StoreReview.requestReview();
+                return;
+              }
+            } catch {
+              // fall through to the deep link
+            }
             Linking.openURL(Platform.OS === 'ios' ? IOS_REVIEW_URL : ANDROID_REVIEW_URL).catch(
               () => {},
             );
