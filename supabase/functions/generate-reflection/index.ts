@@ -144,29 +144,62 @@ const encryptContent = async (plaintext: string): Promise<string> => {
   return ENC_PREFIX + bytesToB64(combined);
 };
 
+// Single source of truth — this was written twice (here and in the reflections row
+// insert), which would drift the moment one was changed.
+const REFLECTION_MODEL = 'claude-opus-4-8';
+
 // ── The reflection prompt ────────────────────────────────────────────────────
-const REFLECTION_SYSTEM = `You are the quiet, perceptive voice inside someone's private journal. Once a week you read what they wrote and reflect it back — not to advise or fix, but to help them see their own week more clearly than they can from inside it.
+// The previous version mandated three beats (pattern → standout moment → open
+// question), which made every reflection the same silhouette forever — by week three
+// a user could predict the shape before reading. It also FORCED a pattern to exist,
+// which on the most common week (3–5 entries) means fabricating one. Two hard
+// requirements plus an elastic shape fixes both at once.
+const REFLECTION_SYSTEM = `You are the quiet, perceptive voice inside someone's private journal. Once a week you read what they wrote and reflect it back — not to advise or fix, but to help them see their week more clearly than they can from inside it.
 
-You'll receive this week's entries in order, with dates. Write a short reflection (about 150–200 words), shaped like this:
+Write about 150–200 words. Second person ("you"). Write in the SAME language the entries are written in.
 
-1. Open with ONE specific pattern you noticed across the week — something they might not have seen themselves. Ground it in their own words: quote a short phrase or two of theirs verbatim so they know you truly read it.
-2. Name the one moment that stood out — the lightest, hardest, or most honest thing they wrote.
-3. End with a single open question for them to sit with. A real question, not advice in disguise. Never tell them what to do.
+Two things are required:
+- Say at least one thing unmistakably about THIS person's week and no one else's. Quote a short phrase of theirs verbatim.
+- Stay with what's actually there. Never invent a pattern, an arc, or a lesson the entries don't support.
 
-Voice: warm, plain, unhurried — a wise friend who listens more than they talk. Second person ("you").
+Beyond that, let the week decide the shape. Some weeks have one clear thread; some have two that never connect; some are a handful of ordinary days with one moment that mattered. A week with no pattern is a real finding — saying so plainly is better than manufacturing one. Do not summarise entry by entry.
 
-Never: give advice, diagnose, use therapy jargon ("holding space", "your journey"), use clichés or toxic positivity, flatter, or mention you're an AI. If the week was hard, don't rush to a silver lining — sit with it honestly. If there are only one or two entries, stay brief and gentle; don't invent patterns that aren't there.
+Ways to end — pick what fits, and do NOT use the same kind of ending every week: an open question worth sitting with; a plain observation left unresolved; their own words returned to them; or simply stopping. If you use a question, make it one only this week could produce. Never a stock prompt like "What would it look like to…?" or "What might you be protecting?"
+
+Voice: warm, plain, unhurried — a wise friend who listens more than they talk. Short sentences are fine. So are fragments.
+
+Never: give advice, diagnose or name a condition, use therapy jargon ("holding space", "your journey", "sitting with", "showing up for yourself"), use clichés or toxic positivity, flatter, praise them for journalling, or mention you're an AI. If the week was hard, don't rush to a silver lining — sit with it honestly.
+
+If the entries mention self-harm, harming someone else, abuse, or an acute crisis: do not advise, diagnose, or urge them to seek help, and do not end on a question that probes it. Reflect it plainly and gently in their own words, and keep the rest of the reflection shorter than usual.
 
 Return only the reflection — no title, no preamble, no sign-off, no meta-commentary.`;
 
 // ── Entry echo: one warm line back after saving an entry ────────────────────
 // The first-session taste of the AI — instant, tiny, cheap (Haiku). Ephemeral:
 // returned to the client, never stored.
-const ECHO_SYSTEM = `You are the quiet voice inside someone's private journal. They just saved an entry. Write back exactly ONE short line (under 18 words) that gently mirrors what they wrote — ideally echoing one of their own words or phrases.
+// "Mirrors what they wrote" licensed exactly one move — paraphrase — and this fires
+// on EVERY save, so the trick wore out within a handful of entries. Offering several
+// distinct moves is the only lever available for variety (temperature is already 1.0
+// on Haiku and rejected outright on Opus).
+const ECHO_SYSTEM = `You are the quiet voice inside someone's private journal. They just saved the entry below. Write back exactly ONE line — usually 6–14 words, never more than 18.
 
-Rules: reply in the SAME language as the entry. Warm, plain, unhurried. Never advice, never questions, never therapy jargon, never flattery, never emoji unless they used one. If the entry is heavy, don't add a silver lining — just show them they were heard. If it's tiny or mundane, honor it lightly.
+Vary what you do. Pick whichever fits THIS entry, and don't reach for the same move every time:
+- name the feeling underneath, if they didn't name it themselves
+- pick out the one concrete detail carrying the weight
+- notice a small contrast — between what they did and what they wanted, or between how the entry starts and ends
+- return one of their own phrases, changed only slightly
+- just say plainly what happened, so they can see it sitting outside their head
+
+Rules: reply in the SAME language as the entry. Warm, plain, unhurried — a friend who was listening, not a therapist taking notes. Never advice, never questions, never therapy jargon, never flattery, never emoji unless they used one. Never begin with "It sounds like", "It seems like", or "That sounds". If the entry is heavy, stay with it — no silver lining, no reassurance. If it's tiny or mundane, honour it lightly; don't inflate it.
+
+If the entry mentions self-harm, harming someone else, abuse, or an acute crisis: do not advise, diagnose, minimise, or urge them to seek help. Show them in one plain sentence that they were heard.
 
 Return only the line — no quotes around it, no preamble.`;
+
+// Shown when the model declines or returns nothing — most likely on exactly the
+// entries where silence would hurt most. Deliberately says only "this was received":
+// no advice, no concern, nothing that reads as a machine reacting to distress.
+const ECHO_FALLBACK = 'That’s here now, written down.';
 
 const callClaudeEcho = async (entryText: string): Promise<string> => {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -185,11 +218,16 @@ const callClaudeEcho = async (entryText: string): Promise<string> => {
   });
   if (!res.ok) throw new Error(`Claude ${res.status}: ${await res.text()}`);
   const data = await res.json();
-  return (data?.content ?? [])
+  const line = (data?.content ?? [])
     .filter((b: { type: string }) => b.type === 'text')
     .map((b: { text: string }) => b.text)
     .join('')
     .trim();
+  // A refusal (or any empty completion) used to leave `line` blank, so the card
+  // rendered nothing at all: someone writes the hardest thing they've ever typed,
+  // watches "Reading…", and then gets silence. Never leave that moment empty.
+  if (!line) return ECHO_FALLBACK;
+  return line;
 };
 
 const callClaude = async (userMessage: string): Promise<string> => {
@@ -201,9 +239,14 @@ const callClaude = async (userMessage: string): Promise<string> => {
       'content-type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'claude-opus-4-8',
-      max_tokens: 1024,
-      output_config: { effort: 'medium' },
+      model: REFLECTION_MODEL,
+      // Adaptive thinking: "find one true, non-obvious pattern across a week of
+      // entries without fabricating" is exactly the analytical task it's for, and
+      // omitting the field on Opus 4.8 meant we were paying Opus rates for a
+      // non-thinking pass. max_tokens raised with it — thinking and response text
+      // share the budget, so 1024 would truncate the reflection mid-sentence.
+      max_tokens: 4000,
+      thinking: { type: 'adaptive' },
       system: REFLECTION_SYSTEM,
       messages: [{ role: 'user', content: userMessage }],
     }),
@@ -285,8 +328,29 @@ const generateForUser = async (
     })
     .join('\n\n');
 
+  // Density note, branched in code rather than asked of the prompt. The old prompt
+  // demanded ONE pattern regardless of how much there was to work with, which on a
+  // 3-entry week means inventing one — and 3–5 entries is the most common week.
+  const n = rows.length;
+  const densityNote =
+    n === 2
+      ? "Only two entries. Do not look for a pattern across them — there isn't one. Stay with what each says, and keep it under 120 words."
+      : n <= 5
+        ? "A quiet week. One honest observation is enough; don't stretch for a second."
+        : n >= 10
+          ? "A full week with several threads. Naming two is fine, and saying they don't connect is fine."
+          : '';
+
+  // 'recent' takes the last 7 entries whatever their dates, so calling them "this
+  // week" made the model assert "across your week" over what can be months — and
+  // it's the DEFAULT path, so it's the first reflection nearly every free user sees.
+  const spanIntro =
+    opts.mode === 'week'
+      ? `This person wrote ${n} ${n === 1 ? 'entry' : 'entries'} this week.`
+      : `Here are this person's ${n} most recent entries. They may span far more than one week — do not describe them as "this week".`;
+
   const reflectionText = await callClaude(
-    `Here are this week's journal entries, oldest first:\n\n${formatted}`,
+    `${spanIntro}${densityNote ? `\n${densityNote}` : ''}\n\nEntries, oldest first:\n\n${formatted}`,
   );
   const encrypted = await encryptContent(reflectionText);
 
@@ -298,7 +362,7 @@ const generateForUser = async (
       period_end: decrypted[decrypted.length - 1].date,
       entry_count: rows.length,
       content: encrypted,
-      model: 'claude-opus-4-8',
+      model: REFLECTION_MODEL,
     })
     .select('id')
     .single();
