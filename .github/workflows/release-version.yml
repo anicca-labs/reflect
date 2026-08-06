@@ -15,6 +15,11 @@ on:
         description: 'Preview only — do not commit the bump'
         type: boolean
         default: true
+      version:
+        description: 'Force an exact version X.Y.Z (empty = derive from conventional commits)'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -33,8 +38,15 @@ jobs:
           node-version: '23'
 
       - id: resolve
+        # Free-text input via env, never interpolated into the shell source.
+        env:
+          FORCED: ${{ inputs.version }}
         run: |
-          node scripts/next-version.mjs | tee /tmp/next-version.json
+          if [[ -n "$FORCED" ]]; then
+            node scripts/next-version.mjs --set "$FORCED" | tee /tmp/next-version.json
+          else
+            node scripts/next-version.mjs | tee /tmp/next-version.json
+          fi
           {
             echo "next=$(node -e "console.log(require('/tmp/next-version.json').next)")"
             echo "level=$(node -e "console.log(require('/tmp/next-version.json').level)")"
@@ -49,10 +61,25 @@ jobs:
 
       - name: Commit bump
         if: ${{ inputs.dry_run == false && steps.resolve.outputs.level != 'none' }}
+        env:
+          NEXT: ${{ steps.resolve.outputs.next }}
         run: |
-          node scripts/next-version.mjs --apply
+          # --set with the already-resolved version, never a bare re-run: recomputing
+          # here would silently ignore a forced `version` input.
+          node scripts/next-version.mjs --set "$NEXT" --apply
+          # Forcing the version stg already carries writes nothing — `commit -am` would
+          # fail on an empty index. That's a no-op, not an error.
+          if git diff --quiet -- package.json; then
+            echo "package.json already at v$NEXT — nothing to commit"
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "chore(release): v${{ steps.resolve.outputs.next }} [skip ci]"
-          git tag "v${{ steps.resolve.outputs.next }}"
+          git commit -am "chore(release): v$NEXT [skip ci]"
+          # ANNOTATED on purpose: `push --follow-tags` pushes only annotated tags, so
+          # the lightweight `git tag` this used to run never left the runner — the
+          # remote has no release tags at all. next-version.mjs prefers the latest
+          # v* tag as its scan base and silently fell back to "commit that last set
+          # this version", which is right only while history stays linear.
+          git tag -a "v$NEXT" -m "v$NEXT"
           git push origin stg --follow-tags
