@@ -218,6 +218,16 @@ const useVoiceToText = ({ onResult, onError, onPermissionDenied }: UseVoiceToTex
 
   const stop = useCallback(() => {
     userStoppedRef.current = true;
+    // Cancel a pending first-grant start. Without this, tapping the mic for the first
+    // time, granting permission, then immediately hitting Save or switching tabs left
+    // the timer armed — beginSession fired ~600ms later and the mic started recording
+    // on a screen the user had already left, with the listening indicator animating on
+    // an unfocused tab (tabs never unmount, so nothing stopped it).
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = null;
+    }
+    justGrantedRef.current = false;
     sessionTranscriptRef.current = '';
     lastRawRef.current = '';
     clearedBaselineRef.current = '';

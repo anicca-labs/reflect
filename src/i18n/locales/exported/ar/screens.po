@@ -286,6 +286,10 @@ msgstr "إدارة الاشتراك"
 msgid "Microphone access required"
 msgstr "يلزم الوصول إلى الميكروفون"
 
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "My Reflect Journal"
+msgstr "دفتر Reflect الخاص بي"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Name"
 msgstr "الاسم"
@@ -406,6 +410,15 @@ msgstr "أعد الاتصال لتسجيل الخروج."
 msgid "Reconnect to upgrade to Pro and keep writing."
 msgstr "أعد الاتصال للترقية إلى Pro ومتابعة الكتابة."
 
+#. placeholder {0}: filtered.length
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Reflect Journal — {0} entries"
+msgstr "دفتر Reflect — {0} تدوينات"
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Reflect Journal — 1 entry"
+msgstr "دفتر Reflect — تدوينة واحدة"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Reflections"
 msgstr "التأملات"
@@ -490,6 +503,10 @@ msgstr "الإسبانية"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
 msgstr "الاشتراك"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Tap save again to keep this entry."
+msgstr "اضغط حفظ مرة أخرى للاحتفاظ بهذه التدوينة."
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx

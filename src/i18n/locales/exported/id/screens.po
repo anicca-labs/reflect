@@ -286,6 +286,10 @@ msgstr "Kelola langganan"
 msgid "Microphone access required"
 msgstr "Akses mikrofon diperlukan"
 
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "My Reflect Journal"
+msgstr "Jurnal Reflect saya"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Name"
 msgstr "Nama"
@@ -406,6 +410,15 @@ msgstr "Sambungkan kembali untuk keluar."
 msgid "Reconnect to upgrade to Pro and keep writing."
 msgstr "Sambungkan kembali untuk meningkatkan ke Pro dan terus menulis."
 
+#. placeholder {0}: filtered.length
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Reflect Journal — {0} entries"
+msgstr "Jurnal Reflect — {0} entri"
+
+#: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
+msgid "Reflect Journal — 1 entry"
+msgstr "Jurnal Reflect — 1 entri"
+
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Reflections"
 msgstr "Refleksi"
@@ -490,6 +503,10 @@ msgstr "Spanyol"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Subscription"
 msgstr "Langganan"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Tap save again to keep this entry."
+msgstr "Ketuk simpan lagi untuk menyimpan entri ini."
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx

@@ -21,7 +21,18 @@ onlineManager.setEventListener((setOnline) =>
 // That's how a reflection generated while the app was backgrounded stayed
 // invisible on return: the server had it, the client never asked again.
 focusManager.setEventListener((setFocused) => {
-  const sub = AppState.addEventListener('change', (state) => setFocused(state === 'active'));
+  const sub = AppState.addEventListener('change', (state) => {
+    // 'inactive' is deliberately IGNORED. iOS reports it for every system overlay —
+    // the ATT dialog, the StoreKit paywall, Face ID, the share sheet, Control Centre —
+    // and Android's share sheet flaps in and out of it mid-interaction. Treating
+    // those as a focus change refetched every active query (which decrypts the whole
+    // journal and every reflection) in the middle of a flow, and could land after an
+    // optimistic update and roll it back: marking a reflection seen and then having
+    // the banner reappear behind the open modal. Only a genuine background → active
+    // transition counts as regaining focus.
+    if (state === 'background') setFocused(false);
+    else if (state === 'active') setFocused(true);
+  });
   return () => sub.remove();
 });
 

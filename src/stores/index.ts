@@ -127,11 +127,20 @@ const usePeekStore = create<PeekStoreState>((set) => ({
 type ComposeStoreState = {
   pendingCompose: boolean;
   setPendingCompose: (v: boolean) => void;
+  // Whether the Journal composer currently holds unsaved text. Lives here rather
+  // than in JournalScreen's local state so OTHER screens can refuse to reload the
+  // app out from under it — Settings' "Update ready" banner called reloadAsync()
+  // with no such guard, and tabs never unmount, so a user could type a long entry,
+  // swipe to Settings, tap the banner, and lose it with no warning.
+  hasDraft: boolean;
+  setHasDraft: (v: boolean) => void;
 };
 
 const useComposeStore = create<ComposeStoreState>((set) => ({
   pendingCompose: false,
   setPendingCompose: (v) => set({ pendingCompose: v }),
+  hasDraft: false,
+  setHasDraft: (v) => set({ hasDraft: v }),
 }));
 
 // Set when a "your week is ready" push is tapped; the Journal home consumes it

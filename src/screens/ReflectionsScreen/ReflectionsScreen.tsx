@@ -5,7 +5,6 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { ScrollView, YStack, XStack, Spinner, Input } from 'tamagui';
 import { DisplayLg, BodySm, LabelMd, LabelLg } from '@fonts';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { SizingAnimatedButton } from '@anicca-labs/ui-button-animated';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { Containers } from '@anicca-labs/ui-containers';
 import { BaseIcon } from '@atoms';
@@ -25,7 +24,7 @@ import {
 import type { JournalEntry } from '@/src/types/journal';
 import { logScreenView } from '@analytics';
 import { useJournalEntries, useToggleBookmark, useRevenueCat, useDeleteJournalEntry } from '@hooks';
-import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING } from '@constants';
+import { HEADING_LETTER_SPACING, LABEL_LETTER_SPACING, DISABLED_OPACITY } from '@constants';
 import { exportJournal } from '@export';
 import { refreshEntitlement } from '@/src/services/entitlements';
 import {
@@ -164,6 +163,7 @@ const ReflectionsScreen = () => {
   const toggleBookmarkMutation = useToggleBookmark();
   const deleteMutation = useDeleteJournalEntry();
   const { t } = useLingui();
+  const timeFormat = usePreferencesStore((s) => s.timeFormat);
   const router = useRouter();
   const [exporting, setExporting] = useState(false);
   const [search, setSearch] = useState('');
@@ -233,7 +233,18 @@ const ReflectionsScreen = () => {
       // try/finally: Share.share rejects on platform failures (no share targets, an
       // Android activity error), and without this `exporting` stayed true — the button
       // disabled and spinning forever, with the tab never unmounting to reset it.
-      await exportJournal(entries);
+      //
+      // `filtered`, not `entries`: it exported the ENTIRE journal even when a search
+      // or the ★ bookmark filter was active, with nothing saying the filter had been
+      // ignored. Labels are built here so they're actually translated.
+      await exportJournal(filtered, {
+        use24h: timeFormat === '24h',
+        title: t`My Reflect Journal`,
+        heading:
+          filtered.length === 1
+            ? t`Reflect Journal — 1 entry`
+            : t`Reflect Journal — ${filtered.length} entries`,
+      });
     } finally {
       setExporting(false);
     }
@@ -266,28 +277,40 @@ const ReflectionsScreen = () => {
               <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
                 <Trans>Reflections</Trans>
               </DisplayLg>
+              {/* Plain touchable, NOT SizingAnimatedButton. That component measures
+                  its own wrapper and only renders once `width > 0` — but the wrapper
+                  is sized by its content, which is nothing until it renders. Inside
+                  this XStack it has no intrinsic width, so it measured 0 and the
+                  button never appeared at all: Pro's headline "export your journal"
+                  feature has been invisible to every user since launch. */}
               {entries.length > 0 ? (
-                <SizingAnimatedButton
+                <BaseTouchable
                   onPress={handleExport}
                   disabled={exporting}
-                  loading={exporting}
-                  backgroundColor="$surface-card"
-                  spinnerBackgroundColor="$surface-card"
-                  spinnerPieceColor="$accentBackground"
+                  bg="$surface-card"
+                  rounded="$4"
+                  px="$3"
                   height={sizes.xl}
+                  items="center"
+                  justify="center"
+                  opacity={exporting ? DISABLED_OPACITY : 1}
                 >
                   <XStack gap="$2" items="center">
-                    <BaseIcon
-                      iconName="iconBook"
-                      width={sizes.sm}
-                      height={sizes.sm}
-                      color="$accentBackground"
-                    />
+                    {exporting ? (
+                      <Spinner size="small" color="$accentBackground" />
+                    ) : (
+                      <BaseIcon
+                        iconName="iconBook"
+                        width={sizes.sm}
+                        height={sizes.sm}
+                        color="$accentBackground"
+                      />
+                    )}
                     <LabelLg color="$accentBackground">
                       {isPro ? <Trans>Export</Trans> : <Trans>Export ✦</Trans>}
                     </LabelLg>
                   </XStack>
-                </SizingAnimatedButton>
+                </BaseTouchable>
               ) : null}
             </XStack>
 
