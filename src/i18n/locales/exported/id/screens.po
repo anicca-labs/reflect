@@ -78,6 +78,10 @@ msgid "Are you sure?"
 msgstr "Apakah Anda yakin?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Ask for Face ID, Touch ID or your passcode when you open Reflect after being away. Your journal stays private if someone else picks up your phone."
+msgstr "Minta Face ID, Touch ID, atau kode sandimu saat kamu membuka Reflect setelah pergi. Jurnalmu tetap privat kalau orang lain memegang ponselmu."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Auto"
 msgstr "Otomatis"
 
@@ -287,6 +291,10 @@ msgid "Let AI write a weekly reflection from your entries"
 msgstr "Biarkan AI menulis refleksi mingguan dari entri kamu"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Lock the app"
+msgstr "Kunci aplikasi"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
 msgstr "Kelola langganan"
 
@@ -380,6 +388,10 @@ msgstr "Portugis"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Preferences"
 msgstr "Preferensi"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Privacy"
+msgstr "Privasi"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"
