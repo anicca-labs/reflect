@@ -78,6 +78,10 @@ msgid "Are you sure?"
 msgstr "¿Estás seguro?"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Ask for Face ID, Touch ID or your passcode when you open Reflect after being away. Your journal stays private if someone else picks up your phone."
+msgstr "Pide Face ID, Touch ID o tu código cuando abres Reflect después de un rato. Tu diario queda privado si alguien más agarra tu teléfono."
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Auto"
 msgstr "Automático"
 
@@ -287,6 +291,10 @@ msgid "Let AI write a weekly reflection from your entries"
 msgstr "Deja que la IA escriba una reflexión semanal a partir de tus entradas"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Lock the app"
+msgstr "Bloquear la app"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Manage subscription"
 msgstr "Gestionar suscripción"
 
@@ -380,6 +388,10 @@ msgstr "Portugués"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Preferences"
 msgstr "Preferencias"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Privacy"
+msgstr "Privacidad"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Pro"

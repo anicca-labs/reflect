@@ -11,6 +11,7 @@ import { SizingAnimatedButton } from '@anicca-labs/ui-button-animated';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { FlashList } from '@shopify/flash-list';
 import * as Device from 'expo-device';
+import * as LocalAuthentication from 'expo-local-authentication';
 import { supabase } from '@/src/services/supabase';
 import { isOnline } from '@/src/services/network';
 import { deleteAccount } from '@/src/services/account';
@@ -139,6 +140,23 @@ const SettingsScreen = () => {
   } = useAiReflectionsSetting();
   const timeFormat = usePreferencesStore((s) => s.timeFormat);
   const setTimeFormat = usePreferencesStore((s) => s.setTimeFormat);
+  const biometricLockEnabled = usePreferencesStore((s) => s.biometricLockEnabled);
+  const setBiometricLockEnabled = usePreferencesStore((s) => s.setBiometricLockEnabled);
+  // Mirrors useBiometricLock's own capability gate: hardware present AND a
+  // biometric/passcode actually enrolled. Without both, the lock can never engage,
+  // so the toggle would be a control that does nothing.
+  const [biometricCapable, setBiometricCapable] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([LocalAuthentication.hasHardwareAsync(), LocalAuthentication.isEnrolledAsync()])
+      .then(([hasHardware, enrolled]) => {
+        if (!cancelled) setBiometricCapable(hasHardware && enrolled);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const voiceLanguage = usePreferencesStore((s) => s.voiceLanguage);
   const setVoiceLanguage = usePreferencesStore((s) => s.setVoiceLanguage);
   const [hasGlass] = useState(() => isGlassEffectAPIAvailable());
@@ -684,8 +702,44 @@ const SettingsScreen = () => {
               </SettingsCard>
             </AnimatedEntry>
 
+            {/* App lock. Signed-in only (the lock never engages for guests — their
+                entries are device-local and there's no session to protect), and only
+                when the device can actually do it: showing a toggle to someone with
+                no Face ID / fingerprint enrolled is a dead control. */}
+            {!isAnonymous && biometricCapable ? (
+              <AnimatedEntry index={6} animKey={animKey}>
+                <SettingsCard hasGlass={hasGlass}>
+                  <LabelMd
+                    color="$text-disabled"
+                    textTransform="uppercase"
+                    letterSpacing={LABEL_LETTER_SPACING}
+                    mb="$3"
+                  >
+                    <Trans>Privacy</Trans>
+                  </LabelMd>
+
+                  <XStack items="center" justify="space-between" gap="$4" mb="$3">
+                    <BodySm color="$text-secondary" flex={1}>
+                      <Trans>Lock the app</Trans>
+                    </BodySm>
+                    <Toggle
+                      value={biometricLockEnabled}
+                      onPress={() => setBiometricLockEnabled(!biometricLockEnabled)}
+                    />
+                  </XStack>
+
+                  <BodySm color="$text-disabled" style={{ lineHeight: 18 }}>
+                    <Trans>
+                      Ask for Face ID, Touch ID or your passcode when you open Reflect after being
+                      away. Your journal stays private if someone else picks up your phone.
+                    </Trans>
+                  </BodySm>
+                </SettingsCard>
+              </AnimatedEntry>
+            ) : null}
+
             {/* Preferences */}
-            <AnimatedEntry index={6} animKey={animKey}>
+            <AnimatedEntry index={7} animKey={animKey}>
               <SettingsCard hasGlass={hasGlass}>
                 <LabelMd
                   color="$text-disabled"
@@ -731,7 +785,7 @@ const SettingsScreen = () => {
             </AnimatedEntry>
 
             {/* Sign out / Sign in */}
-            <AnimatedEntry index={7} animKey={animKey}>
+            <AnimatedEntry index={8} animKey={animKey}>
               {isAnonymous ? (
                 <YStack />
               ) : (
