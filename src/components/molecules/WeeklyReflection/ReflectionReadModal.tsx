@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Modal, Share } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Modal, Share, View, Text } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScrollView, YStack, XStack } from 'tamagui';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 import { HeadingLg, BodyLg, LabelMd, LabelLg } from '@fonts';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -34,6 +36,15 @@ interface ReflectionReadModalProps {
   onWrite?: () => void;
 }
 
+// 9:16 quote card, captured offscreen at 3x (≈1080×1920) for story-sized shares.
+// Fixed warm palette — shares should look consistent regardless of app theme.
+const CARD_W = 360;
+const CARD_H = 640;
+const CARD_BG = '#F7F2EA';
+const CARD_INK = '#3B322A';
+const CARD_SOFT = '#8A7B6B';
+const CARD_ACCENT = '#C4631A';
+
 // Full-screen, calm read of one weekly reflection. The reveal deserves space —
 // its own surface, not a cramped list row.
 const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadModalProps) => {
@@ -53,11 +64,13 @@ const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadMod
     rate(feltTrue);
     setJustRated(true);
   };
+  const cardRef = useRef<View>(null);
   const meta = reflection ? reflectionMeta(reflection) : null;
   const paragraphs = reflection ? reflection.body.split('\n\n') : [];
 
   // Share one line, not the whole (intimate) reflection — quote-card psychology.
-  // Every share is an organic ad written by the product itself.
+  // Every share is an organic ad written by the product itself. Image card when
+  // capture/sharing are available; text with the link otherwise.
   const handleShare = async () => {
     if (!meta) return;
     logShareTap();
@@ -66,11 +79,20 @@ const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadMod
     const { openStoreSheet, closeStoreSheet } = useAppLockStore.getState();
     openStoreSheet();
     try {
+      if (await Sharing.isAvailableAsync()) {
+        const uri = await captureRef(cardRef, { format: 'png', quality: 1, result: 'tmpfile' });
+        await Sharing.shareAsync(uri.startsWith('file://') ? uri : `file://${uri}`, {
+          mimeType: 'image/png',
+          dialogTitle: 'Reflect',
+        });
+        return;
+      }
+      throw new Error('image sharing unavailable');
+    } catch {
+      // Any capture/share failure → plain text share, never a dead button.
       await Share.share({
         message: `“${meta.preview}”\n\n— ${t`my journal, via Reflect`} 🍂\nhttps://reflects.sytes.net/get`,
-      });
-    } catch {
-      // sharing is best-effort
+      }).catch(() => {});
     } finally {
       closeStoreSheet();
     }
@@ -90,6 +112,45 @@ const ReflectionReadModal = ({ reflection, onClose, onWrite }: ReflectionReadMod
       statusBarTranslucent
     >
       <YStack flex={1} bg="$background">
+        {/* Offscreen quote card for image sharing — rendered but invisible.
+            collapsable={false} is required for captureRef on Android. */}
+        {meta ? (
+          <View
+            ref={cardRef}
+            collapsable={false}
+            style={{
+              position: 'absolute',
+              left: -9999,
+              width: CARD_W,
+              height: CARD_H,
+              backgroundColor: CARD_BG,
+              paddingHorizontal: 36,
+              paddingVertical: 48,
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text style={{ fontSize: 13, letterSpacing: 2, color: CARD_ACCENT }}>
+              🍂 {t`Weekly reflection`.toUpperCase()}
+            </Text>
+            <Text
+              style={{
+                fontSize: 30,
+                lineHeight: 44,
+                color: CARD_INK,
+                fontWeight: '600',
+              }}
+            >
+              “{meta.preview}”
+            </Text>
+            <View>
+              <Text style={{ fontSize: 15, color: CARD_SOFT, marginBottom: 6 }}>
+                — {t`my journal, via Reflect`}
+              </Text>
+              <Text style={{ fontSize: 13, color: CARD_ACCENT }}>reflects.sytes.net/get</Text>
+            </View>
+          </View>
+        ) : null}
+
         <XStack
           justify="space-between"
           items="center"
