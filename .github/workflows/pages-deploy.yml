@@ -78,6 +78,12 @@ jobs:
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
+        with:
+          # THE reason /.well-known has never been publishable from this repo: this
+          # input defaults to false and drops every dot-directory from the artifact,
+          # so the files vanish between a green build and the live site. Android and
+          # iOS read app-link files from /.well-known and nowhere else.
+          include-hidden-files: true
 
   deploy:
     needs: build
