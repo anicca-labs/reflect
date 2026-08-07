@@ -37,6 +37,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: true,
     bundleIdentifier: process.env.APP_IDENTIFIER ?? 'com.reflect.prod',
     googleServicesFile: process.env.GOOGLE_SERVICES_INFOPLIST_PATH,
+    // Universal Links. This is the half that was missing: assetlinks.json was hosted
+    // (verified by Google, on another domain) but NO build ever CLAIMED a domain, so
+    // neither OS ever asked for the file. Enabling "Associated Domains" on the App ID
+    // in the Apple Developer portal only PERMITS this entitlement — the domain list
+    // lives here, and nothing in App Store Connect is involved.
+    //
+    // Which paths open the app is decided by the apple-app-site-association file, not
+    // here (iOS has no path syntax in the entitlement). That file scopes the claim to
+    // /open, so privacy-policy and terms — linked from both store listings — keep
+    // opening in the browser.
+    associatedDomains: ['applinks:reflects.sytes.net'],
     infoPlist: {
       UIBackgroundModes: ['fetch', 'remote-notification'],
       ITSAppUsesNonExemptEncryption: false,
@@ -71,6 +82,22 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     predictiveBackGestureEnabled: false,
     googleServicesFile: process.env.GOOGLE_SERVICES_JSON_PATH,
     permissions: ['android.permission.POST_NOTIFICATIONS'],
+    // App Links — the app side of the Digital Asset Links handshake. The website
+    // vouching for the app (assetlinks.json) is only half of it; without an
+    // autoVerify intent filter here, Android never even fetches that file and just
+    // opens the browser. That was the state until now: the file was hosted and
+    // Google-verified, while no build claimed the domain.
+    //
+    // Scoped to /open by pathPrefix so the store-listed privacy-policy and
+    // terms pages keep opening in a browser rather than launching the app.
+    intentFilters: [
+      {
+        action: 'VIEW',
+        autoVerify: true,
+        data: [{ scheme: 'https', host: 'reflects.sytes.net', pathPrefix: '/open' }],
+        category: ['BROWSABLE', 'DEFAULT'],
+      },
+    ],
   },
   web: {
     output: 'static',
