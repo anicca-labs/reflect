@@ -64,8 +64,12 @@ jobs:
       - name: Publish /.well-known
         run: |
           set -euo pipefail
-          mkdir -p ./_site/.well-known
-          cp ./docs/well-known/* ./_site/.well-known/
+          # sudo: jekyll-build-pages runs in a container as a different uid, so _site
+          # is not owned by the runner user and a plain mkdir gets EACCES.
+          sudo mkdir -p ./_site/.well-known
+          sudo cp ./docs/well-known/* ./_site/.well-known/
+          # Readable by the artifact packer, which runs as the runner user.
+          sudo chmod -R a+rX ./_site/.well-known
           echo "published:"
           ls -la ./_site/.well-known/
           # Fail loudly rather than deploying a site where app links silently break.
