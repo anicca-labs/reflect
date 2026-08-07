@@ -1,0 +1,27 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["G46UUC9DX3.com.reflect.prod", "G46UUC9DX3.com.reflect.stg"],
+        "components": [
+          {
+            "/": "/open",
+            "comment": "Re-engagement links — open the app."
+          },
+          {
+            "/": "/open/*",
+            "comment": "Anything under /open opens the app."
+          },
+          {
+            "/": "/*",
+            "exclude": true,
+            "comment": "Everything else stays in the browser. Critically privacy-policy and terms-of-service, which are linked from both store listings and must render as web pages."
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["G46UUC9DX3.com.reflect.prod", "G46UUC9DX3.com.reflect.stg"]
+  }
+}

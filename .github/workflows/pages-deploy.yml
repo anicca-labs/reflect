@@ -73,8 +73,11 @@ jobs:
           echo "published:"
           ls -la ./_site/.well-known/
           # Fail loudly rather than deploying a site where app links silently break.
-          node -e 'JSON.parse(require("fs").readFileSync("./_site/.well-known/assetlinks.json","utf8"))'
-          echo "assetlinks.json is valid JSON"
+          # Both files are JSON (apple-app-site-association is extensionless by spec).
+          for f in assetlinks.json apple-app-site-association; do
+            node -e 'JSON.parse(require("fs").readFileSync("./_site/.well-known/"+process.argv[1],"utf8"))' "$f"
+            echo "  $f is valid JSON"
+          done
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
