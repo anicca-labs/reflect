@@ -94,7 +94,7 @@
       <h1>Opening Reflect…</h1>
       <p id="status">If it doesn't open automatically, tap below.</p>
       <a class="btn" id="openBtn" href="#">Open Reflect</a>
-      <a class="secondary" id="storeLink" href="/get">Don't have the app? Get it here</a>
+      <a class="secondary" id="storeLink" href="/get">Don't have the app yet? Get it here</a>
     </div>
 
     <script>
@@ -131,33 +131,35 @@
           return;
         }
 
-        // If the app takes over, the browser is backgrounded — that's the only reliable
-        // "it worked" signal, since navigating to an unhandled scheme reports no error.
-        // Cancel the store fallback when it fires, so someone who DOES have the app
-        // isn't dumped on a store page when they come back.
-        var appOpened = false;
-        function markOpened() {
-          if (document.hidden) appOpened = true;
-        }
-        document.addEventListener('visibilitychange', markOpened);
-        window.addEventListener('pagehide', function () {
-          appOpened = true;
-        });
-
+        // NO timed store fallback, deliberately.
+        //
+        // iOS shows a system "Open in Reflect?" confirmation over this page before
+        // handing off. That alert does NOT hide the page (document.hidden stays false)
+        // and fires no event, so a timer can't tell "the user hasn't tapped Open yet"
+        // from "the app isn't installed" — and iOS reports no error for an unhandled
+        // scheme either. An earlier 1.5s fallback lost exactly that race: it redirected
+        // to the App Store out from under the dialog on a device that HAD the app.
+        //
+        // Since this page is only linked from mail sent to people who already have the
+        // app, guessing wrong is worse than not guessing. Fire the scheme, then leave
+        // the manual controls on screen and let the person choose.
         function tryOpen() {
           window.location.href = APP_SCHEME;
-          setTimeout(function () {
-            if (appOpened || document.hidden) return;
-            // Scheme went unhandled → app isn't installed. Fall through to the store.
-            document.getElementById('status').textContent = 'Taking you to the store…';
-            window.location.replace(storeUrl);
-          }, 1500);
         }
 
         document.getElementById('openBtn').addEventListener('click', function (e) {
           e.preventDefault();
           tryOpen();
         });
+
+        // Once the handoff has had a moment, reword the page for whoever is still
+        // looking at it — either they dismissed the dialog or the scheme went
+        // unhandled. Text only; no navigation, so nothing can be yanked away.
+        setTimeout(function () {
+          if (document.hidden) return;
+          document.getElementById('status').textContent =
+            'Tap below to open Reflect on this phone.';
+        }, 2500);
 
         // Some in-app browsers (notably the Gmail app's webview) block scheme
         // navigation that isn't user-initiated, which is why the manual button above
