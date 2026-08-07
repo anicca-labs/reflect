@@ -1,3 +1,10 @@
+---
+# Jekyll on GitHub Pages does not reliably publish dot-directories even with
+# `include`, so this file lives at a NON-dot source path and Jekyll writes it
+# to the required /.well-known/ URL via this permalink. Front matter is
+# stripped from the output, leaving valid JSON.
+permalink: /.well-known/assetlinks.json
+---
 [
   {
     "relation": ["delegate_permission/common.handle_all_urls"],

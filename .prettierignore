@@ -10,3 +10,7 @@ env.template.yaml
 
 # Build artifacts
 dist/
+
+# Jekyll front matter makes this valid Jekyll input but invalid JSON — Prettier
+# would fail to parse it. The published output (front matter stripped) IS valid JSON.
+docs/well-known/
