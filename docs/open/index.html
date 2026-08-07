@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Open Reflect — your private daily journal." />
+    <!-- This page is for people who ALREADY have the app (re-engagement emails).
+         Unlike /get, which always goes to the store, this tries to open the
+         installed app first and only falls back to the store if that fails. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Opening Reflect…</title>
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --cream: #f5f0e8;
+        --ink: #1c1917;
+        --ink-light: #57534e;
+        --green-dark: #4a7a5a;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: var(--cream);
+        color: var(--ink);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 24px;
+        text-align: center;
+      }
+
+      .card {
+        max-width: 420px;
+        width: 100%;
+      }
+
+      .leaf {
+        font-size: 40px;
+        margin-bottom: 16px;
+      }
+
+      h1 {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      p {
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--ink-light);
+        margin-bottom: 24px;
+      }
+
+      .btn {
+        display: inline-block;
+        background: var(--green-dark);
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 14px 28px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+      }
+
+      .secondary {
+        display: block;
+        font-size: 14px;
+        color: var(--ink-light);
+        text-decoration: underline;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <div class="leaf">🍂</div>
+      <h1>Opening Reflect…</h1>
+      <p id="status">If it doesn't open automatically, tap below.</p>
+      <a class="btn" id="openBtn" href="#">Open Reflect</a>
+      <a class="secondary" id="storeLink" href="/get">Don't have the app? Get it here</a>
+    </div>
+
+    <script>
+      (function () {
+        // The app registers the `reflect` URL scheme (app.config.ts `scheme`), so this
+        // opens it directly when installed. Universal Links / App Links are NOT set up
+        // (no associatedDomains, no intentFilters, and assetlinks.json isn't served from
+        // /.well-known), so the custom scheme is the only way to reach an installed app
+        // from the web today. Switching to Universal Links needs a native build.
+        var APP_SCHEME = 'reflect://';
+        var IOS_URL = 'https://apps.apple.com/app/reflect-it/id6767607183';
+        var ANDROID_URL = 'https://play.google.com/store/apps/details?id=com.reflect.prod';
+
+        function detectOS() {
+          var ua = navigator.userAgent || navigator.vendor || window.opera || '';
+          if (/android/i.test(ua)) return 'android';
+          var iOSlike =
+            /iPad|iPhone|iPod/.test(ua) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+          return iOSlike ? 'ios' : 'other';
+        }
+
+        var os = detectOS();
+        var storeUrl = os === 'android' ? ANDROID_URL : IOS_URL;
+        document.getElementById('storeLink').href = os === 'other' ? '/get' : storeUrl;
+        document.getElementById('openBtn').href = APP_SCHEME;
+
+        // Desktop can't open a phone app — send them to the landing page instead of
+        // firing a scheme that will always fail.
+        if (os === 'other') {
+          document.getElementById('status').textContent =
+            'Reflect is a phone app — open this link on your phone.';
+          document.getElementById('openBtn').style.display = 'none';
+          return;
+        }
+
+        // If the app takes over, the browser is backgrounded — that's the only reliable
+        // "it worked" signal, since navigating to an unhandled scheme reports no error.
+        // Cancel the store fallback when it fires, so someone who DOES have the app
+        // isn't dumped on a store page when they come back.
+        var appOpened = false;
+        function markOpened() {
+          if (document.hidden) appOpened = true;
+        }
+        document.addEventListener('visibilitychange', markOpened);
+        window.addEventListener('pagehide', function () {
+          appOpened = true;
+        });
+
+        function tryOpen() {
+          window.location.href = APP_SCHEME;
+          setTimeout(function () {
+            if (appOpened || document.hidden) return;
+            // Scheme went unhandled → app isn't installed. Fall through to the store.
+            document.getElementById('status').textContent = 'Taking you to the store…';
+            window.location.replace(storeUrl);
+          }, 1500);
+        }
+
+        document.getElementById('openBtn').addEventListener('click', function (e) {
+          e.preventDefault();
+          tryOpen();
+        });
+
+        // Some in-app browsers (notably the Gmail app's webview) block scheme
+        // navigation that isn't user-initiated, which is why the manual button above
+        // always stays visible as the fallback.
+        tryOpen();
+      })();
+    </script>
+  </body>
+</html>
