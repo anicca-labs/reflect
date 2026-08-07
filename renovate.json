@@ -1,11 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
+  "baseBranches": ["stg"],
   "schedule": ["every weekend"],
   "timezone": "America/Buenos_Aires",
   "labels": ["dependencies"],
   "assignees": ["ksairi"],
   "packageRules": [
+    {
+      "description": "WHY NO AUTOMERGE ANYWHERE: every dependency bump rewrites yarn.lock, which changes the native fingerprint (runtimeVersion policy: fingerprint). A merged bump strands OTA reach to every installed binary until a new store build ships, so no dependency update in this repo is routine — each one implies a release. A human decides when that happens. WHY baseBranches IS stg: main is the production trigger. A push to main touching package.json/yarn.lock fires expo-store-deploy-prd, which builds AND submits to both stores. Renovate targeting the default branch would auto-submit releases.",
+      "matchPackageNames": ["*"],
+      "automerge": false
+    },
     {
       "description": "Expo SDK — update all expo packages atomically so expo doctor never sees a mismatch",
       "groupName": "Expo SDK",
@@ -47,9 +53,7 @@
       "groupName": "TypeScript & types",
       "matchPackageNames": ["typescript", "@types/*"],
       "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true,
-      "automergeType": "pr",
-      "platformAutomerge": true
+      "automerge": false
     },
     {
       "description": "Patch-only updates for everything else — automerge safely",
@@ -67,9 +71,7 @@
         "tamagui",
         "@tamagui/*"
       ],
-      "automerge": true,
-      "automergeType": "pr",
-      "platformAutomerge": true
+      "automerge": false
     }
   ],
   "lockFileMaintenance": {
@@ -79,5 +81,6 @@
   "vulnerabilityAlerts": {
     "enabled": true,
     "labels": ["security"]
-  }
+  },
+  "dependencyDashboard": true
 }
