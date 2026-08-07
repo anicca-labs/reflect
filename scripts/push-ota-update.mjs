@@ -201,12 +201,42 @@ async function pushPlatform(platform, metadata, updateId, expoConfig, runtimeVer
   console.log(`  ✓ registered in DB`);
 }
 
+// EXPO_PUBLIC_* values are INLINED into the bundle at transform time, and Metro caches
+// those transforms. A cache warmed by a previous `stg` export is reused by a later `prd`
+// export, so the prd channel gets a bundle carrying stg's Supabase project and stg's
+// Google iOS client ID — while Doppler reports prd correctly, so nothing looks wrong.
+// That shipped on 2026-08-06: prd users got a stg-configured bundle and Google Sign-In
+// crashed on launch (NSInvalidArgumentException — the reversed client ID has no matching
+// URL scheme in the prd binary). CI never hit it because its cache is always cold.
+//
+// So: never trust the exporting process's env — read what actually landed in the bundle.
+// The Supabase URL is the cleanest probe (always inlined, unambiguous per environment).
+function assertBundleMatchesChannel(metadata) {
+  const expected = new URL(SUPABASE_URL).host;
+  for (const platform of ['ios', 'android']) {
+    const bundleRel = metadata.fileMetadata?.[platform]?.bundle;
+    if (!bundleRel) continue;
+    const bundle = fs.readFileSync(path.join(DIST_DIR, bundleRel), 'latin1');
+    if (bundle.includes(expected)) continue;
+    throw new Error(
+      `${platform} bundle does not reference ${expected} (channel "${CHANNEL}").\n` +
+        `The export was almost certainly served from a Metro cache built under a different\n` +
+        `environment. Re-export with a cold cache before pushing:\n` +
+        `  rm -rf dist && doppler run --project mobile --config ${CHANNEL} -- \\\n` +
+        `    yarn expo export --clear --platform ios --platform android --output-dir dist`,
+    );
+  }
+  console.log(`  ✓ bundles reference ${expected}`);
+}
+
 async function main() {
   const metadataPath = path.join(DIST_DIR, 'metadata.json');
   if (!fs.existsSync(metadataPath)) {
     throw new Error(`${metadataPath} not found — run 'yarn expo export --output-dir dist' first`);
   }
   const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+  // Before anything is uploaded — a wrong-env bundle must never reach the channel.
+  assertBundleMatchesChannel(metadata);
   const { exp: expoConfig } = getConfig(process.cwd(), { skipSDKVersionRequirement: true });
 
   // Compute the native fingerprint per platform — iOS and Android differ, and each

@@ -214,7 +214,15 @@ const useReflectionFeedback = (reflectionId: string | null) => {
 // Namespaced per user: a bare key would let one account's declines silence the ask
 // for whoever signs in next on the same device (and vice versa).
 const echoSavesKey = (userId: string) => `entry-echo:saves:${userId}`;
-const ASK_ON_SAVES = [1, 2, 5];
+// Save 2 is deliberately LEFT FREE for the reminder prompt. The reminder is
+// suppressed on save 1 (consent owns the first entry) and whenever this card shows,
+// so while echo asked at 1 AND 2 the reminder could not appear before someone's 3rd
+// entry — and 59 of 76 writers (78%) never wrote a 3rd, making them structurally
+// incapable of ever being offered a reminder. Among the 17 who could see it, it
+// converted ~18%: the prompt was fine, its gate was closed. Echo keeps save 1 (its
+// critical ask) and its re-ask moves to 3, which also gives the re-ask more distance
+// than repeating one entry after a decline.
+const ASK_ON_SAVES = [1, 3, 6];
 
 const useEntryEcho = () => {
   const { enabled, settled, setEnabled } = useAiReflectionsSetting();
@@ -285,8 +293,14 @@ const useEntryEcho = () => {
   // with a sign-up call to action instead of a consent one.
   //
   // NOT on their first entry: guest-first exists so that one is never interrupted,
-  // and it bought ~20 points of activation. Asked on the 2nd and 5th instead.
-  const GUEST_ASK_ON_SAVES = [2, 5];
+  // and it bought ~20 points of activation.
+  //
+  // Moved off save 2 for the same reason as ASK_ON_SAVES above — it was blocking the
+  // reminder prompt at the earliest slot it could ever occupy. The trade is clearly
+  // right for guests: this card cannot show a real echo (guest entries are on-device,
+  // so there's no server row to read), it only advertises the feature, whereas the
+  // reminder is what actually brings them back to write.
+  const GUEST_ASK_ON_SAVES = [3, 6];
   // Returns true when it shows the card, so the caller holds back the reminder modal.
   const onGuestSaved = useCallback((entryNumber: number): boolean => {
     setLine(null);
