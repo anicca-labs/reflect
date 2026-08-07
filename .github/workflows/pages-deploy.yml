@@ -51,6 +51,27 @@ jobs:
           source: ./docs
           destination: ./_site
 
+      # Jekyll on GitHub Pages will not publish /.well-known — verified twice against
+      # the built artifact: `include: ['.well-known']` in _config.yml produced nothing,
+      # and a page with `permalink: /.well-known/...` produced nothing either (the
+      # source directory didn't even get copied as a static file). Both failed SILENTLY,
+      # which is how assetlinks.json ended up at /android/ and then on another domain.
+      #
+      # Android reads ONLY /.well-known/assetlinks.json and iOS reads ONLY
+      # /.well-known/apple-app-site-association, so copy them in after the build. This
+      # is independent of Jekyll's dotfile handling; upload-pages-artifact tars `.`
+      # and keeps dot-directories.
+      - name: Publish /.well-known
+        run: |
+          set -euo pipefail
+          mkdir -p ./_site/.well-known
+          cp ./docs/well-known/* ./_site/.well-known/
+          echo "published:"
+          ls -la ./_site/.well-known/
+          # Fail loudly rather than deploying a site where app links silently break.
+          node -e 'JSON.parse(require("fs").readFileSync("./_site/.well-known/assetlinks.json","utf8"))'
+          echo "assetlinks.json is valid JSON"
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
 
