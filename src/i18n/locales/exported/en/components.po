@@ -27,12 +27,12 @@ msgid "A gentle daily nudge makes it far more likely to become a habit."
 msgstr ""
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. 4 reflections free."
-msgstr ""
+#~ msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. 4 reflections free."
+#~ msgstr ""
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. A free account unlocks it, and brings your entries with you."
-msgstr ""
+#~ msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. A free account unlocks it, and brings your entries with you."
+#~ msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A little more to reflect on"
@@ -196,6 +196,10 @@ msgid "Read →"
 msgstr ""
 
 #: src/components/molecules/EntryEcho/index.tsx
+msgid "Read this entry ✦"
+msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
 msgid "Reading…"
 msgstr ""
 
@@ -211,6 +215,10 @@ msgstr ""
 msgid "Reminder set ✦"
 msgstr ""
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "See what Reflect notices in this entry?"
+msgstr ""
+
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Share ↗"
 msgstr ""
@@ -224,8 +232,12 @@ msgid "Thanks — this helps the next one. 🍂"
 msgstr ""
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "That’s 2 entries — see what they add up to?"
+msgid "That’s {entriesSoFar} entries — see what they add up to?"
 msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "That’s 2 entries — see what they add up to?"
+#~ msgstr ""
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
@@ -261,8 +273,8 @@ msgid "Upgrade to Pro to merge all {combined} entries and write without limits."
 msgstr ""
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "Want your journal to write back?"
-msgstr ""
+#~ msgid "Want your journal to write back?"
+#~ msgstr ""
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "We'll nudge you at {timeLabel}. Change it anytime in Settings."
@@ -301,8 +313,8 @@ msgid "Yes, deeply"
 msgstr ""
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "Yes, write back ✦"
-msgstr ""
+#~ msgid "Yes, write back ✦"
+#~ msgstr ""
 
 #. placeholder {0}: localCount === 1 ? 'entry' : 'entries'
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
@@ -326,6 +338,22 @@ msgstr ""
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your entries are sent securely to our AI to write it — never shown to anyone, never sold, never used to train AI."
 msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Your entry is sent to be read and a line comes back — this one, and each one after. Every Sunday, your week is written back to you. 4 reflections free."
+msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Your entry is sent to be read and a line comes back — this one, and each one after. Every Sunday, your week is written back to you. A free account unlocks it, and brings your entries with you."
+msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "Your entry is sent to be read, and a line comes back — something you might not have noticed yourself. Every Sunday, your week is written back to you. 4 reflections free."
+#~ msgstr ""
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "Your entry is sent to be read, and a line comes back — something you might not have noticed yourself. Every Sunday, your week is written back to you. A free account unlocks it, and brings your entries with you."
+#~ msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your next reflection arrives Sunday — in {daysToSunday} days 🍂"

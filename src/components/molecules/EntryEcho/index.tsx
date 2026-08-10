@@ -47,28 +47,42 @@ const EntryEchoCards = ({
           borderColor="$accentBackground"
           gap="$3"
         >
+          {/* Framed around THIS entry, not an abstract permission. 20% of people who
+              saw the old "Want your journal to write back? / Yes, write back" card said
+              yes — reasonable, given it asked to open the most private thing on their
+              phone before showing anything. Accepting already fetches the echo for the
+              entry they just wrote (acceptConsent -> fetchEcho), so the value arrives
+              in the same tap; the copy just never said so.
+              The body states plainly that the entry is SENT to be read. Consent has to
+              stay informed — a vague "see what happens" that quietly ships someone's
+              journal would be a dark pattern, and privacy is the whole product. */}
           <YStack gap="$1">
             <BodyMdBold color="$text-emphasis">
               🍂{' '}
               {entriesSoFar <= 1 ? (
-                <Trans>Want your journal to write back?</Trans>
-              ) : entriesSoFar === 2 ? (
-                <Trans>That’s 2 entries — see what they add up to?</Trans>
+                <Trans>See what Reflect notices in this entry?</Trans>
+              ) : entriesSoFar <= 3 ? (
+                <Trans>That’s {entriesSoFar} entries — see what they add up to?</Trans>
               ) : (
                 <Trans>You’ve written {entriesSoFar} entries. Ready to see your week?</Trans>
               )}
             </BodyMdBold>
             <BodySm color="$text-secondary">
+              {/* "this one, and each one after" is load-bearing, not filler: saying only
+                  "your entry" describes a single act, while the echo actually fires on
+                  EVERY save once consented (useEntryEcho.onSaved). The copy this replaced
+                  said "after each entry"; dropping that made the ask read narrower than
+                  what it grants. Scope has to be stated, or the consent isn't informed. */}
               {isGuest ? (
                 <Trans>
-                  A gentle line back after each entry — and every Sunday, AI reads your week and
-                  writes it back to you in your own words. A free account unlocks it, and brings
-                  your entries with you.
+                  Your entry is sent to be read and a line comes back — this one, and each one
+                  after. Every Sunday, your week is written back to you. A free account unlocks it,
+                  and brings your entries with you.
                 </Trans>
               ) : (
                 <Trans>
-                  A gentle line back after each entry — and every Sunday, AI reads your week and
-                  writes it back to you in your own words. 4 reflections free.
+                  Your entry is sent to be read and a line comes back — this one, and each one
+                  after. Every Sunday, your week is written back to you. 4 reflections free.
                 </Trans>
               )}
             </BodySm>
@@ -86,8 +100,10 @@ const EntryEchoCards = ({
               items="center"
               flex={1}
             >
+              {/* Names the action and its object. "Yes, write back" asked for a standing
+                  permission; this offers to do one concrete thing to the entry on screen. */}
               <LabelLg color="$accentColor">
-                {isGuest ? <Trans>Create free account ✦</Trans> : <Trans>Yes, write back ✦</Trans>}
+                {isGuest ? <Trans>Create free account ✦</Trans> : <Trans>Read this entry ✦</Trans>}
               </LabelLg>
             </BaseTouchable>
             <BaseTouchable onPress={onDecline} px="$3" py="$3">
