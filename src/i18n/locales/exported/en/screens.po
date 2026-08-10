@@ -108,6 +108,10 @@ msgstr ""
 msgid "Check your email"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Checking your account…"
+msgstr ""
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Chinese"
 msgstr ""

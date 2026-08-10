@@ -108,6 +108,10 @@ msgstr "Batal"
 msgid "Check your email"
 msgstr "Periksa email Anda"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Checking your account…"
+msgstr "Memeriksa akunmu…"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Chinese"
 msgstr "Mandarin"

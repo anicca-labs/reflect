@@ -131,6 +131,12 @@ const EntryCard = ({ entry, index, onDelete, onPeek, closeKey }: EntryCardProps)
 
 const FREE_ENTRY_LIMIT = 7;
 
+// How long the save button may stay blocked waiting for the server entry count
+// before giving up and letting the save through (the DB trigger enforces the
+// limit regardless). Long enough for a normal cold fetch, short enough that it
+// never reads as a frozen app.
+const COUNT_GUARD_TIMEOUT_MS = 5000;
+
 const JournalScreen = () => {
   const [draft, setDraft] = useState('');
   const [closeKey, setCloseKey] = useState(0);
@@ -415,7 +421,31 @@ const JournalScreen = () => {
   // Until the server list has loaded at least once (no cache yet, still
   // fetching), `entries` undercounts to just the pending queue — a free user
   // would slip past the limit. Hold saves until the real count is known.
-  const countPending = !isPro && !isAnonymous && serverLoading && serverEntries.length === 0;
+  const countUnknown = !isPro && !isAnonymous && serverLoading && serverEntries.length === 0;
+  // ...but NEVER indefinitely. Reported from a real device: the button sat
+  // disabled behind a spinner for minutes, swallowed every tap, and then the
+  // spinner vanished — which reads exactly like a successful save, except the
+  // entry was never written and the draft was still sitting in the input. The
+  // spinner is shared with `createMutation.isPending`, so "blocked" and "saving"
+  // are visually identical and the user has no way to tell them apart.
+  //
+  // It happens whenever the entries query is slow with an empty cache: clearing
+  // storage or an OTA reload drops the persisted cache, and a phone waking from
+  // sleep then makes React Query retry with backoff while `serverLoading` stays
+  // true. Blocking is a nice-to-have — api.enforce_free_entry_limit is the actual
+  // authority — so after this long, let the save through and let the server say
+  // no. The catch already handles `free_entry_limit_reached` by presenting the
+  // paywall and retrying, which is a far better outcome than a dead button.
+  const [countGuardExpired, setCountGuardExpired] = useState(false);
+  useEffect(() => {
+    if (!countUnknown) {
+      setCountGuardExpired(false);
+      return;
+    }
+    const timer = setTimeout(() => setCountGuardExpired(true), COUNT_GUARD_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [countUnknown]);
+  const countPending = countUnknown && !countGuardExpired;
   const showHint =
     !isPro && entries.length >= FREE_ENTRY_LIMIT - 2 && entries.length < FREE_ENTRY_LIMIT;
 
@@ -686,6 +716,15 @@ const JournalScreen = () => {
                   </LabelLg>
                 )}
               </BaseTouchable>
+
+              {/* The spinner alone is ambiguous — identical to a save in flight — so
+                  name what's happening. Without this, a blocked button that later
+                  clears looks like the entry saved when it never did. */}
+              {countPending && hasContent ? (
+                <BodySm color="$text-disabled" text="center" mt="$2">
+                  <Trans>Checking your account…</Trans>
+                </BodySm>
+              ) : null}
 
               {showHint ? (
                 <BodySm color="$text-disabled" text="center" mt="$2">
