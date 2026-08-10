@@ -438,12 +438,16 @@ const JournalScreen = () => {
   // paywall and retrying, which is a far better outcome than a dead button.
   const [countGuardExpired, setCountGuardExpired] = useState(false);
   useEffect(() => {
-    if (!countUnknown) {
-      setCountGuardExpired(false);
-      return;
-    }
+    if (!countUnknown) return;
     const timer = setTimeout(() => setCountGuardExpired(true), COUNT_GUARD_TIMEOUT_MS);
-    return () => clearTimeout(timer);
+    // Reset in cleanup, not in the effect body: a synchronous setState there
+    // cascades renders (react-hooks/set-state-in-effect). Cleanup runs when the
+    // count resolves, which is exactly when the next episode should start fresh —
+    // otherwise a stale `true` would let the following cold fetch skip the guard.
+    return () => {
+      clearTimeout(timer);
+      setCountGuardExpired(false);
+    };
   }, [countUnknown]);
   const countPending = countUnknown && !countGuardExpired;
   const showHint =
