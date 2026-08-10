@@ -68,17 +68,21 @@ const EntryEchoCards = ({
               )}
             </BodyMdBold>
             <BodySm color="$text-secondary">
+              {/* "this one, and each one after" is load-bearing, not filler: saying only
+                  "your entry" describes a single act, while the echo actually fires on
+                  EVERY save once consented (useEntryEcho.onSaved). The copy this replaced
+                  said "after each entry"; dropping that made the ask read narrower than
+                  what it grants. Scope has to be stated, or the consent isn't informed. */}
               {isGuest ? (
                 <Trans>
-                  Your entry is sent to be read, and a line comes back — something you might not
-                  have noticed yourself. Every Sunday, your week is written back to you. A free
-                  account unlocks it, and brings your entries with you.
+                  Your entry is sent to be read and a line comes back — this one, and each one
+                  after. Every Sunday, your week is written back to you. A free account unlocks it,
+                  and brings your entries with you.
                 </Trans>
               ) : (
                 <Trans>
-                  Your entry is sent to be read, and a line comes back — something you might not
-                  have noticed yourself. Every Sunday, your week is written back to you. 4
-                  reflections free.
+                  Your entry is sent to be read and a line comes back — this one, and each one
+                  after. Every Sunday, your week is written back to you. 4 reflections free.
                 </Trans>
               )}
             </BodySm>

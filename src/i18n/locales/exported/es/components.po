@@ -340,12 +340,20 @@ msgid "Your entries are sent securely to our AI to write it — never shown to a
 msgstr "Tus entradas se envían de forma segura a nuestra IA para escribirla — nunca se muestran a nadie, nunca se venden, nunca se usan para entrenar IA."
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "Your entry is sent to be read, and a line comes back — something you might not have noticed yourself. Every Sunday, your week is written back to you. 4 reflections free."
-msgstr "Tu entrada se envía para ser leída y vuelve una línea: algo que quizá no habías notado. Cada domingo, tu semana se te devuelve escrita. 4 reflexiones gratis."
+msgid "Your entry is sent to be read and a line comes back — this one, and each one after. Every Sunday, your week is written back to you. 4 reflections free."
+msgstr "Tu entrada se envía para ser leída y vuelve una línea: esta y cada una que escribas después. Cada domingo, tu semana se te devuelve escrita. 4 reflexiones gratis."
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "Your entry is sent to be read, and a line comes back — something you might not have noticed yourself. Every Sunday, your week is written back to you. A free account unlocks it, and brings your entries with you."
-msgstr "Tu entrada se envía para ser leída y vuelve una línea: algo que quizá no habías notado. Cada domingo, tu semana se te devuelve escrita. Una cuenta gratuita lo desbloquea y se lleva tus entradas contigo."
+msgid "Your entry is sent to be read and a line comes back — this one, and each one after. Every Sunday, your week is written back to you. A free account unlocks it, and brings your entries with you."
+msgstr "Tu entrada se envía para ser leída y vuelve una línea: esta y cada una que escribas después. Cada domingo, tu semana se te devuelve escrita. Una cuenta gratuita lo desbloquea y se lleva tus entradas contigo."
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "Your entry is sent to be read, and a line comes back — something you might not have noticed yourself. Every Sunday, your week is written back to you. 4 reflections free."
+#~ msgstr "Tu entrada se envía para ser leída y vuelve una línea: algo que quizá no habías notado. Cada domingo, tu semana se te devuelve escrita. 4 reflexiones gratis."
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "Your entry is sent to be read, and a line comes back — something you might not have noticed yourself. Every Sunday, your week is written back to you. A free account unlocks it, and brings your entries with you."
+#~ msgstr "Tu entrada se envía para ser leída y vuelve una línea: algo que quizá no habías notado. Cada domingo, tu semana se te devuelve escrita. Una cuenta gratuita lo desbloquea y se lleva tus entradas contigo."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your next reflection arrives Sunday — in {daysToSunday} days 🍂"
