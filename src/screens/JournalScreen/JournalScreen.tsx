@@ -368,6 +368,30 @@ const JournalScreen = () => {
     return () => clearTimeout(timer);
   }, [isScreenFocused, isAnonymous, entries.length, splashComplete]);
 
+  // iOS ATT, asked once the journal is actually on screen — NOT at app start and no
+  // longer only after a save.
+  //
+  // Deferring it to the first save meant it was invisible to anyone who never wrote,
+  // which cost us twice. App Review rejected 1.3 under Guideline 2.1 ("unable to
+  // locate the App Tracking Transparency permission request") because the reviewer
+  // opened the app without creating an entry — and until the prompt fires even once,
+  // the app never appears under Settings > Privacy & Security > Tracking, so there
+  // was nothing for them to find. It also meant ad-sourced installs that bounce
+  // before writing were never counted, which is exactly the cohort Meta attribution
+  // needs to measure.
+  //
+  // Gated on splashComplete for the same reason as the autofocus above: the prompt is
+  // a system alert, and firing it while the splash overlay is still fading either
+  // covers the app's first frame or gets suppressed outright. requestTrackingConsent
+  // is idempotent (iOS shows the dialog once per install and there's a local guard),
+  // so the ref is belt-and-braces.
+  const didRequestTracking = useRef(false);
+  useEffect(() => {
+    if (didRequestTracking.current || !isScreenFocused || !splashComplete) return;
+    didRequestTracking.current = true;
+    requestTrackingConsent();
+  }, [isScreenFocused, splashComplete]);
+
   const hasOpenCard = useSwipeableStore((s) => s.activeDragCount > 0);
   const dismissOpenCard = () => {
     if (hasOpenCard) setCloseKey((k) => k + 1);
@@ -516,10 +540,6 @@ const JournalScreen = () => {
       // Guest entries stay on-device, so this is the only server-side record that this
       // device activated. Fire-and-forget: it must never delay or fail the save.
       markFirstEntryWritten();
-      // iOS ATT, deferred to here from app start — asking to track someone before
-      // they've written anything is the worst possible first impression. Only ever
-      // prompts once per install.
-      requestTrackingConsent();
       // Guests get no echo (their entries are device-local, so there's no server row
       // to read) — but they can still be told the feature exists. Deliberately not on
       // their first entry: guest-first exists so that one is unmolested.
@@ -531,7 +551,6 @@ const JournalScreen = () => {
       const { queued, entry } = await createMutation.mutateAsync(trimmed);
       logJournalEntryCreated(trimmed.split(/\s+/).length);
       markFirstEntryWritten();
-      requestTrackingConsent(); // see the guest branch above
       // Echo needs the server row — queued (offline) saves have none yet.
       const consentShown = !queued && entry?.id ? await echo.onSaved(entry.id) : false;
       askForReminderUnless(consentShown);
