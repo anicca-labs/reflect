@@ -27,12 +27,12 @@ msgid "A gentle daily nudge makes it far more likely to become a habit."
 msgstr "Pengingat harian yang lembut membuatnya jauh lebih mungkin menjadi kebiasaan."
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. 4 reflections free."
-msgstr "Satu kalimat lembut setelah setiap entri — dan setiap Minggu, AI membaca pekanmu dan menuliskannya kembali dengan kata-katamu sendiri. 4 refleksi gratis."
+#~ msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. 4 reflections free."
+#~ msgstr "Satu kalimat lembut setelah setiap entri — dan setiap Minggu, AI membaca pekanmu dan menuliskannya kembali dengan kata-katamu sendiri. 4 refleksi gratis."
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. A free account unlocks it, and brings your entries with you."
-msgstr "Satu kalimat lembut setelah setiap entri — dan setiap Minggu, AI membaca pekanmu dan menuliskannya kembali dengan kata-katamu sendiri. Akun gratis membukanya dan membawa entrimu bersamamu."
+#~ msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. A free account unlocks it, and brings your entries with you."
+#~ msgstr "Satu kalimat lembut setelah setiap entri — dan setiap Minggu, AI membaca pekanmu dan menuliskannya kembali dengan kata-katamu sendiri. Akun gratis membukanya dan membawa entrimu bersamamu."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A little more to reflect on"
@@ -196,6 +196,10 @@ msgid "Read →"
 msgstr "Baca →"
 
 #: src/components/molecules/EntryEcho/index.tsx
+msgid "Read this entry ✦"
+msgstr "Baca entri ini ✦"
+
+#: src/components/molecules/EntryEcho/index.tsx
 msgid "Reading…"
 msgstr "Membaca…"
 
@@ -211,6 +215,10 @@ msgstr "Ingatkan saya pukul {timeLabel}"
 msgid "Reminder set ✦"
 msgstr "Pengingat aktif ✦"
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "See what Reflect notices in this entry?"
+msgstr "Lihat apa yang Reflect tangkap di entri ini?"
+
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Share ↗"
 msgstr "Bagikan ↗"
@@ -224,8 +232,12 @@ msgid "Thanks — this helps the next one. 🍂"
 msgstr "Terima kasih — ini membantu yang berikutnya. 🍂"
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "That’s 2 entries — see what they add up to?"
-msgstr "Sudah 2 entri — mau lihat jadinya seperti apa?"
+msgid "That’s {entriesSoFar} entries — see what they add up to?"
+msgstr "Sudah {entriesSoFar} entri — mau lihat maknanya?"
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "That’s 2 entries — see what they add up to?"
+#~ msgstr "Sudah 2 entri — mau lihat jadinya seperti apa?"
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
@@ -261,8 +273,8 @@ msgid "Upgrade to Pro to merge all {combined} entries and write without limits."
 msgstr "Upgrade ke Pro untuk menggabungkan semua {combined} entri dan menulis tanpa batas."
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "Want your journal to write back?"
-msgstr "Mau jurnalmu membalas tulisanmu?"
+#~ msgid "Want your journal to write back?"
+#~ msgstr "Mau jurnalmu membalas tulisanmu?"
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "We'll nudge you at {timeLabel}. Change it anytime in Settings."
@@ -301,8 +313,8 @@ msgid "Yes, deeply"
 msgstr "Ya, sangat"
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "Yes, write back ✦"
-msgstr "Ya, balas aku ✦"
+#~ msgid "Yes, write back ✦"
+#~ msgstr "Ya, balas aku ✦"
 
 #. placeholder {0}: localCount === 1 ? 'entry' : 'entries'
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
@@ -326,6 +338,22 @@ msgstr "{serverCount} {0} akun Anda akan dihapus permanen dan digantikan oleh {l
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your entries are sent securely to our AI to write it — never shown to anyone, never sold, never used to train AI."
 msgstr "Entrimu dikirim dengan aman ke AI kami untuk menulisnya — tidak pernah ditunjukkan ke siapa pun, tidak pernah dijual, tidak pernah dipakai untuk melatih AI."
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Your entry is sent to be read and a line comes back — this one, and each one after. Every Sunday, your week is written back to you. 4 reflections free."
+msgstr "Entrimu dikirim untuk dibaca dan kembali satu kalimat: entri ini, dan setiap entri berikutnya. Setiap Minggu, pekanmu dituliskan kembali untukmu. 4 refleksi gratis."
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Your entry is sent to be read and a line comes back — this one, and each one after. Every Sunday, your week is written back to you. A free account unlocks it, and brings your entries with you."
+msgstr "Entrimu dikirim untuk dibaca dan kembali satu kalimat: entri ini, dan setiap entri berikutnya. Setiap Minggu, pekanmu dituliskan kembali untukmu. Akun gratis membukanya, sekaligus membawa serta entrimu."
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "Your entry is sent to be read, and a line comes back — something you might not have noticed yourself. Every Sunday, your week is written back to you. 4 reflections free."
+#~ msgstr "Entrimu dikirim untuk dibaca, lalu kembali satu kalimat: sesuatu yang mungkin belum kamu sadari. Setiap Minggu, pekanmu dituliskan kembali untukmu. 4 refleksi gratis."
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "Your entry is sent to be read, and a line comes back — something you might not have noticed yourself. Every Sunday, your week is written back to you. A free account unlocks it, and brings your entries with you."
+#~ msgstr "Entrimu dikirim untuk dibaca, lalu kembali satu kalimat: sesuatu yang mungkin belum kamu sadari. Setiap Minggu, pekanmu dituliskan kembali untukmu. Akun gratis membukanya, sekaligus membawa serta entrimu."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your next reflection arrives Sunday — in {daysToSunday} days 🍂"

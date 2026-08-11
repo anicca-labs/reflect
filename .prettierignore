@@ -10,3 +10,4 @@ env.template.yaml
 
 # Build artifacts
 dist/
+

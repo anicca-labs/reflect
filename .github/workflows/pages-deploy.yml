@@ -51,8 +51,42 @@ jobs:
           source: ./docs
           destination: ./_site
 
+      # Jekyll on GitHub Pages will not publish /.well-known — verified twice against
+      # the built artifact: `include: ['.well-known']` in _config.yml produced nothing,
+      # and a page with `permalink: /.well-known/...` produced nothing either (the
+      # source directory didn't even get copied as a static file). Both failed SILENTLY,
+      # which is how assetlinks.json ended up at /android/ and then on another domain.
+      #
+      # Android reads ONLY /.well-known/assetlinks.json and iOS reads ONLY
+      # /.well-known/apple-app-site-association, so copy them in after the build. This
+      # is independent of Jekyll's dotfile handling; upload-pages-artifact tars `.`
+      # and keeps dot-directories.
+      - name: Publish /.well-known
+        run: |
+          set -euo pipefail
+          # sudo: jekyll-build-pages runs in a container as a different uid, so _site
+          # is not owned by the runner user and a plain mkdir gets EACCES.
+          sudo mkdir -p ./_site/.well-known
+          sudo cp ./docs/well-known/* ./_site/.well-known/
+          # Readable by the artifact packer, which runs as the runner user.
+          sudo chmod -R a+rX ./_site/.well-known
+          echo "published:"
+          ls -la ./_site/.well-known/
+          # Fail loudly rather than deploying a site where app links silently break.
+          # Both files are JSON (apple-app-site-association is extensionless by spec).
+          for f in assetlinks.json apple-app-site-association; do
+            node -e 'JSON.parse(require("fs").readFileSync("./_site/.well-known/"+process.argv[1],"utf8"))' "$f"
+            echo "  $f is valid JSON"
+          done
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
+        with:
+          # THE reason /.well-known has never been publishable from this repo: this
+          # input defaults to false and drops every dot-directory from the artifact,
+          # so the files vanish between a green build and the live site. Android and
+          # iOS read app-link files from /.well-known and nowhere else.
+          include-hidden-files: true
 
   deploy:
     needs: build

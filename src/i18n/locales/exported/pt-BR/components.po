@@ -27,12 +27,12 @@ msgid "A gentle daily nudge makes it far more likely to become a habit."
 msgstr "Um lembrete diário suave torna muito mais provável que vire um hábito."
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. 4 reflections free."
-msgstr "Uma linha gentil de volta depois de cada entrada — e todo domingo, a IA lê a sua semana e escreve de volta nas suas próprias palavras. 4 reflexões grátis."
+#~ msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. 4 reflections free."
+#~ msgstr "Uma linha gentil de volta depois de cada entrada — e todo domingo, a IA lê a sua semana e escreve de volta nas suas próprias palavras. 4 reflexões grátis."
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. A free account unlocks it, and brings your entries with you."
-msgstr "Uma linha gentil de volta depois de cada entrada — e todo domingo, a IA lê a sua semana e escreve de volta nas suas próprias palavras. Uma conta grátis libera isso e leva suas entradas com você."
+#~ msgid "A gentle line back after each entry — and every Sunday, AI reads your week and writes it back to you in your own words. A free account unlocks it, and brings your entries with you."
+#~ msgstr "Uma linha gentil de volta depois de cada entrada — e todo domingo, a IA lê a sua semana e escreve de volta nas suas próprias palavras. Uma conta grátis libera isso e leva suas entradas com você."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "A little more to reflect on"
@@ -196,6 +196,10 @@ msgid "Read →"
 msgstr "Ler →"
 
 #: src/components/molecules/EntryEcho/index.tsx
+msgid "Read this entry ✦"
+msgstr "Ler esta entrada ✦"
+
+#: src/components/molecules/EntryEcho/index.tsx
 msgid "Reading…"
 msgstr "Lendo…"
 
@@ -211,6 +215,10 @@ msgstr "Lembrar-me às {timeLabel}"
 msgid "Reminder set ✦"
 msgstr "Lembrete ativado ✦"
 
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "See what Reflect notices in this entry?"
+msgstr "Ver o que o Reflect percebe nesta entrada?"
+
 #: src/components/molecules/WeeklyReflection/ReflectionReadModal.tsx
 msgid "Share ↗"
 msgstr "Compartilhar ↗"
@@ -224,8 +232,12 @@ msgid "Thanks — this helps the next one. 🍂"
 msgstr "Obrigado — isso ajuda a próxima. 🍂"
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "That’s 2 entries — see what they add up to?"
-msgstr "Já são 2 entradas — quer ver no que elas dão?"
+msgid "That’s {entriesSoFar} entries — see what they add up to?"
+msgstr "Já são {entriesSoFar} entradas — quer ver no que dão?"
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "That’s 2 entries — see what they add up to?"
+#~ msgstr "Já são 2 entradas — quer ver no que elas dão?"
 
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "This cannot be undone."
@@ -261,8 +273,8 @@ msgid "Upgrade to Pro to merge all {combined} entries and write without limits."
 msgstr "Faça upgrade para o Pro para mesclar todas as {combined} entradas e escrever sem limites."
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "Want your journal to write back?"
-msgstr "Quer que seu diário responda?"
+#~ msgid "Want your journal to write back?"
+#~ msgstr "Quer que seu diário responda?"
 
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "We'll nudge you at {timeLabel}. Change it anytime in Settings."
@@ -301,8 +313,8 @@ msgid "Yes, deeply"
 msgstr "Sim, muito"
 
 #: src/components/molecules/EntryEcho/index.tsx
-msgid "Yes, write back ✦"
-msgstr "Sim, responda ✦"
+#~ msgid "Yes, write back ✦"
+#~ msgstr "Sim, responda ✦"
 
 #. placeholder {0}: localCount === 1 ? 'entry' : 'entries'
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
@@ -326,6 +338,22 @@ msgstr "Suas {serverCount} {0} da conta serão excluídas permanentemente e subs
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your entries are sent securely to our AI to write it — never shown to anyone, never sold, never used to train AI."
 msgstr "Suas entradas são enviadas com segurança para nossa IA para escrevê-la — nunca são mostradas a ninguém, nunca são vendidas, nunca são usadas para treinar IA."
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Your entry is sent to be read and a line comes back — this one, and each one after. Every Sunday, your week is written back to you. 4 reflections free."
+msgstr "Sua entrada é enviada para ser lida e volta uma linha: esta e cada uma que vier depois. Todo domingo, sua semana é escrita de volta para você. 4 reflexões grátis."
+
+#: src/components/molecules/EntryEcho/index.tsx
+msgid "Your entry is sent to be read and a line comes back — this one, and each one after. Every Sunday, your week is written back to you. A free account unlocks it, and brings your entries with you."
+msgstr "Sua entrada é enviada para ser lida e volta uma linha: esta e cada uma que vier depois. Todo domingo, sua semana é escrita de volta para você. Uma conta gratuita libera isso e leva suas entradas com você."
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "Your entry is sent to be read, and a line comes back — something you might not have noticed yourself. Every Sunday, your week is written back to you. 4 reflections free."
+#~ msgstr "Sua entrada é enviada para ser lida e volta uma linha: algo que você talvez não tenha percebido. Todo domingo, sua semana é escrita de volta para você. 4 reflexões grátis."
+
+#: src/components/molecules/EntryEcho/index.tsx
+#~ msgid "Your entry is sent to be read, and a line comes back — something you might not have noticed yourself. Every Sunday, your week is written back to you. A free account unlocks it, and brings your entries with you."
+#~ msgstr "Sua entrada é enviada para ser lida e volta uma linha: algo que você talvez não tenha percebido. Todo domingo, sua semana é escrita de volta para você. Uma conta gratuita libera isso e leva suas entradas com você."
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your next reflection arrives Sunday — in {daysToSunday} days 🍂"

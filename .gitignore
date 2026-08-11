@@ -55,7 +55,11 @@ supabase/.temp/
 
 # Lingui compiled output is committed — EAS local builds archive via git and cannot regenerate it
 
-# Digital Asset Links — belongs on galagym.com, not in this repo (reference copy lives in docs/android/)
+# Digital Asset Links: the SERVED copy is docs/well-known/assetlinks.json (published
+# to /.well-known/ by pages-deploy.yml). This ignores a stray download at the repo
+# root only. It previously said the file "belongs on galagym.com" — that was a
+# workaround for GitHub Pages silently dropping dot-directories, now fixed via
+# upload-pages-artifact include-hidden-files.
 /assetlinks.json
 
 # Firebase service account key (has admin privileges — never commit)

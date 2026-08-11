@@ -108,6 +108,10 @@ msgstr "Cancelar"
 msgid "Check your email"
 msgstr "Revisa tu correo"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Checking your account…"
+msgstr "Comprobando tu cuenta…"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Chinese"
 msgstr "Chino"
