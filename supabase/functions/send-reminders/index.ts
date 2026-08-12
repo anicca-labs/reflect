@@ -113,6 +113,56 @@ const teaserBody = (locale: string | null, count: number): string => {
   return tmpl.replace('{n}', String(count));
 };
 
+// ── Reflective line ("presence") ────────────────────────────────────────────
+// NOT a reminder. This exists so the app is pleasantly present — a line worth
+// reading on its own, where writing is a possible side effect rather than the ask.
+// Different intent from the daily reminder, so a deliberately different pool: these
+// lean toward being worth reading, the reminder's lean toward "write".
+//
+// Tue/Thu/Sat at 10:00 local. Three days avoids Wed (teaser) and Sun (reflection)
+// entirely, and 10:00 avoids the 09:00 default that memory notifications use.
+//
+// Audience is everyone who did NOT set a reminder — people who set one already chose
+// their cadence and shouldn't get a second daily voice. Anyone who already wrote that
+// day is skipped (they don't need prompting), as is anyone who already received any
+// server push that day (see api.push_log).
+const LINE_WEEKDAYS = ['Tue', 'Thu', 'Sat'];
+const LINE_HOUR = 10;
+const REFLECTIVE_PRESENCE_LINES: Record<string, string[]> = {
+  en: [
+    'Rain doesn’t decide where to fall. It just falls, and the ground changes.',
+    'A room feels different depending on who just left it.',
+    'Most things you worried about last month have no name now.',
+    'The river never asks whether it is making progress.',
+    'You can hold a whole day in one sentence, if it’s the right one.',
+    'Attention is the rarest thing anyone gives anyone.',
+    'What you notice tends to be what you become.',
+    'There is a kind of tiredness that sleep doesn’t reach.',
+    'Stillness isn’t empty. It’s just quiet enough to hear.',
+    'Some feelings only arrive once you stop chasing them.',
+    'The same street looks different walking home.',
+    'Nothing in nature hurries, and everything gets where it’s going.',
+  ],
+  es: [
+    'La lluvia no decide dónde caer. Cae, y la tierra cambia.',
+    'Una habitación se siente distinta según quién acaba de irse.',
+    'Casi todo lo que te preocupaba el mes pasado hoy ya no tiene nombre.',
+    'El río nunca se pregunta si está avanzando.',
+    'Un día entero entra en una sola frase, si es la frase justa.',
+    'La atención es lo más raro que alguien le da a alguien.',
+    'Uno termina pareciéndose a lo que mira.',
+    'Hay un cansancio al que el sueño no llega.',
+    'La quietud no está vacía. Solo está lo bastante callada para oír.',
+    'Algunas cosas solo llegan cuando dejás de buscarlas.',
+    'La misma calle se ve distinta cuando volvés a casa.',
+    'En la naturaleza nada se apura, y todo llega.',
+  ],
+};
+const presenceLine = (locale: string | null, dayKey: number): string => {
+  const lines = (locale && REFLECTIVE_PRESENCE_LINES[locale]) || REFLECTIVE_PRESENCE_LINES.en;
+  return lines[dayKey % lines.length];
+};
+
 // Short local weekday name ('Mon'..'Sun') for an instant in a timezone.
 const localWeekdayInTz = (instant: Date, timezone: string): string =>
   new Intl.DateTimeFormat('en-US', { timeZone: timezone, weekday: 'short' }).format(instant);
@@ -369,11 +419,83 @@ Deno.serve(async (req) => {
     teasersSent = teaserResults.filter(Boolean).length;
   }
 
+  // ── Phase 4: reflective line (presence) ─────────────────────────────────────
+  let linesSent = 0;
+  const forceLine = isAdminTest && body.test === 'line-now';
+  {
+    const { data: lineDevices } = await supabase
+      .from('device_tokens')
+      .select('fcm_token, user_id, timezone, firebase_project_id, locale, reminder_enabled')
+      .not('user_id', 'is', null)
+      .not('timezone', 'is', null);
+
+    const due = (lineDevices ?? []).filter(
+      (d) =>
+        // People who set a reminder chose their cadence — don't add a second voice.
+        !d.reminder_enabled &&
+        (forceLine ||
+          (LINE_WEEKDAYS.includes(localWeekdayInTz(now, d.timezone)) &&
+            matchesReminderTime(now, d.timezone, LINE_HOUR, 0))),
+    );
+
+    if (due.length > 0) {
+      const userIds = [...new Set(due.map((d) => d.user_id as string))];
+
+      // Skip anyone who already wrote today — the line is for presence, and someone
+      // mid-habit doesn't need prompting.
+      const { data: todaysEntries } = await supabase
+        .from('journal_entries')
+        .select('user_id, created_at')
+        .in('user_id', userIds)
+        .gte('created_at', new Date(now.getTime() - 24 * 3_600_000).toISOString());
+      const wroteRecently = new Set((todaysEntries ?? []).map((e) => e.user_id as string));
+
+      // Skip anyone who already heard from us today, whatever the reason. This is the
+      // only place anything coordinates total push volume across types.
+      const { data: alreadyPushed } = await supabase
+        .from('push_log')
+        .select('user_id, sent_on')
+        .in('user_id', userIds);
+      const pushedToday = new Set(
+        (alreadyPushed ?? [])
+          .filter((r) => {
+            const d = due.find((x) => x.user_id === r.user_id);
+            return d && r.sent_on === localDateInTz(now, d.timezone);
+          })
+          .map((r) => r.user_id as string),
+      );
+
+      const eligible = due.filter(
+        (d) => !wroteRecently.has(d.user_id as string) && !pushedToday.has(d.user_id as string),
+      );
+
+      const results = await Promise.all(
+        eligible.map(async (d) => {
+          const localDate = localDateInTz(now, d.timezone);
+          // Index off the local date so everyone on a given day gets the same line and
+          // a retry can't change it mid-day.
+          const dayKey = Math.floor(Date.parse(localDate) / 86_400_000);
+          const ok = await push(d, presenceLine(d.locale, dayKey), 'reflective-line');
+          if (ok) {
+            // Ignore conflicts: the unique index makes a retry a no-op rather than a
+            // duplicate, which is exactly what we want from an hourly cron.
+            await supabase
+              .from('push_log')
+              .insert({ user_id: d.user_id, kind: 'reflective_line', sent_on: localDate })
+              .then(() => {});
+          }
+          return ok;
+        }),
+      );
+      linesSent = results.filter(Boolean).length;
+    }
+  }
+
   if (staleTokens.length > 0) {
     await supabase.from('device_tokens').delete().in('fcm_token', staleTokens);
   }
 
   return new Response(
-    `Sent ${remindersSent} reminder(s), ${streaksSent} streak nudge(s), ${teasersSent} teaser(s)`,
+    `Sent ${remindersSent} reminder(s), ${streaksSent} streak nudge(s), ${teasersSent} teaser(s), ${linesSent} line(s)`,
   );
 });
