@@ -259,7 +259,12 @@ const classifyOpenThread = async (
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        model: ECHO_MODEL,
+        // Opus, not the echo's Sonnet. This call decides whether someone in acute
+        // distress gets an automated "how's it going?" — the failure that matters is
+        // grief or crisis misread as an ordinary worry, and that's a judgment call in
+        // the ambiguous middle. One 8-token call per reflection, single-digit weekly
+        // volume: the cheapest place in the app to buy better judgment.
+        model: REFLECTION_MODEL,
         max_tokens: 8,
         system: OPEN_THREAD_SYSTEM,
         messages: [{ role: 'user', content: reflectionText }],
