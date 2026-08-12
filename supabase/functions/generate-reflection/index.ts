@@ -149,7 +149,18 @@ const encryptContent = async (plaintext: string): Promise<string> => {
 
 // Single source of truth — this was written twice (here and in the reflections row
 // insert), which would drift the moment one was changed.
-const REFLECTION_MODEL = 'claude-opus-4-8';
+//
+// Opus 5 (was opus-4-8). Weekly volume is single digits, so the cost delta is
+// rounding error, while this is the one output someone might pay for — quality is
+// worth more here than anywhere else in the app. The echo deliberately stays on
+// Sonnet 5: it fires on EVERY save with no cap, so it's the real spend.
+//
+// The prompt below was tuned against 4.8 — particularly the crisis clauses, the
+// anti-sameness rules, and the "never remark on the writing itself" guardrail added
+// after a model produced dismissive commentary about someone's entries. A model
+// change can move those. If reflections start reading as judgmental, this line is
+// the first thing to look at.
+const REFLECTION_MODEL = 'claude-opus-5';
 
 // ── The reflection prompt ────────────────────────────────────────────────────
 // The previous version mandated three beats (pattern → standout moment → open
