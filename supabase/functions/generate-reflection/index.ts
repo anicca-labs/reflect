@@ -225,6 +225,58 @@ const ECHO_FALLBACK = 'That’s here now, written down.';
 // don't measurably improve.
 const ECHO_MODEL = 'claude-sonnet-5';
 
+// ── Open-thread classifier (drives the mid-week follow-up) ───────────────────
+// Returns ONE token. Nothing it sees is stored — only the resulting enum lands in
+// api.reflections.open_thread, so no topic, phrase or summary is ever persisted.
+//
+// 'sensitive' exists to make the follow-up REFUSE to fire, not to escalate anything.
+// A scheduled, cheerful "how's it going?" aimed at someone in acute distress is worse
+// than silence: it's automated concern with nothing behind it, arriving on a lock
+// screen at a moment we know nothing about. The reflection prompt already carries the
+// crisis guidance; this classifier's only job here is to stay out of the way.
+//
+// Defaults to 'none' on any error or unexpected output — silence is the safe failure.
+const OPEN_THREAD_SYSTEM = `You read a short weekly reflection that was written for someone about their own journal entries.
+
+Answer with exactly ONE word, nothing else:
+
+none — nothing unresolved; the week reads as settled, ordinary, or already concluded.
+thread — an ordinary worry, decision, or situation that is still in motion and that a gentle check-in a few days later would suit. Work stress, a hard conversation, a decision pending, an illness getting better, a strained relationship.
+sensitive — signs of acute distress, crisis, grief, self-harm, abuse, or anything where an automated cheerful check-in could land badly.
+
+When uncertain between thread and sensitive, answer sensitive.
+When uncertain between none and thread, answer none.`;
+
+const classifyOpenThread = async (
+  reflectionText: string,
+): Promise<'none' | 'thread' | 'sensitive'> => {
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': Deno.env.get('ANTHROPIC_API_KEY')!,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: ECHO_MODEL,
+        max_tokens: 8,
+        system: OPEN_THREAD_SYSTEM,
+        messages: [{ role: 'user', content: reflectionText }],
+      }),
+    });
+    if (!res.ok) return 'none';
+    const data = await res.json();
+    const word = ((data?.content ?? [])[0]?.text ?? '').trim().toLowerCase();
+    if (word.startsWith('thread')) return 'thread';
+    if (word.startsWith('sensitive')) return 'sensitive';
+    return 'none';
+  } catch {
+    // Never let classification break reflection generation — it's an add-on.
+    return 'none';
+  }
+};
+
 const callClaudeEcho = async (entryText: string): Promise<string> => {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -383,6 +435,12 @@ const generateForUser = async (
   );
   const encrypted = await encryptContent(reflectionText);
 
+  // Classify whether anything is still in motion, for the mid-week follow-up. Runs on
+  // the REFLECTION text, not the raw entries — the reflection is already a derived
+  // summary, so this adds no new exposure, and it keeps the carefully tuned reflection
+  // prompt untouched rather than bolting structured output onto it.
+  const openThread = await classifyOpenThread(reflectionText);
+
   const { data: inserted, error: insErr } = await admin
     .from('reflections')
     .insert({
@@ -392,6 +450,7 @@ const generateForUser = async (
       entry_count: rows.length,
       content: encrypted,
       model: REFLECTION_MODEL,
+      open_thread: openThread,
     })
     .select('id')
     .single();
