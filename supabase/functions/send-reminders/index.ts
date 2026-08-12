@@ -113,6 +113,21 @@ const teaserBody = (locale: string | null, count: number): string => {
   return tmpl.replace('{n}', String(count));
 };
 
+// ── Worry follow-up ─────────────────────────────────────────────────────────
+// Four days after a reflection that noticed something still in motion — Sunday's
+// reflection lands a follow-up on Thursday, far enough to be a real interval, close
+// enough that the thing is still true. Capped at 21 days so a stale worry is never
+// reopened. Content-free by design; see the migration for why nothing is stored.
+const FOLLOWUP_AFTER_DAYS = 4;
+const FOLLOWUP_MAX_AGE_DAYS = 21;
+const FOLLOWUP_HOUR = 10;
+const FOLLOWUP_BODY_BY_LOCALE: Record<string, string> = {
+  en: 'Something from last week seemed to be sitting with you. How’s it going?',
+  es: 'Algo de la semana pasada parecía estar pesándote. ¿Cómo va?',
+};
+const followupBody = (locale: string | null): string =>
+  (locale ? FOLLOWUP_BODY_BY_LOCALE[locale] : undefined) ?? FOLLOWUP_BODY_BY_LOCALE.en;
+
 // ── Reflective line ("presence") ────────────────────────────────────────────
 // NOT a reminder. This exists so the app is pleasantly present — a line worth
 // reading on its own, where writing is a possible side effect rather than the ask.
@@ -419,7 +434,77 @@ Deno.serve(async (req) => {
     teasersSent = teaserResults.filter(Boolean).length;
   }
 
-  // ── Phase 4: reflective line (presence) ─────────────────────────────────────
+  // ── Phase 4: follow-up on an unresolved worry ───────────────────────────────
+  // A few days after a reflection noticed something still in motion, ask how it's
+  // going. This is the most personal push the app sends and the only one triggered by
+  // what someone wrote — so two rules hold it in check:
+  //
+  //   1. CONTENT-FREE. The message never names the worry and is identical for
+  //      everyone. Notifications are readable on a lock screen by whoever is holding
+  //      the phone, and this feature selects for the most sensitive entries a person
+  //      has. Nothing about the topic is stored either (see the migration).
+  //   2. open_thread = 'thread' ONLY. Reflections classified 'sensitive' — acute
+  //      distress, grief, crisis — are deliberately skipped. An automated check-in
+  //      there is worse than silence.
+  //
+  // Sent BEFORE the presence phase on purpose: if a user qualifies for both today,
+  // this is the one worth their attention, and push_log makes the other stand down.
+  let followupsSent = 0;
+  const forceFollowup = isAdminTest && body.test === 'followup-now';
+  {
+    const cutoff = new Date(now.getTime() - FOLLOWUP_AFTER_DAYS * 86_400_000).toISOString();
+    const { data: pending } = await supabase
+      .from('reflections')
+      .select('id, user_id, created_at')
+      .eq('open_thread', 'thread')
+      .is('followup_sent_at', null)
+      .lt('created_at', forceFollowup ? new Date(now.getTime() + 86_400_000).toISOString() : cutoff)
+      // Only ever chase a recent one — a worry from six weeks ago is not something to
+      // reopen unprompted.
+      .gt('created_at', new Date(now.getTime() - FOLLOWUP_MAX_AGE_DAYS * 86_400_000).toISOString());
+
+    if (pending && pending.length > 0) {
+      const userIds = [...new Set(pending.map((r) => r.user_id as string))];
+      const { data: devices } = await supabase
+        .from('device_tokens')
+        .select('fcm_token, user_id, timezone, firebase_project_id, locale')
+        .in('user_id', userIds)
+        .not('timezone', 'is', null);
+
+      const { data: pushedRows } = await supabase
+        .from('push_log')
+        .select('user_id, sent_on')
+        .in('user_id', userIds);
+
+      for (const r of pending) {
+        const d = (devices ?? []).find((x) => x.user_id === r.user_id);
+        if (!d) continue;
+        // Same local hour as the presence line, and the same day-collision guard.
+        if (!forceFollowup && !matchesReminderTime(now, d.timezone, FOLLOWUP_HOUR, 0)) continue;
+        const localDate = localDateInTz(now, d.timezone);
+        if ((pushedRows ?? []).some((p) => p.user_id === r.user_id && p.sent_on === localDate))
+          continue;
+
+        const ok = await push(d, followupBody(d.locale), 'worry-followup');
+        // Stamp regardless of delivery: a failed push should not leave the row to be
+        // retried forever, and re-asking about a worry days later is worse than
+        // missing it once.
+        await supabase
+          .from('reflections')
+          .update({ followup_sent_at: new Date().toISOString() })
+          .eq('id', r.id);
+        if (ok) {
+          followupsSent++;
+          await supabase
+            .from('push_log')
+            .insert({ user_id: r.user_id, kind: 'worry_followup', sent_on: localDate })
+            .then(() => {});
+        }
+      }
+    }
+  }
+
+  // ── Phase 5: reflective line (presence) ─────────────────────────────────────
   let linesSent = 0;
   const forceLine = isAdminTest && body.test === 'line-now';
   {
@@ -496,6 +581,6 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    `Sent ${remindersSent} reminder(s), ${streaksSent} streak nudge(s), ${teasersSent} teaser(s), ${linesSent} line(s)`,
+    `Sent ${remindersSent} reminder(s), ${streaksSent} streak nudge(s), ${teasersSent} teaser(s), ${followupsSent} follow-up(s), ${linesSent} line(s)`,
   );
 });
