@@ -108,7 +108,11 @@ async function translateNotification(
       'content-type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
+      // Opus 5. These are short notification strings going to real users in a
+      // language nobody here reviews before it sends — tone and register matter more
+      // than the token cost, and it runs once per distinct locale per send, not per
+      // device. The echo is the only deliberate exception to Opus in this codebase.
+      model: 'claude-opus-5',
       max_tokens: 500,
       messages: [
         {
