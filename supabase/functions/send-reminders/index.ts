@@ -3,20 +3,69 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { getFirebaseAccessToken, sendFcmMessage } from '../_shared/firebase.ts';
 import { REMINDER_DATA_TYPE } from '../_shared/notifications.ts';
 
-// Fixed reminder string, localized by the device's saved locale (English fallback).
-// Keep in sync with REMINDER_BODY_BY_LOCALE in src/services/firebase-messaging (the
-// local-notification path for guests).
 const REMINDER_TITLE = 'Reflect';
-const REMINDER_BODY_BY_LOCALE: Record<string, string> = {
-  en: "Time to jot down today's thoughts.",
-  es: 'Hora de anotar tus pensamientos de hoy.',
-  'pt-BR': 'Hora de anotar seus pensamientos de hoje.',
-  fr: 'C’est le moment de noter tes pensées du jour.',
-  id: 'Waktunya mencatat pikiranmu hari ini.',
-  ar: 'حان وقت تدوين أفكارك اليوم.',
+
+// The daily reminder used to be ONE fixed string per locale — the same sentence,
+// every day, forever, to the people who explicitly opted in. That's the most
+// engaged audience in the app receiving its weakest copy.
+//
+// These rotate instead: a different line each day, cycling every ~2 weeks. They're
+// written to be worth reading on their own and to invite writing without
+// instructing it — a nudge you'd tolerate daily rather than mute.
+//
+// ORIGINAL lines, deliberately. The obvious move is to quote Rumi / Eliot / Laozi,
+// but Eliot is under copyright until ~2035, the famous "Rumi" translations are
+// Barks' copyrighted interpretations (and a great many circulating quotes are
+// fabricated outright), and a misattributed quote would undercut exactly the
+// careful register this app trades on. Same spirit, nothing to get wrong.
+//
+// en + es only: those are the only locales any device reports (62 en, 11 es, 97
+// null which already fall back to English). No fr/id/pt-BR/ar device exists, so
+// adding them would be translating for nobody.
+const REFLECTIVE_LINES: Record<string, string[]> = {
+  en: [
+    'Not every day has a shape. Some only find one once you write it down.',
+    'The thing you keep almost saying — say it here first.',
+    'Water takes the shape of whatever holds it. Notice what held you today.',
+    'A cup is useful because of the space inside it.',
+    "What you couldn't name this morning may have a name by tonight.",
+    "The mind repeats what it hasn't finished. What's repeating?",
+    'Small days are still days. Write the small one.',
+    "You don't have to conclude anything. Just put it down.",
+    'Some weeks only make sense backwards.',
+    'What asked for your attention today, whether or not you gave it?',
+    'A worry written down takes up less room than one carried.',
+    'Nothing needs solving tonight. Only noticing.',
+    'Whatever is heavy gets lighter in sentences.',
+    'You were somewhere today. Where?',
+  ],
+  es: [
+    'No todos los días tienen forma. Algunos la encuentran solo al escribirlos.',
+    'Eso que casi dices siempre — dilo acá primero.',
+    'El agua toma la forma de lo que la contiene. Fijate qué te contuvo hoy.',
+    'Una taza sirve por el espacio que tiene adentro.',
+    'Lo que esta mañana no supiste nombrar quizá tenga nombre esta noche.',
+    'La mente repite lo que no terminó. ¿Qué se te repite?',
+    'Los días pequeños también son días. Escribí el pequeño.',
+    'No hace falta que llegues a ninguna conclusión. Solo dejalo escrito.',
+    'Hay semanas que solo se entienden al revés.',
+    '¿Qué te pidió atención hoy, se la hayas dado o no?',
+    'Una preocupación escrita ocupa menos lugar que una cargada.',
+    'Esta noche no hay nada que resolver. Solo notar.',
+    'Lo que pesa se aliviana en oraciones.',
+    'Hoy estuviste en algún lugar. ¿Dónde?',
+  ],
 };
-const reminderBody = (locale: string | null): string =>
-  (locale ? REMINDER_BODY_BY_LOCALE[locale] : undefined) ?? REMINDER_BODY_BY_LOCALE.en;
+
+// Same line for everyone on a given day, rotating by day-of-year. Deterministic, so
+// a retry or an at-least-once redelivery can't hand someone a different sentence for
+// the same day.
+const reminderBody = (locale: string | null): string => {
+  const lines = (locale && REFLECTIVE_LINES[locale]) || REFLECTIVE_LINES.en;
+  const now = new Date();
+  const dayOfYear = Math.floor((now.getTime() - Date.UTC(now.getUTCFullYear(), 0, 0)) / 86_400_000);
+  return lines[dayOfYear % lines.length];
+};
 
 // Streak-at-risk: at local 20:00, nudge signed-in users who wrote yesterday but
 // not yet today. Loss aversion beats a fixed-time reminder — it only fires for

@@ -110,9 +110,13 @@ const REMINDER_DATA_TYPE = 'daily-reminder';
 // tapping one opens the latest reflection full-screen (useReflectionNotification).
 const WEEKLY_REFLECTION_DATA_TYPE = 'weekly-reflection';
 
-// The reminder is a fixed string, so it's localized from a static map by the app's
-// active locale (English fallback) — no runtime translation. Keep in sync with the
-// same map in the send-reminders edge function (the server-push path for signed-in).
+// GUEST path only. Signed-in users get the server push from send-reminders, which
+// now rotates a set of reflective lines daily; this stays a single fixed string
+// because the local schedule is ONE repeating daily trigger — rotating would mean
+// scheduling N days ahead individually, the way scheduleMemoryNotifications does.
+// Worth doing if guests ever adopt reminders; today none have them enabled, so it
+// would be work for nobody. These are deliberately NO LONGER in sync with the
+// server map — don't "fix" that by copying one over the other.
 const REMINDER_BODY_BY_LOCALE: Record<string, string> = {
   en: "Time to jot down today's thoughts.",
   es: 'Hora de anotar tus pensamientos de hoy.',
