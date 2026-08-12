@@ -83,6 +83,12 @@ type Body = {
   reminder_enabled?: boolean;
   inactive_days?: number;
   account?: 'all' | 'guest' | 'signed_in';
+  // Exact server-side entry count. `entry_count: 1` is the single-entry cohort — by
+  // far the biggest addressable group and the one the scheduled pushes CANNOT reach:
+  // the presence line needs a timezone to find 10:00 local, and most of these users
+  // are on binaries that predate timezone stamping (57 of 66 have none). Guests are
+  // excluded automatically since their entries never reach the server.
+  entry_count?: number;
   // translate the message into each recipient's locale (once per locale) via Claude
   translate?: boolean;
   // send a pre-translated template instead of custom title/body (no Claude)
@@ -242,8 +248,31 @@ Deno.serve(async (req) => {
   }
 
   const { data: rawDevices, error } = await query;
+
+  // Entry-count filter runs AFTER the device query: it's a per-user aggregate over
+  // journal_entries, not a column on device_tokens, so it can't be expressed as part
+  // of the same select.
+  let entryFiltered = rawDevices;
+  if (!payload.user_id && typeof payload.entry_count === 'number') {
+    const ids = [...new Set((rawDevices ?? []).map((d) => d.user_id).filter(Boolean))];
+    const counts = new Map<string, number>();
+    if (ids.length > 0) {
+      const { data: rows } = await supabase
+        .from('journal_entries')
+        .select('user_id')
+        .in('user_id', ids as string[]);
+      for (const r of rows ?? []) {
+        const uid = r.user_id as string;
+        counts.set(uid, (counts.get(uid) ?? 0) + 1);
+      }
+    }
+    entryFiltered = (rawDevices ?? []).filter(
+      (d) => d.user_id && (counts.get(d.user_id) ?? 0) === payload.entry_count,
+    );
+  }
+
   if (error) return new Response(error.message, { status: 500, headers: CORS_HEADERS });
-  const devices = (rawDevices ?? []) as Device[];
+  const devices = (entryFiltered ?? []) as Device[];
 
   // --- preview: how many match + breakdown by locale (no send) ---
   if (payload.action === 'preview') {
