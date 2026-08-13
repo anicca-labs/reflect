@@ -38,7 +38,6 @@
     "stg": {
       "autoIncrement": true
     },
-
     "prd": {
       "autoIncrement": true
     }
@@ -62,7 +61,7 @@
       },
       "android": {
         "serviceAccountKeyPath": "./eas-service-account.json",
-        "track": "internal",
+        "track": "production",
         "releaseStatus": "completed"
       }
     }
