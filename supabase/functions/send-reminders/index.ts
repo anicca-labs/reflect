@@ -3,20 +3,69 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { getFirebaseAccessToken, sendFcmMessage } from '../_shared/firebase.ts';
 import { REMINDER_DATA_TYPE } from '../_shared/notifications.ts';
 
-// Fixed reminder string, localized by the device's saved locale (English fallback).
-// Keep in sync with REMINDER_BODY_BY_LOCALE in src/services/firebase-messaging (the
-// local-notification path for guests).
 const REMINDER_TITLE = 'Reflect';
-const REMINDER_BODY_BY_LOCALE: Record<string, string> = {
-  en: "Time to jot down today's thoughts.",
-  es: 'Hora de anotar tus pensamientos de hoy.',
-  'pt-BR': 'Hora de anotar seus pensamientos de hoje.',
-  fr: 'C’est le moment de noter tes pensées du jour.',
-  id: 'Waktunya mencatat pikiranmu hari ini.',
-  ar: 'حان وقت تدوين أفكارك اليوم.',
+
+// The daily reminder used to be ONE fixed string per locale — the same sentence,
+// every day, forever, to the people who explicitly opted in. That's the most
+// engaged audience in the app receiving its weakest copy.
+//
+// These rotate instead: a different line each day, cycling every ~2 weeks. They're
+// written to be worth reading on their own and to invite writing without
+// instructing it — a nudge you'd tolerate daily rather than mute.
+//
+// ORIGINAL lines, deliberately. The obvious move is to quote Rumi / Eliot / Laozi,
+// but Eliot is under copyright until ~2035, the famous "Rumi" translations are
+// Barks' copyrighted interpretations (and a great many circulating quotes are
+// fabricated outright), and a misattributed quote would undercut exactly the
+// careful register this app trades on. Same spirit, nothing to get wrong.
+//
+// en + es only: those are the only locales any device reports (62 en, 11 es, 97
+// null which already fall back to English). No fr/id/pt-BR/ar device exists, so
+// adding them would be translating for nobody.
+const REFLECTIVE_LINES: Record<string, string[]> = {
+  en: [
+    'Not every day has a shape. Some only find one once you write it down.',
+    'The thing you keep almost saying — say it here first.',
+    'Water takes the shape of whatever holds it. Notice what held you today.',
+    'A cup is useful because of the space inside it.',
+    "What you couldn't name this morning may have a name by tonight.",
+    "The mind repeats what it hasn't finished. What's repeating?",
+    'Small days are still days. Write the small one.',
+    "You don't have to conclude anything. Just put it down.",
+    'Some weeks only make sense backwards.',
+    'What asked for your attention today, whether or not you gave it?',
+    'A worry written down takes up less room than one carried.',
+    'Nothing needs solving tonight. Only noticing.',
+    'Whatever is heavy gets lighter in sentences.',
+    'You were somewhere today. Where?',
+  ],
+  es: [
+    'No todos los días tienen forma. Algunos la encuentran solo al escribirlos.',
+    'Eso que casi dices siempre — dilo acá primero.',
+    'El agua toma la forma de lo que la contiene. Fijate qué te contuvo hoy.',
+    'Una taza sirve por el espacio que tiene adentro.',
+    'Lo que esta mañana no supiste nombrar quizá tenga nombre esta noche.',
+    'La mente repite lo que no terminó. ¿Qué se te repite?',
+    'Los días pequeños también son días. Escribí el pequeño.',
+    'No hace falta que llegues a ninguna conclusión. Solo dejalo escrito.',
+    'Hay semanas que solo se entienden al revés.',
+    '¿Qué te pidió atención hoy, se la hayas dado o no?',
+    'Una preocupación escrita ocupa menos lugar que una cargada.',
+    'Esta noche no hay nada que resolver. Solo notar.',
+    'Lo que pesa se aliviana en oraciones.',
+    'Hoy estuviste en algún lugar. ¿Dónde?',
+  ],
 };
-const reminderBody = (locale: string | null): string =>
-  (locale ? REMINDER_BODY_BY_LOCALE[locale] : undefined) ?? REMINDER_BODY_BY_LOCALE.en;
+
+// Same line for everyone on a given day, rotating by day-of-year. Deterministic, so
+// a retry or an at-least-once redelivery can't hand someone a different sentence for
+// the same day.
+const reminderBody = (locale: string | null): string => {
+  const lines = (locale && REFLECTIVE_LINES[locale]) || REFLECTIVE_LINES.en;
+  const now = new Date();
+  const dayOfYear = Math.floor((now.getTime() - Date.UTC(now.getUTCFullYear(), 0, 0)) / 86_400_000);
+  return lines[dayOfYear % lines.length];
+};
 
 // Streak-at-risk: at local 20:00, nudge signed-in users who wrote yesterday but
 // not yet today. Loss aversion beats a fixed-time reminder — it only fires for
@@ -62,6 +111,71 @@ const teaserBody = (locale: string | null, count: number): string => {
   const table = count === 1 ? TEASER_ONE_BY_LOCALE : TEASER_MANY_BY_LOCALE;
   const tmpl = (locale ? table[locale] : undefined) ?? table.en;
   return tmpl.replace('{n}', String(count));
+};
+
+// ── Worry follow-up ─────────────────────────────────────────────────────────
+// Four days after a reflection that noticed something still in motion — Sunday's
+// reflection lands a follow-up on Thursday, far enough to be a real interval, close
+// enough that the thing is still true. Capped at 21 days so a stale worry is never
+// reopened. Content-free by design; see the migration for why nothing is stored.
+const FOLLOWUP_AFTER_DAYS = 4;
+const FOLLOWUP_MAX_AGE_DAYS = 21;
+const FOLLOWUP_HOUR = 10;
+const FOLLOWUP_BODY_BY_LOCALE: Record<string, string> = {
+  en: 'Something from last week seemed to be sitting with you. How’s it going?',
+  es: 'Algo de la semana pasada parecía estar pesándote. ¿Cómo va?',
+};
+const followupBody = (locale: string | null): string =>
+  (locale ? FOLLOWUP_BODY_BY_LOCALE[locale] : undefined) ?? FOLLOWUP_BODY_BY_LOCALE.en;
+
+// ── Reflective line ("presence") ────────────────────────────────────────────
+// NOT a reminder. This exists so the app is pleasantly present — a line worth
+// reading on its own, where writing is a possible side effect rather than the ask.
+// Different intent from the daily reminder, so a deliberately different pool: these
+// lean toward being worth reading, the reminder's lean toward "write".
+//
+// Tue/Thu/Sat at 10:00 local. Three days avoids Wed (teaser) and Sun (reflection)
+// entirely, and 10:00 avoids the 09:00 default that memory notifications use.
+//
+// Audience is everyone who did NOT set a reminder — people who set one already chose
+// their cadence and shouldn't get a second daily voice. Anyone who already wrote that
+// day is skipped (they don't need prompting), as is anyone who already received any
+// server push that day (see api.push_log).
+const LINE_WEEKDAYS = ['Tue', 'Thu', 'Sat'];
+const LINE_HOUR = 10;
+const REFLECTIVE_PRESENCE_LINES: Record<string, string[]> = {
+  en: [
+    'Rain doesn’t decide where to fall. It just falls, and the ground changes.',
+    'A room feels different depending on who just left it.',
+    'Most things you worried about last month have no name now.',
+    'The river never asks whether it is making progress.',
+    'You can hold a whole day in one sentence, if it’s the right one.',
+    'Attention is the rarest thing anyone gives anyone.',
+    'What you notice tends to be what you become.',
+    'There is a kind of tiredness that sleep doesn’t reach.',
+    'Stillness isn’t empty. It’s just quiet enough to hear.',
+    'Some feelings only arrive once you stop chasing them.',
+    'The same street looks different walking home.',
+    'Nothing in nature hurries, and everything gets where it’s going.',
+  ],
+  es: [
+    'La lluvia no decide dónde caer. Cae, y la tierra cambia.',
+    'Una habitación se siente distinta según quién acaba de irse.',
+    'Casi todo lo que te preocupaba el mes pasado hoy ya no tiene nombre.',
+    'El río nunca se pregunta si está avanzando.',
+    'Un día entero entra en una sola frase, si es la frase justa.',
+    'La atención es lo más raro que alguien le da a alguien.',
+    'Uno termina pareciéndose a lo que mira.',
+    'Hay un cansancio al que el sueño no llega.',
+    'La quietud no está vacía. Solo está lo bastante callada para oír.',
+    'Algunas cosas solo llegan cuando dejás de buscarlas.',
+    'La misma calle se ve distinta cuando volvés a casa.',
+    'En la naturaleza nada se apura, y todo llega.',
+  ],
+};
+const presenceLine = (locale: string | null, dayKey: number): string => {
+  const lines = (locale && REFLECTIVE_PRESENCE_LINES[locale]) || REFLECTIVE_PRESENCE_LINES.en;
+  return lines[dayKey % lines.length];
 };
 
 // Short local weekday name ('Mon'..'Sun') for an instant in a timezone.
@@ -320,11 +434,153 @@ Deno.serve(async (req) => {
     teasersSent = teaserResults.filter(Boolean).length;
   }
 
+  // ── Phase 4: follow-up on an unresolved worry ───────────────────────────────
+  // A few days after a reflection noticed something still in motion, ask how it's
+  // going. This is the most personal push the app sends and the only one triggered by
+  // what someone wrote — so two rules hold it in check:
+  //
+  //   1. CONTENT-FREE. The message never names the worry and is identical for
+  //      everyone. Notifications are readable on a lock screen by whoever is holding
+  //      the phone, and this feature selects for the most sensitive entries a person
+  //      has. Nothing about the topic is stored either (see the migration).
+  //   2. open_thread = 'thread' ONLY. Reflections classified 'sensitive' — acute
+  //      distress, grief, crisis — are deliberately skipped. An automated check-in
+  //      there is worse than silence.
+  //
+  // Sent BEFORE the presence phase on purpose: if a user qualifies for both today,
+  // this is the one worth their attention, and push_log makes the other stand down.
+  let followupsSent = 0;
+  const forceFollowup = isAdminTest && body.test === 'followup-now';
+  {
+    const cutoff = new Date(now.getTime() - FOLLOWUP_AFTER_DAYS * 86_400_000).toISOString();
+    const { data: pending } = await supabase
+      .from('reflections')
+      .select('id, user_id, created_at')
+      .eq('open_thread', 'thread')
+      .is('followup_sent_at', null)
+      .lt('created_at', forceFollowup ? new Date(now.getTime() + 86_400_000).toISOString() : cutoff)
+      // Only ever chase a recent one — a worry from six weeks ago is not something to
+      // reopen unprompted.
+      .gt('created_at', new Date(now.getTime() - FOLLOWUP_MAX_AGE_DAYS * 86_400_000).toISOString());
+
+    if (pending && pending.length > 0) {
+      const userIds = [...new Set(pending.map((r) => r.user_id as string))];
+      const { data: devices } = await supabase
+        .from('device_tokens')
+        .select('fcm_token, user_id, timezone, firebase_project_id, locale')
+        .in('user_id', userIds)
+        .not('timezone', 'is', null);
+
+      const { data: pushedRows } = await supabase
+        .from('push_log')
+        .select('user_id, sent_on')
+        .in('user_id', userIds);
+
+      for (const r of pending) {
+        const d = (devices ?? []).find((x) => x.user_id === r.user_id);
+        if (!d) continue;
+        // Same local hour as the presence line, and the same day-collision guard.
+        if (!forceFollowup && !matchesReminderTime(now, d.timezone, FOLLOWUP_HOUR, 0)) continue;
+        const localDate = localDateInTz(now, d.timezone);
+        if ((pushedRows ?? []).some((p) => p.user_id === r.user_id && p.sent_on === localDate))
+          continue;
+
+        const ok = await push(d, followupBody(d.locale), 'worry-followup');
+        // Stamp regardless of delivery: a failed push should not leave the row to be
+        // retried forever, and re-asking about a worry days later is worse than
+        // missing it once.
+        await supabase
+          .from('reflections')
+          .update({ followup_sent_at: new Date().toISOString() })
+          .eq('id', r.id);
+        if (ok) {
+          followupsSent++;
+          await supabase
+            .from('push_log')
+            .insert({ user_id: r.user_id, kind: 'worry_followup', sent_on: localDate })
+            .then(() => {});
+        }
+      }
+    }
+  }
+
+  // ── Phase 5: reflective line (presence) ─────────────────────────────────────
+  let linesSent = 0;
+  const forceLine = isAdminTest && body.test === 'line-now';
+  {
+    const { data: lineDevices } = await supabase
+      .from('device_tokens')
+      .select('fcm_token, user_id, timezone, firebase_project_id, locale, reminder_enabled')
+      .not('user_id', 'is', null)
+      .not('timezone', 'is', null);
+
+    const due = (lineDevices ?? []).filter(
+      (d) =>
+        // People who set a reminder chose their cadence — don't add a second voice.
+        !d.reminder_enabled &&
+        (forceLine ||
+          (LINE_WEEKDAYS.includes(localWeekdayInTz(now, d.timezone)) &&
+            matchesReminderTime(now, d.timezone, LINE_HOUR, 0))),
+    );
+
+    if (due.length > 0) {
+      const userIds = [...new Set(due.map((d) => d.user_id as string))];
+
+      // Skip anyone who already wrote today — the line is for presence, and someone
+      // mid-habit doesn't need prompting.
+      const { data: todaysEntries } = await supabase
+        .from('journal_entries')
+        .select('user_id, created_at')
+        .in('user_id', userIds)
+        .gte('created_at', new Date(now.getTime() - 24 * 3_600_000).toISOString());
+      const wroteRecently = new Set((todaysEntries ?? []).map((e) => e.user_id as string));
+
+      // Skip anyone who already heard from us today, whatever the reason. This is the
+      // only place anything coordinates total push volume across types.
+      const { data: alreadyPushed } = await supabase
+        .from('push_log')
+        .select('user_id, sent_on')
+        .in('user_id', userIds);
+      const pushedToday = new Set(
+        (alreadyPushed ?? [])
+          .filter((r) => {
+            const d = due.find((x) => x.user_id === r.user_id);
+            return d && r.sent_on === localDateInTz(now, d.timezone);
+          })
+          .map((r) => r.user_id as string),
+      );
+
+      const eligible = due.filter(
+        (d) => !wroteRecently.has(d.user_id as string) && !pushedToday.has(d.user_id as string),
+      );
+
+      const results = await Promise.all(
+        eligible.map(async (d) => {
+          const localDate = localDateInTz(now, d.timezone);
+          // Index off the local date so everyone on a given day gets the same line and
+          // a retry can't change it mid-day.
+          const dayKey = Math.floor(Date.parse(localDate) / 86_400_000);
+          const ok = await push(d, presenceLine(d.locale, dayKey), 'reflective-line');
+          if (ok) {
+            // Ignore conflicts: the unique index makes a retry a no-op rather than a
+            // duplicate, which is exactly what we want from an hourly cron.
+            await supabase
+              .from('push_log')
+              .insert({ user_id: d.user_id, kind: 'reflective_line', sent_on: localDate })
+              .then(() => {});
+          }
+          return ok;
+        }),
+      );
+      linesSent = results.filter(Boolean).length;
+    }
+  }
+
   if (staleTokens.length > 0) {
     await supabase.from('device_tokens').delete().in('fcm_token', staleTokens);
   }
 
   return new Response(
-    `Sent ${remindersSent} reminder(s), ${streaksSent} streak nudge(s), ${teasersSent} teaser(s)`,
+    `Sent ${remindersSent} reminder(s), ${streaksSent} streak nudge(s), ${teasersSent} teaser(s), ${followupsSent} follow-up(s), ${linesSent} line(s)`,
   );
 });

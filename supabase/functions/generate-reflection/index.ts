@@ -149,7 +149,18 @@ const encryptContent = async (plaintext: string): Promise<string> => {
 
 // Single source of truth — this was written twice (here and in the reflections row
 // insert), which would drift the moment one was changed.
-const REFLECTION_MODEL = 'claude-opus-4-8';
+//
+// Opus 5 (was opus-4-8). Weekly volume is single digits, so the cost delta is
+// rounding error, while this is the one output someone might pay for — quality is
+// worth more here than anywhere else in the app. The echo deliberately stays on
+// Sonnet 5: it fires on EVERY save with no cap, so it's the real spend.
+//
+// The prompt below was tuned against 4.8 — particularly the crisis clauses, the
+// anti-sameness rules, and the "never remark on the writing itself" guardrail added
+// after a model produced dismissive commentary about someone's entries. A model
+// change can move those. If reflections start reading as judgmental, this line is
+// the first thing to look at.
+const REFLECTION_MODEL = 'claude-opus-5';
 
 // ── The reflection prompt ────────────────────────────────────────────────────
 // The previous version mandated three beats (pattern → standout moment → open
@@ -213,6 +224,63 @@ const ECHO_FALLBACK = 'That’s here now, written down.';
 // cent on the output the whole retention story rests on. Revert here if the lines
 // don't measurably improve.
 const ECHO_MODEL = 'claude-sonnet-5';
+
+// ── Open-thread classifier (drives the mid-week follow-up) ───────────────────
+// Returns ONE token. Nothing it sees is stored — only the resulting enum lands in
+// api.reflections.open_thread, so no topic, phrase or summary is ever persisted.
+//
+// 'sensitive' exists to make the follow-up REFUSE to fire, not to escalate anything.
+// A scheduled, cheerful "how's it going?" aimed at someone in acute distress is worse
+// than silence: it's automated concern with nothing behind it, arriving on a lock
+// screen at a moment we know nothing about. The reflection prompt already carries the
+// crisis guidance; this classifier's only job here is to stay out of the way.
+//
+// Defaults to 'none' on any error or unexpected output — silence is the safe failure.
+const OPEN_THREAD_SYSTEM = `You read a short weekly reflection that was written for someone about their own journal entries.
+
+Answer with exactly ONE word, nothing else:
+
+none — nothing unresolved; the week reads as settled, ordinary, or already concluded.
+thread — an ordinary worry, decision, or situation that is still in motion and that a gentle check-in a few days later would suit. Work stress, a hard conversation, a decision pending, an illness getting better, a strained relationship.
+sensitive — signs of acute distress, crisis, grief, self-harm, abuse, or anything where an automated cheerful check-in could land badly.
+
+When uncertain between thread and sensitive, answer sensitive.
+When uncertain between none and thread, answer none.`;
+
+const classifyOpenThread = async (
+  reflectionText: string,
+): Promise<'none' | 'thread' | 'sensitive'> => {
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': Deno.env.get('ANTHROPIC_API_KEY')!,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        // Opus, not the echo's Sonnet. This call decides whether someone in acute
+        // distress gets an automated "how's it going?" — the failure that matters is
+        // grief or crisis misread as an ordinary worry, and that's a judgment call in
+        // the ambiguous middle. One 8-token call per reflection, single-digit weekly
+        // volume: the cheapest place in the app to buy better judgment.
+        model: REFLECTION_MODEL,
+        max_tokens: 8,
+        system: OPEN_THREAD_SYSTEM,
+        messages: [{ role: 'user', content: reflectionText }],
+      }),
+    });
+    if (!res.ok) return 'none';
+    const data = await res.json();
+    const word = ((data?.content ?? [])[0]?.text ?? '').trim().toLowerCase();
+    if (word.startsWith('thread')) return 'thread';
+    if (word.startsWith('sensitive')) return 'sensitive';
+    return 'none';
+  } catch {
+    // Never let classification break reflection generation — it's an add-on.
+    return 'none';
+  }
+};
 
 const callClaudeEcho = async (entryText: string): Promise<string> => {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -372,6 +440,12 @@ const generateForUser = async (
   );
   const encrypted = await encryptContent(reflectionText);
 
+  // Classify whether anything is still in motion, for the mid-week follow-up. Runs on
+  // the REFLECTION text, not the raw entries — the reflection is already a derived
+  // summary, so this adds no new exposure, and it keeps the carefully tuned reflection
+  // prompt untouched rather than bolting structured output onto it.
+  const openThread = await classifyOpenThread(reflectionText);
+
   const { data: inserted, error: insErr } = await admin
     .from('reflections')
     .insert({
@@ -381,6 +455,7 @@ const generateForUser = async (
       entry_count: rows.length,
       content: encrypted,
       model: REFLECTION_MODEL,
+      open_thread: openThread,
     })
     .select('id')
     .single();
