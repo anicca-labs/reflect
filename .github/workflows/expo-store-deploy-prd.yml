@@ -112,6 +112,14 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '23'
+          # Corepack manages Yarn 4 in this repo, so setup-node's automatic
+          # package-manager cache must stay off: it shells out to `yarn cache dir`
+          # using the runner's GLOBAL yarn 1.22, which refuses to run against a
+          # package.json declaring "packageManager": "yarn@4.9.2" and fails the step.
+          # Every other job here already disables it; this one didn't, which meant
+          # resolve-version failed on its first real invocation and — correctly — the
+          # deploy guard skipped the build rather than shipping an unresolved version.
+          package-manager-cache: false
 
       - id: resolve
         # Free-text dispatch inputs go through env, never interpolated into the shell
