@@ -68,9 +68,24 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     entitlements: {
       'aps-environment': 'production',
       'com.apple.developer.applesignin': ['Default'],
-      ...(process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID
-        ? { 'com.apple.developer.in-app-payments': [process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID] }
-        : {}),
+      // NO Apple Pay entitlement. This used to add
+      // 'com.apple.developer.in-app-payments' whenever EXPO_PUBLIC_APPLE_MERCHANT_ID
+      // was set — scaffolding from the plugin template, which includes it for apps
+      // that take Stripe payments. Reflect takes none: nothing in src/ or app/
+      // references Stripe, PassKit, Apple Pay or PaymentSheet, and all purchases go
+      // through StoreKit via RevenueCat.
+      //
+      // Shipping it anyway got 1.3 (34) rejected under Guideline 2.1 — "the app
+      // binary includes the PassKit framework for implementing Apple Pay, but we were
+      // unable to verify any integration". The Review Notes already said we don't use
+      // Apple Pay; that isn't enough, because the entitlement is an explicit CLAIM to
+      // the capability, so the binary contradicted the note. Apple's "just declare it
+      // in Review Notes" guidance covers a framework incidentally linked by a
+      // dependency, not one the app asks for by name.
+      //
+      // Removed rather than made conditional on the Doppler var: leaving the branch
+      // in place means anyone who sets that var later silently reintroduces a store
+      // rejection. If Reflect ever takes Apple Pay, add it back deliberately.
     },
   },
   android: {
