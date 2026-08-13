@@ -37,6 +37,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: true,
     bundleIdentifier: process.env.APP_IDENTIFIER ?? 'com.reflect.prod',
     googleServicesFile: process.env.GOOGLE_SERVICES_INFOPLIST_PATH,
+    // Universal Links. This is the half that was missing: assetlinks.json was hosted
+    // (verified by Google, on another domain) but NO build ever CLAIMED a domain, so
+    // neither OS ever asked for the file. Enabling "Associated Domains" on the App ID
+    // in the Apple Developer portal only PERMITS this entitlement — the domain list
+    // lives here, and nothing in App Store Connect is involved.
+    //
+    // Which paths open the app is decided by the apple-app-site-association file, not
+    // here (iOS has no path syntax in the entitlement). That file scopes the claim to
+    // /open, so privacy-policy and terms — linked from both store listings — keep
+    // opening in the browser.
+    associatedDomains: ['applinks:reflects.sytes.net'],
     infoPlist: {
       UIBackgroundModes: ['fetch', 'remote-notification'],
       ITSAppUsesNonExemptEncryption: false,
@@ -57,9 +68,24 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     entitlements: {
       'aps-environment': 'production',
       'com.apple.developer.applesignin': ['Default'],
-      ...(process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID
-        ? { 'com.apple.developer.in-app-payments': [process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID] }
-        : {}),
+      // NO Apple Pay entitlement. This used to add
+      // 'com.apple.developer.in-app-payments' whenever EXPO_PUBLIC_APPLE_MERCHANT_ID
+      // was set — scaffolding from the plugin template, which includes it for apps
+      // that take Stripe payments. Reflect takes none: nothing in src/ or app/
+      // references Stripe, PassKit, Apple Pay or PaymentSheet, and all purchases go
+      // through StoreKit via RevenueCat.
+      //
+      // Shipping it anyway got 1.3 (34) rejected under Guideline 2.1 — "the app
+      // binary includes the PassKit framework for implementing Apple Pay, but we were
+      // unable to verify any integration". The Review Notes already said we don't use
+      // Apple Pay; that isn't enough, because the entitlement is an explicit CLAIM to
+      // the capability, so the binary contradicted the note. Apple's "just declare it
+      // in Review Notes" guidance covers a framework incidentally linked by a
+      // dependency, not one the app asks for by name.
+      //
+      // Removed rather than made conditional on the Doppler var: leaving the branch
+      // in place means anyone who sets that var later silently reintroduces a store
+      // rejection. If Reflect ever takes Apple Pay, add it back deliberately.
     },
   },
   android: {
@@ -71,6 +97,22 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     predictiveBackGestureEnabled: false,
     googleServicesFile: process.env.GOOGLE_SERVICES_JSON_PATH,
     permissions: ['android.permission.POST_NOTIFICATIONS'],
+    // App Links — the app side of the Digital Asset Links handshake. The website
+    // vouching for the app (assetlinks.json) is only half of it; without an
+    // autoVerify intent filter here, Android never even fetches that file and just
+    // opens the browser. That was the state until now: the file was hosted and
+    // Google-verified, while no build claimed the domain.
+    //
+    // Scoped to /open by pathPrefix so the store-listed privacy-policy and
+    // terms pages keep opening in a browser rather than launching the app.
+    intentFilters: [
+      {
+        action: 'VIEW',
+        autoVerify: true,
+        data: [{ scheme: 'https', host: 'reflects.sytes.net', pathPrefix: '/open' }],
+        category: ['BROWSABLE', 'DEFAULT'],
+      },
+    ],
   },
   web: {
     output: 'static',
