@@ -252,6 +252,10 @@ msgstr "Cette semaine"
 msgid "Turn them on in Settings whenever you'd like a daily nudge."
 msgstr "Activez-les dans les Réglages quand vous souhaitez un rappel quotidien."
 
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Two entries are enough — tap and I’ll gather what you’ve written."
+msgstr "Deux entrées suffisent — touche et je rassemble ce que tu as écrit."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Unlimited entries unlocked. Keep writing."
 msgstr "Entrées illimitées débloquées. Continuez à écrire."
@@ -354,6 +358,10 @@ msgstr "Votre entrée est envoyée pour être lue et une ligne revient : celle-c
 #: src/components/molecules/EntryEcho/index.tsx
 #~ msgid "Your entry is sent to be read, and a line comes back — something you might not have noticed yourself. Every Sunday, your week is written back to you. A free account unlocks it, and brings your entries with you."
 #~ msgstr "Votre entrée est envoyée pour être lue, et une ligne revient : quelque chose que vous n’aviez peut-être pas remarqué. Chaque dimanche, votre semaine vous est réécrite. Un compte gratuit le débloque et emporte vos entrées avec vous."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your first reflection is waiting"
+msgstr "Ta première réflexion t’attend"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your next reflection arrives Sunday — in {daysToSunday} days 🍂"

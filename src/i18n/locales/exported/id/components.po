@@ -252,6 +252,10 @@ msgstr "Minggu ini"
 msgid "Turn them on in Settings whenever you'd like a daily nudge."
 msgstr "Aktifkan di Pengaturan kapan pun kamu ingin pengingat harian."
 
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Two entries are enough — tap and I’ll gather what you’ve written."
+msgstr "Dua catatan sudah cukup — ketuk dan kukumpulkan tulisanmu."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Unlimited entries unlocked. Keep writing."
 msgstr "Entri tak terbatas terbuka. Terus menulis."
@@ -354,6 +358,10 @@ msgstr "Entrimu dikirim untuk dibaca dan kembali satu kalimat: entri ini, dan se
 #: src/components/molecules/EntryEcho/index.tsx
 #~ msgid "Your entry is sent to be read, and a line comes back — something you might not have noticed yourself. Every Sunday, your week is written back to you. A free account unlocks it, and brings your entries with you."
 #~ msgstr "Entrimu dikirim untuk dibaca, lalu kembali satu kalimat: sesuatu yang mungkin belum kamu sadari. Setiap Minggu, pekanmu dituliskan kembali untukmu. Akun gratis membukanya, sekaligus membawa serta entrimu."
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Your first reflection is waiting"
+msgstr "Refleksi pertamamu sudah menunggu"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your next reflection arrives Sunday — in {daysToSunday} days 🍂"
