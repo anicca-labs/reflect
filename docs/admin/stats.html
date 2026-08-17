@@ -65,33 +65,6 @@
         font-style: normal;
         text-transform: none;
       }
-      .env-row {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-      .env-btn {
-        flex: 1;
-        padding: 8px;
-        border-radius: 8px;
-        border: 1px solid #333;
-        background: #111;
-        color: #888;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 500;
-        transition: all 0.15s;
-      }
-      .env-btn.active {
-        background: #fff;
-        color: #000;
-        border-color: #fff;
-      }
-      .env-btn.active.danger {
-        background: #ff4444;
-        color: #fff;
-        border-color: #ff4444;
-      }
       label span.field-label {
         display: block;
         font-size: 12px;
@@ -116,18 +89,32 @@
       select:focus {
         border-color: #555;
       }
-      input[type='date'] {
-        color-scheme: dark;
-      }
       .day-row {
         display: flex;
         gap: 8px;
         align-items: center;
         flex-wrap: wrap;
       }
-      .day-row input[type='date'] {
-        width: auto;
+      .day-text {
+        width: 120px;
         flex: 0 0 auto;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.03em;
+      }
+      .day-text.bad {
+        border-color: #7a2a2a;
+        color: #f4634f;
+      }
+      /* Present only to open the OS date picker from the calendar button — never
+         shown, because its own rendering is locale-dependent. */
+      .day-native {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        color-scheme: dark;
       }
       .nav-btn,
       .ghost-btn {
@@ -345,10 +332,6 @@
         <h1>Reflect &mdash; Daily Stats</h1>
         <a href="./push.html">Push console &rarr;</a>
       </div>
-      <div class="env-row">
-        <button class="env-btn active" id="btn-stg" onclick="setEnv('stg')">Staging</button>
-        <button class="env-btn danger" id="btn-prd" onclick="setEnv('prd')">Production</button>
-      </div>
       <label style="display: block; margin-bottom: 16px">
         <span class="field-label">Admin Secret</span>
         <input type="password" id="secret" autocomplete="current-password" />
@@ -357,7 +340,23 @@
         <button class="nav-btn" id="prev-btn" onclick="stepDay(-1)" title="Previous day">
           &#9664;
         </button>
-        <input type="date" id="day" onchange="load()" />
+        <!-- The visible field is plain text so the date always reads DD/MM/YYYY; a
+             native date input renders in the BROWSER's locale, which is the one thing
+             we can't control. The native one is kept alongside, hidden, purely to open
+             the OS calendar from the button. -->
+        <input
+          type="text"
+          id="day-text"
+          class="day-text"
+          inputmode="numeric"
+          maxlength="10"
+          placeholder="DD/MM/YYYY"
+          onchange="applyTypedDay()"
+        />
+        <button class="nav-btn" id="cal-btn" onclick="openPicker()" title="Pick a date">
+          &#128197;
+        </button>
+        <input type="date" id="day" class="day-native" onchange="applyPickedDay()" tabindex="-1" />
         <button class="nav-btn" id="next-btn" onclick="stepDay(1)" title="Next day">&#9654;</button>
         <button class="ghost-btn" onclick="jumpTo(0)">Today</button>
         <button class="ghost-btn" onclick="jumpTo(-1)">Yesterday</button>
@@ -419,15 +418,19 @@
     </div>
 
     <script>
-      const URLS = {
-        stg: 'https://sznlkorcninofgezkwmy.supabase.co/functions/v1/admin-stats',
-        prd: 'https://orrcfftpaxlldolavipm.supabase.co/functions/v1/admin-stats',
-      };
+      // Production only. Staging carries test data, so a staging reading of "how many
+      // people wrote today" is noise — the push console keeps its env toggle because
+      // sending a test push somewhere harmless is the point there; reading numbers
+      // from a test database isn't. The staging function is deployed either way and
+      // can be curled directly if it's ever needed.
+      const ENDPOINT = 'https://orrcfftpaxlldolavipm.supabase.co/functions/v1/admin-stats';
       // Days are cut in the viewer's own timezone — "today" on this page means the
       // day you're living in, and the server computes the boundaries from this name.
       const TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-      let env = localStorage.getItem('reflect_stats_env') || 'stg';
-      let latest = null;
+      // The selected day, always ISO (YYYY-MM-DD) internally — that's what the API and
+      // the native picker want. DD/MM/YYYY is a presentation concern, applied at the
+      // edges by fmtDMY().
+      let day = null;
 
       // Tile definitions: [key in stats, label, title]. Rendered in these three
       // groups; a metric missing from the payload is skipped, so the server can add
@@ -457,10 +460,11 @@
 
       const secretEl = document.getElementById('secret');
       const dayEl = document.getElementById('day');
+      const dayTextEl = document.getElementById('day-text');
       secretEl.value = localStorage.getItem('reflect_admin_secret') || '';
 
       function todayLocal() {
-        // en-CA renders as YYYY-MM-DD, which is what <input type="date"> wants.
+        // en-CA renders as YYYY-MM-DD, the ISO shape used internally.
         return new Intl.DateTimeFormat('en-CA', {
           timeZone: TZ,
           year: 'numeric',
@@ -469,30 +473,82 @@
         }).format(new Date());
       }
 
-      function shiftDay(day, delta) {
+      function shiftDay(iso, delta) {
         // Noon UTC anchor so a ±1 step survives DST transitions.
-        const d = new Date(day + 'T12:00:00Z');
+        const d = new Date(iso + 'T12:00:00Z');
         d.setUTCDate(d.getUTCDate() + delta);
         return d.toISOString().slice(0, 10);
       }
 
-      function setEnv(e) {
-        env = e;
-        localStorage.setItem('reflect_stats_env', e);
-        document.getElementById('btn-stg').className = 'env-btn' + (e === 'stg' ? ' active' : '');
-        document.getElementById('btn-prd').className =
-          'env-btn danger' + (e === 'prd' ? ' active' : '');
-        load();
+      // ISO → DD/MM/YYYY, the only format this page shows a date in.
+      function fmtDMY(iso) {
+        if (!iso) return '';
+        const [y, m, d] = iso.split('-');
+        return `${d}/${m}/${y}`;
+      }
+
+      // DD/MM/YYYY → ISO, or null when it isn't a real date. Separators are loose
+      // (/ - .) and a pasted ISO string is accepted too, but the day is ALWAYS read
+      // first: 05/08/2026 is 5 August, never 8 May.
+      function parseDMY(text) {
+        const t = (text || '').trim();
+        let y, mo, d;
+        let m = t.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/);
+        if (m) {
+          d = +m[1];
+          mo = +m[2];
+          y = +m[3];
+        } else if ((m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/))) {
+          y = +m[1];
+          mo = +m[2];
+          d = +m[3];
+        } else {
+          return null;
+        }
+        const iso = `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        // Round-trip through Date to reject 31/02 and friends, which would otherwise
+        // roll over into the next month.
+        const dt = new Date(iso + 'T12:00:00Z');
+        if (isNaN(dt.getTime()) || dt.getUTCDate() !== d || dt.getUTCMonth() + 1 !== mo)
+          return null;
+        return iso;
+      }
+
+      // The single way the selected day changes: keeps the text field, the hidden
+      // native picker and `day` in step, then reloads.
+      function setDay(iso, reload = true) {
+        day = iso;
+        dayTextEl.value = fmtDMY(iso);
+        dayTextEl.classList.remove('bad');
+        dayEl.value = iso;
+        document.getElementById('next-btn').disabled = iso >= todayLocal();
+        if (reload) load();
+      }
+
+      function applyTypedDay() {
+        const iso = parseDMY(dayTextEl.value);
+        if (!iso) {
+          dayTextEl.classList.add('bad');
+          showResult('error', `"${dayTextEl.value}" isn't a date — use DD/MM/YYYY.`);
+          return;
+        }
+        setDay(iso);
+      }
+
+      function applyPickedDay() {
+        if (dayEl.value) setDay(dayEl.value);
+      }
+
+      function openPicker() {
+        if (dayEl.showPicker) dayEl.showPicker();
       }
 
       function stepDay(delta) {
-        dayEl.value = shiftDay(dayEl.value || todayLocal(), delta);
-        load();
+        setDay(shiftDay(day || todayLocal(), delta));
       }
 
       function jumpTo(delta) {
-        dayEl.value = delta === 0 ? todayLocal() : shiftDay(todayLocal(), delta);
-        load();
+        setDay(delta === 0 ? todayLocal() : shiftDay(todayLocal(), delta));
       }
 
       function esc(s) {
@@ -576,21 +632,20 @@
             const n = Number(s.entries);
             const h = Math.round((n / max) * 100);
             const sel = s.day === selectedDay ? ' sel' : '';
-            const title = `${s.day} · ${n} entries · ${s.writers} writers · ${s.signups} signups · ${s.reflections} reflections`;
+            const title = `${fmtDMY(s.day)} · ${n} entries · ${s.writers} writers · ${s.signups} signups · ${s.reflections} reflections`;
             return `
         <div class="bar-wrap${sel}" title="${esc(title)}" onclick="pickDay('${esc(s.day)}')">
           <div class="bar-n">${n}</div>
           <div class="bar" style="height:${h}%"></div>
-          <div class="bar-x">${esc(s.day.slice(5))}</div>
+          <div class="bar-x">${esc(fmtDMY(s.day).slice(0, 5))}</div>
         </div>`;
           })
           .join('');
         document.getElementById('chart-card').style.display = '';
       }
 
-      function pickDay(day) {
-        dayEl.value = day;
-        load();
+      function pickDay(iso) {
+        setDay(iso);
       }
 
       function renderTotals(t) {
@@ -610,17 +665,14 @@
           return;
         }
         localStorage.setItem('reflect_admin_secret', secret);
-        if (!dayEl.value) dayEl.value = todayLocal();
-        const day = dayEl.value;
-        // Never offer a day that hasn't started yet in this timezone.
-        document.getElementById('next-btn').disabled = day >= todayLocal();
+        if (!day) setDay(todayLocal(), false);
 
         const btn = document.getElementById('load-btn');
         btn.disabled = true;
         const prevLabel = btn.textContent;
         btn.textContent = 'Loading…';
         try {
-          const res = await fetch(URLS[env], {
+          const res = await fetch(ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-Admin-Secret': secret },
             body: JSON.stringify({ day, tz: TZ, days: 14, limit: 15 }),
@@ -630,30 +682,27 @@
             return;
           }
           const data = await res.json();
-          latest = data;
           showResult(null);
           renderTiles(data.stats || {}, data.prev);
           renderWriters(data.top_writers || []);
           renderChart(data.series || [], data.day);
           renderTotals((data.stats || {}).totals);
 
-          const label = data.is_today
-            ? 'Today'
-            : new Date(day + 'T12:00:00Z').toLocaleDateString([], {
-                weekday: 'long',
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-                timeZone: 'UTC',
-              });
-          document.getElementById('tiles-title').textContent = label;
-          document.getElementById('compare-note').textContent = `vs ${data.prev_day}`;
+          // Weekday for orientation, then the date itself in DD/MM/YYYY. The noon-UTC
+          // anchor is read back in UTC so the weekday matches the date shown.
+          const weekday = new Date(data.day + 'T12:00:00Z').toLocaleDateString([], {
+            weekday: 'long',
+            timeZone: 'UTC',
+          });
+          document.getElementById('tiles-title').textContent =
+            (data.is_today ? 'Today · ' : `${weekday} · `) + fmtDMY(data.day);
+          document.getElementById('compare-note').textContent = `vs ${fmtDMY(data.prev_day)}`;
           const tzNote =
             data.tz === data.requested_tz
               ? data.tz
               : `${data.tz} (fell back — "${data.requested_tz}" is unknown to the server)`;
           document.getElementById('meta').textContent =
-            `${env === 'prd' ? 'Production' : 'Staging'} · days cut in ${tzNote} · ` +
+            `Production · days cut in ${tzNote} · ` +
             `loaded ${new Date(data.generated_at).toLocaleTimeString()}`;
         } catch (err) {
           showResult('error', err.message);
@@ -664,8 +713,10 @@
       }
 
       secretEl.addEventListener('change', load);
-      dayEl.value = todayLocal();
-      setEnv(env);
+      // showPicker() is what makes the hidden native input useful; without it the
+      // calendar button would do nothing, so it goes away and typing is the way in.
+      if (!dayEl.showPicker) document.getElementById('cal-btn').style.display = 'none';
+      setDay(todayLocal());
     </script>
   </body>
 </html>
