@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Modal } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useSessionStore, useReflectionOpenStore, useAppLockStore } from '@/src/stores';
 import Animated, { FadeOutUp } from 'react-native-reanimated';
@@ -14,6 +15,8 @@ import {
   useGenerateReflection,
   useMarkReflectionSeen,
   useRatingsAsk,
+  useAiReflectionsSetting,
+  useJournalEntries,
   reflectionMeta,
   type Reflection,
 } from '@hooks';
@@ -325,8 +328,12 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
 };
 
 // ── The "your week is ready" nudge card on the Journal home ──────────────────
+// One-shot forever: the invite is an offer, not a campaign. A session-only dismiss
+// would re-pitch every launch to someone who already said no.
+const INVITE_DISMISSED_KEY = '@reflect/first-reflection-invite-dismissed';
+
 const WeeklyReflectionBanner = () => {
-  const { data: reflections = [] } = useReflections();
+  const { data: reflections = [], isSuccess: reflectionsSettled } = useReflections();
   const markSeen = useMarkReflectionSeen();
   const { maybeAsk: maybeAskRating } = useRatingsAsk();
   const [reading, setReading] = useState(false);
@@ -364,6 +371,55 @@ const WeeklyReflectionBanner = () => {
     if (!latest.seen_at) markSeen.mutate(latest.id);
   };
 
+  // ── First-reflection invite ───────────────────────────────────────────────
+  // 18 of 20 consented users had never received a reflection: the Sunday cron
+  // needs 2 entries inside one week, a bar slow writers never clear. The instant
+  // first-reflection machinery already existed on the Reflections tab — this
+  // surfaces it on the journal, where those users actually are. Consented users
+  // ONLY, on purpose: generation implies consent server-side, and a second
+  // consent-granting surface would contaminate the echo card's acceptance
+  // measurement (the metric everything else is judged by this week).
+  const isAnonymous = useSessionStore((s) => s.isAnonymous);
+  const { enabled: aiConsented, settled: consentSettled } = useAiReflectionsSetting();
+  const { data: entries = [] } = useJournalEntries();
+  const generate = useGenerateReflection();
+  const { alert } = useToast();
+  const { t } = useLingui();
+  // null = storage not read yet; render nothing rather than flash-and-remove.
+  const [inviteDismissed, setInviteDismissed] = useState<boolean | null>(null);
+  useEffect(() => {
+    AsyncStorage.getItem(INVITE_DISMISSED_KEY)
+      .then((v) => setInviteDismissed(v === '1'))
+      .catch(() => setInviteDismissed(true));
+  }, []);
+
+  const showInvite =
+    !show &&
+    !isAnonymous &&
+    consentSettled &&
+    aiConsented &&
+    reflectionsSettled &&
+    reflections.length === 0 &&
+    entries.length >= MIN_ENTRIES &&
+    inviteDismissed === false;
+
+  const dismissInvite = () => {
+    setInviteDismissed(true);
+    AsyncStorage.setItem(INVITE_DISMISSED_KEY, '1').catch(() => {});
+  };
+
+  const gatherFirst = async () => {
+    if (generate.isPending) return;
+    const res = await generate.mutateAsync('recent').catch(() => null);
+    if (res?.status === 'ok') {
+      // The invalidated query makes the new reflection `latest`; keeping the modal
+      // flag up opens it the moment the row lands.
+      setReading(true);
+    } else {
+      alert({ title: t`Couldn't generate`, message: t`Please try again.`, preset: 'error' });
+    }
+  };
+
   return (
     <>
       {show ? (
@@ -397,9 +453,49 @@ const WeeklyReflectionBanner = () => {
         </Animated.View>
       ) : null}
 
+      {showInvite ? (
+        <Animated.View exiting={FadeOutUp.duration(220)}>
+          <BaseTouchable
+            onPress={gatherFirst}
+            disabled={generate.isPending}
+            bg="$surface-card"
+            rounded="$4"
+            p="$4"
+            mb="$4"
+            borderWidth={1}
+            borderColor="$accentBackground"
+          >
+            <XStack justify="space-between" items="flex-start" gap="$3">
+              <YStack flex={1} gap="$1">
+                <BodyMdBold color="$text-emphasis">
+                  🍂 <Trans>Your first reflection is waiting</Trans>
+                </BodyMdBold>
+                <BodySm color="$text-secondary">
+                  <Trans>Two entries are enough — tap and I’ll gather what you’ve written.</Trans>
+                </BodySm>
+              </YStack>
+              {generate.isPending ? (
+                <Spinner size="small" color="$accentBackground" />
+              ) : (
+                <BaseTouchable
+                  onPress={dismissInvite}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                >
+                  <LabelLg color="$text-disabled">✕</LabelLg>
+                </BaseTouchable>
+              )}
+            </XStack>
+          </BaseTouchable>
+        </Animated.View>
+      ) : null}
+
       <ReflectionReadModal
         reflection={(reading || openedFromPush) && latest ? latest : null}
         onClose={() => {
+          // A reflection opened from the invite was never marked seen (open() only
+          // runs for the ready banner) — mark it here or the ready banner pops the
+          // moment the modal closes, announcing what was just read.
+          if (latest && !latest.seen_at) markSeen.mutate(latest.id);
           setReading(false);
           setPendingReflectionOpen(false);
           maybeAskRating();

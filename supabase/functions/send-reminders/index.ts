@@ -178,6 +178,26 @@ const presenceLine = (locale: string | null, dayKey: number): string => {
   return lines[dayKey % lines.length];
 };
 
+// The Sunday reflection is an appointment, but nothing told consented users it was
+// coming — 18 of 20 opted-in users got nothing on 2026-08-16 because they hadn't
+// written the 2 entries the cron needs. For those users the presence slot carries
+// the appointment instead of a generic line: same send, same volume, better aim.
+// Index 0 = no entries yet this week, 1 = one entry so far.
+const APPOINTMENT_LINES: Record<string, [string, string]> = {
+  en: [
+    'Your Sunday reflection is waiting on this week’s pages. Two are enough.',
+    'One page this week so far. One more, and Sunday has something to gather.',
+  ],
+  es: [
+    'Tu reflexión del domingo espera las páginas de esta semana. Con dos alcanza.',
+    'Una página esta semana. Una más, y el domingo tendrá algo que recoger.',
+  ],
+};
+const appointmentLine = (locale: string | null, weekCount: number): string => {
+  const lines = (locale && APPOINTMENT_LINES[locale]) || APPOINTMENT_LINES.en;
+  return lines[Math.min(weekCount, 1)];
+};
+
 // Short local weekday name ('Mon'..'Sun') for an instant in a timezone.
 const localWeekdayInTz = (instant: Date, timezone: string): string =>
   new Intl.DateTimeFormat('en-US', { timeZone: timezone, weekday: 'short' }).format(instant);
@@ -554,13 +574,74 @@ Deno.serve(async (req) => {
         (d) => !wroteRecently.has(d.user_id as string) && !pushedToday.has(d.user_id as string),
       );
 
+      // Consented users who haven't yet fed next Sunday's reflection get the
+      // appointment line instead of a generic one (see APPOINTMENT_LINES). Excluded:
+      // free users already at the reflection limit — the Sunday cron skips them, so
+      // promising a delivery would be a lie told right above the Pro gate.
+      const eligibleIds = [...new Set(eligible.map((d) => d.user_id as string))];
+      const appointmentFor = new Set<string>();
+      const weekCounts = new Map<string, number>();
+      if (eligibleIds.length > 0) {
+        const { data: consentRows } = await supabase
+          .from('user_settings')
+          .select('user_id')
+          .eq('ai_reflections_enabled', true)
+          .in('user_id', eligibleIds);
+        const consented = (consentRows ?? []).map((r) => r.user_id as string);
+        if (consented.length > 0) {
+          const [{ data: reflRows }, { data: proRows }] = await Promise.all([
+            supabase.from('reflections').select('user_id').in('user_id', consented),
+            supabase
+              .from('entitlements')
+              .select('user_id')
+              .eq('is_pro', true)
+              .in('user_id', consented),
+          ]);
+          const reflCounts = new Map<string, number>();
+          for (const r of reflRows ?? []) {
+            const uid = r.user_id as string;
+            reflCounts.set(uid, (reflCounts.get(uid) ?? 0) + 1);
+          }
+          const pro = new Set((proRows ?? []).map((r) => r.user_id as string));
+          // Keep in sync with FREE_REFLECTION_LIMIT in generate-reflection.
+          const FREE_REFLECTION_LIMIT = 4;
+          const candidates = consented.filter(
+            (uid) => pro.has(uid) || (reflCounts.get(uid) ?? 0) < FREE_REFLECTION_LIMIT,
+          );
+          if (candidates.length > 0) {
+            // Entries since the last Sunday-16:00 UTC cron — exactly the window the
+            // next reflection will read.
+            const cutoff = new Date(now.getTime());
+            cutoff.setUTCHours(16, 0, 0, 0);
+            if (cutoff.getTime() > now.getTime()) cutoff.setUTCDate(cutoff.getUTCDate() - 1);
+            while (cutoff.getUTCDay() !== 0) cutoff.setUTCDate(cutoff.getUTCDate() - 1);
+            const { data: weekRows } = await supabase
+              .from('journal_entries')
+              .select('user_id')
+              .in('user_id', candidates)
+              .gte('created_at', cutoff.toISOString());
+            for (const r of weekRows ?? []) {
+              const uid = r.user_id as string;
+              weekCounts.set(uid, (weekCounts.get(uid) ?? 0) + 1);
+            }
+            for (const uid of candidates) {
+              if ((weekCounts.get(uid) ?? 0) < 2) appointmentFor.add(uid);
+            }
+          }
+        }
+      }
+
       const results = await Promise.all(
         eligible.map(async (d) => {
+          const uid = d.user_id as string;
           const localDate = localDateInTz(now, d.timezone);
           // Index off the local date so everyone on a given day gets the same line and
           // a retry can't change it mid-day.
           const dayKey = Math.floor(Date.parse(localDate) / 86_400_000);
-          const ok = await push(d, presenceLine(d.locale, dayKey), 'reflective-line');
+          const line = appointmentFor.has(uid)
+            ? appointmentLine(d.locale, weekCounts.get(uid) ?? 0)
+            : presenceLine(d.locale, dayKey);
+          const ok = await push(d, line, 'reflective-line');
           if (ok) {
             // Ignore conflicts: the unique index makes a retry a no-op rather than a
             // duplicate, which is exactly what we want from an hourly cron.
