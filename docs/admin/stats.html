@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reflect - Daily Stats</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: #0f0f0f;
+        color: #e8e8e8;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 48px 16px;
+        gap: 16px;
+      }
+      .card {
+        width: 100%;
+        max-width: 900px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 12px;
+        padding: 24px 28px;
+      }
+      .card-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      h1 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #fff;
+      }
+      h2 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      a {
+        color: #7aa2ff;
+        text-decoration: none;
+        font-size: 13px;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .muted {
+        color: #666;
+        font-size: 12px;
+        font-style: normal;
+        text-transform: none;
+      }
+      .env-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .env-btn {
+        flex: 1;
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid #333;
+        background: #111;
+        color: #888;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.15s;
+      }
+      .env-btn.active {
+        background: #fff;
+        color: #000;
+        border-color: #fff;
+      }
+      .env-btn.active.danger {
+        background: #ff4444;
+        color: #fff;
+        border-color: #ff4444;
+      }
+      label span.field-label {
+        display: block;
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      input,
+      select {
+        background: #111;
+        border: 1px solid #2a2a2a;
+        border-radius: 8px;
+        color: #e8e8e8;
+        font-size: 14px;
+        padding: 10px 12px;
+        outline: none;
+        font-family: inherit;
+        width: 100%;
+      }
+      input:focus,
+      select:focus {
+        border-color: #555;
+      }
+      input[type='date'] {
+        color-scheme: dark;
+      }
+      .day-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .day-row input[type='date'] {
+        width: auto;
+        flex: 0 0 auto;
+      }
+      .nav-btn,
+      .ghost-btn {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid #333;
+        background: #111;
+        color: #aaa;
+        cursor: pointer;
+        font-size: 13px;
+        font-family: inherit;
+        white-space: nowrap;
+        transition: all 0.15s;
+      }
+      .nav-btn:hover,
+      .ghost-btn:hover {
+        border-color: #555;
+        color: #fff;
+      }
+      .nav-btn:disabled,
+      .ghost-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .ghost-btn.primary {
+        background: #e8e8e8;
+        color: #000;
+        border-color: #e8e8e8;
+        font-weight: 600;
+      }
+      .spacer {
+        flex: 1;
+      }
+      .tiles {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+      }
+      .tile {
+        background: #111;
+        border: 1px solid #262626;
+        border-radius: 10px;
+        padding: 14px;
+      }
+      .tile .k {
+        font-size: 11px;
+        color: #777;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 6px;
+      }
+      .tile .v {
+        font-size: 26px;
+        font-weight: 600;
+        color: #fff;
+        line-height: 1.1;
+      }
+      .tile .d {
+        font-size: 11px;
+        margin-top: 6px;
+        color: #666;
+      }
+      .up {
+        color: #4caf50;
+      }
+      .down {
+        color: #f4634f;
+      }
+      .flat {
+        color: #666;
+      }
+      .group-title {
+        font-size: 11px;
+        color: #777;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin: 20px 0 8px;
+      }
+      .group-title:first-of-type {
+        margin-top: 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th {
+        text-align: left;
+        font-size: 11px;
+        color: #777;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0 10px 8px;
+        font-weight: 500;
+      }
+      td {
+        padding: 9px 10px;
+        border-top: 1px solid #222;
+        color: #ccc;
+        white-space: nowrap;
+      }
+      td.email {
+        white-space: normal;
+        word-break: break-all;
+        color: #e8e8e8;
+      }
+      td.num,
+      th.num {
+        text-align: right;
+      }
+      tr:hover td {
+        background: #1e1e1e;
+      }
+      .rank {
+        color: #555;
+        font-family: monospace;
+      }
+      .pro {
+        display: inline-block;
+        padding: 1px 7px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 600;
+        background: #2b2113;
+        color: #e0a643;
+        border: 1px solid #4a3a1a;
+      }
+      .chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 4px;
+        height: 130px;
+        padding-top: 8px;
+      }
+      .bar-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        height: 100%;
+        cursor: pointer;
+        gap: 4px;
+      }
+      .bar {
+        width: 100%;
+        min-height: 2px;
+        background: #2f4a7a;
+        border-radius: 3px 3px 0 0;
+        transition: background 0.15s;
+      }
+      .bar-wrap:hover .bar {
+        background: #4a6fb5;
+      }
+      .bar-wrap.sel .bar {
+        background: #7aa2ff;
+      }
+      .bar-n {
+        font-size: 10px;
+        color: #888;
+      }
+      .bar-x {
+        font-size: 9px;
+        color: #555;
+        font-family: monospace;
+      }
+      .bar-wrap.sel .bar-x,
+      .bar-wrap.sel .bar-n {
+        color: #7aa2ff;
+      }
+      .totals {
+        font-size: 12px;
+        color: #888;
+        line-height: 1.9;
+      }
+      .totals b {
+        color: #e8e8e8;
+        font-weight: 600;
+      }
+      #result {
+        margin-top: 14px;
+        padding: 12px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        display: none;
+        white-space: pre-wrap;
+      }
+      #result.error {
+        background: #2a0d0d;
+        border: 1px solid #4a1a1a;
+        color: #f44336;
+      }
+      #result.info {
+        background: #0d1a2a;
+        border: 1px solid #1a2f4a;
+        color: #7aa2ff;
+      }
+      .empty {
+        padding: 18px 10px;
+        font-size: 13px;
+        color: #555;
+        text-align: center;
+      }
+      .hint {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.6;
+        margin-top: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="card-head">
+        <h1>Reflect &mdash; Daily Stats</h1>
+        <a href="./push.html">Push console &rarr;</a>
+      </div>
+      <div class="env-row">
+        <button class="env-btn active" id="btn-stg" onclick="setEnv('stg')">Staging</button>
+        <button class="env-btn danger" id="btn-prd" onclick="setEnv('prd')">Production</button>
+      </div>
+      <label style="display: block; margin-bottom: 16px">
+        <span class="field-label">Admin Secret</span>
+        <input type="password" id="secret" autocomplete="current-password" />
+      </label>
+      <div class="day-row">
+        <button class="nav-btn" id="prev-btn" onclick="stepDay(-1)" title="Previous day">
+          &#9664;
+        </button>
+        <input type="date" id="day" onchange="load()" />
+        <button class="nav-btn" id="next-btn" onclick="stepDay(1)" title="Next day">&#9654;</button>
+        <button class="ghost-btn" onclick="jumpTo(0)">Today</button>
+        <button class="ghost-btn" onclick="jumpTo(-1)">Yesterday</button>
+        <button class="ghost-btn" onclick="jumpTo(-2)">2 days ago</button>
+        <span class="spacer"></span>
+        <button class="ghost-btn primary" id="load-btn" onclick="load()">Refresh</button>
+      </div>
+      <div class="hint" id="meta"></div>
+      <div id="result"></div>
+    </div>
+
+    <div class="card" id="tiles-card" style="display: none">
+      <div class="card-head">
+        <h2 id="tiles-title">The day</h2>
+        <span class="muted" id="compare-note"></span>
+      </div>
+      <div class="group-title">Writing</div>
+      <div class="tiles" id="tiles-writing"></div>
+      <div class="group-title">Growth &amp; revenue</div>
+      <div class="tiles" id="tiles-growth"></div>
+      <div class="group-title">AI reflections &amp; push</div>
+      <div class="tiles" id="tiles-ai"></div>
+    </div>
+
+    <div class="card" id="writers-card" style="display: none">
+      <div class="card-head">
+        <h2>Top writers</h2>
+        <span class="muted"
+          >Ranked by entries written that day &mdash; content is encrypted, so word counts aren't
+          available server-side.</span
+        >
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 28px"></th>
+            <th>Account</th>
+            <th class="num">Entries</th>
+            <th class="num">First</th>
+            <th class="num">Last</th>
+            <th class="num">Lifetime</th>
+          </tr>
+        </thead>
+        <tbody id="writers-body"></tbody>
+      </table>
+    </div>
+
+    <div class="card" id="chart-card" style="display: none">
+      <div class="card-head">
+        <h2>Entries per day</h2>
+        <span class="muted">Click a bar to jump to that day</span>
+      </div>
+      <div class="chart" id="chart"></div>
+    </div>
+
+    <div class="card" id="totals-card" style="display: none">
+      <div class="card-head"><h2>All-time totals</h2></div>
+      <div class="totals" id="totals"></div>
+    </div>
+
+    <script>
+      const URLS = {
+        stg: 'https://sznlkorcninofgezkwmy.supabase.co/functions/v1/admin-stats',
+        prd: 'https://orrcfftpaxlldolavipm.supabase.co/functions/v1/admin-stats',
+      };
+      // Days are cut in the viewer's own timezone — "today" on this page means the
+      // day you're living in, and the server computes the boundaries from this name.
+      const TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+      let env = localStorage.getItem('reflect_stats_env') || 'stg';
+      let latest = null;
+
+      // Tile definitions: [key in stats, label, title]. Rendered in these three
+      // groups; a metric missing from the payload is skipped, so the server can add
+      // one before this page knows about it.
+      const GROUPS = {
+        'tiles-writing': [
+          ['entries', 'Entries'],
+          ['writers', 'Writers'],
+          ['new_writers', 'New writers'],
+          ['device_activations', 'Guest activations'],
+        ],
+        'tiles-growth': [
+          ['signups', 'Signups'],
+          ['paywall_views', 'Paywall views'],
+          ['pro_events', 'Pro events'],
+        ],
+        'tiles-ai': [
+          ['reflections', 'Reflections'],
+          ['reflections_seen', 'Reflections seen'],
+          ['feedback_yes', 'Felt true 👍'],
+          ['feedback_no', "Didn't 👎"],
+          ['echoes', 'Echoes'],
+          ['share_taps', 'Share taps'],
+          ['pushes', 'Pushes sent'],
+        ],
+      };
+
+      const secretEl = document.getElementById('secret');
+      const dayEl = document.getElementById('day');
+      secretEl.value = localStorage.getItem('reflect_admin_secret') || '';
+
+      function todayLocal() {
+        // en-CA renders as YYYY-MM-DD, which is what <input type="date"> wants.
+        return new Intl.DateTimeFormat('en-CA', {
+          timeZone: TZ,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).format(new Date());
+      }
+
+      function shiftDay(day, delta) {
+        // Noon UTC anchor so a ±1 step survives DST transitions.
+        const d = new Date(day + 'T12:00:00Z');
+        d.setUTCDate(d.getUTCDate() + delta);
+        return d.toISOString().slice(0, 10);
+      }
+
+      function setEnv(e) {
+        env = e;
+        localStorage.setItem('reflect_stats_env', e);
+        document.getElementById('btn-stg').className = 'env-btn' + (e === 'stg' ? ' active' : '');
+        document.getElementById('btn-prd').className =
+          'env-btn danger' + (e === 'prd' ? ' active' : '');
+        load();
+      }
+
+      function stepDay(delta) {
+        dayEl.value = shiftDay(dayEl.value || todayLocal(), delta);
+        load();
+      }
+
+      function jumpTo(delta) {
+        dayEl.value = delta === 0 ? todayLocal() : shiftDay(todayLocal(), delta);
+        load();
+      }
+
+      function esc(s) {
+        return String(s ?? '').replace(
+          /[&<>"']/g,
+          (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
+        );
+      }
+
+      function showResult(kind, msg) {
+        const el = document.getElementById('result');
+        if (!msg) {
+          el.style.display = 'none';
+          return;
+        }
+        el.textContent = (kind === 'error' ? '✗ ' : 'ℹ ') + msg;
+        el.className = kind;
+        el.style.display = 'block';
+      }
+
+      function delta(now, before) {
+        if (typeof now !== 'number' || typeof before !== 'number') return '';
+        const d = now - before;
+        if (d === 0) return '<span class="flat">= same as prev. day</span>';
+        const pct = before > 0 ? ` (${d > 0 ? '+' : ''}${Math.round((d / before) * 100)}%)` : '';
+        return `<span class="${d > 0 ? 'up' : 'down'}">${d > 0 ? '▲ +' : '▼ '}${d}${pct}</span> vs prev.`;
+      }
+
+      function renderTiles(stats, prev) {
+        for (const [id, defs] of Object.entries(GROUPS)) {
+          document.getElementById(id).innerHTML = defs
+            .filter(([k]) => stats[k] !== undefined && stats[k] !== null)
+            .map(
+              ([k, label]) => `
+        <div class="tile">
+          <div class="k">${esc(label)}</div>
+          <div class="v">${Number(stats[k]).toLocaleString()}</div>
+          <div class="d">${delta(Number(stats[k]), prev ? Number(prev[k]) : undefined)}</div>
+        </div>`,
+            )
+            .join('');
+        }
+        document.getElementById('tiles-card').style.display = '';
+      }
+
+      function hhmm(iso) {
+        if (!iso) return '—';
+        return new Date(iso).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZone: TZ,
+        });
+      }
+
+      function renderWriters(rows) {
+        const body = document.getElementById('writers-body');
+        if (!rows.length) {
+          body.innerHTML = '<tr><td colspan="6" class="empty">Nobody wrote on this day.</td></tr>';
+        } else {
+          body.innerHTML = rows
+            .map(
+              (w, i) => `
+        <tr>
+          <td class="rank">${i + 1}</td>
+          <td class="email">${esc(w.email)}${w.is_pro ? ' <span class="pro">PRO</span>' : ''}</td>
+          <td class="num">${w.entries}</td>
+          <td class="num">${hhmm(w.first_at)}</td>
+          <td class="num">${hhmm(w.last_at)}</td>
+          <td class="num">${w.lifetime_entries}</td>
+        </tr>`,
+            )
+            .join('');
+        }
+        document.getElementById('writers-card').style.display = '';
+      }
+
+      function renderChart(series, selectedDay) {
+        const max = Math.max(1, ...series.map((s) => Number(s.entries)));
+        document.getElementById('chart').innerHTML = series
+          .map((s) => {
+            const n = Number(s.entries);
+            const h = Math.round((n / max) * 100);
+            const sel = s.day === selectedDay ? ' sel' : '';
+            const title = `${s.day} · ${n} entries · ${s.writers} writers · ${s.signups} signups · ${s.reflections} reflections`;
+            return `
+        <div class="bar-wrap${sel}" title="${esc(title)}" onclick="pickDay('${esc(s.day)}')">
+          <div class="bar-n">${n}</div>
+          <div class="bar" style="height:${h}%"></div>
+          <div class="bar-x">${esc(s.day.slice(5))}</div>
+        </div>`;
+          })
+          .join('');
+        document.getElementById('chart-card').style.display = '';
+      }
+
+      function pickDay(day) {
+        dayEl.value = day;
+        load();
+      }
+
+      function renderTotals(t) {
+        if (!t) return;
+        document.getElementById('totals').innerHTML =
+          `<b>${t.users}</b> accounts · <b>${t.writers}</b> of them have written · ` +
+          `<b>${t.entries}</b> entries · <b>${t.devices}</b> devices<br>` +
+          `<b>${t.pro}</b> Pro · <b>${t.ai_opted_in}</b> opted into AI reflections · ` +
+          `<b>${t.reflections}</b> reflections generated`;
+        document.getElementById('totals-card').style.display = '';
+      }
+
+      async function load() {
+        const secret = secretEl.value.trim();
+        if (!secret) {
+          showResult('info', 'Enter the admin secret to load stats.');
+          return;
+        }
+        localStorage.setItem('reflect_admin_secret', secret);
+        if (!dayEl.value) dayEl.value = todayLocal();
+        const day = dayEl.value;
+        // Never offer a day that hasn't started yet in this timezone.
+        document.getElementById('next-btn').disabled = day >= todayLocal();
+
+        const btn = document.getElementById('load-btn');
+        btn.disabled = true;
+        const prevLabel = btn.textContent;
+        btn.textContent = 'Loading…';
+        try {
+          const res = await fetch(URLS[env], {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Admin-Secret': secret },
+            body: JSON.stringify({ day, tz: TZ, days: 14, limit: 15 }),
+          });
+          if (!res.ok) {
+            showResult('error', `${res.status} — ${await res.text()}`);
+            return;
+          }
+          const data = await res.json();
+          latest = data;
+          showResult(null);
+          renderTiles(data.stats || {}, data.prev);
+          renderWriters(data.top_writers || []);
+          renderChart(data.series || [], data.day);
+          renderTotals((data.stats || {}).totals);
+
+          const label = data.is_today
+            ? 'Today'
+            : new Date(day + 'T12:00:00Z').toLocaleDateString([], {
+                weekday: 'long',
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                timeZone: 'UTC',
+              });
+          document.getElementById('tiles-title').textContent = label;
+          document.getElementById('compare-note').textContent = `vs ${data.prev_day}`;
+          const tzNote =
+            data.tz === data.requested_tz
+              ? data.tz
+              : `${data.tz} (fell back — "${data.requested_tz}" is unknown to the server)`;
+          document.getElementById('meta').textContent =
+            `${env === 'prd' ? 'Production' : 'Staging'} · days cut in ${tzNote} · ` +
+            `loaded ${new Date(data.generated_at).toLocaleTimeString()}`;
+        } catch (err) {
+          showResult('error', err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = prevLabel;
+        }
+      }
+
+      secretEl.addEventListener('change', load);
+      dayEl.value = todayLocal();
+      setEnv(env);
+    </script>
+  </body>
+</html>
