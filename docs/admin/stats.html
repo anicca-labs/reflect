@@ -177,6 +177,17 @@
         margin-top: 6px;
         color: #666;
       }
+      .tile .info {
+        color: #555;
+        border: 1px solid #333;
+        border-radius: 50%;
+        padding: 0 4px;
+        font-size: 9px;
+        cursor: help;
+      }
+      .zero {
+        color: #555;
+      }
       .up {
         color: #4caf50;
       }
@@ -200,6 +211,8 @@
         width: 100%;
         border-collapse: collapse;
         font-size: 13px;
+        /* Floor width for six columns; narrower than this the box scrolls. */
+        min-width: 560px;
       }
       th {
         text-align: left;
@@ -242,15 +255,27 @@
         color: #e0a643;
         border: 1px solid #4a3a1a;
       }
+      /* Wide content scrolls inside its own box; the page itself never scrolls
+         sideways. Applies to the writers table and the chart, both of which have a
+         floor width the card can be narrower than on a phone. */
+      .scroll-x {
+        overflow-x: auto;
+        overflow-y: hidden;
+        max-width: 100%;
+      }
       .chart {
         display: flex;
         align-items: flex-end;
         gap: 4px;
         height: 130px;
         padding-top: 8px;
+        /* 14 bars need room for a DD/MM label each — below this they'd overlap, so
+           the box scrolls instead of squeezing. */
+        min-width: 520px;
       }
       .bar-wrap {
         flex: 1;
+        min-width: 32px;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
@@ -383,25 +408,27 @@
 
     <div class="card" id="writers-card" style="display: none">
       <div class="card-head">
-        <h2>Top writers</h2>
+        <h2>Top writers &mdash; all time</h2>
         <span class="muted"
-          >Ranked by entries written that day &mdash; content is encrypted, so word counts aren't
+          >Ranked by total entries ever written. Content is encrypted, so word counts aren't
           available server-side.</span
         >
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 28px"></th>
-            <th>Account</th>
-            <th class="num">Entries</th>
-            <th class="num">First</th>
-            <th class="num">Last</th>
-            <th class="num">Lifetime</th>
-          </tr>
-        </thead>
-        <tbody id="writers-body"></tbody>
-      </table>
+      <div class="scroll-x">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 28px"></th>
+              <th>Account</th>
+              <th class="num">Entries</th>
+              <th class="num" id="th-on-day">On day</th>
+              <th class="num">First ever</th>
+              <th class="num">Last ever</th>
+            </tr>
+          </thead>
+          <tbody id="writers-body"></tbody>
+        </table>
+      </div>
     </div>
 
     <div class="card" id="chart-card" style="display: none">
@@ -409,7 +436,9 @@
         <h2>Entries per day</h2>
         <span class="muted">Click a bar to jump to that day</span>
       </div>
-      <div class="chart" id="chart"></div>
+      <div class="scroll-x">
+        <div class="chart" id="chart"></div>
+      </div>
     </div>
 
     <div class="card" id="totals-card" style="display: none">
@@ -432,29 +461,48 @@
       // edges by fmtDMY().
       let day = null;
 
-      // Tile definitions: [key in stats, label, title]. Rendered in these three
+      // Tile definitions: [key in stats, label, explanation]. The explanation is the
+      // tile's tooltip — several of these count something narrower than their name
+      // suggests, and guessing wrong is worse than not looking. Rendered in three
       // groups; a metric missing from the payload is skipped, so the server can add
       // one before this page knows about it.
       const GROUPS = {
         'tiles-writing': [
-          ['entries', 'Entries'],
-          ['writers', 'Writers'],
-          ['new_writers', 'New writers'],
-          ['device_activations', 'Guest activations'],
+          ['entries', 'Entries', 'Journal entries created on this day by signed-in users.'],
+          ['writers', 'Writers', 'Distinct accounts that wrote at least one entry on this day.'],
+          ['new_writers', 'New writers', 'Accounts whose FIRST-EVER entry landed on this day.'],
+          [
+            'device_activations',
+            'Device activations',
+            'Devices that wrote their first-ever entry on this day — guest or signed-in. ' +
+              'Guest entries stay on the device and never reach the server, so this is the ' +
+              'only activation signal that can see guests at all.',
+          ],
         ],
         'tiles-growth': [
-          ['signups', 'Signups'],
-          ['paywall_views', 'Paywall views'],
-          ['pro_events', 'Pro events'],
+          ['signups', 'Signups', 'Accounts created on this day.'],
+          ['paywall_views', 'Paywall views', 'Times the paywall was shown on this day.'],
+          [
+            'pro_events',
+            'Pro events',
+            'Entitlement rows marked Pro that were written on this day (RevenueCat webhook) — ' +
+              'new subscriptions and renewals both land here.',
+          ],
         ],
         'tiles-ai': [
-          ['reflections', 'Reflections'],
-          ['reflections_seen', 'Reflections seen'],
-          ['feedback_yes', 'Felt true 👍'],
-          ['feedback_no', "Didn't 👎"],
-          ['echoes', 'Echoes'],
-          ['share_taps', 'Share taps'],
-          ['pushes', 'Pushes sent'],
+          ['reflections', 'Reflections', 'AI weekly reflections generated on this day.'],
+          ['reflections_seen', 'Reflections seen', 'Reflections opened by their user on this day.'],
+          ['feedback_yes', 'Felt true 👍', 'Reflections marked "felt true" on this day.'],
+          ['feedback_no', "Didn't 👎", 'Reflections marked "didn\'t feel true" on this day.'],
+          ['echoes', 'Echoes', 'Echo prompts delivered on this day.'],
+          ['share_taps', 'Share taps', 'Times a user tapped share on this day.'],
+          [
+            'pushes',
+            'Pushes sent',
+            'Server-sent pushes logged for this day, counted in the RECIPIENT’s local date. ' +
+              'Guest reminders are scheduled on-device and never reach the server, so they ' +
+              "aren't counted.",
+          ],
         ],
       };
 
@@ -582,9 +630,9 @@
           document.getElementById(id).innerHTML = defs
             .filter(([k]) => stats[k] !== undefined && stats[k] !== null)
             .map(
-              ([k, label]) => `
-        <div class="tile">
-          <div class="k">${esc(label)}</div>
+              ([k, label, help]) => `
+        <div class="tile" title="${esc(help || '')}">
+          <div class="k">${esc(label)}${help ? ' <span class="info">?</span>' : ''}</div>
           <div class="v">${Number(stats[k]).toLocaleString()}</div>
           <div class="d">${delta(Number(stats[k]), prev ? Number(prev[k]) : undefined)}</div>
         </div>`,
@@ -594,19 +642,37 @@
         document.getElementById('tiles-card').style.display = '';
       }
 
-      function hhmm(iso) {
-        if (!iso) return '—';
-        return new Date(iso).toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-          timeZone: TZ,
-        });
+      // PostgREST renders timestamptz as "2026-08-10 15:51:03.9+00": a space instead
+      // of T and a two-digit offset, neither of which is ISO 8601, so parsing it is
+      // engine-dependent. Normalise before handing it to Date.
+      function toDate(ts) {
+        let s = String(ts).replace(' ', 'T');
+        if (/[+-]\d{2}$/.test(s)) s += ':00';
+        return new Date(s);
       }
 
-      function renderWriters(rows) {
+      // timestamptz → DD/MM/YYYY in the viewer's timezone.
+      function dmy(ts) {
+        if (!ts) return '—';
+        const d = toDate(ts);
+        if (isNaN(d.getTime())) return '—';
+        return fmtDMY(
+          new Intl.DateTimeFormat('en-CA', {
+            timeZone: TZ,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          }).format(d),
+        );
+      }
+
+      function renderWriters(rows, selectedDay) {
         const body = document.getElementById('writers-body');
+        // The "On day" column is the only day-dependent thing in an otherwise
+        // all-time table, so it names the day it's counting.
+        document.getElementById('th-on-day').textContent = fmtDMY(selectedDay).slice(0, 5);
         if (!rows.length) {
-          body.innerHTML = '<tr><td colspan="6" class="empty">Nobody wrote on this day.</td></tr>';
+          body.innerHTML = '<tr><td colspan="6" class="empty">Nobody has written yet.</td></tr>';
         } else {
           body.innerHTML = rows
             .map(
@@ -614,10 +680,10 @@
         <tr>
           <td class="rank">${i + 1}</td>
           <td class="email">${esc(w.email)}${w.is_pro ? ' <span class="pro">PRO</span>' : ''}</td>
-          <td class="num">${w.entries}</td>
-          <td class="num">${hhmm(w.first_at)}</td>
-          <td class="num">${hhmm(w.last_at)}</td>
           <td class="num">${w.lifetime_entries}</td>
+          <td class="num ${Number(w.entries_on_day) > 0 ? 'up' : 'zero'}">${w.entries_on_day}</td>
+          <td class="num">${dmy(w.first_at)}</td>
+          <td class="num">${dmy(w.last_at)}</td>
         </tr>`,
             )
             .join('');
@@ -684,7 +750,7 @@
           const data = await res.json();
           showResult(null);
           renderTiles(data.stats || {}, data.prev);
-          renderWriters(data.top_writers || []);
+          renderWriters(data.top_writers || [], data.day);
           renderChart(data.series || [], data.day);
           renderTotals((data.stats || {}).totals);
 
