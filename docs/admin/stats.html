@@ -349,6 +349,48 @@
         line-height: 1.6;
         margin-top: 12px;
       }
+      /* Phones: make the wide panels FIT rather than scroll inside themselves. The
+         .scroll-x boxes stay as the backstop, but sideways-scrolling a table on a
+         phone is a bad way to read a leaderboard, so the table drops its floor width
+         and its least useful column, and the chart asks for 7 days instead of 14
+         (CHART_DAYS below) so the bars have room. */
+      @media (max-width: 640px) {
+        body {
+          padding: 24px 10px;
+        }
+        .card {
+          padding: 18px 14px;
+        }
+        table {
+          min-width: 0;
+        }
+        th,
+        td {
+          padding: 8px 6px;
+          font-size: 12px;
+        }
+        td.email {
+          /* Prefer breaking at the "." and "@" an address already has; break inside a
+             run of characters only when there's genuinely nowhere else to break. */
+          word-break: normal;
+          overflow-wrap: anywhere;
+          min-width: 110px;
+        }
+        /* "First ever" is the least load-bearing column here — the leaderboard is
+           about volume and recency, both of which stay. */
+        .col-first {
+          display: none;
+        }
+        .chart {
+          min-width: 0;
+        }
+        .bar-wrap {
+          min-width: 20px;
+        }
+        .bar-x {
+          font-size: 8px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -421,8 +463,8 @@
               <th style="width: 28px"></th>
               <th>Account</th>
               <th class="num">Entries</th>
-              <th class="num" id="th-on-day">On day</th>
-              <th class="num">First ever</th>
+              <th class="num" id="th-on-day">Today</th>
+              <th class="num col-first">First ever</th>
               <th class="num">Last ever</th>
             </tr>
           </thead>
@@ -434,7 +476,7 @@
     <div class="card" id="chart-card" style="display: none">
       <div class="card-head">
         <h2>Entries per day</h2>
-        <span class="muted">Click a bar to jump to that day</span>
+        <span class="muted" id="chart-note">Click a bar to jump to that day</span>
       </div>
       <div class="scroll-x">
         <div class="chart" id="chart"></div>
@@ -456,6 +498,11 @@
       // Days are cut in the viewer's own timezone — "today" on this page means the
       // day you're living in, and the server computes the boundaries from this name.
       const TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+      // A phone can't fit 14 labelled bars without either overlapping them or
+      // scrolling sideways, and both are worse than simply charting a shorter window
+      // there. Decided once at load; the Refresh button re-evaluates it after a
+      // rotate or resize.
+      const CHART_DAYS = window.innerWidth < 640 ? 7 : 14;
       // The selected day, always ISO (YYYY-MM-DD) internally — that's what the API and
       // the native picker want. DD/MM/YYYY is a presentation concern, applied at the
       // edges by fmtDMY().
@@ -599,6 +646,13 @@
         setDay(delta === 0 ? todayLocal() : shiftDay(todayLocal(), delta));
       }
 
+      // A count that is missing from the payload is zero, not "undefined" — a stale
+      // page against a changed API used to print the literal word.
+      function num(v) {
+        const x = Number(v);
+        return Number.isFinite(x) ? x.toLocaleString() : '0';
+      }
+
       function esc(s) {
         return String(s ?? '').replace(
           /[&<>"']/g,
@@ -633,7 +687,7 @@
               ([k, label, help]) => `
         <div class="tile" title="${esc(help || '')}">
           <div class="k">${esc(label)}${help ? ' <span class="info">?</span>' : ''}</div>
-          <div class="v">${Number(stats[k]).toLocaleString()}</div>
+          <div class="v">${num(stats[k])}</div>
           <div class="d">${delta(Number(stats[k]), prev ? Number(prev[k]) : undefined)}</div>
         </div>`,
             )
@@ -666,11 +720,13 @@
         );
       }
 
-      function renderWriters(rows, selectedDay) {
+      function renderWriters(rows, selectedDay, isToday) {
         const body = document.getElementById('writers-body');
-        // The "On day" column is the only day-dependent thing in an otherwise
-        // all-time table, so it names the day it's counting.
-        document.getElementById('th-on-day').textContent = fmtDMY(selectedDay).slice(0, 5);
+        // The only day-dependent column in an otherwise all-time table, so it names
+        // the day it counts: "Today" when that's what's selected, the date otherwise.
+        document.getElementById('th-on-day').textContent = isToday
+          ? 'Today'
+          : fmtDMY(selectedDay).slice(0, 5);
         if (!rows.length) {
           body.innerHTML = '<tr><td colspan="6" class="empty">Nobody has written yet.</td></tr>';
         } else {
@@ -680,9 +736,9 @@
         <tr>
           <td class="rank">${i + 1}</td>
           <td class="email">${esc(w.email)}${w.is_pro ? ' <span class="pro">PRO</span>' : ''}</td>
-          <td class="num">${w.lifetime_entries}</td>
-          <td class="num ${Number(w.entries_on_day) > 0 ? 'up' : 'zero'}">${w.entries_on_day}</td>
-          <td class="num">${dmy(w.first_at)}</td>
+          <td class="num">${num(w.lifetime_entries)}</td>
+          <td class="num ${Number(w.entries_on_day) > 0 ? 'up' : 'zero'}">${num(w.entries_on_day)}</td>
+          <td class="num col-first">${dmy(w.first_at)}</td>
           <td class="num">${dmy(w.last_at)}</td>
         </tr>`,
             )
@@ -741,7 +797,7 @@
           const res = await fetch(ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-Admin-Secret': secret },
-            body: JSON.stringify({ day, tz: TZ, days: 14, limit: 15 }),
+            body: JSON.stringify({ day, tz: TZ, days: CHART_DAYS, limit: 15 }),
           });
           if (!res.ok) {
             showResult('error', `${res.status} — ${await res.text()}`);
@@ -750,8 +806,10 @@
           const data = await res.json();
           showResult(null);
           renderTiles(data.stats || {}, data.prev);
-          renderWriters(data.top_writers || [], data.day);
+          renderWriters(data.top_writers || [], data.day, data.is_today);
           renderChart(data.series || [], data.day);
+          document.getElementById('chart-note').textContent =
+            `Last ${(data.series || []).length} days · click a bar to jump to that day`;
           renderTotals((data.stats || {}).totals);
 
           // Weekday for orientation, then the date itself in DD/MM/YYYY. The noon-UTC
