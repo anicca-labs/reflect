@@ -397,6 +397,10 @@
               <span>Inactive &ge; (days)</span>
               <input type="number" id="inactive_days" min="1" step="1" placeholder="e.g. 7" />
             </label>
+            <label>
+              <span>Entry count <em class="muted">(exact, server-side)</em></span>
+              <input type="number" id="entry_count" min="0" step="1" placeholder="e.g. 1" />
+            </label>
           </div>
         </fieldset>
 
@@ -526,6 +530,8 @@
         if (locale) f.locale = locale;
         if (reminder !== '') f.reminder_enabled = reminder === 'true';
         if (Number.isFinite(days) && days > 0) f.inactive_days = days;
+        const entries = parseInt(document.getElementById('entry_count').value, 10);
+        if (Number.isFinite(entries) && entries >= 0) f.entry_count = entries;
         return f;
       }
 
@@ -737,7 +743,8 @@
           !aud.account &&
           !aud.locale &&
           aud.reminder_enabled === undefined &&
-          !aud.inactive_days
+          !aud.inactive_days &&
+          aud.entry_count === undefined
         ) {
           if (
             !confirm('No target and no filters — this sends to EVERY registered device. Continue?')
