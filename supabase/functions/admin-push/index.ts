@@ -240,10 +240,13 @@ Deno.serve(async (req) => {
       query = query.eq('reminder_enabled', payload.reminder_enabled);
     if (payload.account === 'guest') query = query.is('user_id', null);
     else if (payload.account === 'signed_in') query = query.not('user_id', 'is', null);
-    // "inactive for at least N days" → last opened before the cutoff (dormant win-back)
+    // "inactive for at least N days" → last opened before the cutoff (dormant win-back).
+    // NULL counts as inactive: older builds never report last_active_at, and a device
+    // with no recorded activity is the most dormant case, not an active one — a bare
+    // .lt() silently dropped every such device from win-back audiences.
     if (payload.inactive_days && payload.inactive_days > 0) {
       const cutoff = new Date(Date.now() - payload.inactive_days * 86_400_000).toISOString();
-      query = query.lt('last_active_at', cutoff);
+      query = query.or(`last_active_at.lt.${cutoff},last_active_at.is.null`);
     }
   }
 
