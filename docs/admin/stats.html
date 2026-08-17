@@ -152,6 +152,9 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 10px;
+        /* Without this an expanded explanation stretches every tile in its row to the
+           same height, leaving the neighbours mostly empty. */
+        align-items: start;
       }
       .tile {
         background: #111;
@@ -177,13 +180,47 @@
         margin-top: 6px;
         color: #666;
       }
+      /* The explanation has to be a TAP target, not a title attribute: a title only
+         appears on hover, which a touch screen doesn't have, so on a phone tapping it
+         did nothing at all. Tapping anywhere on the tile toggles the text below. */
+      .tile.has-help {
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
       .tile .info {
-        color: #555;
-        border: 1px solid #333;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        vertical-align: middle;
+        margin-left: 3px;
+        color: #777;
+        background: #1e1e1e;
+        border: 1px solid #3a3a3a;
         border-radius: 50%;
-        padding: 0 4px;
         font-size: 9px;
-        cursor: help;
+        line-height: 1;
+      }
+      .tile.open {
+        border-color: #3a4a6a;
+      }
+      .tile.open .info {
+        color: #0f0f0f;
+        background: #7aa2ff;
+        border-color: #7aa2ff;
+      }
+      .tile .help {
+        display: none;
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px solid #2a2a2a;
+        font-size: 11px;
+        line-height: 1.55;
+        color: #9a9a9a;
+      }
+      .tile.open .help {
+        display: block;
       }
       .zero {
         color: #555;
@@ -679,16 +716,26 @@
         return `<span class="${d > 0 ? 'up' : 'down'}">${d > 0 ? '▲ +' : '▼ '}${d}${pct}</span> vs prev.`;
       }
 
+      // Show one tile's explanation at a time: a second open panel pushes the rest of
+      // the grid around for no benefit.
+      function toggleHelp(ev) {
+        const tile = ev.currentTarget;
+        const wasOpen = tile.classList.contains('open');
+        document.querySelectorAll('.tile.open').forEach((t) => t.classList.remove('open'));
+        if (!wasOpen) tile.classList.add('open');
+      }
+
       function renderTiles(stats, prev) {
         for (const [id, defs] of Object.entries(GROUPS)) {
           document.getElementById(id).innerHTML = defs
             .filter(([k]) => stats[k] !== undefined && stats[k] !== null)
             .map(
               ([k, label, help]) => `
-        <div class="tile" title="${esc(help || '')}">
-          <div class="k">${esc(label)}${help ? ' <span class="info">?</span>' : ''}</div>
+        <div class="tile${help ? ' has-help' : ''}"${help ? ' onclick="toggleHelp(event)"' : ''}>
+          <div class="k">${esc(label)}${help ? '<span class="info">?</span>' : ''}</div>
           <div class="v">${num(stats[k])}</div>
           <div class="d">${delta(Number(stats[k]), prev ? Number(prev[k]) : undefined)}</div>
+          ${help ? `<div class="help">${esc(help)}</div>` : ''}
         </div>`,
             )
             .join('');
