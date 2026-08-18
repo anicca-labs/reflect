@@ -302,6 +302,17 @@
         color: #555;
         font-family: monospace;
       }
+      /* Burst-writer tag: entries seconds apart, not real journaling. */
+      .phony {
+        display: inline-block;
+        padding: 1px 7px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 600;
+        background: #2b1616;
+        color: #e0705a;
+        border: 1px solid #4a2222;
+      }
       /* Separator between the all-time leaderboard and the day's other writers. */
       tr.divider td {
         padding: 14px 10px 6px;
@@ -536,8 +547,9 @@
         <h2>Top writers &mdash; all time</h2>
         <span class="muted"
           >Ranked by total entries ever written; anyone else who wrote on the selected day is listed
-          after the divider. Content is encrypted, so word counts aren't available
-          server-side.</span
+          after the divider. PHONY marks accounts where half or more entries landed under a minute
+          after the previous one — poking at the app, not journaling. Content is encrypted, so word
+          counts aren't available server-side.</span
         >
       </div>
       <div class="scroll-x">
@@ -848,10 +860,26 @@
         // the page working against a server that predates the flag.
         const top = rows.filter((w) => w.is_top !== false);
         const dayOnly = rows.filter((w) => w.is_top === false);
+        // Burst tag: real journaling takes minutes between entries; an account
+        // where half or more of the gaps are under 60s (rapid_entries, computed
+        // server-side — timestamps are all the server has, content is encrypted)
+        // is someone poking at the app, not writing. Requires 2+ rapid gaps so a
+        // single quick double-entry doesn't tag a genuine user.
+        const phony = (w) => {
+          const gaps = Number(w.lifetime_entries) - 1;
+          const rapid = Number(w.rapid_entries ?? 0);
+          return gaps >= 2 && rapid >= 2 && rapid / gaps >= 0.5;
+        };
         const row = (w, rank) => `
         <tr>
           <td class="rank">${rank}</td>
-          <td class="email">${esc(w.email)}${w.is_pro ? ' <span class="pro">PRO</span>' : ''}</td>
+          <td class="email">${esc(w.email)}${w.is_pro ? ' <span class="pro">PRO</span>' : ''}${
+            phony(w)
+              ? ` <span class="phony" title="${Number(w.rapid_entries)} of ${
+                  Number(w.lifetime_entries) - 1
+                } gaps between entries were under a minute — likely just playing with the app">PHONY</span>`
+              : ''
+          }</td>
           <td class="num">${num(w.lifetime_entries)}</td>
           <td class="num ${Number(w.entries_on_day) > 0 ? 'up' : 'zero'}">${num(w.entries_on_day)}</td>
           <td class="num col-first">${dmy(w.first_at)}</td>
