@@ -2,8 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Reflect - Daily Stats</title>
+    <!-- Installable as a home-screen app: the manifest covers Android/Chrome, the
+         apple-* tags cover iOS Add to Home Screen (standalone window, dark status
+         bar, proper icon instead of a page screenshot). -->
+    <link rel="manifest" href="./stats.webmanifest" />
+    <meta name="theme-color" content="#0f0f0f" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Stats" />
     <style>
       *,
       *::before,
@@ -21,6 +30,10 @@
         flex-direction: column;
         align-items: center;
         padding: 48px 16px;
+        /* Installed on a phone the page draws under the status bar / home indicator
+           (black-translucent + viewport-fit=cover); keep content out of both. */
+        padding-top: calc(48px + env(safe-area-inset-top, 0px));
+        padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
         gap: 16px;
       }
       .card {
@@ -436,6 +449,8 @@
       @media (max-width: 640px) {
         body {
           padding: 24px 10px;
+          padding-top: calc(24px + env(safe-area-inset-top, 0px));
+          padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
         }
         .card {
           padding: 18px 14px;
