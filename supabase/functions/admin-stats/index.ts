@@ -15,6 +15,55 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const ADMIN_SECRET = Deno.env.get('ADMIN_PUSH_SECRET')!;
 
+// Meta (Facebook) ads — install counts come from the Marketing API, because the
+// FB SDK in the app reports attribution straight to Meta and nothing about it ever
+// touches our database. Optional: without META_ADS_TOKEN the payload simply has no
+// Meta numbers and the console shows no Meta tiles. The token is a System User
+// token (business 868854396268027) with ads_read on the ad account.
+const META_ADS_TOKEN = Deno.env.get('META_ADS_TOKEN');
+// The Reflect ad account (not a secret — it's in every Ads Manager URL).
+const META_AD_ACCOUNT = 'act_1019338787467273';
+
+type MetaDay = { installs: number; spend: number };
+
+// Per-day installs + spend for [since, until], keyed by YYYY-MM-DD. Days are cut in
+// the AD ACCOUNT's timezone (Meta ignores everyone else's) and recent days keep
+// growing for ~2 days as SKAdNetwork postbacks trickle in — both facts the console
+// repeats to the human reading the tile.
+async function fetchMetaAds(since: string, until: string): Promise<Map<string, MetaDay>> {
+  const url = new URL(`https://graph.facebook.com/v23.0/${META_AD_ACCOUNT}/insights`);
+  url.searchParams.set('level', 'account');
+  url.searchParams.set('fields', 'spend,actions');
+  url.searchParams.set('time_increment', '1');
+  url.searchParams.set('time_range', JSON.stringify({ since, until }));
+  // Default page size is 25 rows; a 90-day series needs one page, not four.
+  url.searchParams.set('limit', '200');
+  url.searchParams.set('access_token', META_ADS_TOKEN!);
+
+  const res = await fetch(url);
+  const body = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(body?.error?.message ?? `Meta Graph API ${res.status}`);
+  }
+
+  const byDay = new Map<string, MetaDay>();
+  type Row = {
+    date_start: string;
+    spend?: string;
+    actions?: { action_type: string; value: string }[];
+  };
+  for (const row of (body?.data ?? []) as Row[]) {
+    const find = (t: string) => row.actions?.find((a) => a.action_type === t)?.value;
+    // mobile_app_install is the Ads Manager "App installs" column; omni_app_install
+    // is the aggregated fallback on accounts that only report the omni event.
+    const installs = Number(find('mobile_app_install') ?? find('omni_app_install') ?? 0);
+    // Cents precision is enough and keeps float noise out of the console's deltas.
+    const spend = Math.round(Number(row.spend ?? 0) * 100) / 100;
+    byDay.set(row.date_start, { installs, spend });
+  }
+  return byDay;
+}
+
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Secret',
@@ -115,16 +164,52 @@ Deno.serve(async (req) => {
     { db: { schema: 'api' } },
   );
 
-  const [stats, prev, writers, series] = await Promise.all([
+  // One Meta call covers the whole window the response needs: the series, plus
+  // prevDay for the delta (inside the series except when days=1, hence the max).
+  // A Meta failure must not take the database numbers down with it, so it resolves
+  // to an error string instead of rejecting the Promise.all.
+  const metaSince = shiftDay(day, -Math.max(days - 1, 1));
+  const [stats, prev, writers, series, meta] = await Promise.all([
     supabase.rpc('admin_day_stats', { p_day: day, p_tz: tz }),
     supabase.rpc('admin_day_stats', { p_day: prevDay, p_tz: tz }),
     supabase.rpc('admin_top_writers', { p_day: day, p_tz: tz, p_limit: limit }),
     supabase.rpc('admin_day_series', { p_end: day, p_days: days, p_tz: tz }),
+    META_ADS_TOKEN
+      ? fetchMetaAds(metaSince, day).catch((e: Error) => ({ error: e.message }))
+      : Promise.resolve(null),
   ]);
 
   const failed = [stats, prev, writers, series].find((r) => r.error);
   if (failed?.error) {
     return Response.json({ error: failed.error.message }, { status: 500, headers: CORS_HEADERS });
+  }
+
+  // Fold the Meta numbers into the same shapes the console already renders: two
+  // keys on stats/prev (tiles + delta) and one on each series row (bar tooltips).
+  let metaError: string | null = null;
+  let statsOut = stats.data as Record<string, unknown> | null;
+  let prevOut = prev.data as Record<string, unknown> | null;
+  let seriesOut = (series.data ?? []) as Record<string, unknown>[];
+  if (meta) {
+    if (meta instanceof Map) {
+      const at = (d: string) => meta.get(d) ?? { installs: 0, spend: 0 };
+      if (statsOut) {
+        statsOut = { ...statsOut, meta_installs: at(day).installs, meta_spend: at(day).spend };
+      }
+      if (prevOut) {
+        prevOut = {
+          ...prevOut,
+          meta_installs: at(prevDay).installs,
+          meta_spend: at(prevDay).spend,
+        };
+      }
+      seriesOut = seriesOut.map((row) => ({
+        ...row,
+        meta_installs: at(String(row.day)).installs,
+      }));
+    } else {
+      metaError = meta.error;
+    }
   }
 
   return Response.json(
@@ -137,10 +222,13 @@ Deno.serve(async (req) => {
       requested_tz: tz,
       is_today: day === todayIn(tz),
       generated_at: new Date().toISOString(),
-      stats: stats.data,
-      prev: prev.data,
+      stats: statsOut,
+      prev: prevOut,
       top_writers: writers.data ?? [],
-      series: series.data ?? [],
+      series: seriesOut,
+      // Set only when a token IS configured but the Graph call failed — the console
+      // shows it so a dead token doesn't read as "zero installs, tiles gone".
+      meta_ads_error: metaError,
     },
     { headers: CORS_HEADERS },
   );

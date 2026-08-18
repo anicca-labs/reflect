@@ -611,6 +611,23 @@
             'Entitlement rows marked Pro that were written on this day (RevenueCat webhook) — ' +
               'new subscriptions and renewals both land here.',
           ],
+          [
+            'meta_installs',
+            'Meta installs',
+            'App installs Meta attributes to our ads, straight from the Marketing API — ' +
+              'this number never touches our database. Two caveats: Meta cuts days in the ' +
+              "AD ACCOUNT's timezone, not yours, so it won't line up exactly with the other " +
+              'tiles; and recent days keep growing for ~2 days as SKAdNetwork postbacks ' +
+              'arrive late. The tile only appears when META_ADS_TOKEN is configured on the ' +
+              'admin-stats function.',
+          ],
+          [
+            'meta_spend',
+            'Meta spend',
+            "Ad spend for this day in the ad account's currency, same source and same " +
+              'timezone caveat as Meta installs. Divide by Meta installs for the cost per ' +
+              'install Ads Manager would show you.',
+          ],
         ],
         'tiles-ai': [
           ['reflections', 'Reflections', 'AI weekly reflections generated on this day.'],
@@ -749,7 +766,9 @@
 
       function delta(now, before) {
         if (typeof now !== 'number' || typeof before !== 'number') return '';
-        const d = now - before;
+        // Spend is fractional, and float subtraction would happily print
+        // 3.4600000000000004 — cents precision is all any of these need.
+        const d = Math.round((now - before) * 100) / 100;
         if (d === 0) return '<span class="flat">= same as prev. day</span>';
         const pct = before > 0 ? ` (${d > 0 ? '+' : ''}${Math.round((d / before) * 100)}%)` : '';
         return `<span class="${d > 0 ? 'up' : 'down'}">${d > 0 ? '▲ +' : '▼ '}${d}${pct}</span> vs prev.`;
@@ -840,7 +859,9 @@
             const n = Number(s.entries);
             const h = Math.round((n / max) * 100);
             const sel = s.day === selectedDay ? ' sel' : '';
-            const title = `${fmtDMY(s.day)} · ${n} entries · ${s.writers} writers · ${s.signups} signups · ${s.reflections} reflections`;
+            const title =
+              `${fmtDMY(s.day)} · ${n} entries · ${s.writers} writers · ${s.signups} signups · ${s.reflections} reflections` +
+              (s.meta_installs === undefined ? '' : ` · ${s.meta_installs} Meta installs`);
             return `
         <div class="bar-wrap${sel}" title="${esc(title)}" onclick="pickDay('${esc(s.day)}')">
           <div class="bar-n">${n}</div>
@@ -915,7 +936,10 @@
               : `${data.tz} (fell back — "${data.requested_tz}" is unknown to the server)`;
           document.getElementById('meta').textContent =
             `Production · days cut in ${tzNote} · ` +
-            `loaded ${new Date(data.generated_at).toLocaleTimeString()}`;
+            `loaded ${new Date(data.generated_at).toLocaleTimeString()}` +
+            // Only set when a Meta token IS configured but the Graph call failed —
+            // without this, an expired token would just silently drop the Meta tiles.
+            (data.meta_ads_error ? ` · ⚠ Meta ads: ${data.meta_ads_error}` : '');
         } catch (err) {
           showResult('error', err.message);
         } finally {

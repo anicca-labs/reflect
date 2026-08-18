@@ -20,6 +20,7 @@
 ## Admin stats console
 
 - `reflects.sytes.net/admin/stats.html` → the `admin-stats` Edge Function (prd only; same `ADMIN_PUSH_SECRET` as the push console). Aggregation lives in SQL: `api.admin_day_stats` / `admin_top_writers` / `admin_day_series`, all SECURITY DEFINER and granted to `service_role` only. Days are cut in the viewer's IANA timezone, passed from the browser.
+- Meta installs/spend tiles come from the Marketing API (`act_1019338787467273` insights), fetched live by `admin-stats` when `META_ADS_TOKEN` is set (System User token, business 868854396268027, `ads_read`; Doppler `mobile/prd` → `yarn functions:push-secrets:prd`). No token → no Meta tiles; token set but failing → warning in the console's hint line. Meta cuts days in the ad account's timezone and backfills SKAdNetwork postbacks for ~2 days, so recent days undercount.
 - Guest vs signed-in activation is stamped ONCE, at activation, into `api.device_tokens.first_entry_guest` (trigger `stamp_first_entry_guest` on the null → non-null transition of `first_entry_at`). Never classify by `user_id` after the fact — it gets filled in when the owner signs in, which would silently move past guests into the signed-in bucket.
 
 ### Guest writing (estimate)
