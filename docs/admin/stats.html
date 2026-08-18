@@ -244,6 +244,17 @@
       .group-title:first-of-type {
         margin-top: 0;
       }
+      .group-note {
+        font-size: 11px;
+        color: #6d6d6d;
+        line-height: 1.5;
+        margin: -2px 0 10px;
+        max-width: 70ch;
+      }
+      .group-note strong {
+        color: #999;
+        font-weight: 600;
+      }
       table {
         width: 100%;
         border-collapse: collapse;
@@ -478,10 +489,18 @@
         <span class="muted" id="compare-note"></span>
       </div>
       <div class="group-title">Writing</div>
+      <div class="group-note">
+        Entries, writers and new writers are <strong>signed-in accounts</strong>. Guests journal on
+        their own phone, so their first entry is the only one that ever reaches the server.
+      </div>
       <div class="tiles" id="tiles-writing"></div>
       <div class="group-title">Growth &amp; revenue</div>
       <div class="tiles" id="tiles-growth"></div>
       <div class="group-title">AI reflections &amp; push</div>
+      <div class="group-note">
+        Pushes counts <strong>server-sent</strong> notifications only — guest reminders are
+        scheduled on the phone and never pass through us.
+      </div>
       <div class="tiles" id="tiles-ai"></div>
     </div>
 
@@ -556,11 +575,13 @@
           ['writers', 'Writers', 'Distinct accounts that wrote at least one entry on this day.'],
           ['new_writers', 'New writers', 'Accounts whose FIRST-EVER entry landed on this day.'],
           [
-            'device_activations',
-            'Device activations',
-            'Devices that wrote their first-ever entry on this day — guest or signed-in. ' +
-              'Guest entries stay on the device and never reach the server, so this is the ' +
-              'only activation signal that can see guests at all.',
+            'guest_activations',
+            'New guests',
+            'Devices with no account that wrote their first-ever entry on this day — one ' +
+              'device counts as one guest. Guest entries stay on the phone, so this first ' +
+              'one is the only thing the server ever learns about a guest. Whether it was a ' +
+              'guest is recorded at that moment, so signing up later does not move this ' +
+              'number out of the day it happened on.',
           ],
         ],
         'tiles-growth': [
@@ -821,7 +842,9 @@
         if (!t) return;
         document.getElementById('totals').innerHTML =
           `<b>${t.users}</b> accounts · <b>${t.writers}</b> of them have written · ` +
-          `<b>${t.entries}</b> entries · <b>${t.devices}</b> devices<br>` +
+          `<b>${t.entries}</b> entries · <b>${t.devices}</b> devices` +
+          (t.guests === undefined ? '' : ` (<b>${t.guests}</b> with no account)`) +
+          `<br>` +
           `<b>${t.pro}</b> Pro · <b>${t.ai_opted_in}</b> opted into AI reflections · ` +
           `<b>${t.reflections}</b> reflections generated`;
         document.getElementById('totals-card').style.display = '';
