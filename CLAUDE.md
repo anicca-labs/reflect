@@ -24,6 +24,6 @@
 
 ### Guest writing (estimate)
 
-The server only ever learns about a guest's FIRST entry; entries 2..n stay on the phone. Firebase Analytics does see them — `logJournalEntryCreated` (`src/services/analytics/index.ts`) fires the `journal_entry_created` event on the guest branch too (`JournalScreen.tsx`), with a `word_count` param.
+The `New guest writers` tile counts GUESTS, not entries: one per device, on the day of its first-ever entry. The server only ever learns about that first entry; entries 2..n stay on the phone. Firebase Analytics does see them — `logJournalEntryCreated` (`src/services/analytics/index.ts`) fires the `journal_entry_created` event on the guest branch too (`JournalScreen.tsx`), with a `word_count` param.
 
 So: **guest writes for a day ≈ Firebase `journal_entry_created` count − the console's `Entries` for the same day.** A trend, not a figure — GA4 reports in the property's own timezone while the console uses the browser's, and offline saves log to Firebase at save time but reach Postgres later. The event carries no guest flag; adding one (or a server-side guest write counter) would need an app release.

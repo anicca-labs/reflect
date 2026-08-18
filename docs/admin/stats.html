@@ -499,12 +499,15 @@
       </div>
       <div class="group-title">Writing</div>
       <div class="group-note">
-        Entries, writers and new writers are <strong>signed-in accounts</strong>. Guests journal on
-        their own phone, so their first entry is the only one that ever reaches the server. To
-        estimate guest writing, take the <code>journal_entry_created</code> count for the day in
-        Firebase Analytics (it fires for guests too) and subtract <strong>Entries</strong> below — a
-        trend, not a figure: the two systems cut days in different timezones and offline saves reach
-        the server late.
+        <strong>Entries</strong> counts entries; the other three count <strong>people</strong>.
+        Entries, writers and new writers are signed-in accounts. Guests journal on their own phone,
+        so the only guest event that ever reaches the server is their first entry — which is what
+        new guest writers counts, once per guest, on the day they started.
+        <br />
+        How much guests write is <strong>not on this page</strong>. To estimate it, take the
+        <code>journal_entry_created</code> count for the day in Firebase Analytics (it fires for
+        guests too) and subtract <strong>Entries</strong> — a trend, not a figure: the two systems
+        cut days in different timezones and offline saves reach the server late.
       </div>
       <div class="tiles" id="tiles-writing"></div>
       <div class="group-title">Growth &amp; revenue</div>
@@ -589,12 +592,14 @@
           ['new_writers', 'New writers', 'Accounts whose FIRST-EVER entry landed on this day.'],
           [
             'guest_activations',
-            'New guests',
-            'Devices with no account that wrote their first-ever entry on this day — one ' +
-              'device counts as one guest. Guest entries stay on the phone, so this first ' +
-              'one is the only thing the server ever learns about a guest. Whether it was a ' +
-              'guest is recorded at that moment, so signing up later does not move this ' +
-              'number out of the day it happened on.',
+            'New guest writers',
+            'GUESTS, not entries: devices with no account whose FIRST-EVER entry landed on ' +
+              'this day. Each device is counted once, ever — a guest who writes forty times ' +
+              'still counts one, on the day they started. Guest entries stay on the phone, so ' +
+              'that first one is the only thing the server ever learns about a guest. This is ' +
+              'a measured number, not the Firebase estimate described above. Guest-ness is ' +
+              'recorded at that moment, so signing up later does not move it out of the day ' +
+              'it happened on.',
           ],
         ],
         'tiles-growth': [
