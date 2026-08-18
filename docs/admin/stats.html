@@ -255,6 +255,15 @@
         color: #999;
         font-weight: 600;
       }
+      .group-note code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 10px;
+        color: #9ab;
+        background: #15181d;
+        border: 1px solid #23282f;
+        border-radius: 4px;
+        padding: 1px 4px;
+      }
       table {
         width: 100%;
         border-collapse: collapse;
@@ -491,7 +500,11 @@
       <div class="group-title">Writing</div>
       <div class="group-note">
         Entries, writers and new writers are <strong>signed-in accounts</strong>. Guests journal on
-        their own phone, so their first entry is the only one that ever reaches the server.
+        their own phone, so their first entry is the only one that ever reaches the server. To
+        estimate guest writing, take the <code>journal_entry_created</code> count for the day in
+        Firebase Analytics (it fires for guests too) and subtract <strong>Entries</strong> below — a
+        trend, not a figure: the two systems cut days in different timezones and offline saves reach
+        the server late.
       </div>
       <div class="tiles" id="tiles-writing"></div>
       <div class="group-title">Growth &amp; revenue</div>
