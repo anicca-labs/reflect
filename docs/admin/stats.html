@@ -302,6 +302,17 @@
         color: #555;
         font-family: monospace;
       }
+      /* Separator between the all-time leaderboard and the day's other writers. */
+      tr.divider td {
+        padding: 14px 10px 6px;
+        font-size: 11px;
+        color: #777;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      tr.divider:hover td {
+        background: none;
+      }
       .pro {
         display: inline-block;
         padding: 1px 7px;
@@ -524,8 +535,9 @@
       <div class="card-head">
         <h2>Top writers &mdash; all time</h2>
         <span class="muted"
-          >Ranked by total entries ever written. Content is encrypted, so word counts aren't
-          available server-side.</span
+          >Ranked by total entries ever written; anyone else who wrote on the selected day is listed
+          after the divider. Content is encrypted, so word counts aren't available
+          server-side.</span
         >
       </div>
       <div class="scroll-x">
@@ -829,25 +841,32 @@
         const body = document.getElementById('writers-body');
         // The only day-dependent column in an otherwise all-time table, so it names
         // the day it counts: "Today" when that's what's selected, the date otherwise.
-        document.getElementById('th-on-day').textContent = isToday
-          ? 'Today'
-          : fmtDMY(selectedDay).slice(0, 5);
-        if (!rows.length) {
-          body.innerHTML = '<tr><td colspan="6" class="empty">Nobody has written yet.</td></tr>';
-        } else {
-          body.innerHTML = rows
-            .map(
-              (w, i) => `
+        const dayLabel = isToday ? 'Today' : fmtDMY(selectedDay).slice(0, 5);
+        document.getElementById('th-on-day').textContent = dayLabel;
+        // The server sends two groups in one list: the all-time top (is_top true),
+        // then everyone else who wrote on the selected day. The `!== false` keeps
+        // the page working against a server that predates the flag.
+        const top = rows.filter((w) => w.is_top !== false);
+        const dayOnly = rows.filter((w) => w.is_top === false);
+        const row = (w, rank) => `
         <tr>
-          <td class="rank">${i + 1}</td>
+          <td class="rank">${rank}</td>
           <td class="email">${esc(w.email)}${w.is_pro ? ' <span class="pro">PRO</span>' : ''}</td>
           <td class="num">${num(w.lifetime_entries)}</td>
           <td class="num ${Number(w.entries_on_day) > 0 ? 'up' : 'zero'}">${num(w.entries_on_day)}</td>
           <td class="num col-first">${dmy(w.first_at)}</td>
           <td class="num">${dmy(w.last_at)}</td>
-        </tr>`,
-            )
-            .join('');
+        </tr>`;
+        if (!rows.length) {
+          body.innerHTML = '<tr><td colspan="6" class="empty">Nobody has written yet.</td></tr>';
+        } else {
+          const divider = dayOnly.length
+            ? `<tr class="divider"><td colspan="6">Also wrote ${isToday ? 'today' : 'on ' + dayLabel} — not in the all-time top</td></tr>`
+            : '';
+          body.innerHTML =
+            top.map((w, i) => row(w, i + 1)).join('') +
+            divider +
+            dayOnly.map((w) => row(w, '·')).join('');
         }
         document.getElementById('writers-card').style.display = '';
       }
