@@ -2,8 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Reflect - Daily Stats</title>
+    <!-- Installable as a home-screen app: the manifest covers Android/Chrome, the
+         apple-* tags cover iOS Add to Home Screen (standalone window, dark status
+         bar, proper icon instead of a page screenshot). -->
+    <link rel="manifest" href="./stats.webmanifest" />
+    <meta name="theme-color" content="#0f0f0f" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Stats" />
     <style>
       *,
       *::before,
@@ -21,6 +30,10 @@
         flex-direction: column;
         align-items: center;
         padding: 48px 16px;
+        /* Installed on a phone the page draws under the status bar / home indicator
+           (black-translucent + viewport-fit=cover); keep content out of both. */
+        padding-top: calc(48px + env(safe-area-inset-top, 0px));
+        padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
         gap: 16px;
       }
       .card {
@@ -370,6 +383,20 @@
         border-radius: 3px 3px 0 0;
         transition: background 0.15s;
       }
+      /* Guests' first entries, stacked above the server-visible entries — the layer
+         whose absence made a healthy week read as a collapse. Sage, to read as
+         "activity" next to the blue without competing with the selection color. */
+      .bar-guest {
+        width: 100%;
+        background: #5a7d5a;
+        border-radius: 3px 3px 0 0;
+        /* Cancel .bar-wrap's 4px flex gap so the two segments read as one stacked
+           bar rather than two bars with a seam. */
+        margin-bottom: -4px;
+      }
+      .bar-guest + .bar {
+        border-radius: 0;
+      }
       .bar-wrap:hover .bar {
         background: #4a6fb5;
       }
@@ -436,6 +463,8 @@
       @media (max-width: 640px) {
         body {
           padding: 24px 10px;
+          padding-top: calc(24px + env(safe-area-inset-top, 0px));
+          padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
         }
         .card {
           padding: 18px 14px;
@@ -900,18 +929,27 @@
       }
 
       function renderChart(series, selectedDay) {
-        const max = Math.max(1, ...series.map((s) => Number(s.entries)));
+        // Bar height = entries + guests' first entries. Guest journaling is
+        // device-local, so their first entry is the only guest writing the server
+        // ever sees — without stacking it, the chart shows only the signed-in slice
+        // and a normal guest-first week reads as a collapse (which is exactly how
+        // 2026-08-13..20 was misread).
+        const total = (s) => Number(s.entries) + Number(s.guest_activations ?? 0);
+        const max = Math.max(1, ...series.map(total));
         document.getElementById('chart').innerHTML = series
           .map((s) => {
             const n = Number(s.entries);
+            const g = Number(s.guest_activations ?? 0);
             const h = Math.round((n / max) * 100);
+            const gh = Math.round((g / max) * 100);
             const sel = s.day === selectedDay ? ' sel' : '';
             const title =
-              `${fmtDMY(s.day)} · ${n} entries · ${s.writers} writers · ${s.signups} signups · ${s.reflections} reflections` +
+              `${fmtDMY(s.day)} · ${n} entries · ${g} guests started writing · ${s.writers} writers · ${s.signups} signups · ${s.reflections} reflections` +
               (s.meta_installs === undefined ? '' : ` · ${s.meta_installs} Meta installs`);
             return `
         <div class="bar-wrap${sel}" title="${esc(title)}" onclick="pickDay('${esc(s.day)}')">
-          <div class="bar-n">${n}</div>
+          <div class="bar-n">${n + g}</div>
+          ${g > 0 ? `<div class="bar-guest" style="height:${gh}%"></div>` : ''}
           <div class="bar" style="height:${h}%"></div>
           <div class="bar-x">${esc(fmtDMY(s.day).slice(0, 5))}</div>
         </div>`;
@@ -965,7 +1003,7 @@
           renderWriters(data.top_writers || [], data.day, data.is_today);
           renderChart(data.series || [], data.day);
           document.getElementById('chart-note').textContent =
-            `Last ${(data.series || []).length} days · click a bar to jump to that day`;
+            `Last ${(data.series || []).length} days · blue = entries, green = guests' first entries · click a bar to jump to that day`;
           renderTotals((data.stats || {}).totals);
 
           // Weekday for orientation, then the date itself in DD/MM/YYYY. The noon-UTC
