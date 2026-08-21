@@ -34,7 +34,8 @@ const signOutToAnonymous = async () => {
   await supabase.auth.signOut({ scope: 'local' });
 };
 
-const FREE_ENTRY_LIMIT = 7;
+// Keep in sync with api.enforce_free_entry_limit (migration 20260821000000).
+const FREE_ENTRY_LIMIT = 30;
 
 // iOS Keychain survives app deletion; AsyncStorage does not.
 // On a fresh install, purge any stale Keychain session before restoring.

@@ -129,7 +129,9 @@ const EntryCard = ({ entry, index, onDelete, onPeek, closeKey }: EntryCardProps)
   );
 };
 
-const FREE_ENTRY_LIMIT = 7;
+// Keep in sync with api.enforce_free_entry_limit (migration 20260821000000) —
+// the trigger is the authoritative gate; this only drives the UX.
+const FREE_ENTRY_LIMIT = 30;
 
 // How long the save button may stay blocked waiting for the server entry count
 // before giving up and letting the save through (the DB trigger enforces the
@@ -767,10 +769,18 @@ const JournalScreen = () => {
 
               {atLimit ? (
                 <BodySm color="$accentBackground" text="center" mt="$2">
+                  {/* Sell what Pro IS, not just the unblock — by the time someone
+                      fills 30 free entries they have a real journal and (if opted
+                      in) a month of Sunday reflections behind them. */}
                   {isAnonymous ? (
-                    <Trans>Entry limit reached — sign up for Pro to keep writing</Trans>
+                    <Trans>
+                      You’ve filled your free journal — sign up and go Pro to keep it growing
+                    </Trans>
                   ) : (
-                    <Trans>Entry limit reached — upgrade to keep writing</Trans>
+                    <Trans>
+                      You’ve filled your free journal — Pro keeps it growing, with weekly
+                      reflections and export
+                    </Trans>
                   )}
                 </BodySm>
               ) : null}

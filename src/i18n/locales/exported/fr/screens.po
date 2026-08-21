@@ -219,12 +219,12 @@ msgid "Enter your email to receive a reset link."
 msgstr "Entrez votre e-mail pour recevoir un lien de réinitialisation."
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Entry limit reached — sign up for Pro to keep writing"
-msgstr "Limite d'entrées atteinte — inscrivez-vous à Pro pour continuer à écrire"
+#~ msgid "Entry limit reached — sign up for Pro to keep writing"
+#~ msgstr "Limite d'entrées atteinte — inscrivez-vous à Pro pour continuer à écrire"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Entry limit reached — upgrade to keep writing"
-msgstr "Limite d'entrées atteinte — passez à Pro pour continuer à écrire"
+#~ msgid "Entry limit reached — upgrade to keep writing"
+#~ msgstr "Limite d'entrées atteinte — passez à Pro pour continuer à écrire"
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export"
@@ -670,6 +670,14 @@ msgstr "Vous êtes hors ligne"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."
 msgstr "Vous utilisez reflect en tant qu'invité. Connectez-vous pour synchroniser votre journal sur tous vos appareils et débloquer Pro."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "You’ve filled your free journal — Pro keeps it growing, with weekly reflections and export"
+msgstr "Tu as rempli ton journal gratuit — Pro le fait continuer à grandir, avec réflexions hebdomadaires et export"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "You’ve filled your free journal — sign up and go Pro to keep it growing"
+msgstr "Tu as rempli ton journal gratuit — crée ton compte et passe à Pro pour qu’il continue à grandir"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."
