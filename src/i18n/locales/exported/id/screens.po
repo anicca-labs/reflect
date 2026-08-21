@@ -219,12 +219,12 @@ msgid "Enter your email to receive a reset link."
 msgstr "Masukkan email Anda untuk menerima tautan reset."
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Entry limit reached — sign up for Pro to keep writing"
-msgstr "Batas entri tercapai — daftar Pro untuk terus menulis"
+#~ msgid "Entry limit reached — sign up for Pro to keep writing"
+#~ msgstr "Batas entri tercapai — daftar Pro untuk terus menulis"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Entry limit reached — upgrade to keep writing"
-msgstr "Batas entri tercapai — tingkatkan untuk terus menulis"
+#~ msgid "Entry limit reached — upgrade to keep writing"
+#~ msgstr "Batas entri tercapai — tingkatkan untuk terus menulis"
 
 #: src/screens/ReflectionsScreen/ReflectionsScreen.tsx
 msgid "Export"
@@ -670,6 +670,14 @@ msgstr "Anda sedang offline"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "You're using reflect as a guest. Sign in to sync your journal across devices and unlock Pro."
 msgstr "Anda menggunakan reflect sebagai tamu. Masuk untuk menyinkronkan jurnal di semua perangkat dan membuka Pro."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "You’ve filled your free journal — Pro keeps it growing, with weekly reflections and export"
+msgstr "Jurnal gratismu sudah penuh — Pro membuatnya terus bertumbuh, dengan refleksi mingguan dan ekspor"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "You’ve filled your free journal — sign up and go Pro to keep it growing"
+msgstr "Jurnal gratismu sudah penuh — daftar dan ambil Pro agar terus bertumbuh"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Your account and journal entries will be permanently deleted."

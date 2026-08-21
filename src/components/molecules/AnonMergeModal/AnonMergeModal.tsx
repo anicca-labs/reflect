@@ -17,7 +17,8 @@ import {
 } from '@constants';
 import { sizes } from '@theme';
 
-const FREE_ENTRY_LIMIT = 7;
+// Keep in sync with api.enforce_free_entry_limit (migration 20260821000000).
+const FREE_ENTRY_LIMIT = 30;
 
 interface AnonMergeModalProps {
   visible: boolean;
