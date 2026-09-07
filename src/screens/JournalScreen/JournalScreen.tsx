@@ -479,6 +479,29 @@ const JournalScreen = () => {
   const showHint =
     !isPro && entries.length >= FREE_ENTRY_LIMIT - 2 && entries.length < FREE_ENTRY_LIMIT;
 
+  // The self-select Pro path. Every monetization *push* has converted nobody so
+  // far (wall-hitters 0/7, trials 0/2), while the one real payer arrived through
+  // "Sign in for Pro" and paid in under a minute — buyers self-select. This gives
+  // that intent a calm, always-findable home instead of burying it in Settings.
+  const handleProIntent = async () => {
+    if (isAnonymous) {
+      // Same mechanism as Settings' "Sign in for Pro": the intent survives the
+      // sign-in round trip and the paywall auto-presents on landing (see the
+      // proIntent effect above).
+      setProIntent(true);
+      router.push('/sign-in');
+      return;
+    }
+    const purchased = await presentPaywall('pro-intent');
+    if (!purchased) return;
+    await refreshEntitlement();
+    alert({
+      title: t`Welcome to Pro ✦`,
+      message: t`Unlimited entries unlocked. Keep writing.`,
+      duration: PAYWALL_SUCCESS_ALERT_DURATION,
+    });
+  };
+
   const handleSave = async () => {
     // Saving mid-dictation: close the transcript with punctuation before
     // stopping, matching what the mic-button stop does.
@@ -646,14 +669,26 @@ const JournalScreen = () => {
                 <DisplayLg color="$text-emphasis" letterSpacing={HEADING_LETTER_SPACING}>
                   <Trans>Journal</Trans>
                 </DisplayLg>
-                {streak > 0 ? (
-                  <YStack items="flex-end">
-                    <LabelMd color="$accentBackground" letterSpacing={STREAK_LETTER_SPACING}>
-                      {streak}{' '}
-                      {streak === 1 ? <Trans>day streak</Trans> : <Trans>days streak</Trans>} 🔥
-                    </LabelMd>
-                  </YStack>
-                ) : null}
+                <XStack items="flex-end" gap="$3">
+                  {!rcLoading && !isPro ? (
+                    <BaseTouchable
+                      onPress={handleProIntent}
+                      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                    >
+                      <LabelMd color="$accentBackground" letterSpacing={STREAK_LETTER_SPACING}>
+                        ✦ Pro
+                      </LabelMd>
+                    </BaseTouchable>
+                  ) : null}
+                  {streak > 0 ? (
+                    <YStack items="flex-end">
+                      <LabelMd color="$accentBackground" letterSpacing={STREAK_LETTER_SPACING}>
+                        {streak}{' '}
+                        {streak === 1 ? <Trans>day streak</Trans> : <Trans>days streak</Trans>} 🔥
+                      </LabelMd>
+                    </YStack>
+                  ) : null}
+                </XStack>
               </XStack>
             </YStack>
 
