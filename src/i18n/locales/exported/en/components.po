@@ -50,6 +50,18 @@ msgstr ""
 msgid "AI reads your week and writes it back to you — in your own words. 4 free."
 msgstr ""
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask"
+msgstr ""
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask something about what you’ve written…"
+msgstr ""
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask your journal"
+msgstr ""
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "Back online"
 msgstr ""
@@ -58,6 +70,10 @@ msgstr ""
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
+msgstr ""
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Couldn't answer"
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
@@ -179,6 +195,10 @@ msgstr ""
 msgid "Not quite"
 msgstr ""
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Nothing to search yet"
+msgstr ""
+
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Notifications are off"
 msgstr ""
@@ -195,6 +215,7 @@ msgstr ""
 msgid "Please try again from Settings."
 msgstr ""
 
+#: src/components/molecules/AskJournal/index.tsx
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Please try again."
 msgstr ""
@@ -209,6 +230,10 @@ msgstr ""
 
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "Reading…"
+msgstr ""
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Reflect on my recent days ✦"
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
@@ -316,6 +341,10 @@ msgstr ""
 msgid "Write a couple of entries first, then your first reflection unlocks. 🍂"
 msgstr ""
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Write a few entries first — then your journal can answer."
+msgstr ""
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Write my first reflection ✦"
 msgstr ""
@@ -385,6 +414,10 @@ msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your next reflection arrives tomorrow 🍂"
+msgstr ""
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Your own pages answer — “when did I last feel like this?”"
 msgstr ""
 
 #: src/components/molecules/WeeklyReflection/index.tsx

@@ -19,7 +19,7 @@ export type Reflection = {
 };
 
 type GenerateResult = {
-  status: 'ok' | 'limit' | 'not_enough' | 'error';
+  status: 'ok' | 'limit' | 'not_enough' | 'error' | 'pro_required' | 'consent_required';
   reflection?: string;
   id?: string;
   entryCount?: number;
@@ -69,6 +69,26 @@ const useGenerateReflection = () => {
     onSuccess: () => qc.invalidateQueries({ queryKey: REFLECTIONS_KEY }),
   });
 };
+
+type AskResult = {
+  status: 'ok' | 'pro_required' | 'consent_required' | 'not_enough' | 'error';
+  answer?: string;
+  message?: string;
+};
+
+// Ask-your-journal: one question, answered from the user's own recent pages
+// (generate-reflection action 'ask'). Free users get 2 questions ever, then
+// Pro — the server enforces both; the client just renders the statuses.
+const useAskJournal = () =>
+  useMutation({
+    mutationFn: async (question: string): Promise<AskResult> => {
+      const { data, error } = await supabase.functions.invoke('generate-reflection', {
+        body: { action: 'ask', question },
+      });
+      if (error) throw error;
+      return data as AskResult;
+    },
+  });
 
 // Mark a reflection read (drives the "your week is ready" home banner).
 // Optimistic: the banner must vanish the instant the reflection opens — waiting
@@ -394,6 +414,7 @@ const reflectionMeta = (r: Reflection): ReflectionMeta => {
 export {
   useReflections,
   useGenerateReflection,
+  useAskJournal,
   useMarkReflectionSeen,
   useAiReflectionsSetting,
   useEntryEcho,

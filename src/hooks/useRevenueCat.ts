@@ -11,6 +11,8 @@ const PRO_ENTITLEMENT = 'pro';
 type PaywallSource =
   | 'entry-limit'
   | 'reflection-limit'
+  | 'ask-journal'
+  | 'reflection-ondemand'
   | 'settings'
   | 'merge'
   | 'pro-intent'

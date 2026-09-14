@@ -50,6 +50,18 @@ msgstr "Uma retrospectiva dos seus últimos 7 dias — toque para ler."
 msgid "AI reads your week and writes it back to you — in your own words. 4 free."
 msgstr "A IA lê a sua semana e escreve de volta para você — nas suas próprias palavras. 4 grátis."
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask"
+msgstr "Perguntar"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask something about what you’ve written…"
+msgstr "Pergunte algo sobre o que você escreveu…"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask your journal"
+msgstr "Pergunte ao seu diário"
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "Back online"
 msgstr "Conexão restabelecida"
@@ -59,6 +71,10 @@ msgstr "Conexão restabelecida"
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
 msgstr "Cancelar"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Couldn't answer"
+msgstr "Não foi possível responder"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Couldn't generate"
@@ -179,6 +195,10 @@ msgstr "Agora não"
 msgid "Not quite"
 msgstr "Nem tanto"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Nothing to search yet"
+msgstr "Ainda não há onde buscar"
+
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Notifications are off"
 msgstr "As notificações estão desativadas"
@@ -195,6 +215,7 @@ msgstr "Um lembrete discreto por dia. Mude o horário ou desative quando quiser.
 msgid "Please try again from Settings."
 msgstr "Tente novamente em Configurações."
 
+#: src/components/molecules/AskJournal/index.tsx
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Please try again."
 msgstr "Tente novamente."
@@ -210,6 +231,10 @@ msgstr "Ler esta entrada ✦"
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "Reading…"
 msgstr "Lendo…"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Reflect on my recent days ✦"
+msgstr "Refletir sobre meus últimos dias ✦"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Reflect Pro gives you a new reflection every Sunday — plus your whole archive to look back on."
@@ -316,6 +341,10 @@ msgstr "Escreva algumas entradas e vou refletir sobre a sua semana."
 msgid "Write a couple of entries first, then your first reflection unlocks. 🍂"
 msgstr "Escreva algumas entradas primeiro e a sua primeira reflexão é liberada. 🍂"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Write a few entries first — then your journal can answer."
+msgstr "Escreva algumas entradas primeiro — depois seu diário pode responder."
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Write my first reflection ✦"
 msgstr "Escrever minha primeira reflexão ✦"
@@ -386,6 +415,10 @@ msgstr "Sua próxima reflexão chega hoje 🍂"
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your next reflection arrives tomorrow 🍂"
 msgstr "Sua próxima reflexão chega amanhã 🍂"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Your own pages answer — “when did I last feel like this?”"
+msgstr "Suas próprias páginas respondem — “quando foi a última vez que me senti assim?”"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your week is ready"

@@ -18,6 +18,15 @@ const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 const ADMIN_SECRET = Deno.env.get('ADMIN_PUSH_SECRET');
 const FREE_REFLECTION_LIMIT = 4;
 
+// Ask-your-journal: free users get FREE_ASKS questions ever (enough to feel the
+// feature), then Pro. Metadata-only logging (api.ask_log holds user_id +
+// timestamp; never the question or the answer).
+const FREE_ASKS = 2;
+// Questions are one line, not essays; a hard cap keeps the prompt bounded.
+const MAX_QUESTION_CHARS = 300;
+// How many recent entries the answer may draw on.
+const ASK_ENTRY_WINDOW = 60;
+
 // ── "Your week is ready" push (cron path only — self-generates happen in-app) ──
 // Localized by the device's saved locale, mirroring the send-reminders pattern.
 const REFLECTION_PUSH_TITLE = 'Reflect';
@@ -343,6 +352,57 @@ const callClaude = async (userMessage: string): Promise<string> => {
   return text;
 };
 
+// Answer a question from the user's own pages. Same protective framing as the
+// reflection prompt: the model is reading someone's private writing back to
+// them — warm, concrete, never clinical, never advice unless asked. Answers
+// ONLY from the entries provided; if they don't contain an answer, it says so
+// plainly instead of inventing one.
+const callClaudeAsk = async (question: string, entriesBlock: string): Promise<string> => {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': Deno.env.get('ANTHROPIC_API_KEY')!,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: REFLECTION_MODEL,
+      max_tokens: 500,
+      system:
+        'You answer questions about a private journal, speaking directly to its author. ' +
+        'Use ONLY the entries provided — never invent events, feelings or dates. ' +
+        'Refer to entries by their day ("On Tuesday you wrote…"). Quote short fragments ' +
+        'when they carry the answer. Warm and plain, second person, no therapy-speak, ' +
+        'no advice unless the question asks for it. If the entries do not contain an ' +
+        'answer, say so in one kind sentence — do not speculate. 2–5 sentences.',
+      messages: [
+        {
+          role: 'user',
+          content: `Journal entries:\n\n${entriesBlock}\n\nQuestion: ${question}`,
+        },
+      ],
+    }),
+  });
+  if (!res.ok) throw new Error(`Claude ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+  const text = String(data?.content?.[0]?.text ?? '').trim();
+  if (!text) throw new Error('empty answer');
+  return text;
+};
+
+// Entitlement check honouring expires_at — same rule as enforce_free_entry_limit.
+// deno-lint-ignore no-explicit-any
+const isProNow = async (admin: any, userId: string): Promise<boolean> => {
+  const { data: ent } = await admin
+    .from('entitlements')
+    .select('is_pro, expires_at')
+    .eq('user_id', userId)
+    .maybeSingle();
+  const row = ent as { is_pro?: boolean; expires_at?: string | null } | null;
+  const notExpired = !row?.expires_at || new Date(row.expires_at) > new Date();
+  return row?.is_pro === true && notExpired;
+};
+
 type Mode = 'week' | 'recent';
 
 const generateForUser = async (
@@ -477,6 +537,7 @@ Deno.serve(async (req) => {
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { db: { schema: 'api' } });
   const body = (await req.json().catch(() => ({}))) as {
     action?: string;
+    question?: string;
     userId?: string;
     mode?: string;
     force?: boolean;
@@ -567,7 +628,73 @@ Deno.serve(async (req) => {
     }
   }
 
+  // Ask-your-journal: answer a question from the user's own recent pages.
+  // Consent-gated exactly like reflections (their entries are being read), then
+  // FREE_ASKS questions ever for free users, unlimited for Pro.
+  if (body.action === 'ask' && typeof body.question === 'string') {
+    const question = body.question.trim().slice(0, MAX_QUESTION_CHARS);
+    if (!question) return json({ status: 'error', message: 'empty question' }, 400);
+    try {
+      const { data: settings } = await admin
+        .from('user_settings')
+        .select('ai_reflections_enabled')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (!(settings as { ai_reflections_enabled?: boolean } | null)?.ai_reflections_enabled) {
+        return json({ status: 'consent_required' });
+      }
+      if (!(await isProNow(admin, userId))) {
+        const { count } = await admin
+          .from('ask_log')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', userId);
+        if ((count ?? 0) >= FREE_ASKS) return json({ status: 'pro_required' });
+      }
+      const { data: rows } = await admin
+        .from('journal_entries')
+        .select('content, created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(ASK_ENTRY_WINDOW);
+      const list = ((rows ?? []) as { content: string; created_at: string }[]).slice().reverse();
+      if (list.length === 0) return json({ status: 'not_enough', entryCount: 0 });
+      const decrypted = await Promise.all(
+        list.map(async (e) => ({ date: e.created_at, text: await decryptContent(e.content) })),
+      );
+      const block = decrypted
+        .map((e) => {
+          const label = new Date(e.date).toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+          });
+          return `[${label}]\n${e.text}`;
+        })
+        .join('\n\n');
+      const answer = await callClaudeAsk(question, block);
+      // Metadata only — never the question, never the answer.
+      await admin.from('ask_log').insert({ user_id: userId });
+      return json({ status: 'ok', answer });
+    } catch (e) {
+      console.error('ask-journal error', e);
+      return json({ status: 'error', message: e instanceof Error ? e.message : String(e) }, 500);
+    }
+  }
+
   const mode: Mode = body.mode === 'week' ? 'week' : 'recent';
+  // On-demand generation is a Pro perk beyond the FIRST reflection: the free
+  // first-ever generate stays (it powers the first-reflection invite and records
+  // consent — the activation path must not regress), and Sunday's cron remains
+  // the free ritual. "Reflect whenever you want" is what Pro buys.
+  if (selfServe && mode === 'recent' && !force) {
+    const { count: priorRefl } = await admin
+      .from('reflections')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
+    if ((priorRefl ?? 0) >= 1 && !(await isProNow(admin, userId))) {
+      return json({ status: 'pro_required' });
+    }
+  }
   try {
     const result = await generateForUser(admin, userId, { mode, force });
     // Pressing "Write my first reflection" IS the consent — but only record it once

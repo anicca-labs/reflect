@@ -140,7 +140,7 @@ const WeeklyReflectionCard = ({
 // ── The section shown at the top of the Reflections tab ──────────────────────
 const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) => {
   const { data: reflections = [], isLoading, isSuccess } = useReflections();
-  const { isPro } = useRevenueCat();
+  const { isPro, presentPaywall } = useRevenueCat();
   const isAnonymous = useSessionStore((s) => s.isAnonymous);
   const router = useRouter();
   const markSeen = useMarkReflectionSeen();
@@ -285,6 +285,54 @@ const WeeklyReflectionsSection = ({ entryCount = 0 }: { entryCount?: number }) =
       {reflections.map((r) => (
         <WeeklyReflectionCard key={r.id} reflection={r} onPress={() => openReflection(r)} />
       ))}
+
+      {/* On-demand generation is a Pro perk beyond the first reflection: Sunday
+          stays the free ritual, "reflect whenever you want" is what Pro buys.
+          The server enforces it (status pro_required); the paywall here is the
+          honest path for free users rather than a button that fails. */}
+      {reflections.length > 0 && !isEmpty ? (
+        <BaseTouchable
+          onPress={async () => {
+            if (!isPro) {
+              await presentPaywall('reflection-ondemand');
+              return;
+            }
+            if (generate.isPending) return;
+            const res = await generate.mutateAsync('recent').catch(() => null);
+            if (res?.status === 'pro_required') {
+              await presentPaywall('reflection-ondemand');
+            } else if (!res || res.status === 'error') {
+              alert({
+                title: t`Couldn't generate`,
+                message: t`Please try again.`,
+                preset: 'error',
+              });
+            } else if (res.status === 'not_enough') {
+              alert({
+                title: t`A little more to reflect on`,
+                message: t`Write a couple of entries and I'll reflect on your week.`,
+              });
+            }
+          }}
+          disabled={generate.isPending}
+          opacity={generate.isPending ? DISABLED_OPACITY : 1}
+          bg="$surface-card"
+          rounded="$4"
+          p="$4"
+          mt="$2"
+          items="center"
+          borderWidth={1}
+          borderColor="$accentBackground"
+        >
+          {generate.isPending ? (
+            <Spinner size="small" color="$accentBackground" />
+          ) : (
+            <LabelLg color="$accentBackground">
+              <Trans>Reflect on my recent days ✦</Trans>
+            </LabelLg>
+          )}
+        </BaseTouchable>
+      ) : null}
 
       {atLimit ? (
         <YStack mt="$3" gap="$3">
