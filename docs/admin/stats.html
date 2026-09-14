@@ -72,6 +72,17 @@
       a:hover {
         text-decoration: underline;
       }
+      .of {
+        color: #555;
+        font-size: 11px;
+      }
+      .near-wall {
+        color: #e2b34c;
+      }
+      .at-wall {
+        color: #e2694c;
+        font-weight: 600;
+      }
       .muted {
         color: #666;
         font-size: 12px;
@@ -588,6 +599,7 @@
               <th style="width: 28px"></th>
               <th>Account</th>
               <th class="num">Entries</th>
+              <th class="num">Reflections</th>
               <th class="num" id="th-on-day">Today</th>
               <th class="num col-first">First ever</th>
               <th class="num">Last ever</th>
@@ -899,6 +911,20 @@
           const rapid = Number(w.rapid_entries ?? 0);
           return gaps >= 2 && rapid >= 2 && rapid / gaps >= 0.5;
         };
+        // The two meters that monetize: entries fill toward the free hold limit,
+        // reflections toward the free reflection limit. Meters (n/limit) make
+        // wall-proximity visible at a glance; ⚠ within one of the wall, AT once
+        // there. Pro users have no walls, so they get plain counts.
+        // Keep in sync with api.enforce_free_entry_limit (30) and
+        // FREE_REFLECTION_LIMIT in generate-reflection (4).
+        const FREE_ENTRY_LIMIT = 30;
+        const FREE_REFLECTION_LIMIT = 4;
+        const meter = (n, limit, isPro) => {
+          if (isPro) return `<td class="num">${num(n)}</td>`;
+          const cls = n >= limit ? 'at-wall' : n >= limit - 1 ? 'near-wall' : '';
+          const mark = n >= limit ? ' ⛔' : n >= limit - 1 ? ' ⚠' : '';
+          return `<td class="num ${cls}">${num(n)}<span class="of">/${limit}</span>${mark}</td>`;
+        };
         const row = (w, rank) => `
         <tr>
           <td class="rank">${rank}</td>
@@ -909,16 +935,17 @@
                 } gaps between entries were under a minute — likely just playing with the app">PHONY</span>`
               : ''
           }</td>
-          <td class="num">${num(w.lifetime_entries)}</td>
+          ${meter(Number(w.lifetime_entries), FREE_ENTRY_LIMIT, w.is_pro)}
+          ${meter(Number(w.reflections ?? 0), FREE_REFLECTION_LIMIT, w.is_pro)}
           <td class="num ${Number(w.entries_on_day) > 0 ? 'up' : 'zero'}">${num(w.entries_on_day)}</td>
           <td class="num col-first">${dmy(w.first_at)}</td>
           <td class="num">${dmy(w.last_at)}</td>
         </tr>`;
         if (!rows.length) {
-          body.innerHTML = '<tr><td colspan="6" class="empty">Nobody has written yet.</td></tr>';
+          body.innerHTML = '<tr><td colspan="7" class="empty">Nobody has written yet.</td></tr>';
         } else {
           const divider = dayOnly.length
-            ? `<tr class="divider"><td colspan="6">Also wrote ${isToday ? 'today' : 'on ' + dayLabel} — not in the all-time top</td></tr>`
+            ? `<tr class="divider"><td colspan="7">Also wrote ${isToday ? 'today' : 'on ' + dayLabel} — not in the all-time top</td></tr>`
             : '';
           body.innerHTML =
             top.map((w, i) => row(w, i + 1)).join('') +
