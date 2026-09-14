@@ -222,7 +222,12 @@ const echoSavesKey = (userId: string) => `entry-echo:saves:${userId}`;
 // converted ~18%: the prompt was fine, its gate was closed. Echo keeps save 1 (its
 // critical ask) and its re-ask moves to 3, which also gives the re-ask more distance
 // than repeating one entry after a decline.
-const ASK_ON_SAVES = [1, 3, 6];
+// 12 added 2026-09-14: the ask used to stop forever at save 6, which cut off
+// exactly the engaged-but-unconvinced — e.g. a user at 6 entries, still writing,
+// who declined a colder version of this card back at entry 1. By save 12 they
+// have real material and the pitch ("that's 12 entries — see what they add up
+// to?") argues from their own investment. One late ask, not a nag loop.
+const ASK_ON_SAVES = [1, 3, 6, 12];
 
 const useEntryEcho = () => {
   const { enabled, settled, setEnabled } = useAiReflectionsSetting();
@@ -304,7 +309,10 @@ const useEntryEcho = () => {
   // Postgres, 2026-08-25), so a save-3 ask reached almost nobody. Save 2 reaches
   // exactly the guests who came back once — the ones worth asking. Save 1 stays
   // untouched: guest-first bought ~20 points of activation by leaving it alone.
-  const GUEST_ASK_ON_SAVES = [2, 5];
+  // 10 added 2026-09-14 for the same reason as ASK_ON_SAVES' 12: a guest still
+  // writing at entry 10 is the strongest possible sign-up candidate, and their
+  // previous ask was 5 entries ago.
+  const GUEST_ASK_ON_SAVES = [2, 5, 10];
   // Returns true when it shows the card, so the caller holds back the reminder modal.
   const onGuestSaved = useCallback((entryNumber: number): boolean => {
     setLine(null);
