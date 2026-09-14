@@ -32,6 +32,7 @@ import {
   SwipeableDeleteWrapper,
   EntryPeekModal,
   WeeklyReflectionsSection,
+  AskJournal,
   type SwipeableDeleteWrapperHandle,
 } from '@molecules';
 
@@ -361,6 +362,7 @@ const ReflectionsScreen = () => {
 
             {/* AI Weekly Reflections. Hidden while a search is active so results stay
                 tight against the search box; visible in the default browse state. */}
+            {!query ? <AskJournal /> : null}
             {!query ? <WeeklyReflectionsSection entryCount={entries.length} /> : null}
 
             {loading && !entries.length ? (

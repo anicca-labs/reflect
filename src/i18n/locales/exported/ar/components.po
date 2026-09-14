@@ -50,6 +50,18 @@ msgstr "نظرة على آخر 7 أيام — اضغط للقراءة."
 msgid "AI reads your week and writes it back to you — in your own words. 4 free."
 msgstr "يقرأ الذكاء الاصطناعي أسبوعك ويكتبه لك — بكلماتك أنت. 4 مجانية."
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask"
+msgstr "اسأل"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask something about what you’ve written…"
+msgstr "اسأل عن شيء مما كتبته…"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask your journal"
+msgstr "اسأل مذكرتك"
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "Back online"
 msgstr "عاد الاتصال"
@@ -59,6 +71,10 @@ msgstr "عاد الاتصال"
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
 msgstr "إلغاء"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Couldn't answer"
+msgstr "تعذّرت الإجابة"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Couldn't generate"
@@ -124,6 +140,10 @@ msgstr "احصل على تأملك الأول"
 msgid "Go Pro ✦"
 msgstr "اشترك في Pro ✦"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "I looked, but your entries don't seem to touch on that yet."
+msgstr "بحثت، لكن يبدو أن تدويناتك لم تتطرق إلى ذلك بعد."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep account entries"
 msgstr "الاحتفاظ بإدخالات الحساب"
@@ -179,6 +199,10 @@ msgstr "ليس الآن"
 msgid "Not quite"
 msgstr "ليس تماماً"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Nothing to search yet"
+msgstr "لا شيء للبحث فيه بعد"
+
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Notifications are off"
 msgstr "الإشعارات معطّلة"
@@ -195,6 +219,7 @@ msgstr "تذكير هادئ واحد يوميًا. غيّر الوقت أو أو
 msgid "Please try again from Settings."
 msgstr "يرجى المحاولة مرة أخرى من الإعدادات."
 
+#: src/components/molecules/AskJournal/index.tsx
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Please try again."
 msgstr "حاول مرّة أخرى."
@@ -210,6 +235,10 @@ msgstr "اقرأ هذه المدونة ✦"
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "Reading…"
 msgstr "يقرأ…"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Reflect on my recent days ✦"
+msgstr "تأمل في أيامي الأخيرة ✦"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Reflect Pro gives you a new reflection every Sunday — plus your whole archive to look back on."
@@ -316,6 +345,10 @@ msgstr "اكتب بضع تدوينات وسأتأمّل في أسبوعك."
 msgid "Write a couple of entries first, then your first reflection unlocks. 🍂"
 msgstr "اكتب بضع تدوينات أولاً، ثم يُفتح تأملك الأول. 🍂"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Write a few entries first — then your journal can answer."
+msgstr "اكتب بعض التدوينات أولًا — بعدها تستطيع مذكرتك أن تجيب."
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Write my first reflection ✦"
 msgstr "اكتب تأملي الأول ✦"
@@ -386,6 +419,10 @@ msgstr "تأملك التالي يصل اليوم 🍂"
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your next reflection arrives tomorrow 🍂"
 msgstr "تأملك التالي يصل غداً 🍂"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Your own pages answer — “when did I last feel like this?”"
+msgstr "صفحاتك أنت تجيب — ”متى شعرت هكذا آخر مرة؟“"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your week is ready"

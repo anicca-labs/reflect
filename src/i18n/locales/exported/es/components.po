@@ -50,6 +50,18 @@ msgstr "Un repaso de tus últimos 7 días — toca para leer."
 msgid "AI reads your week and writes it back to you — in your own words. 4 free."
 msgstr "La IA lee tu semana y te la escribe de vuelta — en tus propias palabras. 4 gratis."
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask"
+msgstr "Preguntar"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask something about what you’ve written…"
+msgstr "Preguntale algo a lo que escribiste…"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask your journal"
+msgstr "Preguntale a tu diario"
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "Back online"
 msgstr "Conexión restablecida"
@@ -59,6 +71,10 @@ msgstr "Conexión restablecida"
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
 msgstr "Cancelar"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Couldn't answer"
+msgstr "No se pudo responder"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Couldn't generate"
@@ -124,6 +140,10 @@ msgstr "Recibe tu primera reflexión"
 msgid "Go Pro ✦"
 msgstr "Hazte Pro ✦"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "I looked, but your entries don't seem to touch on that yet."
+msgstr "Busqué, pero tus entradas todavía no parecen hablar de eso."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep account entries"
 msgstr "Conservar entradas de la cuenta"
@@ -179,6 +199,10 @@ msgstr "Ahora no"
 msgid "Not quite"
 msgstr "No tanto"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Nothing to search yet"
+msgstr "Todavía no hay dónde buscar"
+
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Notifications are off"
 msgstr "Las notificaciones están desactivadas"
@@ -195,6 +219,7 @@ msgstr "Un recordatorio discreto al día. Cambia la hora o desactívalo cuando q
 msgid "Please try again from Settings."
 msgstr "Inténtalo de nuevo desde Ajustes."
 
+#: src/components/molecules/AskJournal/index.tsx
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Please try again."
 msgstr "Inténtalo de nuevo."
@@ -210,6 +235,10 @@ msgstr "Leer esta entrada ✦"
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "Reading…"
 msgstr "Leyendo…"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Reflect on my recent days ✦"
+msgstr "Reflexionar sobre mis últimos días ✦"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Reflect Pro gives you a new reflection every Sunday — plus your whole archive to look back on."
@@ -316,6 +345,10 @@ msgstr "Escribe un par de entradas y reflexionaré sobre tu semana."
 msgid "Write a couple of entries first, then your first reflection unlocks. 🍂"
 msgstr "Escribe un par de entradas primero y se desbloquea tu primera reflexión. 🍂"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Write a few entries first — then your journal can answer."
+msgstr "Escribí algunas entradas primero — después tu diario puede responder."
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Write my first reflection ✦"
 msgstr "Escribir mi primera reflexión ✦"
@@ -386,6 +419,10 @@ msgstr "Tu próxima reflexión llega hoy 🍂"
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your next reflection arrives tomorrow 🍂"
 msgstr "Tu próxima reflexión llega mañana 🍂"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Your own pages answer — “when did I last feel like this?”"
+msgstr "Tus propias páginas responden — “¿cuándo fue la última vez que me sentí así?”"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your week is ready"

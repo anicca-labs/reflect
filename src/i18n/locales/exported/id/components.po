@@ -50,6 +50,18 @@ msgstr "Melihat kembali 7 hari terakhirmu — ketuk untuk membaca."
 msgid "AI reads your week and writes it back to you — in your own words. 4 free."
 msgstr "AI membaca pekanmu dan menuliskannya kembali untukmu — dengan kata-katamu sendiri. 4 gratis."
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask"
+msgstr "Tanya"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask something about what you’ve written…"
+msgstr "Tanyakan sesuatu tentang tulisanmu…"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Ask your journal"
+msgstr "Tanya jurnalmu"
+
 #: src/components/atoms/NetworkStatusBanner/index.tsx
 msgid "Back online"
 msgstr "Kembali online"
@@ -59,6 +71,10 @@ msgstr "Kembali online"
 #: src/components/molecules/JournalEntry/SwipeableDeleteWrapper.tsx
 msgid "Cancel"
 msgstr "Batal"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Couldn't answer"
+msgstr "Tidak bisa menjawab"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Couldn't generate"
@@ -124,6 +140,10 @@ msgstr "Dapatkan refleksi pertamamu"
 msgid "Go Pro ✦"
 msgstr "Beralih ke Pro ✦"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "I looked, but your entries don't seem to touch on that yet."
+msgstr "Aku mencari, tapi catatanmu sepertinya belum menyentuh hal itu."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep account entries"
 msgstr "Pertahankan entri akun"
@@ -179,6 +199,10 @@ msgstr "Nanti saja"
 msgid "Not quite"
 msgstr "Kurang pas"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Nothing to search yet"
+msgstr "Belum ada yang bisa dicari"
+
 #: src/components/molecules/ReminderPromptModal/ReminderPromptModal.tsx
 msgid "Notifications are off"
 msgstr "Notifikasi nonaktif"
@@ -195,6 +219,7 @@ msgstr "Satu pengingat tenang setiap hari. Ubah waktunya atau matikan kapan saja
 msgid "Please try again from Settings."
 msgstr "Silakan coba lagi dari Pengaturan."
 
+#: src/components/molecules/AskJournal/index.tsx
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Please try again."
 msgstr "Coba lagi."
@@ -210,6 +235,10 @@ msgstr "Baca entri ini ✦"
 #: src/components/molecules/EntryEcho/index.tsx
 msgid "Reading…"
 msgstr "Membaca…"
+
+#: src/components/molecules/WeeklyReflection/index.tsx
+msgid "Reflect on my recent days ✦"
+msgstr "Refleksikan hari-hari terakhirku ✦"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Reflect Pro gives you a new reflection every Sunday — plus your whole archive to look back on."
@@ -316,6 +345,10 @@ msgstr "Tulis beberapa entri dan aku akan merefleksikan minggumu."
 msgid "Write a couple of entries first, then your first reflection unlocks. 🍂"
 msgstr "Tulis beberapa entri dulu, lalu refleksi pertamamu terbuka. 🍂"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Write a few entries first — then your journal can answer."
+msgstr "Tulis beberapa catatan dulu — setelah itu jurnalmu bisa menjawab."
+
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Write my first reflection ✦"
 msgstr "Tulis refleksi pertamaku ✦"
@@ -386,6 +419,10 @@ msgstr "Refleksi berikutnya tiba hari ini 🍂"
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your next reflection arrives tomorrow 🍂"
 msgstr "Refleksi berikutnya tiba besok 🍂"
+
+#: src/components/molecules/AskJournal/index.tsx
+msgid "Your own pages answer — “when did I last feel like this?”"
+msgstr "Halamanmu sendiri yang menjawab — “kapan terakhir aku merasa seperti ini?”"
 
 #: src/components/molecules/WeeklyReflection/index.tsx
 msgid "Your week is ready"
