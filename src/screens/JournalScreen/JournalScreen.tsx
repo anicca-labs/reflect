@@ -24,6 +24,7 @@ import {
   usePreferencesStore,
   useSwipeableStore,
   useSessionStore,
+  useAiInviteStore,
   useAnonymousJournalStore,
   usePendingJournalStore,
   usePendingDeletionsStore,
@@ -183,6 +184,14 @@ const JournalScreen = () => {
   const echo = useEntryEcho();
   const inputRef = useRef<ComponentRef<typeof TextArea>>(null);
 
+  // A tapped ai-invite push lands here: open the consent card the push promised.
+  // Waits for focus (the navigate from useAiInviteNotification may still be in
+  // flight) and consumes the flag exactly once; openInvite itself no-ops if the
+  // user consented between send and tap.
+  const pendingAiInvite = useAiInviteStore((s) => s.pendingAiInvite);
+  const setPendingAiInvite = useAiInviteStore((s) => s.setPendingAiInvite);
+  const isInviteFocused = useIsFocused();
+
   // Auto-present the paywall for a user who tapped "Sign in for Pro" while
   // anonymous. The intent survived the sign-in round trip; now that they've
   // landed on the journal, honour it instead of dropping it silently.
@@ -318,6 +327,18 @@ const JournalScreen = () => {
   const unsyncedEntries = pendingEntries.filter((e) => !serverIds.has(e.id));
   const pendingIds = new Set(unsyncedEntries.map((e) => e.id));
   const entries = isAnonymous ? localEntries : [...unsyncedEntries, ...visibleServerEntries];
+
+  // Consume a tapped ai-invite push (flag read above, near the other stores):
+  // open the consent card the push promised, with the user's real entry count.
+  // Below `entries` on purpose — the lint rule is right that referencing it from
+  // an effect declared earlier would freeze a pre-declaration binding.
+  useEffect(() => {
+    if (!pendingAiInvite || !isInviteFocused) return;
+    setPendingAiInvite(false);
+    echo.openInvite(entries.length);
+    // One-shot consume: re-running on entries/echo changes would be wasted work.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingAiInvite, isInviteFocused]);
   const loading = isAnonymous ? false : serverLoading;
   const peekEntry = peekEntryId ? (entries.find((e) => e.id === peekEntryId) ?? null) : null;
 

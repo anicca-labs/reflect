@@ -109,6 +109,10 @@ const REMINDER_DATA_TYPE = 'daily-reminder';
 // Sunday "your week is ready" pushes (sent by the generate-reflection edge fn);
 // tapping one opens the latest reflection full-screen (useReflectionNotification).
 const WEEKLY_REFLECTION_DATA_TYPE = 'weekly-reflection';
+// Once-ever server nudge to writers who never answered the AI consent card
+// (send-reminders phase 6); tapping one opens the consent card itself
+// (useAiInviteNotification) — the push promises the ask, so it must land on it.
+const AI_INVITE_DATA_TYPE = 'ai-invite';
 
 // GUEST path only. Signed-in users get the server push from send-reminders, which
 // now rotates a set of reflective lines daily; this stays a single fixed string
@@ -284,6 +288,7 @@ export type { NotificationPermissionStatus };
 export {
   REMINDER_DATA_TYPE,
   WEEKLY_REFLECTION_DATA_TYPE,
+  AI_INVITE_DATA_TYPE,
   getInitialFcmMessage,
   getNotificationPermissionStatus,
   requestNotificationPermission,
