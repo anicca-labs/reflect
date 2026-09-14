@@ -38,6 +38,9 @@ const AskJournal = () => {
       setQuestion('');
     } else if (res?.status === 'pro_required') {
       await presentPaywall('ask-journal');
+    } else if (res?.status === 'not_found') {
+      setAnswer(t`I looked, but your entries don't seem to touch on that yet.`);
+      setQuestion('');
     } else if (res?.status === 'not_enough') {
       alert({
         title: t`Nothing to search yet`,

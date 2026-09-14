@@ -140,6 +140,10 @@ msgstr "Dapatkan refleksi pertamamu"
 msgid "Go Pro ✦"
 msgstr "Beralih ke Pro ✦"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "I looked, but your entries don't seem to touch on that yet."
+msgstr "Aku mencari, tapi catatanmu sepertinya belum menyentuh hal itu."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep account entries"
 msgstr "Pertahankan entri akun"

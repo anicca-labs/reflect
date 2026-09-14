@@ -140,6 +140,10 @@ msgstr "احصل على تأملك الأول"
 msgid "Go Pro ✦"
 msgstr "اشترك في Pro ✦"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "I looked, but your entries don't seem to touch on that yet."
+msgstr "بحثت، لكن يبدو أن تدويناتك لم تتطرق إلى ذلك بعد."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep account entries"
 msgstr "الاحتفاظ بإدخالات الحساب"

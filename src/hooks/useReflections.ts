@@ -71,7 +71,7 @@ const useGenerateReflection = () => {
 };
 
 type AskResult = {
-  status: 'ok' | 'pro_required' | 'consent_required' | 'not_enough' | 'error';
+  status: 'ok' | 'pro_required' | 'consent_required' | 'not_enough' | 'not_found' | 'error';
   answer?: string;
   message?: string;
 };

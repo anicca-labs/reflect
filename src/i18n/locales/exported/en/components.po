@@ -140,6 +140,10 @@ msgstr ""
 msgid "Go Pro ✦"
 msgstr ""
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "I looked, but your entries don't seem to touch on that yet."
+msgstr ""
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep account entries"
 msgstr ""

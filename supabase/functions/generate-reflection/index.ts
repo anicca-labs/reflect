@@ -367,7 +367,12 @@ const callClaudeAsk = async (question: string, entriesBlock: string): Promise<st
     },
     body: JSON.stringify({
       model: REFLECTION_MODEL,
-      max_tokens: 500,
+      // Opus emits a thinking block first; the response text is a LATER block, so
+      // parsing content[0].text returned the (absent) text of the thinking block
+      // and looked empty. Give thinking its own budget on top of the answer, and
+      // filter for text blocks exactly like callClaude (the reflection path).
+      max_tokens: 2000,
+      thinking: { type: 'adaptive' },
       system:
         'You answer questions about a private journal, speaking directly to its author. ' +
         'Use ONLY the entries provided — never invent events, feelings or dates. ' +
@@ -385,8 +390,11 @@ const callClaudeAsk = async (question: string, entriesBlock: string): Promise<st
   });
   if (!res.ok) throw new Error(`Claude ${res.status}: ${await res.text()}`);
   const data = await res.json();
-  const text = String(data?.content?.[0]?.text ?? '').trim();
-  if (!text) throw new Error('empty answer');
+  const text = (data.content ?? [])
+    .filter((b: { type: string }) => b.type === 'text')
+    .map((b: { text: string }) => b.text)
+    .join('')
+    .trim();
   return text;
 };
 
@@ -672,6 +680,10 @@ Deno.serve(async (req) => {
         })
         .join('\n\n');
       const answer = await callClaudeAsk(question, block);
+      // A truly empty return (model declined without producing the fallback
+      // sentence) degrades to a kind not-found rather than a 500 — and is NOT
+      // logged against the free-ask quota, since the user got nothing.
+      if (!answer) return json({ status: 'not_found' });
       // Metadata only — never the question, never the answer.
       await admin.from('ask_log').insert({ user_id: userId });
       return json({ status: 'ok', answer });

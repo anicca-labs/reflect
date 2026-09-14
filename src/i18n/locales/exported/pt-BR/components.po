@@ -140,6 +140,10 @@ msgstr "Receba a sua primeira reflexão"
 msgid "Go Pro ✦"
 msgstr "Assine o Pro ✦"
 
+#: src/components/molecules/AskJournal/index.tsx
+msgid "I looked, but your entries don't seem to touch on that yet."
+msgstr "Procurei, mas suas entradas ainda não parecem tocar nisso."
+
 #: src/components/molecules/AnonMergeModal/AnonMergeModal.tsx
 msgid "Keep account entries"
 msgstr "Manter entradas da conta"
