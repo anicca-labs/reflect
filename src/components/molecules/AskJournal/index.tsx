@@ -59,6 +59,8 @@ const AskJournal = () => {
         </BodySm>
       </YStack>
       <XStack gap="$2" items="center">
+        {/* Explicit height + theming, mirroring the entry-search Input: Tamagui's
+            default Input collapses to a sliver on Android without them. */}
         <Input
           flex={1}
           value={question}
@@ -67,6 +69,15 @@ const AskJournal = () => {
           placeholder={t`Ask something about what you’ve written…`}
           returnKeyType="send"
           onSubmitEditing={submit}
+          bg="$surface-card"
+          borderWidth={1}
+          borderColor="$borderColor"
+          focusStyle={{ outlineWidth: 0 }}
+          fontSize="$3"
+          color="$text-emphasis"
+          rounded="$4"
+          px="$4"
+          height={44}
         />
         <BaseTouchable
           onPress={submit}
