@@ -128,6 +128,23 @@ const FOLLOWUP_BODY_BY_LOCALE: Record<string, string> = {
 const followupBody = (locale: string | null): string =>
   (locale ? FOLLOWUP_BODY_BY_LOCALE[locale] : undefined) ?? FOLLOWUP_BODY_BY_LOCALE.en;
 
+// ── AI invite ───────────────────────────────────────────────────────────────
+// Once-EVER nudge for engaged writers who never answered the AI consent card:
+// >=3 entries, no api.user_settings row (a row with enabled=false means they
+// explicitly turned it off in Settings — never nudge those), never invited
+// before. The tap opens the consent card itself (client: useAiInviteNotification)
+// — a push that promises "see what Reflect notices" must land ON the ask, not on
+// a journal that then shows nothing. Keep the type string in sync with
+// AI_INVITE_DATA_TYPE in src/services/firebase-messaging.
+const AI_INVITE_HOUR = 17;
+const AI_INVITE_DATA_TYPE = 'ai-invite';
+const AI_INVITE_BODY_BY_LOCALE: Record<string, string> = {
+  en: 'Your pages could write back — tap to see what Reflect notices in your writing.',
+  es: 'Tus páginas podrían responderte — tocá y mirá qué nota Reflect en lo que escribís.',
+};
+const aiInviteBody = (locale: string | null): string =>
+  (locale ? AI_INVITE_BODY_BY_LOCALE[locale] : undefined) ?? AI_INVITE_BODY_BY_LOCALE.en;
+
 // ── Reflective line ("presence") ────────────────────────────────────────────
 // NOT a reminder. This exists so the app is pleasantly present — a line worth
 // reading on its own, where writing is a possible side effect rather than the ask.
@@ -297,16 +314,22 @@ Deno.serve(async (req) => {
     }
     return token;
   };
-  const push = async (d: PushDevice, body: string, collapseId: string): Promise<boolean> => {
+  const push = async (
+    d: PushDevice,
+    body: string,
+    collapseId: string,
+    dataType: string = REMINDER_DATA_TYPE,
+  ): Promise<boolean> => {
     const projectId = d.firebase_project_id ?? 'reflect-8e62d';
     const res = await sendFcmMessage(
       d.fcm_token,
       projectId,
       await getToken(projectId),
       { title: REMINDER_TITLE, body },
-      // Routes the tap to the journal composer (useReminderNotification). FCM
-      // data values must be strings.
-      { type: REMINDER_DATA_TYPE },
+      // Routes the tap client-side by type: the default opens the journal
+      // composer (useReminderNotification); AI_INVITE_DATA_TYPE opens the echo
+      // consent card (useAiInviteNotification). FCM data values must be strings.
+      { type: dataType },
       // Collapse redundant deliveries so an at-least-once redelivery (e.g. a
       // phone that was in Doze at send time) never stacks a second copy.
       { collapseId },
@@ -657,11 +680,81 @@ Deno.serve(async (req) => {
     }
   }
 
+  // ── Phase 6: AI invite (once ever, local 17:00) ─────────────────────────────
+  let invitesSent = 0;
+  {
+    const { data: inviteDevices } = await supabase
+      .from('device_tokens')
+      .select('fcm_token, user_id, timezone, firebase_project_id, locale')
+      .not('user_id', 'is', null)
+      .not('timezone', 'is', null);
+
+    const due = (inviteDevices ?? []).filter(
+      (d) => forceLine === false && matchesReminderTime(now, d.timezone, AI_INVITE_HOUR, 0),
+    );
+
+    if (due.length > 0) {
+      const userIds = [...new Set(due.map((d) => d.user_id as string))];
+
+      // Never answered the consent card: no user_settings row at all.
+      const { data: settingsRows } = await supabase
+        .from('user_settings')
+        .select('user_id')
+        .in('user_id', userIds);
+      const answered = new Set((settingsRows ?? []).map((r) => r.user_id as string));
+
+      // Engaged: >=3 entries. Counted per user over the candidate set.
+      const candidates = userIds.filter((id) => !answered.has(id));
+      const entryCounts = new Map<string, number>();
+      if (candidates.length > 0) {
+        const { data: entryRows } = await supabase
+          .from('journal_entries')
+          .select('user_id')
+          .in('user_id', candidates);
+        for (const r of entryRows ?? []) {
+          const uid = r.user_id as string;
+          entryCounts.set(uid, (entryCounts.get(uid) ?? 0) + 1);
+        }
+      }
+
+      // Once ever: any prior ai_invite row, whatever its date, disqualifies.
+      const { data: prior } = await supabase
+        .from('push_log')
+        .select('user_id')
+        .eq('kind', 'ai_invite')
+        .in('user_id', candidates);
+      const invited = new Set((prior ?? []).map((r) => r.user_id as string));
+
+      const eligible = due.filter((d) => {
+        const uid = d.user_id as string;
+        return !answered.has(uid) && (entryCounts.get(uid) ?? 0) >= 3 && !invited.has(uid);
+      });
+
+      const results = await Promise.all(
+        eligible.map(async (d) => {
+          const ok = await push(d, aiInviteBody(d.locale), 'ai-invite', AI_INVITE_DATA_TYPE);
+          if (ok) {
+            await supabase
+              .from('push_log')
+              .insert({
+                user_id: d.user_id,
+                kind: 'ai_invite',
+                sent_on: localDateInTz(now, d.timezone),
+              })
+              .then(() => {});
+          }
+          return ok;
+        }),
+      );
+      invitesSent = results.filter(Boolean).length;
+    }
+  }
+
   if (staleTokens.length > 0) {
     await supabase.from('device_tokens').delete().in('fcm_token', staleTokens);
   }
 
   return new Response(
-    `Sent ${remindersSent} reminder(s), ${streaksSent} streak nudge(s), ${teasersSent} teaser(s), ${followupsSent} follow-up(s), ${linesSent} line(s)`,
+    `Sent ${remindersSent} reminder(s), ${streaksSent} streak nudge(s), ${teasersSent} teaser(s), ${followupsSent} follow-up(s), ${linesSent} line(s), ${invitesSent} AI invite(s)`,
   );
 });

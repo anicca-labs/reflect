@@ -146,6 +146,19 @@ const useComposeStore = create<ComposeStoreState>((set) => ({
 // Set when a "your week is ready" push is tapped; the Journal home consumes it
 // to open the latest reflection full-screen (stash-then-navigate pattern, same
 // as pendingCompose above).
+type AiInviteStoreState = {
+  // A tapped ai-invite push, waiting for JournalScreen to open the consent card.
+  // Store-backed for the same reason as pendingReflectionOpen below: the tap can
+  // arrive during cold-start churn, before the screen that consumes it exists.
+  pendingAiInvite: boolean;
+  setPendingAiInvite: (v: boolean) => void;
+};
+
+const useAiInviteStore = create<AiInviteStoreState>((set) => ({
+  pendingAiInvite: false,
+  setPendingAiInvite: (v) => set({ pendingAiInvite: v }),
+}));
+
 type ReflectionOpenStoreState = {
   pendingReflectionOpen: boolean;
   setPendingReflectionOpen: (v: boolean) => void;
@@ -164,6 +177,7 @@ export {
   usePeekStore,
   useComposeStore,
   useReflectionOpenStore,
+  useAiInviteStore,
 };
 export type { PendingMerge };
 export { useAnonymousJournalStore } from './anonymousJournal';

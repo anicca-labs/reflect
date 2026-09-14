@@ -22,6 +22,7 @@ import {
   useActivityPing,
   useOfflineJournalSync,
   useBiometricLock,
+  useAiInviteNotification,
 } from '@hooks';
 import { EnvBadge, NetworkStatusBanner, BiometricLockOverlay } from '@atoms';
 import { AnonMergeModal } from '@molecules';
@@ -62,6 +63,7 @@ const RootLayoutNav = () => {
   useAuthSession();
   useMemoryNotification();
   useReminderNotification();
+  useAiInviteNotification();
   useReflectionNotification();
   useActivityPing();
   useOfflineJournalSync();

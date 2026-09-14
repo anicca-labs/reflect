@@ -333,6 +333,21 @@ const useEntryEcho = () => {
   // schedule decides whether to ask again.
   const declineConsent = useCallback(() => setConsentVisible(false), []);
 
+  // Open the consent card outside the save schedule — the landing for a tapped
+  // ai-invite push. The push copy promises "see what Reflect notices", so the
+  // tap must arrive at the ask itself, not at a journal that shows nothing.
+  // No-ops for already-consented users (they may have consented between the
+  // send and the tap).
+  const openInvite = useCallback(
+    (entryCount: number) => {
+      if (enabled || !settled) return;
+      setLine(null);
+      setEntriesSoFar(Math.max(entryCount, 1));
+      setConsentVisible(true);
+    },
+    [enabled, settled],
+  );
+
   const dismissLine = useCallback(() => setLine(null), []);
 
   return {
@@ -342,6 +357,7 @@ const useEntryEcho = () => {
     entriesSoFar,
     onSaved,
     onGuestSaved,
+    openInvite,
     acceptConsent,
     declineConsent,
     dismissLine,
