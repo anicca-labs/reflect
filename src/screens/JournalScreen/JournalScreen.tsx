@@ -66,6 +66,7 @@ import {
   ReminderPromptModal,
   WeeklyReflectionBanner,
   EntryEchoCards,
+  EntryContent,
   type SwipeableDeleteWrapperHandle,
 } from '@molecules';
 import { BaseIcon } from '@/src/components/atoms/icons';
@@ -83,7 +84,6 @@ const isToday = (iso: string) => {
   );
 };
 
-const TRUNCATE_LENGTH = 250;
 const STREAK_LETTER_SPACING = -0.3;
 
 interface EntryCardProps {
@@ -97,11 +97,6 @@ interface EntryCardProps {
 const EntryCard = ({ entry, index, onDelete, onPeek, closeKey }: EntryCardProps) => {
   const timeFormat = usePreferencesStore((s) => s.timeFormat);
   const swipeRef = useRef<SwipeableDeleteWrapperHandle>(null);
-  const isTruncated = entry.content.length > TRUNCATE_LENGTH;
-  const displayContent = isTruncated
-    ? entry.content.slice(0, TRUNCATE_LENGTH) + '…'
-    : entry.content;
-
   return (
     <SwipeableDeleteWrapper
       ref={swipeRef}
@@ -119,9 +114,9 @@ const EntryCard = ({ entry, index, onDelete, onPeek, closeKey }: EntryCardProps)
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <BodySm color="$text-emphasis" mb="$3">
-          {displayContent}
-        </BodySm>
+        <YStack mb="$3">
+          <EntryContent content={entry.content} preview />
+        </YStack>
         <LabelMd color="$text-disabled">
           {formatEntryTime(entry.created_at, timeFormat === '24h')}
         </LabelMd>
