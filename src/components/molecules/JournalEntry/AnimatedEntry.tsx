@@ -28,8 +28,13 @@ const AnimatedEntry = ({ children, index, animKey }: AnimatedEntryProps) => {
     indexRef.current = index;
   }, [index]);
 
+  // Runs on mount AND whenever animKey flips (screen focus replays the stagger).
+  // It must run on mount too — never gated on animKey — or a card that mounts while
+  // animKey is still 0 and never receives a focus bump (e.g. the JS bundle reloads
+  // while this tab is already focused, so no new focus event fires) would sit at
+  // opacity 0 forever: laid out and tappable but invisible. An entrance animation
+  // must never be able to hide content permanently.
   useEffect(() => {
-    if (animKey === 0) return;
     const i = indexRef.current;
     cancelAnimation(tx);
     cancelAnimation(opacity);
