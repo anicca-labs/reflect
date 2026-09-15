@@ -45,6 +45,10 @@ msgstr "Une petite note aide les autres à le découvrir. 🍂"
 msgid "Account"
 msgstr "Compte"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Add a title…"
+msgstr "Ajoute un titre…"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Allow notifications below to use reminders."
 msgstr "Autorise les notifications ci-dessous pour utiliser les rappels."
@@ -58,8 +62,8 @@ msgid "An account with this email already exists"
 msgstr "Un compte avec cet email existe déjà"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Answer today’s prompt:"
-msgstr "Répondre à la question du jour :"
+#~ msgid "Answer today’s prompt:"
+#~ msgstr "Répondre à la question du jour :"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Apple sign-in failed: no identity token"

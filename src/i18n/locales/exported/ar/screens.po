@@ -45,6 +45,10 @@ msgstr "تقييم سريع يساعد الآخرين على اكتشافه. �
 msgid "Account"
 msgstr "الحساب"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Add a title…"
+msgstr "أضف عنوانًا…"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Allow notifications below to use reminders."
 msgstr "اسمح بالإشعارات أدناه لاستخدام التذكيرات."
@@ -58,8 +62,8 @@ msgid "An account with this email already exists"
 msgstr "يوجد حساب بهذا البريد الإلكتروني بالفعل"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Answer today’s prompt:"
-msgstr "أجب عن سؤال اليوم:"
+#~ msgid "Answer today’s prompt:"
+#~ msgstr "أجب عن سؤال اليوم:"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Apple sign-in failed: no identity token"
