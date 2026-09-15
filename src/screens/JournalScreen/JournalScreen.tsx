@@ -12,7 +12,7 @@ import Animated, {
 import { useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { BlurTargetView } from 'expo-blur';
 import { useFocusEffect, useRouter, useIsFocused } from 'expo-router';
-import { ScrollView, YStack, XStack, TextArea, Input, Spinner, useTheme } from 'tamagui';
+import { ScrollView, YStack, XStack, TextArea, Spinner, useTheme } from 'tamagui';
 import { DisplayLg, BodySm, BodyMdBold, LabelMd, LabelLg } from '@fonts';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
@@ -145,11 +145,11 @@ const JournalScreen = () => {
   const [closeKey, setCloseKey] = useState(0);
   const [animKey, setAnimKey] = useState(0);
   const [peekEntryId, setPeekEntryId] = useState<string | null>(null);
-  // The daily prompt as an editable title, pre-filled and saved above the entry
-  // body so an answer keeps its question when read back later (and the echo /
-  // reflection get the context too). Editable/clearable for an off-prompt day, so
-  // the title never contradicts the body. Initialised lazily to the day's prompt.
-  const [promptTitle, setPromptTitle] = useState<string | null>(null);
+  // Checkbox: when ticked, the day's prompt is prepended to the saved entry as a
+  // title line ("prompt\n\nbody"), so an answer keeps its question when read back
+  // later (and the echo / reflection get the context too). Opt-in; off = the entry
+  // is saved exactly as written.
+  const [answeringPrompt, setAnsweringPrompt] = useState(false);
 
   const handlePeek = (entry: JournalEntry) => {
     setCloseKey((k) => k + 1);
@@ -311,7 +311,7 @@ const JournalScreen = () => {
 
   const handleClearDraft = () => {
     setDraft('');
-    setPromptTitle(null);
+    setAnsweringPrompt(false);
     // Discard any in-flight dictation too, so the cleared words aren't re-prefixed to
     // the next utterance while recording continues.
     clearListening();
@@ -455,7 +455,6 @@ const JournalScreen = () => {
   const prompt = prompts[getDailyPromptIndex(prompts.length)];
   // Pre-fill the title with the day's prompt until the user edits it; null means
   // "untouched → use today's prompt", so the title follows the daily rotation.
-  const titleValue = promptTitle ?? prompt;
   const hasContent = draft.trim().length > 0;
   // Keep long-lived sessions on the latest OTA: silently apply a downloaded
   // update when the app returns from a real break — but never mid-write.
@@ -542,8 +541,8 @@ const JournalScreen = () => {
     // Prompt-as-title: prepend the (editable) title and a blank line, so the saved
     // entry reads as "Question\n\nAnswer". A cleared title saves the body alone.
     // Captured now so a failed save can restore the draft and title for a retry.
-    const titleTrim = titleValue.trim();
-    const persisted = titleTrim ? `${titleTrim}\n\n${trimmed}` : trimmed;
+    const wasAnsweringPrompt = answeringPrompt && !!prompt;
+    const persisted = wasAnsweringPrompt ? `${prompt}\n\n${trimmed}` : trimmed;
 
     if (atLimit) {
       if (isAnonymous) {
@@ -578,7 +577,7 @@ const JournalScreen = () => {
     }
 
     setDraft('');
-    setPromptTitle(null);
+    setAnsweringPrompt(false);
     Keyboard.dismiss();
 
     // Entries BEFORE this save. The reminder prompt is held back on someone's very
@@ -626,7 +625,7 @@ const JournalScreen = () => {
       // Restore the raw body (not the title-prefixed form) and the checkbox, so a
       // retry re-composes cleanly rather than double-prefixing the prompt.
       setDraft(trimmed);
-      setPromptTitle(titleTrim);
+      setAnsweringPrompt(wasAnsweringPrompt);
       // The server's free-entry-limit trigger. Reachable even when the UI says a
       // slot is free: the client count excludes tombstoned rows whose deletion
       // hasn't flushed yet, while the server counts what's actually there. Without
@@ -645,7 +644,7 @@ const JournalScreen = () => {
           try {
             const { queued, entry } = await createMutation.mutateAsync(persisted);
             setDraft('');
-            setPromptTitle(null);
+            setAnsweringPrompt(false);
             logJournalEntryCreated(persisted.split(/\s+/).length);
             // The retried entry is a real entry: it must get the same treatment as
             // one saved normally, or the person who just paid is the only user who
@@ -732,6 +731,28 @@ const JournalScreen = () => {
               </XStack>
             </YStack>
 
+            {/* Answer today's prompt: when checked, the prompt is saved as a title
+                line above the entry, so the answer keeps its context read back later. */}
+            <BaseTouchable onPress={() => setAnsweringPrompt((v) => !v)} hitSlop={8} mb="$3">
+              <XStack items="center" gap="$3">
+                <YStack
+                  width={20}
+                  height={20}
+                  rounded="$2"
+                  borderWidth={1}
+                  borderColor={answeringPrompt ? '$accentBackground' : '$borderColor'}
+                  bg={answeringPrompt ? '$accentBackground' : '$background0'}
+                  items="center"
+                  justify="center"
+                >
+                  {answeringPrompt ? <LabelMd color="$accentColor">✓</LabelMd> : null}
+                </YStack>
+                <BodySm flex={1} color={answeringPrompt ? '$text-emphasis' : '$text-disabled'}>
+                  <Trans>Answer today’s prompt:</Trans> {prompt}
+                </BodySm>
+              </XStack>
+            </BaseTouchable>
+
             <YStack
               bg="$surface-card"
               rounded="$4"
@@ -739,25 +760,11 @@ const JournalScreen = () => {
               borderColor="$borderColor"
               mb="$4"
             >
-              {/* The prompt as an editable title, pre-filled and saved above the body
-                  so an answer keeps its question when read back. Clear it on an
-                  off-prompt day so the title never contradicts the entry. */}
-              <Input
-                value={titleValue}
-                onChangeText={setPromptTitle}
-                placeholder={t`Add a title…`}
-                bg="$background0"
-                borderWidth={0}
-                focusStyle={{ outlineWidth: 0 }}
-                fontSize="$4"
-                fontWeight="600"
-                color="$text-emphasis"
-              />
               <TextArea
                 ref={inputRef}
                 value={draft}
                 onChangeText={setDraft}
-                placeholder={t`Write your answer…`}
+                placeholder={answeringPrompt ? t`Write your answer…` : prompt}
                 minH={sizes['3xl']}
                 bg="$background0"
                 borderWidth={0}

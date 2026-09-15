@@ -46,8 +46,8 @@ msgid "Account"
 msgstr "Cuenta"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-msgid "Add a title…"
-msgstr "Agregá un título…"
+#~ msgid "Add a title…"
+#~ msgstr "Agregá un título…"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Allow notifications below to use reminders."
@@ -62,8 +62,8 @@ msgid "An account with this email already exists"
 msgstr "Ya existe una cuenta con este correo"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
-#~ msgid "Answer today’s prompt:"
-#~ msgstr "Responder la pregunta de hoy:"
+msgid "Answer today’s prompt:"
+msgstr "Responder la pregunta de hoy:"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Apple sign-in failed: no identity token"
