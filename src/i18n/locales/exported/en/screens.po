@@ -57,6 +57,10 @@ msgstr ""
 msgid "An account with this email already exists"
 msgstr ""
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Answer today’s prompt:"
+msgstr ""
+
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Apple sign-in failed: no identity token"
 msgstr ""
@@ -672,6 +676,10 @@ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "When this is on, your entries are sent securely to our AI (Anthropic’s Claude) to write your reflection. They’re never shown to another person, never used for ads, never sold, and never used to train AI. You can turn it off anytime."
+msgstr ""
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Write your answer…"
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx

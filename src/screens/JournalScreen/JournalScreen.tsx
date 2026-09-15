@@ -145,6 +145,10 @@ const JournalScreen = () => {
   const [closeKey, setCloseKey] = useState(0);
   const [animKey, setAnimKey] = useState(0);
   const [peekEntryId, setPeekEntryId] = useState<string | null>(null);
+  // When on, the daily prompt is saved as a title line above the entry — an
+  // answer keeps its question, so it still makes sense read back later (and the
+  // echo/reflection get the context too). Opt-in; off = unchanged behavior.
+  const [answeringPrompt, setAnsweringPrompt] = useState(false);
 
   const handlePeek = (entry: JournalEntry) => {
     setCloseKey((k) => k + 1);
@@ -306,6 +310,7 @@ const JournalScreen = () => {
 
   const handleClearDraft = () => {
     setDraft('');
+    setAnsweringPrompt(false);
     // Discard any in-flight dictation too, so the cleared words aren't re-prefixed to
     // the next utterance while recording continues.
     clearListening();
@@ -530,6 +535,11 @@ const JournalScreen = () => {
     if (isListening) stopListening();
     const trimmed = source.trim();
     if (!trimmed) return;
+    // Prompt-as-title: prepend the question and a blank line, so the saved entry
+    // reads as "Question\n\nAnswer". Captured now so a failed save can restore
+    // both the raw draft and the checkbox state for a clean retry.
+    const wasAnsweringPrompt = answeringPrompt && !!prompt;
+    const persisted = wasAnsweringPrompt ? `${prompt}\n\n${trimmed}` : trimmed;
 
     if (atLimit) {
       if (isAnonymous) {
@@ -564,6 +574,7 @@ const JournalScreen = () => {
     }
 
     setDraft('');
+    setAnsweringPrompt(false);
     Keyboard.dismiss();
 
     // Entries BEFORE this save. The reminder prompt is held back on someone's very
@@ -581,8 +592,8 @@ const JournalScreen = () => {
     };
 
     if (isAnonymous) {
-      addLocalEntry(trimmed);
-      logJournalEntryCreated(trimmed.split(/\s+/).length);
+      addLocalEntry(persisted);
+      logJournalEntryCreated(persisted.split(/\s+/).length);
       // Guest entries stay on-device, so this is the only server-side record that this
       // device activated. Fire-and-forget: it must never delay or fail the save.
       markFirstEntryWritten();
@@ -594,8 +605,8 @@ const JournalScreen = () => {
     }
 
     try {
-      const { queued, entry } = await createMutation.mutateAsync(trimmed);
-      logJournalEntryCreated(trimmed.split(/\s+/).length);
+      const { queued, entry } = await createMutation.mutateAsync(persisted);
+      logJournalEntryCreated(persisted.split(/\s+/).length);
       markFirstEntryWritten();
       // Echo needs the server row — queued (offline) saves have none yet.
       const consentShown = !queued && entry?.id ? await echo.onSaved(entry.id) : false;
@@ -608,7 +619,10 @@ const JournalScreen = () => {
       }
     } catch (err) {
       // Always restore the draft first — the user's writing must never be lost.
+      // Restore the raw body (not the title-prefixed form) and the checkbox, so a
+      // retry re-composes cleanly rather than double-prefixing the prompt.
       setDraft(trimmed);
+      setAnsweringPrompt(wasAnsweringPrompt);
       // The server's free-entry-limit trigger. Reachable even when the UI says a
       // slot is free: the client count excludes tombstoned rows whose deletion
       // hasn't flushed yet, while the server counts what's actually there. Without
@@ -625,9 +639,10 @@ const JournalScreen = () => {
           // paywall ready to reappear is the worst possible outcome.
           await refreshEntitlement();
           try {
-            const { queued, entry } = await createMutation.mutateAsync(trimmed);
+            const { queued, entry } = await createMutation.mutateAsync(persisted);
             setDraft('');
-            logJournalEntryCreated(trimmed.split(/\s+/).length);
+            setAnsweringPrompt(false);
+            logJournalEntryCreated(persisted.split(/\s+/).length);
             // The retried entry is a real entry: it must get the same treatment as
             // one saved normally, or the person who just paid is the only user who
             // never gets an echo for what they wrote.
@@ -713,6 +728,28 @@ const JournalScreen = () => {
               </XStack>
             </YStack>
 
+            {/* Answer today's prompt: tap to save the question as a title line above
+                the entry, so the answer keeps its context when read back later. */}
+            <BaseTouchable onPress={() => setAnsweringPrompt((v) => !v)} hitSlop={8} mb="$3">
+              <XStack items="center" gap="$3">
+                <YStack
+                  width={20}
+                  height={20}
+                  rounded="$2"
+                  borderWidth={1}
+                  borderColor={answeringPrompt ? '$accentBackground' : '$borderColor'}
+                  bg={answeringPrompt ? '$accentBackground' : '$background0'}
+                  items="center"
+                  justify="center"
+                >
+                  {answeringPrompt ? <LabelMd color="$accentColor">✓</LabelMd> : null}
+                </YStack>
+                <BodySm flex={1} color={answeringPrompt ? '$text-emphasis' : '$text-disabled'}>
+                  <Trans>Answer today’s prompt:</Trans> {prompt}
+                </BodySm>
+              </XStack>
+            </BaseTouchable>
+
             <YStack
               bg="$surface-card"
               rounded="$4"
@@ -724,7 +761,7 @@ const JournalScreen = () => {
                 ref={inputRef}
                 value={draft}
                 onChangeText={setDraft}
-                placeholder={prompt}
+                placeholder={answeringPrompt ? t`Write your answer…` : prompt}
                 minH={sizes['3xl']}
                 bg="$background0"
                 borderWidth={0}
