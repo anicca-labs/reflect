@@ -302,6 +302,10 @@ msgstr "قفل التطبيق"
 msgid "Manage subscription"
 msgstr "إدارة الاشتراك"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Memories"
+msgstr "ذكريات"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Microphone access required"
 msgstr "يلزم الوصول إلى الميكروفون"
@@ -337,6 +341,10 @@ msgstr "لا توجد تسجيلات بعد. ابدأ الكتابة في تبو
 #: src/hooks/useRatingsAsk.ts
 msgid "Not now"
 msgstr "ليس الآن"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Once in a while, an older entry comes back to you on your lock screen. Turn it off to keep only the daily reminder."
+msgstr "من حين لآخر، تعود إليك تدوينة قديمة على شاشة القفل. أوقفه لتُبقي التذكير اليومي فقط."
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Open Settings"
@@ -454,6 +462,10 @@ msgstr "هل تتذكر هذا؟"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
 msgstr "ذكّرني بالكتابة"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Resurface a past entry now and then"
+msgstr "إعادة إظهار تدوينة قديمة بين الحين والآخر"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Russian"

@@ -302,6 +302,10 @@ msgstr "Kunci aplikasi"
 msgid "Manage subscription"
 msgstr "Kelola langganan"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Memories"
+msgstr "Kenangan"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Microphone access required"
 msgstr "Akses mikrofon diperlukan"
@@ -337,6 +341,10 @@ msgstr "Belum ada entri. Mulai menulis di tab Jurnal."
 #: src/hooks/useRatingsAsk.ts
 msgid "Not now"
 msgstr "Nanti saja"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Once in a while, an older entry comes back to you on your lock screen. Turn it off to keep only the daily reminder."
+msgstr "Sesekali, catatan lama muncul kembali di layar kuncimu. Matikan untuk menyisakan hanya pengingat harian."
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Open Settings"
@@ -454,6 +462,10 @@ msgstr "Masih ingat ini?"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
 msgstr "Ingatkan saya untuk menulis"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Resurface a past entry now and then"
+msgstr "Memunculkan kembali catatan lama sesekali"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Russian"

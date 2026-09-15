@@ -302,6 +302,10 @@ msgstr "Bloquear o app"
 msgid "Manage subscription"
 msgstr "Gerenciar assinatura"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Memories"
+msgstr "Memórias"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Microphone access required"
 msgstr "Acesso ao microfone necessário"
@@ -337,6 +341,10 @@ msgstr "Sem entradas ainda. Comece a escrever na aba Diário."
 #: src/hooks/useRatingsAsk.ts
 msgid "Not now"
 msgstr "Agora não"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Once in a while, an older entry comes back to you on your lock screen. Turn it off to keep only the daily reminder."
+msgstr "De vez em quando, uma entrada antiga volta para você na tela de bloqueio. Desligue para manter apenas o lembrete diário."
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Open Settings"
@@ -454,6 +462,10 @@ msgstr "Você se lembra disso?"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
 msgstr "Me lembre de escrever"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Resurface a past entry now and then"
+msgstr "Trazer de volta uma entrada antiga de vez em quando"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Russian"
