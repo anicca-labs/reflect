@@ -76,7 +76,7 @@ const AskJournal = () => {
           borderWidth={1}
           borderColor="$borderColor"
           focusStyle={{ outlineWidth: 0 }}
-          fontSize="$3"
+          fontSize="$2"
           color="$text-emphasis"
           rounded="$4"
           px="$4"
