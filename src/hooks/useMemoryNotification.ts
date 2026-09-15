@@ -3,7 +3,8 @@ import { useRouter } from 'expo-router';
 import * as ExpoNotifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLingui } from '@lingui/react/macro';
-import { scheduleMemoryNotifications } from '@firebase-messaging';
+import { scheduleMemoryNotifications, cancelMemoryNotifications } from '@firebase-messaging';
+import { MEMORIES_ENABLED_KEY } from './useMemoriesSetting';
 import { useJournalEntries } from './useJournalEntries';
 import { useSessionStore, usePeekStore } from '@/src/stores';
 
@@ -24,6 +25,13 @@ const useMemoryNotification = () => {
   useEffect(() => {
     if (isAnonymous || !entries?.length) return;
     const schedule = async () => {
+      // Respect the Memories toggle (default on). Off = cancel any already-scheduled
+      // batch and never reschedule, so the daily reminder can stay on independently.
+      const memoriesEnabled = (await AsyncStorage.getItem(MEMORIES_ENABLED_KEY)) !== 'false';
+      if (!memoriesEnabled) {
+        await cancelMemoryNotifications();
+        return;
+      }
       const [hourStr, minuteStr] = await Promise.all([
         AsyncStorage.getItem(HOUR_KEY),
         AsyncStorage.getItem(MINUTE_KEY),

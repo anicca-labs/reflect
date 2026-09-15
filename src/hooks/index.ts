@@ -1,5 +1,6 @@
 export * from './useAuthSession';
 export * from './useMemoryNotification';
+export * from './useMemoriesSetting';
 export * from './useReminderNotification';
 export * from './useAiInviteNotification';
 export * from './useReflectionNotification';

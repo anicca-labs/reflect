@@ -302,6 +302,10 @@ msgstr "Verrouiller l’app"
 msgid "Manage subscription"
 msgstr "Gérer l'abonnement"
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Memories"
+msgstr "Souvenirs"
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Microphone access required"
 msgstr "Accès au microphone requis"
@@ -337,6 +341,10 @@ msgstr "Aucune entrée pour l'instant. Commencez à écrire dans l'onglet Journa
 #: src/hooks/useRatingsAsk.ts
 msgid "Not now"
 msgstr "Pas maintenant"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Once in a while, an older entry comes back to you on your lock screen. Turn it off to keep only the daily reminder."
+msgstr "De temps en temps, une ancienne entrée te revient sur l’écran de verrouillage. Désactive-le pour ne garder que le rappel quotidien."
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Open Settings"
@@ -454,6 +462,10 @@ msgstr "Tu te souviens de ça ?"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
 msgstr "Me rappeler d'écrire"
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Resurface a past entry now and then"
+msgstr "Refaire surgir une ancienne entrée de temps en temps"
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Russian"

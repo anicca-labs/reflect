@@ -302,6 +302,10 @@ msgstr ""
 msgid "Manage subscription"
 msgstr ""
 
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Memories"
+msgstr ""
+
 #: src/screens/JournalScreen/JournalScreen.tsx
 msgid "Microphone access required"
 msgstr ""
@@ -336,6 +340,10 @@ msgstr ""
 
 #: src/hooks/useRatingsAsk.ts
 msgid "Not now"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Once in a while, an older entry comes back to you on your lock screen. Turn it off to keep only the daily reminder."
 msgstr ""
 
 #: src/screens/JournalScreen/JournalScreen.tsx
@@ -453,6 +461,10 @@ msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Remind me to write"
+msgstr ""
+
+#: src/screens/SettingsScreen/SettingsScreen.tsx
+msgid "Resurface a past entry now and then"
 msgstr ""
 
 #: src/screens/SettingsScreen/SettingsScreen.tsx

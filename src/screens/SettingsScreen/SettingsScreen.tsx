@@ -27,6 +27,7 @@ import {
   useRevenueCat,
   useToast,
   useReminder,
+  useMemoriesSetting,
   useOtaUpdate,
   useAiReflectionsSetting,
 } from '@hooks';
@@ -133,6 +134,11 @@ const SettingsScreen = () => {
     disable: disableReminder,
     updateTime,
   } = useReminder();
+  const {
+    enabled: memoriesEnabled,
+    loading: memoriesLoading,
+    setEnabled: setMemoriesEnabled,
+  } = useMemoriesSetting();
   const {
     enabled: aiEnabled,
     isLoading: aiLoading,
@@ -640,6 +646,53 @@ const SettingsScreen = () => {
                     <Trans>Allow notifications below to use reminders.</Trans>
                   </BodySm>
                 ) : null}
+              </SettingsCard>
+            </AnimatedEntry>
+
+            {/* Memories — resurfacing past entries, independent of the write reminder.
+                A user wanted the "go write" nudge without the "here's something you
+                wrote" one (a low day resurfacing unprompted). Default on. */}
+            <AnimatedEntry index={4} animKey={animKey}>
+              <SettingsCard hasGlass={hasGlass}>
+                <LabelMd
+                  color="$text-disabled"
+                  textTransform="uppercase"
+                  letterSpacing={LABEL_LETTER_SPACING}
+                  mb="$3"
+                >
+                  <Trans>Memories</Trans>
+                </LabelMd>
+
+                <XStack items="center" justify="space-between" gap="$4">
+                  <BodySm color="$text-secondary" flex={1}>
+                    <Trans>Resurface a past entry now and then</Trans>
+                  </BodySm>
+                  {memoriesLoading ? (
+                    <Spinner size="small" color="$text-disabled" />
+                  ) : (
+                    <Toggle
+                      value={memoriesEnabled}
+                      onPress={() => {
+                        if (isSimulator) {
+                          showSimulatorToast();
+                          return;
+                        }
+                        setMemoriesEnabled(!memoriesEnabled);
+                      }}
+                      disabled={isSimulator ? false : notifPermission !== 'granted'}
+                      opacity={
+                        isSimulator ? 1 : notifPermission === 'granted' ? 1 : DISABLED_OPACITY
+                      }
+                    />
+                  )}
+                </XStack>
+
+                <BodySm color="$text-disabled" mt="$2" style={{ lineHeight: 18 }}>
+                  <Trans>
+                    Once in a while, an older entry comes back to you on your lock screen. Turn it
+                    off to keep only the daily reminder.
+                  </Trans>
+                </BodySm>
               </SettingsCard>
             </AnimatedEntry>
 
