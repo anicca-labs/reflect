@@ -10,6 +10,7 @@ const PREVIEW_BODY_MAX = 250;
 // for a titled one: the first segment must be a single line and reasonably short,
 // and there must be a real body after it.
 const splitTitle = (content: string): { title: string | null; body: string } => {
+  if (!content) return { title: null, body: content ?? '' };
   const idx = content.indexOf('\n\n');
   if (idx <= 0) return { title: null, body: content };
   const first = content.slice(0, idx);
@@ -33,9 +34,18 @@ const EntryContent = ({ content, preview = false, lineHeight }: Props) => {
   const { title, body } = splitTitle(content);
   const shownBody =
     preview && body.length > PREVIEW_BODY_MAX ? body.slice(0, PREVIEW_BODY_MAX) + '…' : body;
+  // No wrapper when there's no title: render the body exactly as before so a
+  // plain entry's layout is byte-for-byte the pre-title-feature behavior.
+  if (!title) {
+    return (
+      <BodySm color="$text-emphasis" lineHeight={lineHeight}>
+        {shownBody}
+      </BodySm>
+    );
+  }
   return (
-    <YStack gap={title ? '$2' : '$0'}>
-      {title ? <BodyMdBold color="$text-emphasis">{title}</BodyMdBold> : null}
+    <YStack gap="$2">
+      <BodyMdBold color="$text-emphasis">{title}</BodyMdBold>
       <BodySm color="$text-emphasis" lineHeight={lineHeight}>
         {shownBody}
       </BodySm>

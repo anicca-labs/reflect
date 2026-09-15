@@ -33,6 +33,7 @@ import {
   EntryPeekModal,
   WeeklyReflectionsSection,
   AskJournal,
+  EntryContent,
   type SwipeableDeleteWrapperHandle,
 } from '@molecules';
 
@@ -63,8 +64,6 @@ const groupByDay = (entries: JournalEntry[]): { label: string; items: JournalEnt
   return Array.from(map.values());
 };
 
-const TRUNCATE_LENGTH = 250;
-
 interface EntryCardProps {
   entry: JournalEntry;
   index: number;
@@ -84,11 +83,6 @@ const EntryCard = ({
 }: EntryCardProps) => {
   const timeFormat = usePreferencesStore((s) => s.timeFormat);
   const swipeRef = useRef<SwipeableDeleteWrapperHandle>(null);
-  const isTruncated = entry.content.length > TRUNCATE_LENGTH;
-  const displayContent = isTruncated
-    ? entry.content.slice(0, TRUNCATE_LENGTH) + '…'
-    : entry.content;
-
   return (
     <SwipeableDeleteWrapper
       ref={swipeRef}
@@ -107,7 +101,7 @@ const EntryCard = ({
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <BodySm color="$text-emphasis">{displayContent}</BodySm>
+        <EntryContent content={entry.content} preview />
         <XStack justify="space-between" items="center" mt="$2">
           <LabelMd color="$text-disabled">
             {formatEntryTime(entry.created_at, timeFormat === '24h')}
