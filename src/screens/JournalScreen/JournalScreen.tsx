@@ -66,14 +66,13 @@ import {
   ReminderPromptModal,
   WeeklyReflectionBanner,
   EntryEchoCards,
+  EntryContent,
   type SwipeableDeleteWrapperHandle,
 } from '@molecules';
 import { BaseIcon } from '@/src/components/atoms/icons';
 
 const formatDateHeading = (iso: string) =>
   format(new Date(iso), 'EEEE, MMMM d', { locale: getDateLocale() });
-
-const TRUNCATE_LENGTH = 250;
 
 const isToday = (iso: string) => {
   const d = new Date(iso);
@@ -98,10 +97,6 @@ interface EntryCardProps {
 const EntryCard = ({ entry, index, onDelete, onPeek, closeKey }: EntryCardProps) => {
   const timeFormat = usePreferencesStore((s) => s.timeFormat);
   const swipeRef = useRef<SwipeableDeleteWrapperHandle>(null);
-  const isTruncated = entry.content.length > TRUNCATE_LENGTH;
-  const displayContent = isTruncated
-    ? entry.content.slice(0, TRUNCATE_LENGTH) + '…'
-    : entry.content;
   return (
     <SwipeableDeleteWrapper
       ref={swipeRef}
@@ -119,10 +114,12 @@ const EntryCard = ({ entry, index, onDelete, onPeek, closeKey }: EntryCardProps)
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <BodySm color="$text-emphasis" mb="$3">
-          {displayContent}
-        </BodySm>
-        <LabelMd color="$text-disabled">
+        {/* Structure mirrors the Reflections card (EntryContent placed directly,
+            spacing via the timestamp's mt) — that layout renders the title-aware
+            component correctly; wrapping it in a YStack here previously hid the
+            card on device. */}
+        <EntryContent content={entry.content} preview />
+        <LabelMd color="$text-disabled" mt="$3">
           {formatEntryTime(entry.created_at, timeFormat === '24h')}
         </LabelMd>
       </BaseTouchable>
