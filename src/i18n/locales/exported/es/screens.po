@@ -45,6 +45,10 @@ msgstr "Una valoración rápida ayuda a que otros la encuentren. 🍂"
 msgid "Account"
 msgstr "Cuenta"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+#~ msgid "Add a title…"
+#~ msgstr "Agregá un título…"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Allow notifications below to use reminders."
 msgstr "Permite las notificaciones más abajo para usar recordatorios."
@@ -56,6 +60,10 @@ msgstr "¿Ya tienes cuenta? Inicia sesión"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "An account with this email already exists"
 msgstr "Ya existe una cuenta con este correo"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Answer today’s prompt:"
+msgstr "Responder la pregunta de hoy:"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Apple sign-in failed: no identity token"
@@ -673,6 +681,10 @@ msgstr "¿Qué pequeña cosa te trajo alegría últimamente?"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "When this is on, your entries are sent securely to our AI (Anthropic’s Claude) to write your reflection. They’re never shown to another person, never used for ads, never sold, and never used to train AI. You can turn it off anytime."
 msgstr "Cuando esto está activado, tus entradas se envían de forma segura a nuestra IA (Claude, de Anthropic) para escribir tu reflexión. Nunca se muestran a otra persona, nunca se usan para anuncios, nunca se venden y nunca se usan para entrenar IA. Puedes desactivarlo cuando quieras."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Write your answer…"
+msgstr "Escribí tu respuesta…"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx

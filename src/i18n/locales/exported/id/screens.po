@@ -45,6 +45,10 @@ msgstr "Rating singkat membantu orang lain menemukannya. 🍂"
 msgid "Account"
 msgstr "Akun"
 
+#: src/screens/JournalScreen/JournalScreen.tsx
+#~ msgid "Add a title…"
+#~ msgstr "Tambahkan judul…"
+
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "Allow notifications below to use reminders."
 msgstr "Izinkan notifikasi di bawah untuk memakai pengingat."
@@ -56,6 +60,10 @@ msgstr "Sudah punya akun? Masuk"
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "An account with this email already exists"
 msgstr "Akun dengan email ini sudah ada"
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Answer today’s prompt:"
+msgstr "Jawab pertanyaan hari ini:"
 
 #: src/screens/SignInScreen/SignInScreen.tsx
 msgid "Apple sign-in failed: no identity token"
@@ -673,6 +681,10 @@ msgstr "Hal kecil apa yang baru-baru ini memberimu kebahagiaan?"
 #: src/screens/SettingsScreen/SettingsScreen.tsx
 msgid "When this is on, your entries are sent securely to our AI (Anthropic’s Claude) to write your reflection. They’re never shown to another person, never used for ads, never sold, and never used to train AI. You can turn it off anytime."
 msgstr "Saat ini aktif, entri kamu dikirim dengan aman ke AI kami (Claude dari Anthropic) untuk menulis refleksimu. Entri tidak pernah ditunjukkan ke orang lain, tidak pernah dipakai untuk iklan, tidak pernah dijual, dan tidak pernah dipakai untuk melatih AI. Kamu bisa menonaktifkannya kapan saja."
+
+#: src/screens/JournalScreen/JournalScreen.tsx
+msgid "Write your answer…"
+msgstr "Tulis jawabanmu…"
 
 #: src/screens/JournalScreen/JournalScreen.tsx
 #: src/screens/SettingsScreen/SettingsScreen.tsx

@@ -2,7 +2,8 @@ import { useRef, useState, useCallback, useEffect, type RefObject } from 'react'
 import { BackHandler, Dimensions, Share, type View } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { ScrollView, YStack, XStack } from 'tamagui';
-import { BodySm, LabelMd, LabelSm } from '@fonts';
+import { LabelMd, LabelSm } from '@fonts';
+import { EntryContent } from './EntryContent';
 import { BaseTouchable } from '@anicca-labs/ui-touchables';
 import { BaseIcon } from '@atoms';
 import { sizes } from '@theme';
@@ -59,9 +60,9 @@ const CardContent = ({
   <>
     <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
       <YStack p="$5" pb="$4">
-        <BodySm color="$text-emphasis" lineHeight={ENTRY_BODY_LINE_HEIGHT}>
-          {displayEntry?.content}
-        </BodySm>
+        {displayEntry?.content ? (
+          <EntryContent content={displayEntry.content} lineHeight={ENTRY_BODY_LINE_HEIGHT} />
+        ) : null}
       </YStack>
     </ScrollView>
     <XStack
