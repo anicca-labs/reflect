@@ -347,6 +347,10 @@ const JournalScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      if (!hasAnimated.current) {
+        hasAnimated.current = true;
+        setAnimKey(1);
+      }
       if (!isAnonymous) refetch();
       logScreenView('Journal');
       return () => {
@@ -382,14 +386,6 @@ const JournalScreen = () => {
   // sliding up over the Rive animation mid-fade on every fresh install — the app's
   // literal first frame looked broken.
   const splashComplete = useAppLockStore((s) => s.splashComplete);
-  // Play the entry stagger once, only after the splash is gone and the screen is
-  // focused. Journal is the launch tab, so a focus-time trigger fires behind the
-  // splash and is invisible; gating on splashComplete lets the user actually see it.
-  useEffect(() => {
-    if (hasAnimated.current || !isScreenFocused || !splashComplete) return;
-    hasAnimated.current = true;
-    setAnimKey(1);
-  }, [isScreenFocused, splashComplete]);
   useEffect(() => {
     if (didFirstRunFocus.current || !isScreenFocused || !splashComplete) return;
     if (!isAnonymous || entries.length > 0) return;
