@@ -67,6 +67,11 @@
       "env": {
         "MCP_DOPPLER_CONFIG": "prd"
       }
+    },
+    "argent": {
+      "type": "stdio",
+      "command": "yarn",
+      "args": ["dlx", "@swmansion/argent@latest", "mcp"]
     }
   }
 }
