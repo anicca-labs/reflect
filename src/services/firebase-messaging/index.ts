@@ -153,24 +153,35 @@ const clearScheduledReminders = async (): Promise<void> => {
 
 const scheduleDailyReminder = async (hour: number, minute: number): Promise<void> => {
   await clearScheduledReminders();
-  await ExpoNotifications.scheduleNotificationAsync({
-    identifier: REMINDER_NOTIF_ID,
-    content: {
-      title: 'Reflect',
-      body: reminderBody(),
-      // Tapping the reminder routes straight to the journal composer (see
-      // useReminderNotification) so the user lands ready to write.
-      data: { type: REMINDER_DATA_TYPE },
-    },
-    // DAILY repeats every day at hour:minute and works on both iOS and Android.
-    // (CALENDAR is iOS-only — on Android it throws "Trigger of type: calendar is
-    // not supported".)
-    trigger: {
-      type: ExpoNotifications.SchedulableTriggerInputTypes.DAILY,
-      hour,
-      minute,
-    },
-  });
+  // Enabled state is persisted and re-applied on every app launch, so permission can
+  // have been revoked in system Settings since it was last checked (toggle() only
+  // checks at flip time). Scheduling without permission is what iOS rejects with
+  // ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE, so skip rather than let that surface as an
+  // unhandled rejection.
+  const status = await getNotificationPermissionStatus();
+  if (status !== 'granted') return;
+  try {
+    await ExpoNotifications.scheduleNotificationAsync({
+      identifier: REMINDER_NOTIF_ID,
+      content: {
+        title: 'Reflect',
+        body: reminderBody(),
+        // Tapping the reminder routes straight to the journal composer (see
+        // useReminderNotification) so the user lands ready to write.
+        data: { type: REMINDER_DATA_TYPE },
+      },
+      // DAILY repeats every day at hour:minute and works on both iOS and Android.
+      // (CALENDAR is iOS-only — on Android it throws "Trigger of type: calendar is
+      // not supported".)
+      trigger: {
+        type: ExpoNotifications.SchedulableTriggerInputTypes.DAILY,
+        hour,
+        minute,
+      },
+    });
+  } catch (e) {
+    console.warn('[reminder] Failed to schedule daily reminder:', e);
+  }
 };
 
 const cancelDailyReminder = async (): Promise<void> => {
@@ -246,6 +257,11 @@ const scheduleMemoryNotifications = (
 
       if (!oldEntries.length) return;
 
+      // Permission can be revoked in system Settings since it was last granted;
+      // scheduling without it is what iOS rejects with ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE.
+      const status = await getNotificationPermissionStatus();
+      if (status !== 'granted') return;
+
       // Mark the day as scheduled before the await-heavy loop so any call that
       // races in behind the in-flight lock still sees the guard and bails.
       await AsyncStorage.setItem(MEMORY_NOTIF_LAST_SCHEDULED_KEY, today);
@@ -261,18 +277,27 @@ const scheduleMemoryNotifications = (
 
         const entry = shuffled[daysAhead % shuffled.length];
 
-        const id = await ExpoNotifications.scheduleNotificationAsync({
-          content: {
-            title,
-            body: buildMemoryPreview(entry.content),
-            data: { entryId: entry.id, type: 'memory' },
-          },
-          trigger: {
-            type: ExpoNotifications.SchedulableTriggerInputTypes.DATE,
-            date: targetDate,
-          },
-        });
-        ids.push(id);
+        // Caught per-iteration: one rejected schedule (e.g. a transient native
+        // failure) must not abort the loop and leave the rest of the month's
+        // notifications both unscheduled and untracked (MEMORY_NOTIF_IDS_KEY is
+        // only written after the loop, so a mid-loop throw orphaned every id
+        // scheduled before it).
+        try {
+          const id = await ExpoNotifications.scheduleNotificationAsync({
+            content: {
+              title,
+              body: buildMemoryPreview(entry.content),
+              data: { entryId: entry.id, type: 'memory' },
+            },
+            trigger: {
+              type: ExpoNotifications.SchedulableTriggerInputTypes.DATE,
+              date: targetDate,
+            },
+          });
+          ids.push(id);
+        } catch (e) {
+          console.warn('[memory notifications] Failed to schedule one:', e);
+        }
       }
 
       await AsyncStorage.setItem(MEMORY_NOTIF_IDS_KEY, JSON.stringify(ids));

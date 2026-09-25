@@ -89,6 +89,12 @@ type Body = {
   // are on binaries that predate timezone stamping (57 of 66 have none). Guests are
   // excluded automatically since their entries never reach the server.
   entry_count?: number;
+  // Minimum server-side entry count (inclusive). Complements the exact match above
+  // for "engaged writers" audiences (e.g. >= 3).
+  entry_count_min?: number;
+  // Only users who accepted the AI consent card (api.user_settings.ai_reflections_enabled).
+  // Needed for AI-feature announcements: the feature doesn't exist for anyone else.
+  consented?: boolean;
   // translate the message into each recipient's locale (once per locale) via Claude
   translate?: boolean;
   // send a pre-translated template instead of custom title/body (no Claude)
@@ -256,7 +262,9 @@ Deno.serve(async (req) => {
   // journal_entries, not a column on device_tokens, so it can't be expressed as part
   // of the same select.
   let entryFiltered = rawDevices;
-  if (!payload.user_id && typeof payload.entry_count === 'number') {
+  const wantsExact = typeof payload.entry_count === 'number';
+  const wantsMin = typeof payload.entry_count_min === 'number';
+  if (!payload.user_id && (wantsExact || wantsMin)) {
     const ids = [...new Set((rawDevices ?? []).map((d) => d.user_id).filter(Boolean))];
     const counts = new Map<string, number>();
     if (ids.length > 0) {
@@ -269,9 +277,28 @@ Deno.serve(async (req) => {
         counts.set(uid, (counts.get(uid) ?? 0) + 1);
       }
     }
-    entryFiltered = (rawDevices ?? []).filter(
-      (d) => d.user_id && (counts.get(d.user_id) ?? 0) === payload.entry_count,
-    );
+    entryFiltered = (rawDevices ?? []).filter((d) => {
+      if (!d.user_id) return false;
+      const n = counts.get(d.user_id) ?? 0;
+      if (wantsExact && n !== payload.entry_count) return false;
+      if (wantsMin && n < (payload.entry_count_min as number)) return false;
+      return true;
+    });
+  }
+
+  // Consent filter: AI announcements must only reach users the feature exists for.
+  if (!payload.user_id && payload.consented) {
+    const ids = [...new Set((entryFiltered ?? []).map((d) => d.user_id).filter(Boolean))];
+    const ok = new Set<string>();
+    if (ids.length > 0) {
+      const { data: rows } = await supabase
+        .from('user_settings')
+        .select('user_id')
+        .eq('ai_reflections_enabled', true)
+        .in('user_id', ids as string[]);
+      for (const r of rows ?? []) ok.add(r.user_id as string);
+    }
+    entryFiltered = (entryFiltered ?? []).filter((d) => d.user_id && ok.has(d.user_id));
   }
 
   if (error) return new Response(error.message, { status: 500, headers: CORS_HEADERS });
