@@ -11,6 +11,12 @@
   - Deploy edge functions: `yarn functions:deploy:stg` / `yarn functions:deploy:prd`
   - `runtimeVersion` uses `policy: 'fingerprint'` (app.config.ts). `push-ota-update.mjs` computes the per-platform fingerprint via `expo-updates fingerprint:generate` — it must run under the **same Doppler env as the build** (config-affecting env vars like `EXPO_UPDATE_URL` change the fingerprint). An OTA only reaches binaries whose native fingerprint matches, so a native change needs a new full build before its OTAs apply.
 
+## MCP servers
+
+- `.mcp.json` and `bin/mcp-run.sh` are only ever updated **together, in the same commit**. Locally the servers run the expo-rn-plugin's own launcher (`${CLAUDE_PLUGIN_ROOT}`); the committed copy runs where there's no plugin (Claude Code on the web). Each server gets only the keys it declares with `--keys`, so an `.mcp.json` that doesn't match the launcher version starts servers with no keys.
+- Keep `bin/mcp-run.sh`'s code identical to the installed plugin's (our header comment is the only difference). The pre-push hook warns on drift via `scripts/check-mcp-launcher.sh`; it never blocks.
+- The launcher refuses production Doppler configs unless `MCP_RUN_ALLOW_PRODUCTION=1` is set in the user's environment (set in the gitignored `.claude/settings.local.json` `env` here, for `revenuecat-prd`).
+
 ## Free-entry limit (server-enforced)
 
 - Free users may hold ≤7 journal entries; Pro is unlimited. Enforced by the `api.enforce_free_entry_limit` BEFORE INSERT trigger on `api.journal_entries` (migration `20260630000000_*`). The client gate in JournalScreen is the UX layer; the trigger is the security backstop. Re-syncs from the offline outbox are upserts → resolve to UPDATE → not blocked. On rejection the trigger raises `free_entry_limit_reached` (the client keys off this string).

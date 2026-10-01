@@ -14,16 +14,11 @@
       ]
     },
     "github": {
-      "type": "stdio",
-      "command": "${CLAUDE_PLUGIN_ROOT:-.}/bin/mcp-run.sh",
-      "args": [
-        "--keys",
-        "GITHUB_PERSONAL_ACCESS_TOKEN",
-        "--",
-        "npx",
-        "-y",
-        "@modelcontextprotocol/server-github@2025.4.8"
-      ]
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
     },
     "sentry": {
       "type": "stdio",
