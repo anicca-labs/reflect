@@ -40,26 +40,12 @@
     "stripe": {
       "type": "stdio",
       "command": "${CLAUDE_PLUGIN_ROOT:-.}/bin/mcp-run.sh",
-      "args": [
-        "--keys",
-        "STRIPE_SECRET_KEY",
-        "--",
-        "npx",
-        "-y",
-        "@stripe/mcp@0.3.3"
-      ]
+      "args": ["--keys", "STRIPE_SECRET_KEY", "--", "npx", "-y", "@stripe/mcp@0.3.3"]
     },
     "doppler": {
       "type": "stdio",
       "command": "${CLAUDE_PLUGIN_ROOT:-.}/bin/mcp-run.sh",
-      "args": [
-        "--keys",
-        "DOPPLER_TOKEN",
-        "--",
-        "npx",
-        "-y",
-        "@dopplerhq/mcp-server@1.0.5"
-      ]
+      "args": ["--keys", "DOPPLER_TOKEN", "--", "npx", "-y", "@dopplerhq/mcp-server@1.0.5"]
     },
     "firebase": {
       "type": "stdio",
@@ -89,14 +75,7 @@
     "context7": {
       "type": "stdio",
       "command": "${CLAUDE_PLUGIN_ROOT:-.}/bin/mcp-run.sh",
-      "args": [
-        "--keys",
-        "CONTEXT7_API_KEY",
-        "--",
-        "npx",
-        "-y",
-        "@upstash/context7-mcp@4.1.1"
-      ]
+      "args": ["--keys", "CONTEXT7_API_KEY", "--", "npx", "-y", "@upstash/context7-mcp@4.1.1"]
     },
     "revenuecat": {
       "type": "stdio",
@@ -128,13 +107,7 @@
     "argent": {
       "type": "stdio",
       "command": "${CLAUDE_PLUGIN_ROOT:-.}/bin/mcp-run.sh",
-      "args": [
-        "--",
-        "yarn",
-        "dlx",
-        "@swmansion/argent@0.26.0",
-        "mcp"
-      ]
+      "args": ["--", "yarn", "dlx", "@swmansion/argent@0.26.0", "mcp"]
     }
   }
 }
